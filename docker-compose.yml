@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+    forex_bot:
+        build: .
+        container_name: forex_bot
+        volumes:
+          - ./config.ini:/usr/src/app/config.ini
+          - ./data:/usr/src/app/data
+          - ./logs:/usr/src/app/logs

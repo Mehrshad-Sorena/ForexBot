@@ -67,6 +67,8 @@ def Task_stoploss_buy_find_1D():
 			if (sym.name == '_DJI'):continue
 			if (sym.name == '_DJI'):continue
 			if (sym.name == '_DXY'):continue
+			if (sym.name == '_DXY'):continue
+			if (sym.name == '_DXY'):continue
 			if (sym.name == 'BTCUSD_i'):continue
 			if (sym.name == 'ETHUSD_i'):continue
 			if (sym.name == 'LTCUSD_i'):continue

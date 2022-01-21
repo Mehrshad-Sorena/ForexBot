@@ -8,3 +8,4 @@ class ForexRobot(Login):
         Login.__init__(self, account)
 
         strategy = kwargs.get('strategy')
+        indicator = kwargs.get('indicator')

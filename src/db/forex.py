@@ -8,6 +8,7 @@ class ForexMongo(object):
     host = params.get('hostname')
     port = int(params.get('port'))
     dbname = 'forex'
+    collection_name = 'forex'
     username = params.get('username')
     password = params.get('password')
 
@@ -19,6 +20,6 @@ class ForexMongo(object):
                     username=self.username,
                     password=self.password)
             self.db = self.client[self.dbname]
-            self.queue = self.db['queue']
+            self.forex = self.db[self.collection_name]
         except Exception as ex:
             logs('warning', ex)

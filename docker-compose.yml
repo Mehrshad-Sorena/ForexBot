@@ -8,3 +8,17 @@ services:
           - ./config.ini:/usr/src/app/config.ini
           - ./data:/usr/src/app/data
           - ./logs:/usr/src/app/logs
+
+    mongodb:
+        image: mongo
+        container_name: mongo
+        ports:
+          - 27017:27017
+        environment:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: rootpwd
+        volumes:
+          - mongodata:/data/db
+
+volumes:
+  mongodata:

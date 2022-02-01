@@ -4,6 +4,7 @@ from log_get_data import *
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import argrelextrema
+from scipy.cluster.vq import kmeans2
 
 # Create a DataFrame so 'ta' can be used.
 df = pd.DataFrame()
@@ -82,7 +83,7 @@ i = np.arange(0,i,1)
 
 
 #*********************************************************************** FlaT Finding ***********************************************************
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,500)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,160)
 
 x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
 y1 = symbol_data_5M['AUDCAD_i']['close']
@@ -94,7 +95,6 @@ ichi = ind.ichimoku(high = y3,low = y4,close = y1,tenkan = 9,kijun = 26,senkou =
 
 column = ichi[0].columns[0]
 SPANA = pd.DataFrame(ichi[0], columns=[column])
-SPANA_copy = pd.DataFrame(ichi[0], columns=[column])
 column = ichi[0].columns[1]
 SPANB = pd.DataFrame(ichi[0], columns=[column])
 column = ichi[0].columns[2]
@@ -102,22 +102,20 @@ Tenkan = pd.DataFrame(ichi[0], columns=[column])
 column = ichi[0].columns[3]
 Kijun = pd.DataFrame(ichi[0], columns=[column])
 
-#SPANA_Duplicates = SPANA[SPANA.isin(SPANA[SPANA.duplicated(keep=False)])]
-SPANA_Duplicates = pd.DataFrame(SPANA[SPANA.duplicated(keep=False)])
-print(SPANA_Duplicates)
-#SPANA_Duplicates = pd.DataFrame(SPANA.drop_duplicates(keep=False))
+#SPANA_Duplicates = pd.DataFrame(SPANA[SPANA.duplicated(keep=False)])
 #print(SPANA_Duplicates)
-#SPANA_Duplicates = SPANA_Duplicates.assign(e=pd.DataFrame(SPANA[SPANA.duplicated(keep=False)].value_counts()))
-count = SPANA_Duplicates.value_counts()
-print(count)
-#print(pd.DataFrame(count).index)
-#print(len(count))
 
-i = np.arange(0,len(count),1)
+#count = SPANA.iloc[SPANA_Duplicates['ISA_9'].value_counts()]['ISA_9']
+#print(count)
 
-plt.scatter(SPANA_Duplicates.index, SPANA_Duplicates, c='r')
-plt.plot(SPANA.index, SPANA, c='#FF5733')
+centroid, label = kmeans2(Kijun.dropna(), iter=10, k=10, minit='random')
+print(centroid,label)
+counts = np.bincount(label)
+print(counts)
+for elm in centroid:
+	plt.axhline(y=elm, color='r', linestyle='-')
+plt.plot(Kijun.index, Kijun, c='#FF5733')
 #plt.plot(SPANB.index, SPANB, c='g')
 #plt.plot(Tenkan.index, Tenkan, c='r')
 #plt.plot(Kijun.index, Kijun, c='b')
-#plt.show()
+plt.show()

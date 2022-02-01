@@ -109,13 +109,64 @@ Kijun = pd.DataFrame(ichi[0], columns=[column])
 #print(count)
 
 centroid, label = kmeans2(Kijun.dropna(), iter=10, k=10, minit='random')
-print(centroid,label)
+#print(centroid,label)
 counts = np.bincount(label)
-print(counts)
-for elm in centroid:
-	plt.axhline(y=elm, color='r', linestyle='-')
-plt.plot(Kijun.index, Kijun, c='#FF5733')
+#print(counts)
+#for elm in centroid:
+#	plt.axhline(y=elm, color='r', linestyle='-')
+#plt.plot(Kijun.index, Kijun, c='#FF5733')
 #plt.plot(SPANB.index, SPANB, c='g')
 #plt.plot(Tenkan.index, Tenkan, c='r')
 #plt.plot(Kijun.index, Kijun, c='b')
+#plt.show()
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#******************************************************* Flat With Scikit Learn Methodes ************************************************
+from sklearn.model_selection import train_test_split
+from sklearn.cluster import KMeans
+from sklearn.metrics import accuracy_score
+
+
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,50000)
+
+x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
+y1 = symbol_data_5M['AUDCAD_i']['close']
+y2 = symbol_data_5M['AUDCAD_i']['open']
+y3 = symbol_data_5M['AUDCAD_i']['high']
+y4 = symbol_data_5M['AUDCAD_i']['low']
+
+ichi = ind.ichimoku(high = y3,low = y4,close = y1,tenkan = 9,kijun = 26,senkou = 52)
+
+column = ichi[0].columns[0]
+SPANA = pd.DataFrame(ichi[0], columns=[column])
+column = ichi[0].columns[1]
+SPANB = pd.DataFrame(ichi[0], columns=[column])
+column = ichi[0].columns[2]
+Tenkan = pd.DataFrame(ichi[0], columns=[column])
+column = ichi[0].columns[3]
+Kijun = pd.DataFrame(ichi[0], columns=[column])
+
+
+X_train, X_test, y_train, y_test = train_test_split(Kijun.dropna(), Kijun.dropna().index, test_size=0.1,shuffle=True)
+kmeans = KMeans(n_clusters=15, random_state=0)
+#fitting
+kmeans = kmeans.fit(X_train)
+X_pred = kmeans.cluster_centers_
+Y_pred = kmeans.labels_
+
+print(kmeans.score(X_test))
+#print(y_test)
+print(Y_pred)
+
+counts = np.bincount(Y_pred)
+print(counts)
+mean_counts = np.mean(counts)
+#print(counts)
+i = 0
+for elm in X_pred:
+	if counts[i] >= (mean_counts/2):
+		plt.axhline(y=elm, color='g', linestyle='-')
+	i += 1
+plt.plot(Kijun.index, Kijun, c='#FF5733')
+plt.plot(y1.index, y1, c='b')
 plt.show()

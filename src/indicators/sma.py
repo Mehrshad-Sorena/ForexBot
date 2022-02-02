@@ -16,8 +16,8 @@ help(ind.sma)
 
 #**************************************************** Golden Cross *******************************************************
 def Golden_Cross_SMA(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
-	SMA_Low = ind.sma(dataset[Low_ApplyTo], lenghth = Low_Period)
-	SMA_High = ind.sma(dataset[High_ApplyTo], lenghth = High_Period)
+	SMA_Low = ind.sma(dataset[Low_ApplyTo], length = Low_Period)
+	SMA_High = ind.sma(dataset[High_ApplyTo], length = High_Period)
 
 	Signal_SMA = {
 		"index": 0,

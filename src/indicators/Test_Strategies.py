@@ -15,7 +15,7 @@ df = pd.DataFrame()
 #df.ta.indicators()
 
 # Help about an indicator such as bbands
-#help(ta.sma)
+#help(ind.sma)
 #help(ind.ichimoku)
 #************************************************************************ Find Extremes ********************************************************************
 symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,500)
@@ -127,7 +127,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score
 
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,50000)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,100)
 
 x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
 y1 = symbol_data_5M['AUDCAD_i']['close']
@@ -154,19 +154,70 @@ kmeans = kmeans.fit(X_train)
 X_pred = kmeans.cluster_centers_
 Y_pred = kmeans.labels_
 
-print(kmeans.score(X_test))
+#print(kmeans.score(X_test))
 #print(y_test)
-print(Y_pred)
+#print(Y_pred)
 
 counts = np.bincount(Y_pred)
-print(counts)
+#print(counts)
 mean_counts = np.mean(counts)
 #print(counts)
 i = 0
 for elm in X_pred:
 	if counts[i] >= (mean_counts/2):
-		plt.axhline(y=elm, color='g', linestyle='-')
+		#plt.axhline(y=elm, color='g', linestyle='-')
+		pass
 	i += 1
-plt.plot(Kijun.index, Kijun, c='#FF5733')
-plt.plot(y1.index, y1, c='b')
+#plt.plot(Kijun.index, Kijun, c='#FF5733')
+#plt.plot(y1.index, y1, c='b')
+#plt.show()
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#******************************************************* Cross Finding ************************************************
+from scipy.optimize import fsolve
+from shapely.geometry import LineString
+
+
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,5000)
+
+x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
+y1 = symbol_data_5M['AUDCAD_i']['close']
+y2 = symbol_data_5M['AUDCAD_i']['open']
+y3 = symbol_data_5M['AUDCAD_i']['high']
+y4 = symbol_data_5M['AUDCAD_i']['low']
+time = symbol_data_5M['AUDCAD_i']['time']
+
+sma_low = ind.sma(y1 , length = 150)
+sma_high = ind.sma(y1 , length = 200)
+
+first_line = LineString(np.column_stack((x[199:], sma_low[199:])))
+second_line = LineString(np.column_stack((x[199:], sma_high.dropna())))
+
+intersection = first_line.intersection(second_line)
+
+#intersected_df = pd.merge(sma_low[199:], sma_high.dropna(), how='inner')
+#print(sma_low[199:])
+#print(sma_high.dropna())
+if intersection.geom_type == 'MultiPoint':
+	
+    plt.plot(*LineString(intersection).xy, 'o',c='g')
+    cross = pd.DataFrame(*LineString(intersection).xy)
+    cross_index = cross.index.to_numpy()
+    cross = pd.DataFrame(cross.values.astype(int),columns=['index'])
+    cross['points'] = cross_index
+    print(cross.points)
+    
+elif intersection.geom_type == 'Point':
+    plt.plot(*intersection.xy, 'o',c='g')
+    cross = pd.DataFrame(*intersection.xy)
+    cross_index = cross.index.to_numpy()
+    cross = pd.DataFrame(cross.values.astype(int),columns=['index'])
+    cross['points'] = cross_index
+    print(cross.points)
+    print(*intersection.xy)
+
+plt.plot(y1.index, y1, c='#FF5733')
+plt.plot(y1.index, sma_low, c='b')
+plt.plot(y1.index, sma_high, c='r')
 plt.show()

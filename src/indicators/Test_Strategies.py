@@ -232,7 +232,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.isotonic import IsotonicRegression
 from sklearn.utils import check_random_state
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,50000)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,24000)
 
 
 x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
@@ -242,74 +242,186 @@ y3 = symbol_data_5M['AUDCAD_i']['high']
 y4 = symbol_data_5M['AUDCAD_i']['low']
 time = symbol_data_5M['AUDCAD_i']['time']
 #Finding Extreme Points
-extremes = pd.DataFrame(y4, columns=['low'])
-extremes['high'] = y3
-extremes['min'] = extremes.iloc[argrelextrema(extremes.low.values, comparator = np.less,order=2000)[0]]['low']
-extremes['max'] = extremes.iloc[argrelextrema(extremes.high.values, comparator = np.greater,order=5000)[0]]['high']
+extremes_1 = pd.DataFrame(y4[(int((len(y3)-1) * 0.98)):(len(y3)-1)], columns=['low'])
+extremes_2 = pd.DataFrame(y4[(int((len(y3)-1) * 0.93)):(len(y3)-1)], columns=['low'])
+extremes_3 = pd.DataFrame(y4[(int((len(y3)-1) * 0.75)):(len(y3)-1)], columns=['low'])
+extremes_4 = pd.DataFrame(y4[(int((len(y3)-1) * 0.0)):(len(y3)-1)], columns=['low'])
+
+extremes_1['high'] = y3[(int((len(y3)-1) * 0.98)):(len(y3)-1)]
+extremes_2['high'] = y3[(int((len(y3)-1) * 0.93)):(len(y3)-1)]
+extremes_3['high'] = y3[(int((len(y3)-1) * 0.75)):(len(y3)-1)]
+extremes_4['high'] = y3[(int((len(y3)-1) * 0.0)):(len(y3)-1)]
+
+exterm_point_train, exterm_point_test, y_train, y_test = train_test_split(y3.values, y3.index,test_size=0.9,shuffle=True)
+
+extremes_1['min'] = extremes_1.iloc[argrelextrema(extremes_1.low.values, comparator = np.less,order=20)[0]]['low']
+extremes_1['max'] = extremes_1.iloc[argrelextrema(extremes_1.high.values, comparator = np.greater,order=20)[0]]['high']
+
+extremes_2['min'] = extremes_2.iloc[argrelextrema(extremes_2.low.values, comparator = np.less,order=100)[0]]['low']
+extremes_2['max'] = extremes_2.iloc[argrelextrema(extremes_2.high.values, comparator = np.greater,order=100)[0]]['high']
+
+extremes_3['min'] = extremes_3.iloc[argrelextrema(extremes_3.low.values, comparator = np.less,order=500)[0]]['low']
+extremes_3['max'] = extremes_3.iloc[argrelextrema(extremes_3.high.values, comparator = np.greater,order=500)[0]]['high']
+
+extremes_4['min'] = extremes_4.iloc[argrelextrema(extremes_4.low.values, comparator = np.less,order=2000)[0]]['low']
+extremes_4['max'] = extremes_4.iloc[argrelextrema(extremes_4.high.values, comparator = np.greater,order=2000)[0]]['high']
 #Optimization Points With Scoring: Training Points 
-exterm_point = pd.DataFrame(extremes['min'].dropna(inplace=False))
+exterm_point_1 = pd.DataFrame(extremes_1['max'].dropna(inplace=False))
+exterm_point_2 = pd.DataFrame(extremes_2['max'].dropna(inplace=False))
+exterm_point_3 = pd.DataFrame(extremes_3['max'].dropna(inplace=False))
+exterm_point_4 = pd.DataFrame(extremes_4['max'].dropna(inplace=False))
 
-exterm_point_train, exterm_point_test, y_train, y_test = train_test_split(exterm_point.values, exterm_point.index, 
-    test_size=0.1,shuffle=True)
-
-kmeans = KMeans(n_clusters=4, random_state=0)
+kmeans = KMeans(n_clusters=5,init='k-means++', n_init=2, max_iter=2)
 #Model Fitting
-kmeans = kmeans.fit(exterm_point_train)
-exterm_point_pred = kmeans.cluster_centers_
-Y_pred = kmeans.labels_
-
-#exterm_point_pred = exterm_point_pred[np.where(exterm_point_pred > np.mean(exterm_point_pred))]
-
-
-counts = np.bincount(Y_pred)
-mean_counts = np.mean(counts)
-index = np.arange(0,len(exterm_point_pred),1)
-
+kmeans = kmeans.fit(exterm_point_1.values)
+exterm_point_pred_1 = kmeans.cluster_centers_
+Y_pred_1 = kmeans.labels_
+counts_1 = np.bincount(Y_pred_1)
+mean_counts_1 = np.mean(counts_1)
+index_1 = np.arange(0,len(exterm_point_pred_1),1)
 k = 0
-for elm in exterm_point_pred:
-    index[k] = pd.DataFrame(abs(exterm_point - elm)).idxmin()
+for elm in exterm_point_pred_1:
+    index_1[k] = (pd.DataFrame(abs(exterm_point_1 - elm)).idxmin())
     k += 1
-#print(index)
 
+kmeans = KMeans(n_clusters=4,init='k-means++', n_init=2, max_iter=2)
+kmeans = kmeans.fit(exterm_point_2.values)
+exterm_point_pred_2 = kmeans.cluster_centers_
+Y_pred_2 = kmeans.labels_
+counts_2 = np.bincount(Y_pred_2)
+mean_counts_2 = np.mean(counts_2)
+index_2 = np.arange(0,len(exterm_point_pred_2),1)
+k = 0
+for elm in exterm_point_pred_2:
+    index_2[k] = (pd.DataFrame(abs(exterm_point_2 - elm)).idxmin())
+    k += 1
+
+kmeans = KMeans(n_clusters=4,init='k-means++', n_init=2, max_iter=2)
+kmeans = kmeans.fit(exterm_point_3.values)
+exterm_point_pred_3 = kmeans.cluster_centers_
+Y_pred_3 = kmeans.labels_
+counts_3 = np.bincount(Y_pred_3)
+mean_counts_3 = np.mean(counts_3)
+index_3 = np.arange(0,len(exterm_point_pred_3),1)
+k = 0
+for elm in exterm_point_pred_3:
+    index_3[k] = (pd.DataFrame(abs(exterm_point_3 - elm)).idxmin())
+    k += 1
+
+kmeans = KMeans(n_clusters=3,init='k-means++', n_init=2, max_iter=2)
+kmeans = kmeans.fit(exterm_point_4.values)
+exterm_point_pred_4 = kmeans.cluster_centers_
+Y_pred_4 = kmeans.labels_
+counts_4 = np.bincount(Y_pred_4)
+mean_counts_4 = np.mean(counts_4)
+index_4 = np.arange(0,len(exterm_point_pred_4),1)
+k = 0
+for elm in exterm_point_pred_4:
+    index_4[k] = (pd.DataFrame(abs(exterm_point_4 - elm)).idxmin())
+    k += 1
 
 #******* DataSet *********************
-n = len(exterm_point_pred)
-x = index#extremes['max'].dropna(inplace=False).index#np.arange(0,len(extremes['max'].dropna(inplace=False)),1)
-rs = check_random_state(0)
-y = exterm_point_pred.reshape(len(exterm_point_pred))
+n_1 = len(exterm_point_pred_1)
+x_1 = index_1#extremes['max'].dropna(inplace=False).index#np.arange(0,len(extremes['max'].dropna(inplace=False)),1)
+y_1 = exterm_point_pred_1.reshape(len(exterm_point_pred_1))
+
+n_2 = len(exterm_point_pred_2)
+x_2 = index_2#extremes['max'].dropna(inplace=False).index#np.arange(0,len(extremes['max'].dropna(inplace=False)),1)
+y_2 = exterm_point_pred_2.reshape(len(exterm_point_pred_2))
+
+n_3 = len(exterm_point_pred_3)
+x_3 = index_3#extremes['max'].dropna(inplace=False).index#np.arange(0,len(extremes['max'].dropna(inplace=False)),1)
+y_3 = exterm_point_pred_3.reshape(len(exterm_point_pred_3))
+
+n_4 = len(exterm_point_pred_4)
+x_4 = index_4#extremes['max'].dropna(inplace=False).index#np.arange(0,len(extremes['max'].dropna(inplace=False)),1)
+y_4 = exterm_point_pred_4.reshape(len(exterm_point_pred_4))
 
 #////////////////
 
 #***** Model Fitting *****************
-ir = IsotonicRegression(out_of_bounds="clip")
-y_ = ir.fit_transform(x, y)
+ir_1 = IsotonicRegression(out_of_bounds="clip")
+y__1 = ir_1.fit_transform(x_1, y_1)
 
-lr = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
-lr.fit(x[:, np.newaxis], y)  # x needs to be 2d for LinearRegression
+lr_1 = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
+lr_1.fit(x_1[:, np.newaxis], y_1)  # x needs to be 2d for LinearRegression
+
+ir_2 = IsotonicRegression(out_of_bounds="clip")
+y__2 = ir_1.fit_transform(x_2, y_2)
+
+lr_2 = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
+lr_2.fit(x_2[:, np.newaxis], y_2)  # x needs to be 2d for LinearRegression
+
+ir_3 = IsotonicRegression(out_of_bounds="clip")
+y__3 = ir_3.fit_transform(x_3, y_3)
+
+lr_3 = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
+lr_3.fit(x_3[:, np.newaxis], y_3)  # x needs to be 2d for LinearRegression
+
+ir_4 = IsotonicRegression(out_of_bounds="clip")
+y__4 = ir_4.fit_transform(x_4, y_4)
+
+lr_4 = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
+lr_4.fit(x_4[:, np.newaxis], y_4)  # x needs to be 2d for LinearRegression
 
 #///////////////////////
 
+
+
 #********* Plot Fitting ************
-segments = [[[i, y[i]], [i, y_[i]]] for i in range(n)]
+segments = [[[i, y_4[i]], [i, y__4[i]]] for i in range(n_4)]
 lc = LineCollection(segments, zorder=0)
-lc.set_array(np.ones(len(y)))
-lc.set_linewidths(np.full(n, 0.5))
+lc.set_array(np.ones(len(y_4)))
+lc.set_linewidths(np.full(n_4, 0.5))
 
 fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))
 
-ax0.plot(y3.index,y3,c='r')
-ax0.plot(x, y, "C0.", markersize=12)
-ax0.plot(x, y_, "C1.-", markersize=12)
-x = y3.index
-ax0.plot(x, (lr.predict(x[:, np.newaxis])), "C2-")
+ax0.plot(y1.index,y1,c='g')
+ax0.plot(x_1, y_1, "C0.", markersize=12)
+ax0.plot(x_1, y__1, "C1.-", markersize=12)
+x_1 = index_1
+ax0.plot(x_1, lr_1.predict(x_1[:, np.newaxis]), "C2-",c='r')
 
+ax0.plot(x_2, y_2, "C0.", markersize=2)
+ax0.plot(x_2, y__2, "C1.-", markersize=2)
+x_2 = index_2
+ax0.plot(x_2, lr_2.predict(x_2[:, np.newaxis]), "C3-",c='b')
+
+ax0.plot(x_3, y_3, "C0.", markersize=12)
+ax0.plot(x_3, y__3, "C1.-", markersize=12)
+x_3 = index_3
+ax0.plot(x_3, (lr_3.predict(x_3[:, np.newaxis])), "C4-",c='g')
+
+ax0.plot(x_4, y_4, "C0.", markersize=12)
+ax0.plot(x_4, y__4, "C1.-", markersize=12)
+x_4 = index_4
+ax0.plot(x_4, (lr_4.predict(x_4[:, np.newaxis])), "C5-")
+
+#***** Model Fitting Total *****************
+
+y_tot = np.concatenate((lr_1.predict(x_1[:, np.newaxis]), lr_2.predict(x_2[:, np.newaxis]),
+    lr_3.predict(x_3[:, np.newaxis]),lr_4.predict(x_4[:, np.newaxis])),axis=None)
+x_tot = np.concatenate((index_1,index_2,index_3,index_4),axis=None)
+
+ir_tot = IsotonicRegression(out_of_bounds="clip")
+y__tot = ir_tot.fit_transform(x_tot, y_tot)
+
+lr_tot = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
+lr_tot.fit(x_tot[:, np.newaxis], y_tot)  # x needs to be 2d for LinearRegression
+
+ax0.plot(x_tot, y_tot, "C5.", markersize=1)
+ax0.plot(x_tot, y__tot, "C6.-", markersize=1)
+x_tot = x_tot
+ax0.plot(x_tot, (lr_tot.predict(x_tot[:, np.newaxis])), "C6-")
+
+#///////////////////////
 ax0.add_collection(lc)
 ax0.legend(("Training data", "Isotonic fit", "Linear fit"), loc="lower right")
-ax0.set_title("Isotonic regression fit on noisy data (n=%d)" % n)
+ax0.set_title("Isotonic regression fit on noisy data (n=%d)" % n_4)
 
-x_test = y3.index
-ax1.plot(x_test, ir.predict(x_test), "C1-")
-ax1.plot(ir.X_thresholds_, ir.y_thresholds_, "C1.", markersize=12)
-ax1.set_title("Prediction function (%d thresholds)" % len(ir.X_thresholds_))
+x_test = y_test
+ax1.plot(x_test, ir_tot.predict(x_test), "C1-")
+ax1.plot(ir_tot.X_thresholds_, ir_tot.y_thresholds_, "C1.", markersize=12)
+ax1.set_title("Prediction function (%d thresholds)" % len(ir_tot.X_thresholds_))
 
 plt.show()

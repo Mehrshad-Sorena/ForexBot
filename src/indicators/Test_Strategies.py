@@ -378,24 +378,24 @@ fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))
 
 ax0.plot(y1.index,y1,c='g')
 ax0.plot(x_1, y_1, "C0.", markersize=12)
-ax0.plot(x_1, y__1, "C1.-", markersize=12)
+ax0.plot(x_1, y__1, "C0.-", markersize=12)
 x_1 = index_1
-ax0.plot(x_1, lr_1.predict(x_1[:, np.newaxis]), "C2-",c='r')
+ax0.plot(x_1, lr_1.predict(x_1[:, np.newaxis]), "C0-",c='r')
 
-ax0.plot(x_2, y_2, "C0.", markersize=2)
+ax0.plot(x_2, y_2, "C1.", markersize=2)
 ax0.plot(x_2, y__2, "C1.-", markersize=2)
 x_2 = index_2
-ax0.plot(x_2, lr_2.predict(x_2[:, np.newaxis]), "C3-",c='b')
+ax0.plot(x_2, lr_2.predict(x_2[:, np.newaxis]), "C1-",c='b')
 
-ax0.plot(x_3, y_3, "C0.", markersize=12)
-ax0.plot(x_3, y__3, "C1.-", markersize=12)
+ax0.plot(x_3, y_3, "C2.", markersize=12)
+ax0.plot(x_3, y__3, "C2.-", markersize=12)
 x_3 = index_3
-ax0.plot(x_3, (lr_3.predict(x_3[:, np.newaxis])), "C4-",c='g')
+ax0.plot(x_3, (lr_3.predict(x_3[:, np.newaxis])), "C2-",c='g')
 
-ax0.plot(x_4, y_4, "C0.", markersize=12)
-ax0.plot(x_4, y__4, "C1.-", markersize=12)
+ax0.plot(x_4, y_4, "C3.", markersize=12)
+ax0.plot(x_4, y__4, "C3.-", markersize=12)
 x_4 = index_4
-ax0.plot(x_4, (lr_4.predict(x_4[:, np.newaxis])), "C5-")
+ax0.plot(x_4, (lr_4.predict(x_4[:, np.newaxis])), "C3-")
 
 #***** Model Fitting Total *****************
 
@@ -409,18 +409,18 @@ y__tot = ir_tot.fit_transform(x_tot, y_tot)
 lr_tot = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
 lr_tot.fit(x_tot[:, np.newaxis], y_tot)  # x needs to be 2d for LinearRegression
 
-ax0.plot(x_tot, y_tot, "C5.", markersize=1)
-ax0.plot(x_tot, y__tot, "C6.-", markersize=1)
+ax0.plot(x_tot, y_tot, "C4.", markersize=1)
+ax0.plot(x_tot, y__tot, "C4.-", markersize=1)
 x_tot = x_tot
-ax0.plot(x_tot, (lr_tot.predict(x_tot[:, np.newaxis])), "C6-")
+ax0.plot(x_tot, (lr_tot.predict(x_tot[:, np.newaxis])), "C4-")
 
 #///////////////////////
 ax0.add_collection(lc)
 ax0.legend(("Training data", "Isotonic fit", "Linear fit"), loc="lower right")
 ax0.set_title("Isotonic regression fit on noisy data (n=%d)" % n_4)
 
-x_test = y_test
-ax1.plot(x_test, ir_tot.predict(x_test), "C1-")
+x_test = x_tot
+ax1.plot(x_test, ir_tot.predict(x_test), "C7-")
 ax1.plot(ir_tot.X_thresholds_, ir_tot.y_thresholds_, "C1.", markersize=12)
 ax1.set_title("Prediction function (%d thresholds)" % len(ir_tot.X_thresholds_))
 

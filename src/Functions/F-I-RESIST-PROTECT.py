@@ -66,6 +66,7 @@ def Extreme_points(high,low,number_min,number_max,number_centers,Size_of_test=0.
 
 
 symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,50000)
+symbol_data_1D,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,2500)
 
 x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
 y1 = symbol_data_5M['AUDCAD_i']['close']
@@ -73,7 +74,8 @@ y2 = symbol_data_5M['AUDCAD_i']['open']
 y3 = symbol_data_5M['AUDCAD_i']['high']
 y4 = symbol_data_5M['AUDCAD_i']['low']
 
-local_extreme = pd.DataFrame(Extreme_points(high=y3,low=y4,number_min=2,number_max=2,number_centers=20,Size_of_test=0.2))
+local_extreme = pd.DataFrame(Extreme_points(high=symbol_data_1D['AUDCAD_i']['high'],low=symbol_data_1D['AUDCAD_i']['low'],
+	number_min=2,number_max=2,number_centers=10,Size_of_test=0.2))
 for point in local_extreme.values:
 	plt.axhline(y=point, color='r', linestyle='-')
 

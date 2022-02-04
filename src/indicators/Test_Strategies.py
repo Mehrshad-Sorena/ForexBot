@@ -179,7 +179,7 @@ from scipy.optimize import fsolve
 from shapely.geometry import LineString
 
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,5000)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,400)
 
 x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
 y1 = symbol_data_5M['AUDCAD_i']['close']
@@ -201,23 +201,115 @@ intersection = first_line.intersection(second_line)
 #print(sma_high.dropna())
 if intersection.geom_type == 'MultiPoint':
 	
-    plt.plot(*LineString(intersection).xy, 'o',c='g')
+    #plt.plot(*LineString(intersection).xy, 'o',c='g')
     cross = pd.DataFrame(*LineString(intersection).xy)
     cross_index = cross.index.to_numpy()
     cross = pd.DataFrame(cross.values.astype(int),columns=['index'])
     cross['points'] = cross_index
-    print(cross.points)
+    #print(cross.points)
     
 elif intersection.geom_type == 'Point':
-    plt.plot(*intersection.xy, 'o',c='g')
+    #plt.plot(*intersection.xy, 'o',c='g')
     cross = pd.DataFrame(*intersection.xy)
     cross_index = cross.index.to_numpy()
     cross = pd.DataFrame(cross.values.astype(int),columns=['index'])
     cross['points'] = cross_index
-    print(cross.points)
-    print(*intersection.xy)
+    #print(cross.points)
+    #print(*intersection.xy)
 
-plt.plot(y1.index, y1, c='#FF5733')
-plt.plot(y1.index, sma_low, c='b')
-plt.plot(y1.index, sma_high, c='r')
+#plt.plot(y1.index, y1, c='#FF5733')
+#plt.plot(y1.index, sma_low, c='b')
+#plt.plot(y1.index, sma_high, c='r')
+#plt.show()
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#******************************************************* Trending Protect Resist Finding ************************************************
+import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
+
+from sklearn.linear_model import LinearRegression
+from sklearn.isotonic import IsotonicRegression
+from sklearn.utils import check_random_state
+
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,50000)
+
+
+x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
+y1 = symbol_data_5M['AUDCAD_i']['close']
+y2 = symbol_data_5M['AUDCAD_i']['open']
+y3 = symbol_data_5M['AUDCAD_i']['high']
+y4 = symbol_data_5M['AUDCAD_i']['low']
+time = symbol_data_5M['AUDCAD_i']['time']
+#Finding Extreme Points
+extremes = pd.DataFrame(y4, columns=['low'])
+extremes['high'] = y3
+extremes['min'] = extremes.iloc[argrelextrema(extremes.low.values, comparator = np.less,order=2000)[0]]['low']
+extremes['max'] = extremes.iloc[argrelextrema(extremes.high.values, comparator = np.greater,order=5000)[0]]['high']
+#Optimization Points With Scoring: Training Points 
+exterm_point = pd.DataFrame(extremes['min'].dropna(inplace=False))
+
+exterm_point_train, exterm_point_test, y_train, y_test = train_test_split(exterm_point.values, exterm_point.index, 
+    test_size=0.1,shuffle=True)
+
+kmeans = KMeans(n_clusters=4, random_state=0)
+#Model Fitting
+kmeans = kmeans.fit(exterm_point_train)
+exterm_point_pred = kmeans.cluster_centers_
+Y_pred = kmeans.labels_
+
+#exterm_point_pred = exterm_point_pred[np.where(exterm_point_pred > np.mean(exterm_point_pred))]
+
+
+counts = np.bincount(Y_pred)
+mean_counts = np.mean(counts)
+index = np.arange(0,len(exterm_point_pred),1)
+
+k = 0
+for elm in exterm_point_pred:
+    index[k] = pd.DataFrame(abs(exterm_point - elm)).idxmin()
+    k += 1
+#print(index)
+
+
+#******* DataSet *********************
+n = len(exterm_point_pred)
+x = index#extremes['max'].dropna(inplace=False).index#np.arange(0,len(extremes['max'].dropna(inplace=False)),1)
+rs = check_random_state(0)
+y = exterm_point_pred.reshape(len(exterm_point_pred))
+
+#////////////////
+
+#***** Model Fitting *****************
+ir = IsotonicRegression(out_of_bounds="clip")
+y_ = ir.fit_transform(x, y)
+
+lr = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
+lr.fit(x[:, np.newaxis], y)  # x needs to be 2d for LinearRegression
+
+#///////////////////////
+
+#********* Plot Fitting ************
+segments = [[[i, y[i]], [i, y_[i]]] for i in range(n)]
+lc = LineCollection(segments, zorder=0)
+lc.set_array(np.ones(len(y)))
+lc.set_linewidths(np.full(n, 0.5))
+
+fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))
+
+ax0.plot(y3.index,y3,c='r')
+ax0.plot(x, y, "C0.", markersize=12)
+ax0.plot(x, y_, "C1.-", markersize=12)
+x = y3.index
+ax0.plot(x, (lr.predict(x[:, np.newaxis])), "C2-")
+
+ax0.add_collection(lc)
+ax0.legend(("Training data", "Isotonic fit", "Linear fit"), loc="lower right")
+ax0.set_title("Isotonic regression fit on noisy data (n=%d)" % n)
+
+x_test = y3.index
+ax1.plot(x_test, ir.predict(x_test), "C1-")
+ax1.plot(ir.X_thresholds_, ir.y_thresholds_, "C1.", markersize=12)
+ax1.set_title("Prediction function (%d thresholds)" % len(ir.X_thresholds_))
+
 plt.show()

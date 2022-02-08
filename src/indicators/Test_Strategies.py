@@ -427,7 +427,7 @@ x_test = x_tot
 plt.show()
 
 #*********************************** Test Function in my Mind *********************
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,400)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,4000)
 
 
 x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
@@ -437,32 +437,53 @@ y3 = symbol_data_5M['AUDCAD_i']['high']
 y4 = symbol_data_5M['AUDCAD_i']['low']
 time = symbol_data_5M['AUDCAD_i']['time']
 
-print(np.max(y1))
+#print(np.max(y1))
 alfa = 0.9
 exp_closes = np.mean(y1)
 j = 0
 #for i in y1:
 exp_closes = (1/(1 + np.exp(-1 * alfa * y1)))
     #j += 1
-print(j)
+#print(j)
 exp_closes = (exp_closes/np.max(exp_closes))
 exp_closes = (exp_closes) * y1
-print(type(exp_closes))
+#print(type(exp_closes))
 
 sum_exp = np.zeros(len(y1))
 #sum_exp[0] = exp_closes[0]
-print(sum_exp[0])
+#print(sum_exp[0])
 sigma = 0
 j = 0
 for i in exp_closes:
     sigma = (sigma + i) * i
     sum_exp[j] = sigma
     j += 1
-print(np.max(y1))
+#print(np.max(y1))
 sum_exp = (sum_exp/np.max(sum_exp)) + np.max(y1)
 sum_exp = (sum_exp/np.max(sum_exp)) * y1
-print(sum_exp)
+#print(sum_exp)
 #plt.plot(y1.index, y1, c='b')
 #plt.plot(y1.index, exp_closes, c='r')
-plt.plot(np.arange(0,len(y1),1), sum_exp, c='g')
+#plt.plot(np.arange(0,len(y1),1), sum_exp, c='g')
+#plt.show()
+
+from scipy import stats
+from scipy.stats import norm
+
+print(stats.norm.__doc__)
+print('bounds of distribution lower: %s, upper: %s' % norm.support())
+pdf = (norm.pdf(y1)) * y1
+sum_exp = np.zeros(len(y1))
+sigma = 0
+j = 0
+for i in pdf:
+    sigma = (sigma + i)
+    sum_exp[j] = sigma
+    j += 1
+sum_exp=sum_exp
+
+#fig ,ax = plt.subplots(1, 1)
+#ax.hist(pdf, density=True, histtype='stepfilled', alpha=0.2)
+#ax.legend(loc='best', frameon=False)
+plt.plot(sum_exp,y1, c='g')
 plt.show()

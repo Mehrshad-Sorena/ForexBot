@@ -487,3 +487,17 @@ sum_exp=sum_exp
 #ax.legend(loc='best', frameon=False)
 plt.plot(sum_exp,y1, c='g')
 plt.show()
+
+from scipy.interpolate import interp1d
+x = np.linspace(0, 10, num=11, endpoint=True)
+y = np.cos(-x**2/9.0)
+f = interp1d(x, y)
+print(f)
+f2 = interp1d(x, y, kind='cubic')
+print(f2)
+xnew = np.linspace(0, 10, num=41, endpoint=True)
+print(f(xnew))
+import matplotlib.pyplot as plt
+plt.plot(x, y, 'o', xnew, f(xnew), '-', xnew, f2(xnew), '--')
+plt.legend(['data', 'linear', 'cubic'], loc='best')
+plt.show()

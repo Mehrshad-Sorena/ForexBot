@@ -1,11 +1,11 @@
-import MetaTrader5 as mt5
+#import MetaTrader5 as mt5
+from src.db import ForexMongo
 from .login import Login
 
 
-class ForexRobot(Login):
+class ForexRobot(ForexMongo, Login):
     def __init__(self, *args, **kwargs):
         account = kwargs.get('account')
-        Login.__init__(self, account)
 
         strategy = kwargs.get('strategy')
         indicator = kwargs.get('indicator')

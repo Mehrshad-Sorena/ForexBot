@@ -271,6 +271,8 @@ exterm_point_2 = pd.DataFrame(extremes_2['max'].dropna(inplace=False))
 exterm_point_3 = pd.DataFrame(extremes_3['max'].dropna(inplace=False))
 exterm_point_4 = pd.DataFrame(extremes_4['max'].dropna(inplace=False))
 
+print('exterm_point_1 = ',exterm_point_1)
+
 kmeans = KMeans(n_clusters=5,init='k-means++', n_init=2, max_iter=2)
 #Model Fitting
 kmeans = kmeans.fit(exterm_point_1.values)
@@ -491,6 +493,8 @@ plt.show()
 from scipy.interpolate import interp1d
 x = np.linspace(0, 10, num=11, endpoint=True)
 y = np.cos(-x**2/9.0)
+print(x)
+print(y)
 f = interp1d(x, y)
 print(f)
 f2 = interp1d(x, y, kind='cubic')

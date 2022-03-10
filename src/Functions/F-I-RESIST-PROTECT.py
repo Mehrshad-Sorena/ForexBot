@@ -13,6 +13,11 @@ from fitter import Fitter, get_common_distributions, get_distributions
 import fitter
 from scipy.stats import foldnorm, dweibull, rayleigh, expon, nakagami, norm
 import time
+from matplotlib.collections import LineCollection
+from scipy.interpolate import interp1d
+from sklearn.linear_model import LinearRegression
+from sklearn.isotonic import IsotonicRegression
+from sklearn.utils import check_random_state
 
 # Create a DataFrame so 'ta' can be used.
 #df = pd.DataFrame()
@@ -111,6 +116,162 @@ def Extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_cluster
 
 
 #**************************************************** Ramp Lines *******************************************************
+def extreme_points_ramp_lines(high,low,close,length='short',n_clusters_low=1,n_clusters_high=1,number_min=10,number_max=10,plot=False):
+	
+	#length:
+	#short
+	#mid
+	#long
+
+	#Finding Extreme Points
+	extremes = pd.DataFrame(low, columns=['low'])
+	extremes['high'] = high
+
+	extremes['min'] = extremes.iloc[argrelextrema(extremes.low.values, comparator = np.less,order=number_min)[0]]['low']
+	extremes['max'] = extremes.iloc[argrelextrema(extremes.high.values, comparator = np.greater,order=number_max)[0]]['high']
+
+	#Optimization Points With Scoring: Training Points 
+	exterm_point_high = pd.DataFrame(extremes['max'].dropna(inplace=False))
+	exterm_point_low = pd.DataFrame(extremes['min'].dropna(inplace=False))
+
+	kmeans_high = KMeans(n_clusters=n_clusters_high,init='k-means++', n_init=2, max_iter=2)
+	#Model Fitting High
+	kmeans_high = kmeans_high.fit(exterm_point_high.values)
+	Power_high = kmeans_high.fit_predict(high.to_numpy().reshape(-1,1))
+	exterm_point_pred_high = exterm_point_high.to_numpy()#kmeans_high.cluster_centers_
+	Y_pred_high = kmeans_high.labels_
+	counts_high = np.bincount(Y_pred_high)
+	mean_counts_high = np.mean(counts_high)
+	index_high = np.arange(0,len(exterm_point_pred_high),1)
+
+	#Model Fitting Low
+	kmeans_low = KMeans(n_clusters=n_clusters_low,init='k-means++', n_init=2, max_iter=2)
+	kmeans_low = kmeans_low.fit(exterm_point_low.values)
+	Power_low = kmeans_low.fit_predict(low.to_numpy().reshape(-1,1))
+	exterm_point_pred_low = exterm_point_low.to_numpy()#kmeans_low.cluster_centers_
+	Y_pred_low = kmeans_low.labels_
+	counts_low = np.bincount(Y_pred_low)
+	mean_counts_low = np.mean(counts_low)
+	index_low = np.arange(0,len(exterm_point_pred_low),1)
+
+	k = 0
+	for elm in exterm_point_pred_high:
+		index_high[k] = (pd.DataFrame(abs(exterm_point_high - elm)).idxmin())
+		k += 1
+	index_high = exterm_point_high.index
+	k = 0
+	for elm in exterm_point_pred_low:
+		index_low[k] = (pd.DataFrame(abs(exterm_point_low - elm)).idxmin())
+		k += 1
+	index_low = exterm_point_low.index
+	#******* DataSet High *********************
+	n_high = len(exterm_point_pred_high)
+	x_high = index_high#extremes['max'].dropna(inplace=False).index#np.arange(0,len(extremes['max'].dropna(inplace=False)),1)
+	y_high = exterm_point_pred_high.reshape(len(exterm_point_pred_high))
+
+	#******* DataSet Low *********************
+	n_low = len(exterm_point_pred_low)
+	x_low = index_low#extremes['max'].dropna(inplace=False).index#np.arange(0,len(extremes['max'].dropna(inplace=False)),1)
+	y_low = exterm_point_pred_low.reshape(len(exterm_point_pred_low))
+
+	#////////////////
+
+	#***** Model Fitting High *****************
+	lr_high = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
+	lr_high.fit(x_high[:, np.newaxis], y_high) # x needs to be 2d for LinearRegression
+
+	#***** Model Fitting Low *****************
+	lr_low = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
+	lr_low.fit(x_low[:, np.newaxis], y_low)  # x needs to be 2d for LinearRegression
+	#///////////////////////
+
+	#********* Plot Fitting High ************
+	if (plot == True):
+		fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))
+
+	if (plot == True):
+		ax0.plot(high.index,high,c='g')
+	#ax0.plot(x, y, "C0.", markersize=12)
+	#ax0.plot(x_high, y_high, "C0.-", markersize=12)
+	x_high = close.index
+
+	#ax0.plot(x_high, lr_high.predict(y3[:, np.newaxis]), "C0-",c='r')
+	if (plot == True):
+		ax0.plot(x_high, lr_high.predict(x_high[:, np.newaxis]), "C0-",c='r')
+	
+	x1_high = high[x_high]
+	y_high = lr_high.predict(x_high[:, np.newaxis])
+	f_high = interp1d(x1_high, y_high)
+	#print(f_high(y3[len(y1)-1]))
+
+	if (plot == True):
+		ax0.axhline(y= f_high(high[len(high)-1]), color = 'r', linestyle = '-')
+
+	#********* Plot Fitting Low ************
+	#ax0.plot(x_low, y_low, "C0.-", markersize=12)
+	x_low = close.index
+	y_low = lr_low.predict(x_low[:, np.newaxis])
+	if (plot == True):
+		ax0.plot(x_low, y_low, "C1-",c='b')
+	#print('y_low1 = ',lr_low.predict(x_low[:, np.newaxis]))
+	x1_low = low
+
+	#print('y_low2 = ',y_low)
+	f_low = interp1d(x1_low, y_low)
+	#print(f_low(y4[len(y1)-1]))
+
+	if (plot == True):
+		ax0.axhline(y= f_low(low[len(low)-1]), color = 'b', linestyle = '--')
+		plt.show()
+
+	#finding Trend and Powers
+	if (f_low(low[len(low)-1]) > f_low(low[0])):
+		ramp_low = 'pos'
+	elif (f_low(low[len(low)-1]) < f_low(low[0])):
+		ramp_low = 'neg'
+	else:
+		ramp_low = 'none'
+
+	if (f_high(high[len(high)-1]) > f_high(high[0])):
+		ramp_high = 'pos'
+	elif (f_high(high[len(high)-1]) < f_high(high[0])):
+		ramp_high = 'neg'
+	else:
+		ramp_high = 'none'
+
+	trend_lines = pd.DataFrame(np.zeros(1))
+	trend_lines['trend'] = np.nan
+	trend_lines['power'] = np.nan
+	trend_lines['min'] = np.nan
+	trend_lines['max'] = np.nan
+
+	if (length == 'short'):
+		power_trends = 100
+	if (length == 'mid'):
+		power_trends = 200
+	if (length == 'long'):
+		power_trends = 400	
+
+	if (ramp_high == 'pos') & (ramp_low == 'pos'):
+		trend_lines['trend'] = 'buy'
+		trend_lines['power'] = power_trends
+		trend_lines['min'] = f_low(low[len(low)-1])
+		trend_lines['max'] = f_high(high[len(high)-1])
+
+	if (ramp_high == 'neg') & (ramp_low == 'neg'):
+		trend_lines['trend'] = 'sell'
+		trend_lines['power'] = power_trends
+		trend_lines['min'] = f_low(low[len(low)-1])
+		trend_lines['max'] = f_high(high[len(high)-1])
+
+	if (ramp_high == 'neg') & ((ramp_low == 'pos')|(ramp_low == 'none') ):
+		if (f_high(high[0]) > f_low(low[0])):
+			trend_lines['trend'] = 'parcham'
+			trend_lines['power'] = power_trends
+			trend_lines['min'] = f_low(low[len(low)-1])
+			trend_lines['max'] = f_high(high[len(high)-1])
+
+	return trend_lines
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -409,7 +570,7 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 
 
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,200)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,50)
 symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,6000)
 symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,2000)
 symbol_data_4H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,360)
@@ -433,115 +594,9 @@ print('data get')
 #plt.plot(y1.index,y1)
 #plt.show()
 
-#********************************************** Finding Res_Pro With Trend Lines **************************
 
-from matplotlib.collections import LineCollection
-
-from sklearn.linear_model import LinearRegression
-from sklearn.isotonic import IsotonicRegression
-from sklearn.utils import check_random_state
-
-#Finding Extreme Points
-extremes = pd.DataFrame(y4, columns=['low'])
-extremes['high'] = y3
-
-extremes['min'] = extremes.iloc[argrelextrema(extremes.low.values, comparator = np.less,order=10)[0]]['low']
-extremes['max'] = extremes.iloc[argrelextrema(extremes.high.values, comparator = np.greater,order=10)[0]]['high']
-
-#Optimization Points With Scoring: Training Points 
-exterm_point_high = pd.DataFrame(extremes['max'].dropna(inplace=False))
-exterm_point_low = pd.DataFrame(extremes['min'].dropna(inplace=False))
-
-kmeans_high = KMeans(n_clusters=1,init='k-means++', n_init=2, max_iter=2)
-#Model Fitting High
-kmeans_high = kmeans_high.fit(exterm_point_high.values)
-Power_high = kmeans_high.fit_predict(y3.to_numpy().reshape(-1,1))
-exterm_point_pred_high = exterm_point_high.to_numpy()#kmeans_high.cluster_centers_
-Y_pred_high = kmeans_high.labels_
-counts_high = np.bincount(Y_pred_high)
-mean_counts_high = np.mean(counts_high)
-index_high = np.arange(0,len(exterm_point_pred_high),1)
-
-#Model Fitting Low
-kmeans_low = KMeans(n_clusters=1,init='k-means++', n_init=2, max_iter=2)
-kmeans_low = kmeans_low.fit(exterm_point_low.values)
-Power_low = kmeans_low.fit_predict(y4.to_numpy().reshape(-1,1))
-exterm_point_pred_low = exterm_point_low.to_numpy()#kmeans_low.cluster_centers_
-Y_pred_low = kmeans_low.labels_
-counts_low = np.bincount(Y_pred_low)
-mean_counts_low = np.mean(counts_low)
-index_low = np.arange(0,len(exterm_point_pred_low),1)
-
-k = 0
-for elm in exterm_point_pred_high:
-    index_high[k] = (pd.DataFrame(abs(exterm_point_high - elm)).idxmin())
-    k += 1
-index_high = exterm_point_high.index
-k = 0
-for elm in exterm_point_pred_low:
-    index_low[k] = (pd.DataFrame(abs(exterm_point_low - elm)).idxmin())
-    k += 1
-index_low = exterm_point_low.index
-#******* DataSet High *********************
-n_high = len(exterm_point_pred_high)
-x_high = index_high#extremes['max'].dropna(inplace=False).index#np.arange(0,len(extremes['max'].dropna(inplace=False)),1)
-y_high = exterm_point_pred_high.reshape(len(exterm_point_pred_high))
-
-#******* DataSet Low *********************
-n_low = len(exterm_point_pred_low)
-x_low = index_low#extremes['max'].dropna(inplace=False).index#np.arange(0,len(extremes['max'].dropna(inplace=False)),1)
-y_low = exterm_point_pred_low.reshape(len(exterm_point_pred_low))
-
-#////////////////
-
-#***** Model Fitting High *****************
-lr_high = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
-lr_high.fit(x_high[:, np.newaxis], y_high) # x needs to be 2d for LinearRegression
-
-#***** Model Fitting Low *****************
-lr_low = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
-lr_low.fit(x_low[:, np.newaxis], y_low)  # x needs to be 2d for LinearRegression
-#///////////////////////
-
-#********* Plot Fitting High ************
-fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))
-
-ax0.plot(y3.index,y3,c='g')
-#ax0.plot(x, y, "C0.", markersize=12)
-#ax0.plot(x_high, y_high, "C0.-", markersize=12)
-x_high = y1.index
-
-#ax0.plot(x_high, lr_high.predict(y3[:, np.newaxis]), "C0-",c='r')
-ax0.plot(x_high, lr_high.predict(x_high[:, np.newaxis]), "C0-",c='r')
-from scipy.interpolate import interp1d
-x1_high = y3[x_high]
-y_high = lr_high.predict(x_high[:, np.newaxis])
-f_high = interp1d(x1_high, y_high)
-print(f_high(y3[len(y1)-1]))
-
-ax0.axhline(y= f_high(y3[len(y3)-1]), color = 'r', linestyle = '-')
-
-#********* Plot Fitting Low ************
-#ax0.plot(x_low, y_low, "C0.-", markersize=12)
-x_low = y1.index
-y_low = lr_low.predict(x_low[:, np.newaxis])
-ax0.plot(x_low, y_low, "C1-",c='b')
-print('y_low1 = ',lr_low.predict(x_low[:, np.newaxis]))
-x1_low = y4
-
-print('y_low2 = ',y_low)
-f_low = interp1d(x1_low, y_low)
-print(f_low(y4[len(y1)-1]))
-
-ax0.axhline(y= f_low(y4[len(y4)-1]), color = 'b', linestyle = '--')
-
-plt.show()
-
-#/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
+trend = extreme_points_ramp_lines(high = y3,low = y4,close = y1,length='long',n_clusters_low=2,n_clusters_high=2,number_min=2,number_max=2,plot=True)
+print(trend)
 #***************************** Test Functions **********************************************
 
 i = len(y3)-1

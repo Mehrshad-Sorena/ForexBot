@@ -100,7 +100,7 @@ def Extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_cluster
 	kmeans = kmeans.fit(exterm_point['extremes'].to_numpy().reshape(-1,1), sample_weight= exterm_point['power'].to_numpy())
 
 	X_pred = kmeans.cluster_centers_
-	Power = np.bincount(kmeans.fit_predict(y1.to_numpy().reshape(-1,1)))
+	Power = np.bincount(kmeans.fit_predict(close.to_numpy().reshape(-1,1)))
 
 	Y_pred = kmeans.labels_
 
@@ -409,7 +409,7 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 
 
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,400)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,200)
 symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,6000)
 symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,2000)
 symbol_data_4H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,360)
@@ -433,6 +433,7 @@ print('data get')
 #plt.plot(y1.index,y1)
 #plt.show()
 
+#********************************************** Finding Res_Pro With Trend Lines **************************
 
 from matplotlib.collections import LineCollection
 
@@ -441,8 +442,8 @@ from sklearn.isotonic import IsotonicRegression
 from sklearn.utils import check_random_state
 
 #Finding Extreme Points
-extremes = pd.DataFrame(y4[250:310], columns=['low'])
-extremes['high'] = y3[250:310]
+extremes = pd.DataFrame(y4, columns=['low'])
+extremes['high'] = y3
 
 extremes['min'] = extremes.iloc[argrelextrema(extremes.low.values, comparator = np.less,order=10)[0]]['low']
 extremes['max'] = extremes.iloc[argrelextrema(extremes.high.values, comparator = np.greater,order=10)[0]]['high']
@@ -518,7 +519,7 @@ y_high = lr_high.predict(x_high[:, np.newaxis])
 f_high = interp1d(x1_high, y_high)
 print(f_high(y3[len(y1)-1]))
 
-ax0.axhline(y= f_high(y3[310]), color = 'r', linestyle = '-')
+ax0.axhline(y= f_high(y3[len(y3)-1]), color = 'r', linestyle = '-')
 
 #********* Plot Fitting Low ************
 #ax0.plot(x_low, y_low, "C0.-", markersize=12)
@@ -532,15 +533,16 @@ print('y_low2 = ',y_low)
 f_low = interp1d(x1_low, y_low)
 print(f_low(y4[len(y1)-1]))
 
-ax0.axhline(y= f_low(y4[310]), color = 'b', linestyle = '--')
+ax0.axhline(y= f_low(y4[len(y4)-1]), color = 'b', linestyle = '--')
 
 plt.show()
 
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
-
+#***************************** Test Functions **********************************************
 
 i = len(y3)-1
 while False:#i <= len(y3)-1:
@@ -608,5 +610,5 @@ while False:#i <= len(y3)-1:
 #f.hist()
 print('************************ Finish ***************************************')
 
-#////////////////////////////////////////////////
+#//////////////////////////////////////////////////////////////////////////////////
 

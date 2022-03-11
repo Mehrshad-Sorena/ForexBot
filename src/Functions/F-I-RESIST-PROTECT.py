@@ -116,7 +116,7 @@ def Extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_cluster
 
 
 #**************************************************** Ramp Lines *******************************************************
-def extreme_points_ramp_lines(high,low,close,length='short',n_clusters_low=1,n_clusters_high=1,number_min=10,number_max=10,plot=False):
+def extreme_points_ramp_lines(high,low,close,length='short',number_min=10,number_max=10,plot=False):
 	
 	#length:
 	#short
@@ -133,36 +133,12 @@ def extreme_points_ramp_lines(high,low,close,length='short',n_clusters_low=1,n_c
 	#Optimization Points With Scoring: Training Points 
 	exterm_point_high = pd.DataFrame(extremes['max'].dropna(inplace=False))
 	exterm_point_low = pd.DataFrame(extremes['min'].dropna(inplace=False))
-
-	kmeans_high = KMeans(n_clusters=n_clusters_high,init='k-means++', n_init=2, max_iter=2)
 	#Model Fitting High
-	kmeans_high = kmeans_high.fit(exterm_point_high.values)
-	Power_high = kmeans_high.fit_predict(high.to_numpy().reshape(-1,1))
-	exterm_point_pred_high = exterm_point_high.to_numpy()#kmeans_high.cluster_centers_
-	Y_pred_high = kmeans_high.labels_
-	counts_high = np.bincount(Y_pred_high)
-	mean_counts_high = np.mean(counts_high)
-	index_high = np.arange(0,len(exterm_point_pred_high),1)
-
+	exterm_point_pred_high = exterm_point_high.to_numpy()
 	#Model Fitting Low
-	kmeans_low = KMeans(n_clusters=n_clusters_low,init='k-means++', n_init=2, max_iter=2)
-	kmeans_low = kmeans_low.fit(exterm_point_low.values)
-	Power_low = kmeans_low.fit_predict(low.to_numpy().reshape(-1,1))
-	exterm_point_pred_low = exterm_point_low.to_numpy()#kmeans_low.cluster_centers_
-	Y_pred_low = kmeans_low.labels_
-	counts_low = np.bincount(Y_pred_low)
-	mean_counts_low = np.mean(counts_low)
-	index_low = np.arange(0,len(exterm_point_pred_low),1)
+	exterm_point_pred_low = exterm_point_low.to_numpy()
 
-	k = 0
-	for elm in exterm_point_pred_high:
-		index_high[k] = (pd.DataFrame(abs(exterm_point_high - elm)).idxmin())
-		k += 1
 	index_high = exterm_point_high.index
-	k = 0
-	for elm in exterm_point_pred_low:
-		index_low[k] = (pd.DataFrame(abs(exterm_point_low - elm)).idxmin())
-		k += 1
 	index_low = exterm_point_low.index
 	#******* DataSet High *********************
 	n_high = len(exterm_point_pred_high)
@@ -609,22 +585,22 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	trend_local_extreme_5M_long = pd.DataFrame()
 	trend_local_extreme_5M_long = np.nan
 	if (T_5M == True):
-		trend_local_extreme_5M_long = extreme_points_ramp_lines(high = dataset_5M['high'],low = dataset_5M['low'],close = dataset_5M['close'],length='long',n_clusters_low=2,n_clusters_high=2,number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_long = extreme_points_ramp_lines(high = dataset_5M['high'],low = dataset_5M['low'],close = dataset_5M['close'],length='long',number_min=2,number_max=2,plot=False)
 
 	trend_local_extreme_5M_mid = pd.DataFrame()
 	trend_local_extreme_5M_mid = np.nan
 	if (T_5M == True):
-		trend_local_extreme_5M_mid = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/2):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['low'])-1)/2):len(dataset_5M['low'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/2):len(dataset_5M['high'])-1],length='long',n_clusters_low=2,n_clusters_high=2,number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_mid = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/2):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['low'])-1)/2):len(dataset_5M['low'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/2):len(dataset_5M['high'])-1],length='long',number_min=2,number_max=2,plot=False)
 
 	trend_local_extreme_5M_short_1 = pd.DataFrame()
 	trend_local_extreme_5M_short_1 = np.nan
 	if (T_5M == True):
-		trend_local_extreme_5M_short_1 = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],length='long',n_clusters_low=2,n_clusters_high=2,number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_short_1 = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],length='long',number_min=2,number_max=2,plot=False)
 
 	trend_local_extreme_5M_short_2 = pd.DataFrame()
 	trend_local_extreme_5M_short_2 = np.nan
 	if (T_5M == True):
-		trend_local_extreme_5M_short_2 = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],length='long',n_clusters_low=1,n_clusters_high=1,number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_short_2 = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],length='long',number_min=2,number_max=2,plot=False)
 
 	#ichi Extreme Finder Function
 
@@ -747,7 +723,7 @@ print('data get')
 #plt.show()
 
 
-res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=symbol_data_5M['AUDCAD_i'],dataset_15M=symbol_data_15M['AUDCAD_i'],dataset_1H=symbol_data_1H['AUDCAD_i'],dataset_4H=symbol_data_4H['AUDCAD_i'],dataset_1D=symbol_data_1D['AUDCAD_i'],plot=True)
+res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=symbol_data_5M['AUDCAD_i'],dataset_15M=symbol_data_15M['AUDCAD_i'],dataset_1H=symbol_data_1H['AUDCAD_i'],dataset_4H=symbol_data_4H['AUDCAD_i'],dataset_1D=symbol_data_1D['AUDCAD_i'],plot=False)
 
 print(res_pro['power_high'])
 print('************************ Finish ***************************************')

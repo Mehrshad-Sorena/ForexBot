@@ -49,7 +49,7 @@ def Extreme_points(high,low,number_min,number_max):
 
 
 #**************************************************** Ichimoko Lines *******************************************************
-def Extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_clusters=15):
+def Extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=1):
 	ichi = ind.ichimoku(high = high,low = low,close = close,tenkan = tenkan,kijun = kijun,senkou = senkou)
 
 	column = ichi[0].columns[0]
@@ -109,8 +109,8 @@ def Extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_cluster
 
 	Y_pred = kmeans.labels_
 
-	exterm_point_pred = pd.DataFrame(X_pred, columns=['extremes'])
-	exterm_point_pred['power'] = Power
+	exterm_point_pred = pd.DataFrame(X_pred, columns=['extreme'])
+	exterm_point_pred['power'] = Power * weight
 	return exterm_point_pred
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -225,16 +225,16 @@ def extreme_points_ramp_lines(high,low,close,length='short',n_clusters_low=1,n_c
 		plt.show()
 
 	#finding Trend and Powers
-	if (f_low(low[len(low)-1]) > f_low(low[0])):
+	if (f_low(low[len(low)-1]) > f_low(low[np.min(low.index)])):
 		ramp_low = 'pos'
-	elif (f_low(low[len(low)-1]) < f_low(low[0])):
+	elif (f_low(low[len(low)-1]) < f_low(low[np.min(low.index)])):
 		ramp_low = 'neg'
 	else:
 		ramp_low = 'none'
 
-	if (f_high(high[len(high)-1]) > f_high(high[0])):
+	if (f_high(high[len(high)-1]) > f_high(high[np.min(high.index)])):
 		ramp_high = 'pos'
-	elif (f_high(high[len(high)-1]) < f_high(high[0])):
+	elif (f_high(high[len(high)-1]) < f_high(high[np.min(high.index)])):
 		ramp_high = 'neg'
 	else:
 		ramp_high = 'none'
@@ -265,7 +265,7 @@ def extreme_points_ramp_lines(high,low,close,length='short',n_clusters_low=1,n_c
 		trend_lines['max'] = f_high(high[len(high)-1])
 
 	if (ramp_high == 'neg') & ((ramp_low == 'pos')|(ramp_low == 'none') ):
-		if (f_high(high[0]) > f_low(low[0])):
+		if (f_high(high[np.min(high.index)]) > f_low(low[np.min(low.index)])):
 			trend_lines['trend'] = 'parcham'
 			trend_lines['power'] = power_trends
 			trend_lines['min'] = f_low(low[len(low)-1])
@@ -274,12 +274,6 @@ def extreme_points_ramp_lines(high,low,close,length='short',n_clusters_low=1,n_c
 	return trend_lines
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-#**************************************************** olgooie parcam *******************************************************
-
-#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 #**************************************************** Best Extreme Finder ***************************************************
 
@@ -296,8 +290,8 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 
 	timeout = time.time() + timeout_break  # timeout_break Sec from now
 	while True:
-		kmeans_low = KMeans(n_clusters=n_clusters_low, random_state=0,init='k-means++',n_init=10,max_iter=100)
-		kmeans_high = KMeans(n_clusters=n_clusters_high, random_state=0,init='k-means++',n_init=10,max_iter=100)
+		kmeans_low = KMeans(n_clusters=n_clusters_low, random_state=0,init='k-means++',n_init=10,max_iter=10)
+		kmeans_high = KMeans(n_clusters=n_clusters_high, random_state=0,init='k-means++',n_init=10,max_iter=10)
 		#Model Fitting
 		kmeans_low = kmeans_low.fit(exterm_point['extremes'].to_numpy()[np.where(exterm_point['extremes']<=high[len(high)-1])].reshape(-1,1), sample_weight= exterm_point['power'].to_numpy()[np.where(exterm_point['extremes']<=high[len(high)-1])])
 		kmeans_high = kmeans_high.fit(exterm_point['extremes'].to_numpy()[np.where(exterm_point['extremes']>=low[len(low)-1])].reshape(-1,1), sample_weight= exterm_point['power'].to_numpy()[np.where(exterm_point['extremes']>=low[len(low)-1])])
@@ -391,9 +385,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_low = Extereme[1]
 			Lower_Line_low = Extereme[0]
 			Mid_Line_low = np.array(dist_parameters['loc'])
-			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
 		
 		elif dist_name_low == 'dweibull':
 			Y = f_low.fitted_pdf['dweibull']
@@ -402,9 +396,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_low = Extereme[1]
 			Lower_Line_low = Extereme[0]
 			Mid_Line_low = np.array(dist_parameters['loc'])
-			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
 		
 		elif dist_name_low == 'rayleigh':
 			Y = f_low.fitted_pdf['rayleigh']
@@ -413,9 +407,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_low = Extereme[1]
 			Lower_Line_low = Extereme[0]
 			Mid_Line_low = np.array(dist_parameters['loc'])
-			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
 		
 		elif dist_name_low == 'expon':
 			Y = f_low.fitted_pdf['expon']
@@ -424,9 +418,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_low = Extereme[1]
 			Lower_Line_low = Extereme[0]
 			Mid_Line_low = np.array(dist_parameters['loc'])
-			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
 		
 		elif dist_name_low == 'nakagami':
 			Y = f_low.fitted_pdf['nakagami']
@@ -435,9 +429,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_low = Extereme[1]
 			Lower_Line_low = Extereme[0]
 			Mid_Line_low = np.array(dist_parameters['loc'])
-			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
 		
 		elif dist_name_low == 'norm':
 			Y = f_low.fitted_pdf['norm']
@@ -446,9 +440,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_low = Extereme[1]
 			Lower_Line_low = Extereme[0]
 			Mid_Line_low = np.array(dist_parameters['loc'])
-			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Upper_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Lower_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Lower_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
+			Power_Mid_Line_low = exterm_point_pred_final_low['power'][kmeans_low.predict(Mid_Line_low.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_low['power'])
 
 		if (time.time() > timeout):
 			if (distributions_low == None):
@@ -486,9 +480,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_high = Extereme[1]
 			Lower_Line_high = Extereme[0]
 			Mid_Line_high = np.array(dist_parameters['loc'])
-			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
 	
 		elif dist_name_high == 'dweibull':
 			Y = f_high.fitted_pdf['dweibull']
@@ -497,9 +491,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_high = Extereme[1]
 			Lower_Line_high = Extereme[0]
 			Mid_Line_high = np.array(dist_parameters['loc'])
-			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
 		
 		elif dist_name_high == 'rayleigh':
 			Y = f_high.fitted_pdf['rayleigh']
@@ -508,9 +502,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_high = Extereme[1]
 			Lower_Line_high = Extereme[0]
 			Mid_Line_high = np.array(dist_parameters['loc'])
-			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
 		
 		elif dist_name_high == 'expon':
 			Y = f_high.fitted_pdf['expon']
@@ -519,9 +513,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_high = Extereme[1]
 			Lower_Line_high = Extereme[0]
 			Mid_Line_high = np.array(dist_parameters['loc'])
-			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
 		
 		elif dist_name_high == 'nakagami':
 			Y = f_high.fitted_pdf['nakagami']
@@ -530,9 +524,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_high = Extereme[1]
 			Lower_Line_high = Extereme[0]
 			Mid_Line_high = np.array(dist_parameters['loc'])
-			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
 		
 		elif dist_name_high == 'norm':
 			Y = f_high.fitted_pdf['norm']
@@ -541,9 +535,9 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			Upper_Line_high = Extereme[1]
 			Lower_Line_high = Extereme[0]
 			Mid_Line_high = np.array(dist_parameters['loc'])
-			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()
-			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()
-			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()
+			Power_Upper_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Upper_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Lower_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Lower_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
+			Power_Mid_Line_high = exterm_point_pred_final_high['power'][kmeans_high.predict(Mid_Line_high.reshape(1,-1))].to_numpy()/np.max(exterm_point_pred_final_high['power'])
 
 		if (time.time() > timeout):
 			if (distributions_high == None):
@@ -565,16 +559,174 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 	return best_extremes
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#***************************** Protect Resist Finder **************************************************************
+
+def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,dataset_4H,dataset_1D,plot=False):
+
+	#Extreme Points Finder Function
+
+	local_extreme_5M = pd.DataFrame()
+	local_extreme_5M['extreme'] = np.nan
+	local_extreme_5M['power'] = np.nan
+	if (T_5M == True):
+		local_extreme_5M['extreme'] = pd.DataFrame(Extreme_points(high=dataset_5M['high'],low=dataset_5M['low'],
+			number_min=5,number_max=5))
+		local_extreme_5M['power'] = np.ones(len(local_extreme_5M))*10
+
+	local_extreme_15M = pd.DataFrame()
+	local_extreme_15M['extreme'] = np.nan
+	local_extreme_15M['power'] = np.nan
+	if (T_15M == True):
+		local_extreme_15M['extreme'] = pd.DataFrame(Extreme_points(high=dataset_15M['high'],low=dataset_15M['low'],
+			number_min=5,number_max=5))
+		local_extreme_15M['power'] = np.ones(len(local_extreme_15M))*3
+
+	local_extreme_1H = pd.DataFrame()
+	local_extreme_1H['extreme'] = np.nan
+	local_extreme_1H['power'] = np.nan
+	if (T_1H == True):
+		local_extreme_1H['extreme'] = pd.DataFrame(Extreme_points(high=dataset_1H['high'],low=dataset_1H['low'],
+			number_min=5,number_max=5))
+		local_extreme_1H['power'] = np.ones(len(local_extreme_1H))*12
+
+	local_extreme_4H = pd.DataFrame()
+	local_extreme_4H['extreme'] = np.nan
+	local_extreme_4H['power'] = np.nan
+	if (T_4H == True):
+		local_extreme_4H['extreme'] = pd.DataFrame(Extreme_points(high=dataset_4H['high'],low=dataset_4H['low'],
+			number_min=2,number_max=2))
+		local_extreme_4H['power'] = np.ones(len(local_extreme_4H))*48
+
+	local_extreme_1D = pd.DataFrame()
+	local_extreme_1D['extreme'] = np.nan
+	local_extreme_1D['power'] = np.nan
+	if (T_1D == True):
+		local_extreme_1D['extreme'] = pd.DataFrame(Extreme_points(high=dataset_1D['high'],low=dataset_1D['low'],
+			number_min=2,number_max=2))
+		local_extreme_1D['power'] = np.ones(len(local_extreme_1D))*288
+
+	#Trend Line Extreme Finder Function
+	trend_local_extreme_5M_long = pd.DataFrame()
+	trend_local_extreme_5M_long = np.nan
+	if (T_5M == True):
+		trend_local_extreme_5M_long = extreme_points_ramp_lines(high = dataset_5M['high'],low = dataset_5M['low'],close = dataset_5M['close'],length='long',n_clusters_low=2,n_clusters_high=2,number_min=2,number_max=2,plot=False)
+
+	trend_local_extreme_5M_mid = pd.DataFrame()
+	trend_local_extreme_5M_mid = np.nan
+	if (T_5M == True):
+		trend_local_extreme_5M_mid = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/2):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['low'])-1)/2):len(dataset_5M['low'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/2):len(dataset_5M['high'])-1],length='long',n_clusters_low=2,n_clusters_high=2,number_min=2,number_max=2,plot=False)
+
+	trend_local_extreme_5M_short_1 = pd.DataFrame()
+	trend_local_extreme_5M_short_1 = np.nan
+	if (T_5M == True):
+		trend_local_extreme_5M_short_1 = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],length='long',n_clusters_low=2,n_clusters_high=2,number_min=2,number_max=2,plot=False)
+
+	trend_local_extreme_5M_short_2 = pd.DataFrame()
+	trend_local_extreme_5M_short_2 = np.nan
+	if (T_5M == True):
+		trend_local_extreme_5M_short_2 = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],length='long',n_clusters_low=1,n_clusters_high=1,number_min=2,number_max=2,plot=False)
+
+	#ichi Extreme Finder Function
+
+	ichi_local_extreme_5M = pd.DataFrame()
+	ichi_local_extreme_5M['extreme'] = np.nan
+	ichi_local_extreme_5M['power'] = np.nan
+	if (T_5M == True):
+		ichi_local_extreme_5M = Extreme_points_ichimoko(dataset_5M['high'],dataset_5M['low'],dataset_5M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=1)
+
+	ichi_local_extreme_15M = pd.DataFrame()
+	ichi_local_extreme_15M['extreme'] = np.nan
+	ichi_local_extreme_15M['power'] = np.nan
+	if (T_15M == True):
+		ichi_local_extreme_15M = Extreme_points_ichimoko(dataset_15M['high'],dataset_15M['low'],dataset_15M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=2)
+
+	ichi_local_extreme_1H = pd.DataFrame()
+	ichi_local_extreme_1H['extreme'] = np.nan
+	ichi_local_extreme_1H['power'] = np.nan
+	if (T_1H == True):
+		ichi_local_extreme_1H = Extreme_points_ichimoko(dataset_1H['high'],dataset_1H['low'],dataset_1H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=5)
+
+	ichi_local_extreme_4H = pd.DataFrame()
+	ichi_local_extreme_4H['extreme'] = np.nan
+	ichi_local_extreme_4H['power'] = np.nan
+	if (T_4H == True):
+		ichi_local_extreme_4H = Extreme_points_ichimoko(dataset_4H['high'],dataset_4H['low'],dataset_4H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=20)
+
+	ichi_local_extreme_1D = pd.DataFrame()
+	ichi_local_extreme_1D['extreme'] = np.nan
+	ichi_local_extreme_1D['power'] = np.nan
+	if (T_1D == True):
+		ichi_local_extreme_1D = Extreme_points_ichimoko(dataset_1D['high'],dataset_1D['low'],dataset_1D['close'],tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=100)
+
+	#concat Extremes
+
+	exterm_point = pd.DataFrame(np.concatenate((local_extreme_5M['extreme'].to_numpy(), 
+			local_extreme_15M['extreme'].to_numpy(),local_extreme_1H['extreme'].to_numpy(),
+			local_extreme_4H['extreme'].to_numpy(),local_extreme_1D['extreme'].to_numpy(),
+			trend_local_extreme_5M_long['min'].to_numpy(),trend_local_extreme_5M_long['max'].to_numpy(),
+			trend_local_extreme_5M_mid['min'].to_numpy(),trend_local_extreme_5M_mid['max'].to_numpy(),
+			trend_local_extreme_5M_short_1['min'].to_numpy(),trend_local_extreme_5M_short_1['max'].to_numpy(),
+			trend_local_extreme_5M_short_2['min'].to_numpy(),trend_local_extreme_5M_short_2['max'].to_numpy(),
+			ichi_local_extreme_5M['extreme'].to_numpy(),
+			ichi_local_extreme_15M['extreme'].to_numpy(),
+			ichi_local_extreme_1H['extreme'].to_numpy(),
+			ichi_local_extreme_4H['extreme'].to_numpy(),
+			ichi_local_extreme_1D['extreme'].to_numpy()) , axis=None),columns=['extremes'])
+
+	exterm_point['power'] = np.concatenate((local_extreme_5M['power'].to_numpy(), 
+			local_extreme_15M['power'].to_numpy(),local_extreme_1H['power'].to_numpy(),
+			local_extreme_4H['power'].to_numpy(),local_extreme_1D['power'].to_numpy(),
+			trend_local_extreme_5M_long['power'].to_numpy(),trend_local_extreme_5M_long['power'].to_numpy(),
+			trend_local_extreme_5M_mid['power'].to_numpy(),trend_local_extreme_5M_mid['power'].to_numpy(),
+			trend_local_extreme_5M_short_1['power'].to_numpy(),trend_local_extreme_5M_short_1['power'].to_numpy(),
+			trend_local_extreme_5M_short_2['power'].to_numpy(),trend_local_extreme_5M_short_2['power'].to_numpy(),
+			ichi_local_extreme_5M['power'].to_numpy(),
+			ichi_local_extreme_15M['power'].to_numpy(),
+			ichi_local_extreme_1H['power'].to_numpy(),
+			ichi_local_extreme_4H['power'].to_numpy(),
+			ichi_local_extreme_1D['power'].to_numpy()) , axis=None)
+
+	exterm_point = exterm_point.dropna()
+
+	extereme = pd.DataFrame()
+	extereme = Best_Extreme_Finder(exterm_point=exterm_point,high=dataset_5M['high'],low=dataset_5M['low'],n_clusters_low=5,n_clusters_high=5,alpha_low=0.05,alpha_high=0.05,timeout_break=1)
+	extereme['trend_long'] = [trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend']]
+	extereme['trend_mid'] = [trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend']]
+	extereme['trend_short1'] = [trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend']]
+	extereme['trend_short2'] = [trend_local_extreme_5M_short_2['trend'],trend_local_extreme_5M_short_2['trend'],trend_local_extreme_5M_short_2['trend']]
 
 
+	if (plot == True):
+		fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))
+		ax0.axhline(y = extereme['high'][0], color = 'r', linestyle = '-')
+		ax0.axhline(y = extereme['high'][1], color = 'g', linestyle = '-')
+		ax0.axhline(y = extereme['high'][2], color = 'r', linestyle = '-')
+
+		ax0.axhline(y = extereme['low'][0], color = 'g', linestyle = '-')
+		ax0.axhline(y = extereme['low'][1], color = 'b', linestyle = '-')
+		ax0.axhline(y = extereme['low'][2], color = 'g', linestyle = '-')
+
+		end = len(dataset_5M['close']) - 1
+
+		ax0.axvline(x = end, color = 'r', linestyle = '-')
+		ax1.axvline(x = end, color = 'r', linestyle = '-')
+
+		ax0.plot(dataset_5M['close'].index[end-100:end],dataset_5M['close'][end-100:end],'b')
+		ax1.plot(dataset_5M['close'].index[end-10:end+300],dataset_5M['close'][end-10:end+300],'b')
+		plt.show()
+
+	return extereme
+#///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+#***************************** How To Use Functions **********************************************
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,50)
-symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,6000)
-symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,2000)
-symbol_data_4H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,360)
-symbol_data_1D,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,60)
+
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,500)
+symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
+symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,10)
+symbol_data_4H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,10)
+symbol_data_1D,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,10)
 
 x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
 y1 = symbol_data_5M['AUDCAD_i']['close']
@@ -595,74 +747,9 @@ print('data get')
 #plt.show()
 
 
-trend = extreme_points_ramp_lines(high = y3,low = y4,close = y1,length='long',n_clusters_low=2,n_clusters_high=2,number_min=2,number_max=2,plot=True)
-print(trend)
-#***************************** Test Functions **********************************************
+res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=symbol_data_5M['AUDCAD_i'],dataset_15M=symbol_data_15M['AUDCAD_i'],dataset_1H=symbol_data_1H['AUDCAD_i'],dataset_4H=symbol_data_4H['AUDCAD_i'],dataset_1D=symbol_data_1D['AUDCAD_i'],plot=True)
 
-i = len(y3)-1
-while False:#i <= len(y3)-1:
-	end = i
-	i += 100
-
-	local_extreme_5M = pd.DataFrame()
-	local_extreme_5M['extreme'] = pd.DataFrame(Extreme_points(high=symbol_data_5M['AUDCAD_i']['high'][0:end],low=symbol_data_5M['AUDCAD_i']['low'][0:end],
-		number_min=5,number_max=5))
-	local_extreme_5M['power'] = np.ones(len(local_extreme_5M))*1
-
-	local_extreme_15M = pd.DataFrame()
-	local_extreme_15M['extreme'] = pd.DataFrame(Extreme_points(high=symbol_data_15M['AUDCAD_i']['high'],low=symbol_data_15M['AUDCAD_i']['low'],
-		number_min=5,number_max=5))
-	local_extreme_15M['power'] = np.ones(len(local_extreme_15M))*3
-
-	local_extreme_1H = pd.DataFrame()
-	local_extreme_1H['extreme'] = pd.DataFrame(Extreme_points(high=symbol_data_1H['AUDCAD_i']['high'],low=symbol_data_1H['AUDCAD_i']['low'],
-		number_min=5,number_max=5))
-	local_extreme_1H['power'] = np.ones(len(local_extreme_1H))*12
-
-	local_extreme_4H = pd.DataFrame()
-	local_extreme_4H['extreme'] = pd.DataFrame(Extreme_points(high=symbol_data_4H['AUDCAD_i']['high'],low=symbol_data_4H['AUDCAD_i']['low'],
-		number_min=2,number_max=2))
-	local_extreme_4H['power'] = np.ones(len(local_extreme_4H))*48
-
-	local_extreme_1D = pd.DataFrame()
-	local_extreme_1D['extreme'] = pd.DataFrame(Extreme_points(high=symbol_data_1D['AUDCAD_i']['high'],low=symbol_data_1D['AUDCAD_i']['low'],
-		number_min=2,number_max=2))
-	local_extreme_1D['power'] = np.ones(len(local_extreme_1D))*288
-
-
-
-	exterm_point = pd.DataFrame(np.concatenate((local_extreme_5M['extreme'].to_numpy(), 
-			local_extreme_15M['extreme'].to_numpy(),local_extreme_1H['extreme'].to_numpy(),
-			local_extreme_4H['extreme'].to_numpy(),local_extreme_1D['extreme'].to_numpy(),
-			exterm_point_pred['extremes'].to_numpy())
-			, axis=None),columns=['extremes'])
-
-	exterm_point['power'] = np.concatenate((local_extreme_5M['power'].to_numpy(), 
-			local_extreme_15M['power'].to_numpy(),local_extreme_1H['power'].to_numpy(),
-			local_extreme_4H['power'].to_numpy(),local_extreme_1D['power'].to_numpy(),
-			exterm_point_pred['power'].to_numpy())
-			, axis=None)
-
-
-
-	extereme = Best_Extreme_Finder(exterm_point=exterm_point,high=y3[0:end],low=y4[0:end],n_clusters_low=5,n_clusters_high=5,alpha_low=0.1,alpha_high=0.05,timeout_break=1)
-
-	fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))
-	ax0.axhline(y = extereme['high'][0], color = 'r', linestyle = '-')
-	ax0.axhline(y = extereme['high'][1], color = 'g', linestyle = '-')
-	ax0.axhline(y = extereme['high'][2], color = 'r', linestyle = '-')
-
-	ax0.axhline(y = extereme['low'][0], color = 'g', linestyle = '-')
-	ax0.axhline(y = extereme['low'][1], color = 'b', linestyle = '-')
-	ax0.axhline(y = extereme['low'][2], color = 'g', linestyle = '-')
-
-	ax0.axvline(x = end, color = 'r', linestyle = '-')
-	ax1.axvline(x = end, color = 'r', linestyle = '-')
-
-	ax0.plot(y3.index[end-100:end],y3[end-100:end],'b')
-	ax1.plot(y3.index[end-10:end+300],y3[end-10:end+300],'b')
-	plt.show()
-#f.hist()
+print(res_pro['power_high'])
 print('************************ Finish ***************************************')
 
 #//////////////////////////////////////////////////////////////////////////////////

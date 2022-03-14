@@ -75,9 +75,9 @@ def Golden_Cross_SMA(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 			signal_buy['index'][i] = elm
 
 			if ((j+1) < len(cross)):
-				signal_buy['profit'][i] = (np.max(y1[elm:cross['index'][j+1]] - y1[elm])/y1[elm]) * 100
+				signal_buy['profit'][i] = (np.max(close[elm:cross['index'][j+1]] - close[elm])/close[elm]) * 100
 			else:
-				signal_buy['profit'][i] = (np.max(y1[elm:-1] - y1[elm])/y1[elm]) * 100
+				signal_buy['profit'][i] = (np.max(close[elm:-1] - close[elm])/close[elm]) * 100
 			i += 1
 
 		if ((SMA_Low[elm-1]>SMA_High[elm-1])&(SMA_Low[elm+1]<SMA_High[elm+1])):
@@ -85,9 +85,9 @@ def Golden_Cross_SMA(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 			signal_sell['values'][k] = cross['values'][j]
 			signal_sell['index'][k] = elm
 			if ((j+1) < len(cross)):
-				signal_sell['profit'][k] = (np.max(y1[elm] - y1[elm:cross['index'][j+1]])/np.min(y1[elm:cross['index'][j+1]])) * 100
+				signal_sell['profit'][k] = (np.max(close[elm] - close[elm:cross['index'][j+1]])/np.min(close[elm:cross['index'][j+1]])) * 100
 			else:
-				signal_sell['profit'][k] = (np.max(y1[elm] - y1[elm:-1])/np.min(y1[elm:-1])) * 100
+				signal_sell['profit'][k] = (np.max(close[elm] - close[elm:-1])/np.min(close[elm:-1])) * 100
 			#print('elm_sell = ',elm)
 			k += 1
 		j += 1

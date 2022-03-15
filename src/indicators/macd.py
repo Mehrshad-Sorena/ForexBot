@@ -12,7 +12,7 @@ from shapely.geometry import LineString
 import matplotlib.pyplot as plt
 from scipy.signal import argrelextrema
 import time
-#from src.utils.resist_protect import bestExtremeFinder, extremePoints
+from src.utils.resist_protect import bestExtremeFinder, extremePoints
 
 # Create a DataFrame so 'ta' can be used.
 #df = pd.DataFrame()
@@ -204,9 +204,17 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 	if (mode == 'optimize'):
 		signal_buy = pd.DataFrame(np.zeros(len(extreme_min)))
 		signal_buy['signal'] = np.nan
-		signal_buy['values'] = np.nan
+		signal_buy['value_front'] = np.nan
+		signal_buy['value_back'] = np.nan
 		signal_buy['index'] = np.nan
-		signal_buy['profit'] = np.nan
+		#signal_buy['profit'] = np.nan
+		signal_buy['ramp_macd'] = np.nan
+		signal_buy['ramp_candle'] = np.nan
+		signal_buy['coef_ramps'] = np.nan
+		signal_buy['diff_ramps'] = np.nan
+		signal_buy['beta'] = np.nan
+		signal_buy['danger_line'] = np.nan
+
 
 		signal_sell = pd.DataFrame(np.zeros(len(extreme_max)))
 		signal_sell['signal'] = np.nan
@@ -214,18 +222,33 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 		signal_sell['index'] = np.nan
 		signal_sell['profit'] = np.nan
 
+		i = 0
+		j = 0
+
 		for elm in extreme_min.index:
 			#print(extreme_min['value'][elm])
 			if (elm - 1 < 0): continue
 			if ((extreme_min['value'][elm] > extreme_min['value'][elm-1]) &
-				(dataset[symbol]['low'][extreme_min['index'][elm]] < dataset[symbol]['low'][extreme_min['index'][elm-1]])):
+				(dataset[symbol]['low'][extreme_min['index'][elm]] <= dataset[symbol]['low'][extreme_min['index'][elm-1]])):
+				signal_buy['signal'][i] = 'buy_primary'
+				signal_buy['value_front'][i] = extreme_min['value'][elm]
+				signal_buy['value_back'][i] = extreme_min['value'][elm-1]
+				signal_buy['index'][i] = extreme_min['index'][elm]
+				signal_buy['ramp_macd'][i] = (extreme_min['value'][elm] - extreme_min['value'][elm-1])/(extreme_min['index'][elm] - extreme_min['index'][elm-1])
+				signal_buy['ramp_candle'][i] = (dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm-1]])/(extreme_min['index'][elm] - extreme_min['index'][elm-1])
+				signal_buy['coef_ramps'][i] = signal_buy['ramp_macd'][i]/signal_buy['ramp_candle'][i]
+				signal_buy['diff_ramps'][i] = signal_buy['ramp_macd'][i] - signal_buy['ramp_candle'][i]
+				signal_buy['beta'][i] = ((dataset[symbol]['high'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
+				signal_buy['danger_line'][i] = dataset[symbol]['low'][extreme_min['index'][elm]] + ((dataset[symbol]['low'][extreme_min['index'][elm]]*signal_buy['beta'][i])/100)
 				
-				print('elm = ',extreme_min['index'][elm])
-				print('elm - 1 = ',extreme_min['index'][elm-1])
 				if (plot == True):
 					ax0.plot([extreme_min['index'][elm-1],extreme_min['index'][elm]],[extreme_min['value'][elm-1],extreme_min['value'][elm]],c='r',linestyle="-")
 					ax1.plot([extreme_min['index'][elm-1],extreme_min['index'][elm]],[dataset[symbol]['low'][extreme_min['index'][elm-1]],dataset[symbol]['low'][extreme_min['index'][elm]]],c='r',linestyle="-")
-	
+				i += 1
+
+	signal_buy = signal_buy.drop(columns=0)
+	signal_buy = signal_buy.dropna()
+	print(signal_buy)
 	if (plot == True):
 		plt.show()
 	return 0,0
@@ -246,6 +269,6 @@ print('time Cross = ',time.time() - time_first)
 
 time_first = time.time()
 signal_buy,signal_sell = divergence(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
-	macd_fast=12,macd_slow=26,macd_signal=9,mode='optimize',plot=True)
+	macd_fast=12,macd_slow=26,macd_signal=9,mode='optimize',plot=False)
 print('time Dive = ',time.time() - time_first)
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////

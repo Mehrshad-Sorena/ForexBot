@@ -12,7 +12,7 @@ from shapely.geometry import LineString
 import matplotlib.pyplot as plt
 from scipy.signal import argrelextrema
 import time
-from src.utils.resist_protect import bestExtremeFinder, extremePoints
+#from src.utils.resist_protect import bestExtremeFinder, extremePoints
 
 # Create a DataFrame so 'ta' can be used.
 #df = pd.DataFrame()
@@ -153,6 +153,9 @@ def golden_cross(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9
 
 	if (plot == True):
 		plt.show()
+
+	signal_buy = signal_buy.drop(columns = 0)
+	signal_sell = signal_sell.drop(columns = 0)
 
 	signal_buy = signal_buy.dropna(inplace = False)
 	signal_sell = signal_sell.dropna(inplace = False)

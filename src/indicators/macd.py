@@ -176,26 +176,66 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 	macd = macd.dropna(inplace=False)
 
 	n = 5
-	extreme = pd.DataFrame()
-	macd['min'] = macd.iloc[argrelextrema(macd.macd.values, comparator = np.less,
+	
+	min_ex = macd.iloc[argrelextrema(macd.macd.values, comparator = np.less,
                     order=n)[0]]['macd']
-	macd['max'] = macd.iloc[argrelextrema(macd.macd.values, comparator = np.greater,
+	max_ex = macd.iloc[argrelextrema(macd.macd.values, comparator = np.greater,
                     order=n)[0]]['macd']
 
-	plt.plot(macd['max'].dropna().index,macd['max'].dropna(), 'o',c='g')
-	plt.plot(macd.index,macd.macd,c='r')
-	plt.show()
+	extreme_min = pd.DataFrame()
+	extreme_min['value'] = min_ex.values
+	extreme_min['index'] = min_ex.index
+	extreme_min = extreme_min.dropna(inplace=False)
+	extreme_min = extreme_min.sort_values(by = ['index'])
 
-	print(macd['max'].dropna())
+	extreme_max = pd.DataFrame()
+	extreme_max['value'] = max_ex.values
+	extreme_max['index'] = max_ex.index
+	extreme_max = extreme_max.dropna(inplace=False)
+	extreme_max = extreme_max.sort_values(by = ['index'])
 
-	return signal_buy,signal_sell
+	if(plot == True):
+		fig, (ax1, ax0) = plt.subplots(nrows=2, figsize=(12, 6))
+		ax0.plot(extreme_min['index'],extreme_min['value'], 'o',c='g')
+		ax0.plot(extreme_max['index'],extreme_max['value'], 'o',c='r')
+		ax0.plot(macd.index,macd.macd,c='b')
+		ax1.plot(dataset[symbol]['close'].index,dataset[symbol]['close'],c='b')
+
+	if (mode == 'optimize'):
+		signal_buy = pd.DataFrame(np.zeros(len(extreme_min)))
+		signal_buy['signal'] = np.nan
+		signal_buy['values'] = np.nan
+		signal_buy['index'] = np.nan
+		signal_buy['profit'] = np.nan
+
+		signal_sell = pd.DataFrame(np.zeros(len(extreme_max)))
+		signal_sell['signal'] = np.nan
+		signal_sell['values'] = np.nan
+		signal_sell['index'] = np.nan
+		signal_sell['profit'] = np.nan
+
+		for elm in extreme_min.index:
+			#print(extreme_min['value'][elm])
+			if (elm - 1 < 0): continue
+			if ((extreme_min['value'][elm] > extreme_min['value'][elm-1]) &
+				(dataset[symbol]['low'][extreme_min['index'][elm]] < dataset[symbol]['low'][extreme_min['index'][elm-1]])):
+				
+				print('elm = ',extreme_min['index'][elm])
+				print('elm - 1 = ',extreme_min['index'][elm-1])
+				if (plot == True):
+					ax0.plot([extreme_min['index'][elm-1],extreme_min['index'][elm]],[extreme_min['value'][elm-1],extreme_min['value'][elm]],c='r',linestyle="-")
+					ax1.plot([extreme_min['index'][elm-1],extreme_min['index'][elm]],[dataset[symbol]['low'][extreme_min['index'][elm-1]],dataset[symbol]['low'][extreme_min['index'][elm]]],c='r',linestyle="-")
+	
+	if (plot == True):
+		plt.show()
+	return 0,0
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 #*********************************** How To Use Funcs ************************************************************
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2000)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,500)
 print('get data')
 time_first = time.time()
 signal_buy,signal_sell = golden_cross(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
@@ -206,6 +246,6 @@ print('time Cross = ',time.time() - time_first)
 
 time_first = time.time()
 signal_buy,signal_sell = divergence(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
-	macd_fast=12,macd_slow=26,macd_signal=9,mode='online',plot=False)
+	macd_fast=12,macd_slow=26,macd_signal=9,mode='optimize',plot=True)
 print('time Dive = ',time.time() - time_first)
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////

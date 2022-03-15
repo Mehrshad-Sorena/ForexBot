@@ -10,6 +10,8 @@ from scipy.stats import foldnorm, dweibull, rayleigh, expon, nakagami, norm
 from scipy.optimize import fsolve
 from shapely.geometry import LineString
 import matplotlib.pyplot as plt
+from scipy.signal import argrelextrema
+import time
 #from src.utils.resist_protect import bestExtremeFinder, extremePoints
 
 # Create a DataFrame so 'ta' can be used.
@@ -25,7 +27,7 @@ import matplotlib.pyplot as plt
 #help(ta.macd)
 
 #**************************************************** Golden Cross Strategy *******************************************************
-def Golden_Cross_SMA(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,mode='optimize',plot=False):
+def golden_cross(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,mode='optimize',plot=False):
 
 	#Mode:
 	#optimize
@@ -78,17 +80,31 @@ def Golden_Cross_SMA(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_sign
 		signal_sell['values'] = np.nan
 		signal_sell['index'] = np.nan
 
-		buy_indexes = cross['index'][np.where(((macd.macds[cross['index']-1].to_numpy()>macd.macd[cross['index']-1].to_numpy())&(macd.macds[cross['index']+1].to_numpy()<macd.macd[cross['index']+1].to_numpy())))[0]]
-		buy_cross_indexes = np.where(((macd.macds[cross['index']-1].to_numpy()>macd.macd[cross['index']-1].to_numpy())&(macd.macds[cross['index']+1].to_numpy()<macd.macd[cross['index']+1].to_numpy())))[0]
-		signal_buy['signal'][buy_cross_indexes] = 'buy'
-		signal_buy['values'] = cross['values'][buy_cross_indexes]
-		signal_buy['index'][buy_cross_indexes] = buy_indexes
+		try:
+			buy_indexes = cross['index'][np.where(((macd.macds[cross['index']-1].to_numpy()>macd.macd[cross['index']-1].to_numpy())&(macd.macds[cross['index']+1].to_numpy()<macd.macd[cross['index']+1].to_numpy())))[0]]
+			buy_cross_indexes = np.where(((macd.macds[cross['index']-1].to_numpy()>macd.macd[cross['index']-1].to_numpy())&(macd.macds[cross['index']+1].to_numpy()<macd.macd[cross['index']+1].to_numpy())))[0]
+			signal_buy['signal'][buy_cross_indexes] = 'buy'
+			signal_buy['values'] = cross['values'][buy_cross_indexes]
+			signal_buy['index'][buy_cross_indexes] = buy_indexes
+		except:
+			buy_indexes = cross['index'][np.where(((macd.macds[cross['index'][1:-1]-1].to_numpy()>macd.macd[cross['index'][1:-1]-1].to_numpy())&(macd.macds[cross['index'][1:-1]+1].to_numpy()<macd.macd[cross['index'][1:-1]+1].to_numpy())))[0]]
+			buy_cross_indexes = np.where(((macd.macds[cross['index'][1:-1]-1].to_numpy()>macd.macd[cross['index'][1:-1]-1].to_numpy())&(macd.macds[cross['index'][1:-1]+1].to_numpy()<macd.macd[cross['index'][1:-1]+1].to_numpy())))[0]
+			signal_buy['signal'][buy_cross_indexes] = 'buy'
+			signal_buy['values'] = cross['values'][buy_cross_indexes]
+			signal_buy['index'][buy_cross_indexes] = buy_indexes
 
-		sell_indexes = cross['index'][np.where(((macd.macds[cross['index']-1].to_numpy()<macd.macd[cross['index']-1].to_numpy())&(macd.macds[cross['index']+1].to_numpy()>macd.macd[cross['index']+1].to_numpy())))[0]]
-		sell_cross_indexes = np.where(((macd.macds[cross['index']-1].to_numpy()<macd.macd[cross['index']-1].to_numpy())&(macd.macds[cross['index']+1].to_numpy()>macd.macd[cross['index']+1].to_numpy())))[0]
-		signal_sell['signal'][sell_cross_indexes] = 'sell'
-		signal_sell['values'] = cross['values'][sell_cross_indexes]
-		signal_sell['index'][sell_cross_indexes] = sell_indexes
+		try:
+			sell_indexes = cross['index'][np.where(((macd.macds[cross['index']-1].to_numpy()<macd.macd[cross['index']-1].to_numpy())&(macd.macds[cross['index']+1].to_numpy()>macd.macd[cross['index']+1].to_numpy())))[0]]
+			sell_cross_indexes = np.where(((macd.macds[cross['index']-1].to_numpy()<macd.macd[cross['index']-1].to_numpy())&(macd.macds[cross['index']+1].to_numpy()>macd.macd[cross['index']+1].to_numpy())))[0]
+			signal_sell['signal'][sell_cross_indexes] = 'sell'
+			signal_sell['values'] = cross['values'][sell_cross_indexes]
+			signal_sell['index'][sell_cross_indexes] = sell_indexes
+		except:
+			sell_indexes = cross['index'][np.where(((macd.macds[cross['index'][1:-1]-1].to_numpy()<macd.macd[cross['index'][1:-1]-1].to_numpy())&(macd.macds[cross['index'][1:-1]+1].to_numpy()>macd.macd[cross['index'][1:-1]+1].to_numpy())))[0]]
+			sell_cross_indexes = np.where(((macd.macds[cross['index'][1:-1]-1].to_numpy()<macd.macd[cross['index'][1:-1]-1].to_numpy())&(macd.macds[cross['index'][1:-1]+1].to_numpy()>macd.macd[cross['index'][1:-1]+1].to_numpy())))[0]
+			signal_sell['signal'][sell_cross_indexes] = 'sell'
+			signal_sell['values'] = cross['values'][sell_cross_indexes]
+			signal_sell['index'][sell_cross_indexes] = sell_indexes
 
 	#print(buy_indexes)
 	#print(signal_buy)
@@ -148,17 +164,48 @@ def Golden_Cross_SMA(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_sign
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 #**************************************************** Divergence Strategy *******************************************************
+
+def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,mode='online',plot=False):
+
+	macd_read = ind.macd(dataset[symbol][Apply_to],fast = macd_fast,slow = macd_slow,signal = macd_signal)
+
+	macd = pd.DataFrame()
+	column = macd_read.columns[0]
+	macd['macd'] = pd.DataFrame(macd_read, columns=[column])
+	macd = macd.dropna(inplace=False)
+
+	n = 5
+	extreme = pd.DataFrame()
+	macd['min'] = macd.iloc[argrelextrema(macd.macd.values, comparator = np.less,
+                    order=n)[0]]['macd']
+	macd['max'] = macd.iloc[argrelextrema(macd.macd.values, comparator = np.greater,
+                    order=n)[0]]['macd']
+
+	plt.plot(macd['max'].dropna().index,macd['max'].dropna(), 'o',c='g')
+	plt.plot(macd.index,macd.macd,c='r')
+	plt.show()
+
+	print(macd['max'].dropna())
+
+	return signal_buy,signal_sell
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 #*********************************** How To Use Funcs ************************************************************
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,20000)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2000)
+print('get data')
+time_first = time.time()
+signal_buy,signal_sell = golden_cross(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
+	macd_fast=12,macd_slow=26,macd_signal=9,mode='online',plot=False)
+print('time Cross = ',time.time() - time_first)
+#print(signal_buy)
+#print(signal_sell)
 
-signal_buy,signal_sell = Golden_Cross_SMA(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
-	macd_fast=12,macd_slow=26,macd_signal=9,mode='optimize',plot=False)
-print(signal_buy)
-print(signal_sell)
+time_first = time.time()
+signal_buy,signal_sell = divergence(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
+	macd_fast=12,macd_slow=26,macd_signal=9,mode='online',plot=False)
+print('time Dive = ',time.time() - time_first)
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////

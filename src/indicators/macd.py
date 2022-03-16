@@ -12,7 +12,7 @@ from shapely.geometry import LineString
 import matplotlib.pyplot as plt
 from scipy.signal import argrelextrema
 import time
-#from src.utils.resist_protect import bestExtremeFinder, extremePoints
+from src.utils.resist_protect import bestExtremeFinder, extremePoints
 
 # Create a DataFrame so 'ta' can be used.
 #df = pd.DataFrame()
@@ -225,7 +225,8 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 		signal_buy['diff_min_max_macd'] = np.nan
 		signal_buy['diff_min_max_candle'] = np.nan
 		if (mode == 'optimize'):
-			signal_buy['profit'] = np.nan
+			signal_buy['tp_min_max_index'] = np.nan
+			signal_buy['st_min_max_index'] = np.nan
 
 
 		signal_sell = pd.DataFrame(np.zeros(len(extreme_max)))
@@ -252,10 +253,34 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 				signal_buy['diff_ramps'][i] = signal_buy['ramp_macd'][i] - signal_buy['ramp_candle'][i]
 				signal_buy['beta'][i] = ((dataset[symbol]['high'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 				signal_buy['danger_line'][i] = dataset[symbol]['low'][extreme_min['index'][elm]] + ((dataset[symbol]['low'][extreme_min['index'][elm]]*signal_buy['beta'][i])/100)
-				signal_buy['diff_min_max_macd'][i] = (np.max(macd.macd[extreme_min['index'][elm-1]:extreme_min['index'][elm]]) - np.min([signal_buy['value_back'][i],signal_buy['value_front'][i]]))
-				signal_buy['diff_min_max_candle'][i] = (np.max(dataset[symbol]['high'][extreme_min['index'][elm-1]:extreme_min['index'][elm]]) - np.min([dataset[symbol]['low'][extreme_min['index'][elm]],dataset[symbol]['low'][extreme_min['index'][elm-1]]]))
+				signal_buy['diff_min_max_macd'][i] = ((np.max(macd.macd[extreme_min['index'][elm-1]:extreme_min['index'][elm]]) - np.min([signal_buy['value_back'][i],signal_buy['value_front'][i]])) / np.min([signal_buy['value_back'][i],signal_buy['value_front'][i]])) * 100
+				signal_buy['diff_min_max_candle'][i] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm-1]:extreme_min['index'][elm]]) - np.min([dataset[symbol]['low'][extreme_min['index'][elm]],dataset[symbol]['low'][extreme_min['index'][elm-1]]])) / np.min([dataset[symbol]['low'][extreme_min['index'][elm]],dataset[symbol]['low'][extreme_min['index'][elm-1]]])) * 100
 
 				#Calculate porfits
+				#must read protect and resist from protect resist function
+				if (mode == 'optimize'):
+					#print('where = ',np.where((((dataset[symbol]['high'][extreme_min['index'][elm]:-1] - dataset[symbol]['close'][extreme_min['index'][elm]])/dataset[symbol]['close'][extreme_min['index'][elm]]) * 100) >= signal_buy['diff_min_max_candle'][i])[0])
+					#print('where = ',np.min(np.where((((dataset[symbol]['high'][extreme_min['index'][elm]:-1] - dataset[symbol]['close'][extreme_min['index'][elm]])/dataset[symbol]['close'][extreme_min['index'][elm]]) * 100) >= signal_buy['diff_min_max_candle'][i])[0]))
+					#print('elm = ',elm)
+					if (len(np.where((((dataset[symbol]['high'][extreme_min['index'][elm]:-1] - dataset[symbol]['close'][extreme_min['index'][elm]])/dataset[symbol]['close'][extreme_min['index'][elm]]) * 100) >= signal_buy['diff_min_max_candle'][i])[0]) != 0):
+						signal_buy['tp_min_max_index'][i] = np.min(np.where((((dataset[symbol]['high'][extreme_min['index'][elm]:-1] - dataset[symbol]['close'][extreme_min['index'][elm]])/dataset[symbol]['close'][extreme_min['index'][elm]]) * 100) >= signal_buy['diff_min_max_candle'][i])[0])
+						#print('where = ',signal_buy['tp_min_max_index'][i])
+						#print('elm = ',elm)
+					else:
+						signal_buy['tp_min_max_index'][i] = 'no_tp_min_max'
+
+					if True:#(len(np.where(((dataset[symbol]['low'][extreme_min['index'][elm]:-1] - dataset[symbol]['low'][extreme_min['index'][elm]])) <= (dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9990))[0]) != 0):
+						#signal_buy['st_min_max_index'][i] = np.min(np.where(((dataset[symbol]['low'][extreme_min['index'][elm]:-1] - dataset[symbol]['low'][extreme_min['index'][elm]])) <= (dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9990))[0])
+						#print('where = ',np.min((((dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]])) <= (dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9990)).index))
+						print('elm = ',extreme_min['index'][elm])
+						print('low1 = ',(dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9000) - dataset[symbol]['low'][extreme_min['index'][elm]])
+						#print('low2 = ',dataset[symbol]['low'][extreme_min['index'][elm]])
+						#print('low3 = ',(dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]]).values)
+						print(np.min(np.where((((dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]]).values) <= ((dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9999) - dataset[symbol]['low'][extreme_min['index'][elm]])))[0]))
+						ax1.axvline(x=np.min((((dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]]).values) <= ((dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9999) - dataset[symbol]['low'][extreme_min['index'][elm]]))))
+					else:
+						signal_buy['st_min_max_index'][i] = 'no_st_min_max'
+					#signal_buy['st'][i] = 
 
 				if (plot == True):
 					ax0.plot([extreme_min['index'][elm-1],extreme_min['index'][elm]],[extreme_min['value'][elm-1],extreme_min['value'][elm]],c='r',linestyle="-")
@@ -288,6 +313,6 @@ print('time Cross = ',time.time() - time_first)
 
 time_first = time.time()
 signal_buy,signal_sell = divergence(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
-	macd_fast=12,macd_slow=26,macd_signal=9,mode='online',plot=False)
+	macd_fast=12,macd_slow=26,macd_signal=9,mode='optimize',plot=True)
 print('time Dive = ',time.time() - time_first)
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////

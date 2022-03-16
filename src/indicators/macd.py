@@ -171,6 +171,9 @@ def golden_cross(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9
 
 def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,mode='online',plot=False):
 
+
+	#***************************** Initialize Inputs ************************
+
 	macd_read = ind.macd(dataset[symbol][Apply_to],fast = macd_fast,slow = macd_slow,signal = macd_signal)
 
 	macd = pd.DataFrame()
@@ -204,19 +207,25 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 		ax0.plot(macd.index,macd.macd,c='b')
 		ax1.plot(dataset[symbol]['close'].index,dataset[symbol]['close'],c='b')
 
-	if (mode == 'optimize'):
+	#//////////////////////////////////////////////////////////////////////
+
+	#******************************* Optimize Mode **************************
+	if ((mode == 'optimize') | (mode == 'online')):
 		signal_buy = pd.DataFrame(np.zeros(len(extreme_min)))
 		signal_buy['signal'] = np.nan
 		signal_buy['value_front'] = np.nan
 		signal_buy['value_back'] = np.nan
 		signal_buy['index'] = np.nan
-		#signal_buy['profit'] = np.nan
 		signal_buy['ramp_macd'] = np.nan
 		signal_buy['ramp_candle'] = np.nan
 		signal_buy['coef_ramps'] = np.nan
 		signal_buy['diff_ramps'] = np.nan
 		signal_buy['beta'] = np.nan
 		signal_buy['danger_line'] = np.nan
+		signal_buy['diff_min_max_macd'] = np.nan
+		signal_buy['diff_min_max_candle'] = np.nan
+		if (mode == 'optimize'):
+			signal_buy['profit'] = np.nan
 
 
 		signal_sell = pd.DataFrame(np.zeros(len(extreme_max)))
@@ -243,12 +252,19 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 				signal_buy['diff_ramps'][i] = signal_buy['ramp_macd'][i] - signal_buy['ramp_candle'][i]
 				signal_buy['beta'][i] = ((dataset[symbol]['high'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 				signal_buy['danger_line'][i] = dataset[symbol]['low'][extreme_min['index'][elm]] + ((dataset[symbol]['low'][extreme_min['index'][elm]]*signal_buy['beta'][i])/100)
-				
+				signal_buy['diff_min_max_macd'][i] = (np.max(macd.macd[extreme_min['index'][elm-1]:extreme_min['index'][elm]]) - np.min([signal_buy['value_back'][i],signal_buy['value_front'][i]]))
+				signal_buy['diff_min_max_candle'][i] = (np.max(dataset[symbol]['high'][extreme_min['index'][elm-1]:extreme_min['index'][elm]]) - np.min([dataset[symbol]['low'][extreme_min['index'][elm]],dataset[symbol]['low'][extreme_min['index'][elm-1]]]))
+
+				#Calculate porfits
+
 				if (plot == True):
 					ax0.plot([extreme_min['index'][elm-1],extreme_min['index'][elm]],[extreme_min['value'][elm-1],extreme_min['value'][elm]],c='r',linestyle="-")
 					ax1.plot([extreme_min['index'][elm-1],extreme_min['index'][elm]],[dataset[symbol]['low'][extreme_min['index'][elm-1]],dataset[symbol]['low'][extreme_min['index'][elm]]],c='r',linestyle="-")
 				i += 1
 
+	#/////////////////////////////////////////////////////////////////////////////
+
+	#*************************** OutPuts ***************************************
 	signal_buy = signal_buy.drop(columns=0)
 	signal_buy = signal_buy.dropna()
 	print(signal_buy)
@@ -261,7 +277,7 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 
 #*********************************** How To Use Funcs ************************************************************
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,500)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2000)
 print('get data')
 time_first = time.time()
 signal_buy,signal_sell = golden_cross(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
@@ -272,6 +288,6 @@ print('time Cross = ',time.time() - time_first)
 
 time_first = time.time()
 signal_buy,signal_sell = divergence(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
-	macd_fast=12,macd_slow=26,macd_signal=9,mode='optimize',plot=False)
+	macd_fast=12,macd_slow=26,macd_signal=9,mode='online',plot=False)
 print('time Dive = ',time.time() - time_first)
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -12,7 +12,8 @@ from shapely.geometry import LineString
 import matplotlib.pyplot as plt
 from scipy.signal import argrelextrema
 import time
-from src.utils.resist_protect import bestExtremeFinder, extremePoints
+from src.utils import bestExtremeFinder, extremePoints
+from src.Function.F_I_RESIST_PROTECT
 
 # Create a DataFrame so 'ta' can be used.
 #df = pd.DataFrame()

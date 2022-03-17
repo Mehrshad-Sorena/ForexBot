@@ -270,15 +270,15 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 					else:
 						signal_buy['tp_min_max_index'][i] = 'no_tp_min_max'
 
-					if True:#(len(np.where(((dataset[symbol]['low'][extreme_min['index'][elm]:-1] - dataset[symbol]['low'][extreme_min['index'][elm]])) <= (dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9990))[0]) != 0):
+					if (len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]]).values) <= ((dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9992) - dataset[symbol]['low'][extreme_min['index'][elm]])))[0]) != 0):
 						#signal_buy['st_min_max_index'][i] = np.min(np.where(((dataset[symbol]['low'][extreme_min['index'][elm]:-1] - dataset[symbol]['low'][extreme_min['index'][elm]])) <= (dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9990))[0])
 						#print('where = ',np.min((((dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]])) <= (dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9990)).index))
 						print('elm = ',extreme_min['index'][elm])
 						print('low1 = ',(dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9000) - dataset[symbol]['low'][extreme_min['index'][elm]])
 						#print('low2 = ',dataset[symbol]['low'][extreme_min['index'][elm]])
 						#print('low3 = ',(dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]]).values)
-						print(np.min(np.where((((dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]]).values) <= ((dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9999) - dataset[symbol]['low'][extreme_min['index'][elm]])))[0]))
-						ax1.axvline(x=np.min((((dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]]).values) <= ((dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9999) - dataset[symbol]['low'][extreme_min['index'][elm]]))))
+						print('where = ',np.min(extreme_min['index'][elm] + np.where((((dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]]).values) <= ((dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9999) - dataset[symbol]['low'][extreme_min['index'][elm]])))[0]))
+						ax1.axvline(x=np.min(extreme_min['index'][elm] + np.where((((dataset[symbol]['low'][extreme_min['index'][elm]+1:-1] - dataset[symbol]['low'][extreme_min['index'][elm]]).values) <= ((dataset[symbol]['low'][extreme_min['index'][elm]] * 0.9992) - dataset[symbol]['low'][extreme_min['index'][elm]])))[0]))
 					else:
 						signal_buy['st_min_max_index'][i] = 'no_st_min_max'
 					#signal_buy['st'][i] = 
@@ -303,7 +303,7 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 
 #*********************************** How To Use Funcs ************************************************************
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2000)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,20000)
 print('get data')
 time_first = time.time()
 signal_buy,signal_sell = golden_cross(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',

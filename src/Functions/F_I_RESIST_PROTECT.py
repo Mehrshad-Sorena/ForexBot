@@ -706,19 +706,19 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 #***************************** How To Use Functions **********************************************
 
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,500)
-symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
-symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,10)
-symbol_data_4H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,10)
-symbol_data_1D,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,10)
+#symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2000)
+#symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
+#symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,10)
+#symbol_data_4H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,10)
+#symbol_data_1D,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,10)
 
-x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
-y1 = symbol_data_5M['AUDCAD_i']['close']
-y2 = symbol_data_5M['AUDCAD_i']['open']
-y3 = symbol_data_5M['AUDCAD_i']['high']
-y4 = symbol_data_5M['AUDCAD_i']['low']
+#x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
+#y1 = symbol_data_5M['AUDCAD_i']['close']
+#y2 = symbol_data_5M['AUDCAD_i']['open']
+#y3 = symbol_data_5M['AUDCAD_i']['high']
+#y4 = symbol_data_5M['AUDCAD_i']['low']
 
-print('data get')
+#print('data get')
 
 
 #exterm_point_pred = Extreme_points_ichimoko(high=y3,low=y4,close=y1,tenkan=9,kijun=26,senkou=52,n_clusters=15)
@@ -731,10 +731,10 @@ print('data get')
 #plt.show()
 
 
-res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=symbol_data_5M['AUDCAD_i'],dataset_15M=symbol_data_15M['AUDCAD_i'],dataset_1H=symbol_data_1H['AUDCAD_i'],dataset_4H=symbol_data_4H['AUDCAD_i'],dataset_1D=symbol_data_1D['AUDCAD_i'],plot=False)
+#res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=symbol_data_5M['AUDCAD_i'],dataset_15M=symbol_data_15M['AUDCAD_i'],dataset_1H=symbol_data_1H['AUDCAD_i'],dataset_4H=symbol_data_4H['AUDCAD_i'],dataset_1D=symbol_data_1D['AUDCAD_i'],plot=False)
 
-print(res_pro['power_high'])
-print('************************ Finish ***************************************')
+#print(res_pro['power_high'])
+#print('************************ Finish ***************************************')
 
 #//////////////////////////////////////////////////////////////////////////////////
 

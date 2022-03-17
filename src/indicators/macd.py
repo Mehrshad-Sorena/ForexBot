@@ -303,7 +303,7 @@ def divergence(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9,m
 
 #*********************************** How To Use Funcs ************************************************************
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,20000)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2000)
 print('get data')
 time_first = time.time()
 signal_buy,signal_sell = golden_cross(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
@@ -316,4 +316,5 @@ time_first = time.time()
 signal_buy,signal_sell = divergence(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
 	macd_fast=12,macd_slow=26,macd_signal=9,mode='optimize',plot=True)
 print('time Dive = ',time.time() - time_first)
+print('salam')
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////

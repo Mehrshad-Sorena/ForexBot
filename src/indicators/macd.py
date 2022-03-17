@@ -288,8 +288,12 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 
 					if (signal_buy['st_min_max_index'][i] < signal_buy['tp_min_max_index'][i]):
 						signal_buy['flag_min_max'][i] = 'st'
+						if (signal_buy['st_min_max_index'][i] != -1):
+							signal_buy['tp_min_max'][i] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy['st_min_max_index'][i])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 					else:
 						signal_buy['flag_min_max'][i] = 'tp'
+						if (signal_buy['tp_min_max_index'][i] != -1):
+							signal_buy['st_min_max'][i] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - np.min(dataset[symbol]['low'][extreme_min['index'][elm]:int(signal_buy['tp_min_max_index'][i])]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 
 					#///////////////////////////////////////////////////
 
@@ -340,8 +344,12 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 
 						if (signal_buy['st_pr_index'][i] < signal_buy['tp_pr_index'][i]):
 							signal_buy['flag_pr'][i] = 'st'
+							if (signal_buy['st_pr_index'][i] != -1):
+								signal_buy['tp_pr'][i] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy['st_pr_index'][i])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						else:
 							signal_buy['flag_pr'][i] = 'tp'
+							if (signal_buy['tp_pr_index'][i] != -1):
+								signal_buy['st_pr'][i] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - np.min(dataset[symbol]['low'][extreme_min['index'][elm]:int(signal_buy['tp_pr_index'][i])]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 						
 					else:
 						signal_buy['tp_pr_index'][i] = -1
@@ -362,8 +370,22 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 	#*************************** OutPuts ***************************************
 	signal_buy = signal_buy.drop(columns=0)
 	signal_buy = signal_buy.dropna()
-	print(signal_buy['tp_min_max_index'])
-	print(signal_buy)
+	print('mean tp pr = ',np.mean(signal_buy['tp_pr']))
+	print('mean st pr = ',np.mean(signal_buy['st_pr']))
+	print('mean tp min_max = ',np.mean(signal_buy['tp_min_max']))
+	print('mean st min_max = ',np.mean(signal_buy['st_min_max']))
+
+	print('max tp pr = ',np.max(signal_buy['tp_pr']))
+	print('min st pr = ',np.min(signal_buy['st_pr']))
+	print('max tp min_max = ',np.max(signal_buy['tp_min_max']))
+	print('min st min_max = ',np.min(signal_buy['st_min_max']))
+
+	print('tp pr = ',np.bincount(signal_buy['flag_pr'] == 'tp'))
+	print('st pr = ',np.bincount(signal_buy['flag_pr'] == 'st'))
+	print('tp min_max = ',np.bincount(signal_buy['flag_min_max'] == 'tp'))
+	print('st min_max = ',np.bincount(signal_buy['flag_min_max'] == 'st'))
+
+	#print(signal_buy)
 	if (plot == True):
 		plt.show()
 	return 0,0
@@ -378,11 +400,20 @@ symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,4000)
 symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,1000)
 print('get data')
 time_first = time.time()
-signal_buy,signal_sell = golden_cross(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
-	macd_fast=12,macd_slow=26,macd_signal=9,mode='online',plot=False)
-print('time Cross = ',time.time() - time_first)
+#signal_buy,signal_sell = golden_cross(dataset=symbol_data_5M,Apply_to='close',symbol='AUDCAD_i',
+#	macd_fast=12,macd_slow=26,macd_signal=9,mode='online',plot=False)
+#print('time Cross = ',time.time() - time_first)
 #print(signal_buy)
 #print(signal_sell)
+
+#print('my index = ',symbol_data_5M['AUDCAD_i']['time'][11000].hour)
+#print(symbol_data_15M['AUDCAD_i']['time'][0:-1])
+#inndex_my = np.where((symbol_data_5M['AUDCAD_i']['time'][11000].hour == symbol_data_15M['AUDCAD_i']['time'].hour)&
+	#(symbol_data_5M['AUDCAD_i']['time'][11000].minute >= symbol_data_15M['AUDCAD_i']['time'].minute)&
+	#(symbol_data_5M['AUDCAD_i']['time'][11000].day == symbol_data_15M['AUDCAD_i']['time'].day)&
+	#(symbol_data_5M['AUDCAD_i']['time'][11000].month == symbol_data_15M['AUDCAD_i']['time'].month)&
+	#(symbol_data_5M['AUDCAD_i']['time'][11000].year == symbol_data_15M['AUDCAD_i']['time'].year))
+#print(inndex_my)
 
 time_first = time.time()
 signal_buy,signal_sell = divergence(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,dataset_1H=symbol_data_1H,Apply_to='close',symbol='AUDCAD_i',

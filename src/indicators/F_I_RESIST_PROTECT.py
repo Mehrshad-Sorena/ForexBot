@@ -189,7 +189,7 @@ def extreme_points_ramp_lines(high,low,close,length='short',number_min=10,number
 	#print(f_high(y3[len(y1)-1]))
 
 	if (plot == True):
-		ax0.axhline(y= f_high(high[len(high)-1]), color = 'r', linestyle = '-')
+		ax0.axhline(y= f_high(high[high.index[0] + len(high)-1]), color = 'r', linestyle = '-')
 
 	#********* Plot Fitting Low ************
 	#ax0.plot(x_low, y_low, "C0.-", markersize=12)
@@ -199,26 +199,25 @@ def extreme_points_ramp_lines(high,low,close,length='short',number_min=10,number
 		ax0.plot(x_low, y_low, "C1-",c='b')
 	#print('y_low1 = ',lr_low.predict(x_low[:, np.newaxis]))
 	x1_low = low
-
 	#print('y_low2 = ',y_low)
 	f_low = interp1d(x1_low, y_low)
 	#print(f_low(y4[len(y1)-1]))
 
 	if (plot == True):
-		ax0.axhline(y= f_low(low[len(low)-1]), color = 'b', linestyle = '--')
+		ax0.axhline(y= f_low(low[low.index[0] + len(low)-1]), color = 'b', linestyle = '--')
 		plt.show()
 
 	#finding Trend and Powers
-	if (f_low(low[len(low)-1]) > f_low(low[np.min(low.index)])):
+	if (f_low(low[low.index[0] + len(low)-1]) > f_low(low[np.min(low.index)])):
 		ramp_low = 'pos'
-	elif (f_low(low[len(low)-1]) < f_low(low[np.min(low.index)])):
+	elif (f_low(low[low.index[0] + len(low)-1]) < f_low(low[np.min(low.index)])):
 		ramp_low = 'neg'
 	else:
 		ramp_low = 'none'
 
-	if (f_high(high[len(high)-1]) > f_high(high[np.min(high.index)])):
+	if (f_high(high[high.index[0] + len(high)-1]) > f_high(high[np.min(high.index)])):
 		ramp_high = 'pos'
-	elif (f_high(high[len(high)-1]) < f_high(high[np.min(high.index)])):
+	elif (f_high(high[high.index[0] + len(high)-1]) < f_high(high[np.min(high.index)])):
 		ramp_high = 'neg'
 	else:
 		ramp_high = 'none'
@@ -239,21 +238,21 @@ def extreme_points_ramp_lines(high,low,close,length='short',number_min=10,number
 	if (ramp_high == 'pos') & (ramp_low == 'pos'):
 		trend_lines['trend'] = 'buy'
 		trend_lines['power'] = power_trends
-		trend_lines['min'] = f_low(low[len(low)-1])
-		trend_lines['max'] = f_high(high[len(high)-1])
+		trend_lines['min'] = f_low(low[low.index[0] + len(low)-1])
+		trend_lines['max'] = f_high(high[high.index[0] + len(high)-1])
 
 	if (ramp_high == 'neg') & (ramp_low == 'neg'):
 		trend_lines['trend'] = 'sell'
 		trend_lines['power'] = power_trends
-		trend_lines['min'] = f_low(low[len(low)-1])
-		trend_lines['max'] = f_high(high[len(high)-1])
+		trend_lines['min'] = f_low(low[low.index[0] + len(low)-1])
+		trend_lines['max'] = f_high(high[high.index[0] + len(high)-1])
 
 	if (ramp_high == 'neg') & ((ramp_low == 'pos')|(ramp_low == 'none') ):
 		if (f_high(high[np.min(high.index)]) > f_low(low[np.min(low.index)])):
 			trend_lines['trend'] = 'parcham'
 			trend_lines['power'] = power_trends
-			trend_lines['min'] = f_low(low[len(low)-1])
-			trend_lines['max'] = f_high(high[len(high)-1])
+			trend_lines['min'] = f_low(low[low.index[0] + len(low)-1])
+			trend_lines['max'] = f_high(high[high.index[0] + len(high)-1])
 
 	return trend_lines
 
@@ -274,6 +273,16 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 
 	timeout = time.time() + timeout_break  # timeout_break Sec from now
 	while True:
+		if (len(low.to_numpy()[np.where(low<=high[len(high)-1])].reshape(-1,1)) > (n_clusters_low * 4)):
+			n_clusters_low = n_clusters_low
+		else:
+			n_clusters_low = int(len(low.to_numpy()[np.where(low<=high[len(high)-1])].reshape(-1,1))/4) + 1
+
+		if (len(high.to_numpy()[np.where(high>=low[len(low)-1])].reshape(-1,1)) > (n_clusters_high * 4)):
+			n_clusters_high = n_clusters_high
+		else:
+			n_clusters_high = int(len(high.to_numpy()[np.where(high>=low[len(low)-1])].reshape(-1,1))/4) + 1
+
 		kmeans_low = KMeans(n_clusters=n_clusters_low, random_state=0,init='k-means++',n_init=10,max_iter=10)
 		kmeans_high = KMeans(n_clusters=n_clusters_high, random_state=0,init='k-means++',n_init=10,max_iter=10)
 		#Model Fitting
@@ -295,7 +304,8 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 		Power_low = np.bincount(Power_low)
 		Power_high = np.bincount(Power_high)
 
-		if ((len(Y_low) != len(X_low)) | ((len(Y_high) != len(X_high)))):
+		if ((len(Y_low) != len(X_low)) | (len(Power_low) != len(Y_low)) | (len(Power_low) != len(X_low)) |
+		 ((len(Y_high) != len(X_high)) | (len(Power_high) != len(Y_high)) | (len(Power_high) != len(X_high)) )):
 			timeout = time.time() + timeout_break
 			continue
 		#if (time.time() > timeout):

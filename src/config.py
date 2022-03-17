@@ -22,7 +22,7 @@ def accountConfig(filename='config.ini', section='accounts'):
     parser = RawConfigParser()
     parser.read(filename)
 
-    accounts = []
+    accounts = dict()
     db = {}
     if parser.has_section(section):
         params = parser.items(section)
@@ -33,15 +33,18 @@ def accountConfig(filename='config.ini', section='accounts'):
         raise Exception('Section {0} not found in the {1} file'.format(
             section, filename))
 
+    name = db.get('name').split(',')
     users = db.get('user').split(',')
     password = db.get('pass').split(',')
     types = db.get('type').split(',')
-    for u, p, t in zip(users, password, types):
-        accounts.append(
+    for n, u, p, t in zip(name, users, password, types):
+        accounts.update(
                 {
-                    'username': u,
-                    'password': p,
-                    'type': t
+                    n: {
+                        'username': u,
+                        'password': p,
+                        'type': t
+                    }
                 }
         )
     return accounts

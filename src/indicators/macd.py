@@ -243,16 +243,38 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 
 		signal_sell = pd.DataFrame(np.zeros(len(extreme_max)))
 		signal_sell['signal'] = np.nan
-		signal_sell['values'] = np.nan
+		signal_sell['value_front'] = np.nan
+		signal_sell['value_back'] = np.nan
 		signal_sell['index'] = np.nan
-		signal_sell['profit'] = np.nan
+		signal_sell['ramp_macd'] = np.nan
+		signal_sell['ramp_candle'] = np.nan
+		signal_sell['coef_ramps'] = np.nan
+		signal_sell['diff_ramps'] = np.nan
+		signal_sell['beta'] = np.nan
+		signal_sell['danger_line'] = np.nan
+		signal_sell['diff_min_max_macd'] = np.nan
+		signal_sell['diff_min_max_candle'] = np.nan
+		if (mode == 'optimize'):
+			signal_sell['tp_min_max_index'] = np.nan
+			signal_sell['tp_min_max'] = np.nan
+			signal_sell['st_min_max_index'] = np.nan
+			signal_sell['st_min_max'] = np.nan
+			signal_sell['flag_min_max'] = np.nan
+
+			signal_sell['tp_pr_index'] = np.nan
+			signal_sell['tp_pr'] = np.nan
+			signal_sell['st_pr_index'] = np.nan
+			signal_sell['st_pr'] = np.nan
+			signal_sell['flag_pr'] = np.nan
+			signal_sell['diff_pr_top'] = np.nan
+			signal_sell['diff_pr_down'] = np.nan
 
 		i = 0
 		j = 0
 
 		#***************************** Buy Find Section ***********************************************
 		for elm in extreme_min.index:
-			#****************************************** Primary ***********************************************
+			#+++++++++++++++++++++++++++++++++++++ Primary +++++++++++++++++++++++++++++++++++++++++++++++
 			#****************************** Primary Buy ********************************* = 1
 			if (elm - 1 < 0): continue
 			if ((extreme_min['value'][elm] > extreme_min['value'][elm-1]) &
@@ -304,7 +326,6 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 					#Calculate ST and TP With Protect Resist Function
 					dataset_pr_5M = pd.DataFrame()
 					dataset_pr_15M = pd.DataFrame()
-					dataset_pr_1H = pd.DataFrame()
 					cut_first = 0
 					if (extreme_min['index'][elm] > 2000):
 						cut_first = extreme_min['index'][elm] - 2000
@@ -318,21 +339,16 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 					dataset_pr_15M['close'] = dataset_15M[symbol]['close'][int(cut_first/3):int(extreme_min['index'][elm]/3)].reset_index(drop=True)
 					dataset_pr_15M['open'] = dataset_15M[symbol]['open'][int(cut_first/3):int(extreme_min['index'][elm]/3)].reset_index(drop=True)
 
-					dataset_pr_1H['low'] = dataset_1H[symbol]['low'][int(cut_first/12):int(extreme_min['index'][elm]/12)].reset_index(drop=True)
-					dataset_pr_1H['high'] = dataset_1H[symbol]['high'][int(cut_first/12):int(extreme_min['index'][elm]/12)].reset_index(drop=True)
-					dataset_pr_1H['close'] = dataset_1H[symbol]['close'][int(cut_first/12):int(extreme_min['index'][elm]/12)].reset_index(drop=True)
-					dataset_pr_1H['open'] = dataset_1H[symbol]['open'][int(cut_first/12):int(extreme_min['index'][elm]/12)].reset_index(drop=True)
-
 					res_pro = pd.DataFrame()
 					
 					try:
-						res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=dataset_pr_5M,dataset_15M=dataset_pr_15M,dataset_1H=dataset_pr_1H,dataset_4H=dataset_pr_5M,dataset_1D=dataset_pr_5M,plot=False)
+						res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=dataset_pr_5M,dataset_15M=dataset_pr_15M,dataset_1H=dataset_pr_15M,dataset_4H=dataset_pr_5M,dataset_1D=dataset_pr_5M,plot=False)
 					except:
 						res_pro['high'] = 'nan'
 						res_pro['low'] = 'nan'
 
 					if (res_pro.empty == False):
-						signal_buy['diff_pr_top'][i] = (((res_pro['high'][0] * 0.9994) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+						signal_buy['diff_pr_top'][i] = (((res_pro['high'][0] * 1.0006) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						signal_buy['diff_pr_down'][i] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - (res_pro['low'][2] * 0.9994))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 
 						if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values) >= (res_pro['high'][0] * 0.9994)))[0]) - 1) > 1):
@@ -390,14 +406,14 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 			#****************************** Primary Buy ********************************* = 6
 					
 			#///////////////////////////////////////////////////////
-			#///////////////////////////////////////////////////////////////////////////////////////////////////
+			#---------------------------------------------------------------------------------------------------
 
-			#**************************************** Secondry *************************************************
+			#+++++++++++++++++++++++++++++++++++++ Secondry ++++++++++++++++++++++++++++++++++++++++++++++++++++
 			#****************************** Secondry Buy ********************************* = 1
 			if (elm - 1 < 0): continue
-			if ((extreme_min['value'][elm] > extreme_min['value'][elm-1]) &
-				(dataset[symbol]['low'][extreme_min['index'][elm]] <= dataset[symbol]['low'][extreme_min['index'][elm-1]])):
-				signal_buy['signal'][i] = 'buy_primary'
+			if ((extreme_min['value'][elm] < extreme_min['value'][elm-1]) &
+				(dataset[symbol]['low'][extreme_min['index'][elm]] > dataset[symbol]['low'][extreme_min['index'][elm-1]])):
+				signal_buy['signal'][i] = 'buy_secondry'
 				signal_buy['value_front'][i] = extreme_min['value'][elm]
 				signal_buy['value_back'][i] = extreme_min['value'][elm-1]
 				signal_buy['index'][i] = extreme_min['index'][elm]
@@ -444,7 +460,6 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 					#Calculate ST and TP With Protect Resist Function
 					dataset_pr_5M = pd.DataFrame()
 					dataset_pr_15M = pd.DataFrame()
-					dataset_pr_1H = pd.DataFrame()
 					cut_first = 0
 					if (extreme_min['index'][elm] > 2000):
 						cut_first = extreme_min['index'][elm] - 2000
@@ -458,21 +473,16 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 					dataset_pr_15M['close'] = dataset_15M[symbol]['close'][int(cut_first/3):int(extreme_min['index'][elm]/3)].reset_index(drop=True)
 					dataset_pr_15M['open'] = dataset_15M[symbol]['open'][int(cut_first/3):int(extreme_min['index'][elm]/3)].reset_index(drop=True)
 
-					dataset_pr_1H['low'] = dataset_1H[symbol]['low'][int(cut_first/12):int(extreme_min['index'][elm]/12)].reset_index(drop=True)
-					dataset_pr_1H['high'] = dataset_1H[symbol]['high'][int(cut_first/12):int(extreme_min['index'][elm]/12)].reset_index(drop=True)
-					dataset_pr_1H['close'] = dataset_1H[symbol]['close'][int(cut_first/12):int(extreme_min['index'][elm]/12)].reset_index(drop=True)
-					dataset_pr_1H['open'] = dataset_1H[symbol]['open'][int(cut_first/12):int(extreme_min['index'][elm]/12)].reset_index(drop=True)
-
 					res_pro = pd.DataFrame()
 					
 					try:
-						res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=dataset_pr_5M,dataset_15M=dataset_pr_15M,dataset_1H=dataset_pr_1H,dataset_4H=dataset_pr_5M,dataset_1D=dataset_pr_5M,plot=False)
+						res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=dataset_pr_5M,dataset_15M=dataset_pr_15M,dataset_1H=dataset_pr_15M,dataset_4H=dataset_pr_5M,dataset_1D=dataset_pr_5M,plot=False)
 					except:
 						res_pro['high'] = 'nan'
 						res_pro['low'] = 'nan'
 
 					if (res_pro.empty == False):
-						signal_buy['diff_pr_top'][i] = (((res_pro['high'][0] * 0.9994) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+						signal_buy['diff_pr_top'][i] = (((res_pro['high'][0] * 1.0006) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						signal_buy['diff_pr_down'][i] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - (res_pro['low'][2] * 0.9994))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 
 						if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values) >= (res_pro['high'][0] * 0.9994)))[0]) - 1) > 1):
@@ -530,17 +540,125 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 			#****************************** Secondry Buy ********************************* = 6
 					
 			#///////////////////////////////////////////////////////
-			#/////////////////////////////////////////////////////////////////////////////////////////////////
+			#--------------------------------------------------------------------------------------------------
 
 		#///////////////////////////////////////////////////////////////////////////////////////////////
 
 		#***************************** Sell Find Section ***********************************************
 		i = 0
 		j = 0
-		for elm in extreme_min.index:
-			#**************************************** Primary *****************************************
+		for elm in extreme_max.index:
+			#++++++++++++++++++++++++++++++++++++ Primary ++++++++++++++++++++++++++++++++++++++++++++++++
 			#****************************** Primary Sell ********************************* = 1
+			if (elm - 1 < 0): continue
+			if ((extreme_max['value'][elm] < extreme_max['value'][elm-1]) &
+				(dataset[symbol]['high'][extreme_max['index'][elm]] >= dataset[symbol]['high'][extreme_max['index'][elm-1]])):
+				signal_sell['signal'][i] = 'sell_primary'
+				signal_sell['value_front'][i] = extreme_max['value'][elm]
+				signal_sell['value_back'][i] = extreme_max['value'][elm-1]
+				signal_sell['index'][i] = extreme_max['index'][elm]
+				signal_sell['ramp_macd'][i] = (extreme_max['value'][elm] - extreme_max['value'][elm-1])/(extreme_max['index'][elm] - extreme_max['index'][elm-1])
+				signal_sell['ramp_candle'][i] = (dataset[symbol]['high'][extreme_max['index'][elm]] - dataset[symbol]['high'][extreme_max['index'][elm-1]])/(extreme_max['index'][elm] - extreme_max['index'][elm-1])
+				signal_sell['coef_ramps'][i] = signal_sell['ramp_macd'][i]/signal_sell['ramp_candle'][i]
+				signal_sell['diff_ramps'][i] = signal_sell['ramp_macd'][i] - signal_sell['ramp_candle'][i]
+				signal_sell['beta'][i] = ((dataset[symbol]['high'][extreme_max['index'][elm]] - dataset[symbol]['low'][extreme_max['index'][elm]])/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+				signal_sell['danger_line'][i] = dataset[symbol]['high'][extreme_max['index'][elm]] + ((dataset[symbol]['high'][extreme_max['index'][elm]]*signal_sell['beta'][i])/100)
+				signal_sell['diff_min_max_macd'][i] = (-1 * (np.min(macd.macd[extreme_max['index'][elm-1]:extreme_max['index'][elm]]) - np.max([signal_sell['value_back'][i],signal_sell['value_front'][i]])) / np.max([signal_sell['value_back'][i],signal_sell['value_front'][i]])) * 100
+				signal_sell['diff_min_max_candle'][i] = (-1 * (np.min(dataset[symbol]['low'][extreme_max['index'][elm-1]:extreme_max['index'][elm]]) - np.max([dataset[symbol]['high'][extreme_max['index'][elm]],dataset[symbol]['high'][extreme_max['index'][elm-1]]])) / np.max([dataset[symbol]['high'][extreme_max['index'][elm]],dataset[symbol]['high'][extreme_max['index'][elm-1]]])) * 100
+
+				#Calculate porfits
+				#must read protect and resist from protect resist function
+				if (mode == 'optimize'):
+
+					#Calculate With Min Max Diff From MACD:
+
+					if ((len(np.where((((((dataset[symbol]['low'][extreme_max['index'][elm]] - dataset[symbol]['low'][extreme_max['index'][elm]:-1])/dataset[symbol]['low'][extreme_max['index'][elm]]).values) * 100) >= (signal_sell['diff_min_max_candle'][i])))[0]) - 1) > 1):
+						signal_sell['tp_min_max_index'][i] = extreme_max['index'][elm] + np.min(np.where((((((dataset[symbol]['low'][extreme_max['index'][elm]] - dataset[symbol]['low'][extreme_max['index'][elm]:-1])/dataset[symbol]['low'][extreme_max['index'][elm]]).values) * 100) >= (signal_sell['diff_min_max_candle'][i])))[0])
+						signal_sell['tp_min_max'][i] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - dataset[symbol]['low'][signal_sell['tp_min_max_index'][i]])/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+					else:
+						signal_sell['tp_min_max_index'][i] = -1
+						signal_sell['tp_min_max'][i] = 0
+
+					if ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm]:-1]).values) >= (dataset[symbol]['high'][extreme_max['index'][elm]] * 1.0006)))[0])-1) > 1):
+						signal_sell['st_min_max_index'][i] = extreme_max['index'][elm] + np.min(np.where((((dataset[symbol]['high'][extreme_max['index'][elm]:-1]).values) >= (dataset[symbol]['high'][extreme_max['index'][elm]] * 1.0006)))[0])
+						signal_sell['st_min_max'][i] = ((dataset[symbol]['high'][signal_sell['st_min_max_index'][i]] - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
+					else:
+						signal_sell['st_min_max_index'][i] = -1
+						signal_sell['st_min_max'][i] = 0
+
+					if (signal_sell['st_min_max_index'][i] < signal_sell['tp_min_max_index'][i]):
+						signal_sell['flag_min_max'][i] = 'st'
+						if (signal_sell['st_min_max_index'][i] != -1):
+							signal_sell['tp_min_max'][i] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - np.min(dataset[symbol]['low'][extreme_max['index'][elm]:int(signal_sell['st_min_max_index'][i])]))/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+					else:
+						signal_sell['flag_min_max'][i] = 'tp'
+						if (signal_sell['tp_min_max_index'][i] != -1):
+							signal_sell['st_min_max'][i] = ((np.max(dataset[symbol]['high'][extreme_max['index'][elm]:int(signal_sell['tp_min_max_index'][i])]) - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
+
+					#///////////////////////////////////////////////////
+
+					#Calculate ST and TP With Protect Resist Function
+					dataset_pr_5M = pd.DataFrame()
+					dataset_pr_15M = pd.DataFrame()
+					cut_first = 0
+					if (extreme_max['index'][elm] > 2000):
+						cut_first = extreme_max['index'][elm] - 2000
+					dataset_pr_5M['low'] = dataset[symbol]['low'][cut_first:extreme_max['index'][elm]].reset_index(drop=True)
+					dataset_pr_5M['high'] = dataset[symbol]['high'][cut_first:extreme_max['index'][elm]].reset_index(drop=True)
+					dataset_pr_5M['close'] = dataset[symbol]['close'][cut_first:extreme_max['index'][elm]].reset_index(drop=True)
+					dataset_pr_5M['open'] = dataset[symbol]['open'][cut_first:extreme_max['index'][elm]].reset_index(drop=True)
+
+					dataset_pr_15M['low'] = dataset_15M[symbol]['low'][int(cut_first/3):int(extreme_max['index'][elm]/3)].reset_index(drop=True)
+					dataset_pr_15M['high'] = dataset_15M[symbol]['high'][int(cut_first/3):int(extreme_max['index'][elm]/3)].reset_index(drop=True)
+					dataset_pr_15M['close'] = dataset_15M[symbol]['close'][int(cut_first/3):int(extreme_max['index'][elm]/3)].reset_index(drop=True)
+					dataset_pr_15M['open'] = dataset_15M[symbol]['open'][int(cut_first/3):int(extreme_max['index'][elm]/3)].reset_index(drop=True)
+
+					res_pro = pd.DataFrame()
 					
+					try:
+						res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=dataset_pr_5M,dataset_15M=dataset_pr_15M,dataset_1H=dataset_pr_15M,dataset_4H=dataset_pr_5M,dataset_1D=dataset_pr_5M,plot=False)
+					except:
+						res_pro['high'] = 'nan'
+						res_pro['low'] = 'nan'
+
+					if (res_pro.empty == False):
+						signal_sell['diff_pr_top'][i] = (((res_pro['high'][0] * 1.0006) - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
+						signal_sell['diff_pr_down'][i] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - (res_pro['low'][2] * 1.0006))/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+
+						if ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm]:-1].values) <= (res_pro['low'][2] * 1.0006)))[0]) - 1) > 1):
+							signal_sell['tp_pr_index'][i] = extreme_max['index'][elm] + np.min(np.where(((dataset[symbol]['low'][extreme_max['index'][elm]:-1].values) <= (res_pro['low'][2] * 1.0006)))[0])
+							signal_sell['tp_pr'][i] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - dataset[symbol]['low'][signal_sell['tp_pr_index'][i]])/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+						else:
+							signal_sell['tp_pr_index'][i] = -1
+							signal_sell['tp_pr'][i] = 0
+
+						if ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm]:-1]).values) >= (res_pro['high'][0] * 1.0006)))[0])-1) > 1):
+							signal_sell['st_pr_index'][i] = extreme_max['index'][elm] + np.min(np.where((((dataset[symbol]['high'][extreme_max['index'][elm]:-1]).values) >= (res_pro['high'][0] * 1.0006)))[0])
+							signal_sell['st_pr'][i] = ((dataset[symbol]['high'][signal_sell['st_pr_index'][i]] - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
+						else:
+							signal_sell['st_pr_index'][i] = -1
+							signal_sell['st_pr'][i] = 0
+
+						if (signal_sell['st_pr_index'][i] < signal_sell['tp_pr_index'][i]):
+							signal_sell['flag_pr'][i] = 'st'
+							if (signal_sell['st_pr_index'][i] != -1):
+								signal_sell['tp_pr'][i] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - np.min(dataset[symbol]['low'][extreme_max['index'][elm]:int(signal_sell['st_pr_index'][i])]))/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+						else:
+							signal_sell['flag_pr'][i] = 'tp'
+							if (signal_sell['tp_pr_index'][i] != -1):
+								signal_sell['st_pr'][i] = ((np.max(dataset[symbol]['high'][extreme_max['index'][elm]:int(signal_sell['tp_pr_index'][i])]) - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
+						
+					else:
+						signal_sell['tp_pr_index'][i] = -1
+						signal_sell['tp_pr'][i] = 0
+						signal_sell['st_pr_index'][i] = -1
+						signal_sell['st_pr'][i] = 0
+						signal_sell['flag_pr'][i] = 'no_flag'
+					#///////////////////////////////////////////////////
+				if (plot == True):
+					ax0.plot([extreme_max['index'][elm-1],extreme_max['index'][elm]],[extreme_max['value'][elm-1],extreme_max['value'][elm]],c='r',linestyle="-")
+					ax1.plot([extreme_max['index'][elm-1],extreme_max['index'][elm]],[dataset[symbol]['low'][extreme_max['index'][elm-1]],dataset[symbol]['low'][extreme_max['index'][elm]]],c='r',linestyle="-")
+				i += 1		
 			#///////////////////////////////////////////////////////
 
 			#****************************** Primary Sell ********************************* = 2
@@ -562,11 +680,119 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 			#****************************** Primary Sell ********************************* = 6
 					
 			#///////////////////////////////////////////////////////
-			#///////////////////////////////////////////////////////////////////////////////////////////////////
+			#---------------------------------------------------------------------------------------------------
 
-			#******************************************* Secondry **********************************************
+			#++++++++++++++++++++++++++++++++++++++ Secondry +++++++++++++++++++++++++++++++++++++++++++++++++++
 			#****************************** Secondry Sell ********************************* = 1
+			if (elm - 1 < 0): continue
+			if ((extreme_max['value'][elm] > extreme_max['value'][elm-1]) &
+				(dataset[symbol]['high'][extreme_max['index'][elm]] < dataset[symbol]['high'][extreme_max['index'][elm-1]])):
+				signal_sell['signal'][i] = 'sell_secondry'
+				signal_sell['value_front'][i] = extreme_max['value'][elm]
+				signal_sell['value_back'][i] = extreme_max['value'][elm-1]
+				signal_sell['index'][i] = extreme_max['index'][elm]
+				signal_sell['ramp_macd'][i] = (extreme_max['value'][elm] - extreme_max['value'][elm-1])/(extreme_max['index'][elm] - extreme_max['index'][elm-1])
+				signal_sell['ramp_candle'][i] = (dataset[symbol]['high'][extreme_max['index'][elm]] - dataset[symbol]['high'][extreme_max['index'][elm-1]])/(extreme_max['index'][elm] - extreme_max['index'][elm-1])
+				signal_sell['coef_ramps'][i] = signal_sell['ramp_macd'][i]/signal_sell['ramp_candle'][i]
+				signal_sell['diff_ramps'][i] = signal_sell['ramp_macd'][i] - signal_sell['ramp_candle'][i]
+				signal_sell['beta'][i] = ((dataset[symbol]['high'][extreme_max['index'][elm]] - dataset[symbol]['low'][extreme_max['index'][elm]])/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+				signal_sell['danger_line'][i] = dataset[symbol]['high'][extreme_max['index'][elm]] + ((dataset[symbol]['high'][extreme_max['index'][elm]]*signal_sell['beta'][i])/100)
+				signal_sell['diff_min_max_macd'][i] = (-1 * (np.min(macd.macd[extreme_max['index'][elm-1]:extreme_max['index'][elm]]) - np.max([signal_sell['value_back'][i],signal_sell['value_front'][i]])) / np.max([signal_sell['value_back'][i],signal_sell['value_front'][i]])) * 100
+				signal_sell['diff_min_max_candle'][i] = (-1 * (np.min(dataset[symbol]['low'][extreme_max['index'][elm-1]:extreme_max['index'][elm]]) - np.max([dataset[symbol]['high'][extreme_max['index'][elm]],dataset[symbol]['high'][extreme_max['index'][elm-1]]])) / np.max([dataset[symbol]['high'][extreme_max['index'][elm]],dataset[symbol]['high'][extreme_max['index'][elm-1]]])) * 100
+
+				#Calculate porfits
+				#must read protect and resist from protect resist function
+				if (mode == 'optimize'):
+
+					#Calculate With Min Max Diff From MACD:
+
+					if ((len(np.where((((((dataset[symbol]['low'][extreme_max['index'][elm]] - dataset[symbol]['low'][extreme_max['index'][elm]:-1])/dataset[symbol]['low'][extreme_max['index'][elm]]).values) * 100) >= (signal_sell['diff_min_max_candle'][i])))[0]) - 1) > 1):
+						signal_sell['tp_min_max_index'][i] = extreme_max['index'][elm] + np.min(np.where((((((dataset[symbol]['low'][extreme_max['index'][elm]] - dataset[symbol]['low'][extreme_max['index'][elm]:-1])/dataset[symbol]['low'][extreme_max['index'][elm]]).values) * 100) >= (signal_sell['diff_min_max_candle'][i])))[0])
+						signal_sell['tp_min_max'][i] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - dataset[symbol]['low'][signal_sell['tp_min_max_index'][i]])/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+					else:
+						signal_sell['tp_min_max_index'][i] = -1
+						signal_sell['tp_min_max'][i] = 0
+
+					if ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm]:-1]).values) >= (dataset[symbol]['high'][extreme_max['index'][elm]] * 1.0006)))[0])-1) > 1):
+						signal_sell['st_min_max_index'][i] = extreme_max['index'][elm] + np.min(np.where((((dataset[symbol]['high'][extreme_max['index'][elm]:-1]).values) >= (dataset[symbol]['high'][extreme_max['index'][elm]] * 1.0006)))[0])
+						signal_sell['st_min_max'][i] = ((dataset[symbol]['high'][signal_sell['st_min_max_index'][i]] - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
+					else:
+						signal_sell['st_min_max_index'][i] = -1
+						signal_sell['st_min_max'][i] = 0
+
+					if (signal_sell['st_min_max_index'][i] < signal_sell['tp_min_max_index'][i]):
+						signal_sell['flag_min_max'][i] = 'st'
+						if (signal_sell['st_min_max_index'][i] != -1):
+							signal_sell['tp_min_max'][i] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - np.min(dataset[symbol]['low'][extreme_max['index'][elm]:int(signal_sell['st_min_max_index'][i])]))/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+					else:
+						signal_sell['flag_min_max'][i] = 'tp'
+						if (signal_sell['tp_min_max_index'][i] != -1):
+							signal_sell['st_min_max'][i] = ((np.max(dataset[symbol]['high'][extreme_max['index'][elm]:int(signal_sell['tp_min_max_index'][i])]) - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
+
+					#///////////////////////////////////////////////////
+
+					#Calculate ST and TP With Protect Resist Function
+					dataset_pr_5M = pd.DataFrame()
+					dataset_pr_15M = pd.DataFrame()
+					cut_first = 0
+					if (extreme_max['index'][elm] > 2000):
+						cut_first = extreme_max['index'][elm] - 2000
+					dataset_pr_5M['low'] = dataset[symbol]['low'][cut_first:extreme_max['index'][elm]].reset_index(drop=True)
+					dataset_pr_5M['high'] = dataset[symbol]['high'][cut_first:extreme_max['index'][elm]].reset_index(drop=True)
+					dataset_pr_5M['close'] = dataset[symbol]['close'][cut_first:extreme_max['index'][elm]].reset_index(drop=True)
+					dataset_pr_5M['open'] = dataset[symbol]['open'][cut_first:extreme_max['index'][elm]].reset_index(drop=True)
+
+					dataset_pr_15M['low'] = dataset_15M[symbol]['low'][int(cut_first/3):int(extreme_max['index'][elm]/3)].reset_index(drop=True)
+					dataset_pr_15M['high'] = dataset_15M[symbol]['high'][int(cut_first/3):int(extreme_max['index'][elm]/3)].reset_index(drop=True)
+					dataset_pr_15M['close'] = dataset_15M[symbol]['close'][int(cut_first/3):int(extreme_max['index'][elm]/3)].reset_index(drop=True)
+					dataset_pr_15M['open'] = dataset_15M[symbol]['open'][int(cut_first/3):int(extreme_max['index'][elm]/3)].reset_index(drop=True)
+
+					res_pro = pd.DataFrame()
 					
+					try:
+						res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=dataset_pr_5M,dataset_15M=dataset_pr_15M,dataset_1H=dataset_pr_15M,dataset_4H=dataset_pr_5M,dataset_1D=dataset_pr_5M,plot=False)
+					except:
+						res_pro['high'] = 'nan'
+						res_pro['low'] = 'nan'
+
+					if (res_pro.empty == False):
+						signal_sell['diff_pr_top'][i] = (((res_pro['high'][0] * 1.0006) - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
+						signal_sell['diff_pr_down'][i] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - (res_pro['low'][2] * 1.0006))/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+
+						if ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm]:-1].values) <= (res_pro['low'][2] * 1.0006)))[0]) - 1) > 1):
+							signal_sell['tp_pr_index'][i] = extreme_max['index'][elm] + np.min(np.where(((dataset[symbol]['low'][extreme_max['index'][elm]:-1].values) <= (res_pro['low'][2] * 1.0006)))[0])
+							signal_sell['tp_pr'][i] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - dataset[symbol]['low'][signal_sell['tp_pr_index'][i]])/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+						else:
+							signal_sell['tp_pr_index'][i] = -1
+							signal_sell['tp_pr'][i] = 0
+
+						if ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm]:-1]).values) >= (res_pro['high'][0] * 1.0006)))[0])-1) > 1):
+							signal_sell['st_pr_index'][i] = extreme_max['index'][elm] + np.min(np.where((((dataset[symbol]['high'][extreme_max['index'][elm]:-1]).values) >= (res_pro['high'][0] * 1.0006)))[0])
+							signal_sell['st_pr'][i] = ((dataset[symbol]['high'][signal_sell['st_pr_index'][i]] - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
+						else:
+							signal_sell['st_pr_index'][i] = -1
+							signal_sell['st_pr'][i] = 0
+
+						if (signal_sell['st_pr_index'][i] < signal_sell['tp_pr_index'][i]):
+							signal_sell['flag_pr'][i] = 'st'
+							if (signal_sell['st_pr_index'][i] != -1):
+								signal_sell['tp_pr'][i] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - np.min(dataset[symbol]['low'][extreme_max['index'][elm]:int(signal_sell['st_pr_index'][i])]))/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
+						else:
+							signal_sell['flag_pr'][i] = 'tp'
+							if (signal_sell['tp_pr_index'][i] != -1):
+								signal_sell['st_pr'][i] = ((np.max(dataset[symbol]['high'][extreme_max['index'][elm]:int(signal_sell['tp_pr_index'][i])]) - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
+						
+					else:
+						signal_sell['tp_pr_index'][i] = -1
+						signal_sell['tp_pr'][i] = 0
+						signal_sell['st_pr_index'][i] = -1
+						signal_sell['st_pr'][i] = 0
+						signal_sell['flag_pr'][i] = 'no_flag'
+					#///////////////////////////////////////////////////
+				if (plot == True):
+					ax0.plot([extreme_max['index'][elm-1],extreme_max['index'][elm]],[extreme_max['value'][elm-1],extreme_max['value'][elm]],c='r',linestyle="-")
+					ax1.plot([extreme_max['index'][elm-1],extreme_max['index'][elm]],[dataset[symbol]['low'][extreme_max['index'][elm-1]],dataset[symbol]['low'][extreme_max['index'][elm]]],c='r',linestyle="-")
+				i += 1
 			#///////////////////////////////////////////////////////
 
 			#****************************** Secondry Sell ********************************* = 2
@@ -588,7 +814,7 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 			#****************************** Secondry Sell ********************************* = 6
 					
 			#///////////////////////////////////////////////////////
-			#////////////////////////////////////////////////////////////////////////////////////////////////
+			#----------------------------------------------------------------------------------------------------
 
 	#/////////////////////////////////////////////////////////////////////////////
 
@@ -597,7 +823,15 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 	signal_buy = signal_buy.dropna()
 	signal_buy = signal_buy.sort_values(by = ['index'])
 	signal_buy = signal_buy.reset_index(drop=True)
+
+	signal_sell = signal_sell.drop(columns=0)
+	signal_sell = signal_sell.dropna()
+	signal_sell = signal_sell.sort_values(by = ['index'])
+	signal_sell = signal_sell.reset_index(drop=True)
+	
+
 	print(signal_buy)
+	print('*********************** Buy *********************************')
 
 	print('mean tp pr = ',np.mean(signal_buy['tp_pr']))
 	print('mean st pr = ',np.mean(signal_buy['st_pr']))
@@ -624,7 +858,37 @@ def divergence(dataset,dataset_15M,dataset_1H,Apply_to,symbol,macd_fast=12,macd_
 	print('min down = ',np.min(signal_buy['diff_pr_down'][np.where(signal_buy['flag_pr'] == 'st')[0]].to_numpy()))
 	print('mean down = ',np.mean(signal_buy['diff_pr_down'][np.where(signal_buy['flag_pr'] == 'st')[0]].to_numpy()))
 
-	#print(signal_buy)
+	print('/////////////////////////////////////////////////////////////////')
+
+	print(signal_sell)
+
+	print('*************************** Sell ***********************************')
+
+	print('mean tp pr = ',np.mean(signal_sell['tp_pr']))
+	print('mean st pr = ',np.mean(signal_sell['st_pr']))
+	print('mean tp min_max = ',np.mean(signal_sell['tp_min_max']))
+	print('mean st min_max = ',np.mean(signal_sell['st_min_max']))
+
+	print('max tp pr = ',np.max(signal_sell['tp_pr']))
+	print('max st pr = ',np.max(signal_sell['st_pr']))
+	print('max tp min_max = ',np.max(signal_sell['tp_min_max']))
+	print('max st min_max = ',np.max(signal_sell['st_min_max']))
+
+	print('tp pr = ',np.bincount(signal_sell['flag_pr'] == 'tp'))
+	print('st pr = ',np.bincount(signal_sell['flag_pr'] == 'st'))
+	print('tp min_max = ',np.bincount(signal_sell['flag_min_max'] == 'tp'))
+	print('st min_max = ',np.bincount(signal_sell['flag_min_max'] == 'st'))
+
+	print('sum st pr = ',np.sum(signal_sell['st_pr'][np.where(signal_sell['flag_pr'] == 'st')[0]].to_numpy()))
+	print('sum tp pr = ',np.sum(signal_sell['tp_pr'][np.where(signal_sell['flag_pr'] == 'tp')[0]].to_numpy()))
+
+	print('sum st min_max = ',np.sum(signal_sell['st_min_max'][np.where(signal_sell['flag_min_max'] == 'st')[0]].to_numpy()))
+	print('sum tp min_max = ',np.sum(signal_sell['tp_min_max'][np.where(signal_sell['flag_min_max'] == 'tp')[0]].to_numpy()))
+
+	print('max down = ',np.max(signal_sell['diff_pr_down'][np.where(signal_sell['flag_pr'] == 'st')[0]].to_numpy()))
+	print('min down = ',np.min(signal_sell['diff_pr_down'][np.where(signal_sell['flag_pr'] == 'st')[0]].to_numpy()))
+	print('mean down = ',np.mean(signal_sell['diff_pr_down'][np.where(signal_sell['flag_pr'] == 'st')[0]].to_numpy()))
+
 	if (plot == True):
 		plt.show()
 	return 0,0

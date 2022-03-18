@@ -162,11 +162,11 @@ def extreme_points_ramp_lines(high,low,close,length='short',number_min=10,number
 
 	#***** Model Fitting High *****************
 	lr_high = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
-	lr_high.fit(x_high[:, np.newaxis], y_high) # x needs to be 2d for LinearRegression
+	lr_high.fit(x_high.to_numpy().reshape(-1,1), y_high) # x needs to be 2d for LinearRegression
 
 	#***** Model Fitting Low *****************
 	lr_low = LinearRegression(fit_intercept=True, copy_X=True, n_jobs=-1, positive=False)
-	lr_low.fit(x_low[:, np.newaxis], y_low)  # x needs to be 2d for LinearRegression
+	lr_low.fit(x_low.to_numpy().reshape(-1,1), y_low)  # x needs to be 2d for LinearRegression
 	#///////////////////////
 
 	#********* Plot Fitting High ************
@@ -181,10 +181,10 @@ def extreme_points_ramp_lines(high,low,close,length='short',number_min=10,number
 
 	#ax0.plot(x_high, lr_high.predict(y3[:, np.newaxis]), "C0-",c='r')
 	if (plot == True):
-		ax0.plot(x_high, lr_high.predict(x_high[:, np.newaxis]), "C0-",c='r')
+		ax0.plot(x_high, lr_high.predict(x_high.to_numpy().reshape(-1,1)), "C0-",c='r')
 	
 	x1_high = high[x_high]
-	y_high = lr_high.predict(x_high[:, np.newaxis])
+	y_high = lr_high.predict(x_high.to_numpy().reshape(-1,1))
 	f_high = interp1d(x1_high, y_high)
 	#print(f_high(y3[len(y1)-1]))
 
@@ -194,7 +194,7 @@ def extreme_points_ramp_lines(high,low,close,length='short',number_min=10,number
 	#********* Plot Fitting Low ************
 	#ax0.plot(x_low, y_low, "C0.-", markersize=12)
 	x_low = close.index
-	y_low = lr_low.predict(x_low[:, np.newaxis])
+	y_low = lr_low.predict(x_low.to_numpy().reshape(-1,1))
 	if (plot == True):
 		ax0.plot(x_low, y_low, "C1-",c='b')
 	#print('y_low1 = ',lr_low.predict(x_low[:, np.newaxis]))
@@ -740,9 +740,9 @@ print('data get')
 #plt.plot(y1.index,y1)
 #plt.show()
 
-
+time_last = time.time()
 res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=symbol_data_5M['AUDCAD_i'],dataset_15M=symbol_data_15M['AUDCAD_i'],dataset_1H=symbol_data_1H['AUDCAD_i'],dataset_4H=symbol_data_4H['AUDCAD_i'],dataset_1D=symbol_data_1D['AUDCAD_i'],plot=False)
-
+print('time left = ',time.time()-time_last)
 print(res_pro['power_high'])
 print('************************ Finish ***************************************')
 

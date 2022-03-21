@@ -378,8 +378,8 @@ def divergence(dataset,dataset_15M,Apply_to,symbol,macd_fast=12,macd_slow=26,mac
 				signal_buy_primary['index'][primary_counter] = extreme_min['index'][elm]
 				signal_buy_primary['ramp_macd'][primary_counter] = (extreme_min['value'][elm] - extreme_min['value'][elm-1])/(extreme_min['index'][elm] - extreme_min['index'][elm-1])
 				signal_buy_primary['ramp_candle'][primary_counter] = (dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm-1]])/(extreme_min['index'][elm] - extreme_min['index'][elm-1])
-				signal_buy_primary['coef_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter]/signal_buy_primary['ramp_candle'][primary_counter]
-				signal_buy_primary['diff_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter] - signal_buy_primary['ramp_candle'][primary_counter]
+				signal_buy_primary['coef_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter]/abs(signal_buy_primary['ramp_candle'][primary_counter])
+				signal_buy_primary['diff_ramps'][primary_counter] = abs(signal_buy_primary['ramp_candle'][primary_counter]) - signal_buy_primary['ramp_macd'][primary_counter]
 				signal_buy_primary['beta'][primary_counter] = ((dataset[symbol]['high'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 				signal_buy_primary['danger_line'][primary_counter] = dataset[symbol]['low'][extreme_min['index'][elm]] + ((dataset[symbol]['low'][extreme_min['index'][elm]]*signal_buy_primary['beta'][primary_counter])/100)
 				signal_buy_primary['diff_min_max_macd'][primary_counter] = ((np.max(macd.macd[extreme_min['index'][elm-1]:extreme_min['index'][elm]]) - np.min([signal_buy_primary['value_back'][primary_counter],signal_buy_primary['value_front'][primary_counter]])) / np.min([signal_buy_primary['value_back'][primary_counter],signal_buy_primary['value_front'][primary_counter]])) * 100
@@ -492,8 +492,8 @@ def divergence(dataset,dataset_15M,Apply_to,symbol,macd_fast=12,macd_slow=26,mac
 				signal_buy_primary['index'][primary_counter] = extreme_min['index'][elm]
 				signal_buy_primary['ramp_macd'][primary_counter] = (extreme_min['value'][elm] - extreme_min['value'][elm-2])/(extreme_min['index'][elm] - extreme_min['index'][elm-2])
 				signal_buy_primary['ramp_candle'][primary_counter] = (dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm-2]])/(extreme_min['index'][elm] - extreme_min['index'][elm-2])
-				signal_buy_primary['coef_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter]/signal_buy_primary['ramp_candle'][primary_counter]
-				signal_buy_primary['diff_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter] - signal_buy_primary['ramp_candle'][primary_counter]
+				signal_buy_primary['coef_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter]/abs(signal_buy_primary['ramp_candle'][primary_counter])
+				signal_buy_primary['diff_ramps'][primary_counter] = abs(signal_buy_primary['ramp_candle'][primary_counter]) - signal_buy_primary['ramp_macd'][primary_counter]
 				signal_buy_primary['beta'][primary_counter] = ((dataset[symbol]['high'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 				signal_buy_primary['danger_line'][primary_counter] = dataset[symbol]['low'][extreme_min['index'][elm]] + ((dataset[symbol]['low'][extreme_min['index'][elm]]*signal_buy_primary['beta'][primary_counter])/100)
 				signal_buy_primary['diff_min_max_macd'][primary_counter] = ((np.max(macd.macd[extreme_min['index'][elm-2]:extreme_min['index'][elm]]) - np.min([signal_buy_primary['value_back'][primary_counter],signal_buy_primary['value_front'][primary_counter]])) / np.min([signal_buy_primary['value_back'][primary_counter],signal_buy_primary['value_front'][primary_counter]])) * 100
@@ -608,8 +608,8 @@ def divergence(dataset,dataset_15M,Apply_to,symbol,macd_fast=12,macd_slow=26,mac
 				signal_buy_primary['index'][primary_counter] = extreme_min['index'][elm]
 				signal_buy_primary['ramp_macd'][primary_counter] = (extreme_min['value'][elm] - extreme_min['value'][elm-3])/(extreme_min['index'][elm] - extreme_min['index'][elm-3])
 				signal_buy_primary['ramp_candle'][primary_counter] = (dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm-3]])/(extreme_min['index'][elm] - extreme_min['index'][elm-3])
-				signal_buy_primary['coef_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter]/signal_buy_primary['ramp_candle'][primary_counter]
-				signal_buy_primary['diff_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter] - signal_buy_primary['ramp_candle'][primary_counter]
+				signal_buy_primary['coef_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter]/abs(signal_buy_primary['ramp_candle'][primary_counter])
+				signal_buy_primary['diff_ramps'][primary_counter] = abs(signal_buy_primary['ramp_candle'][primary_counter]) - signal_buy_primary['ramp_macd'][primary_counter]
 				signal_buy_primary['beta'][primary_counter] = ((dataset[symbol]['high'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 				signal_buy_primary['danger_line'][primary_counter] = dataset[symbol]['low'][extreme_min['index'][elm]] + ((dataset[symbol]['low'][extreme_min['index'][elm]]*signal_buy_primary['beta'][primary_counter])/100)
 				signal_buy_primary['diff_min_max_macd'][primary_counter] = ((np.max(macd.macd[extreme_min['index'][elm-3]:extreme_min['index'][elm]]) - np.min([signal_buy_primary['value_back'][primary_counter],signal_buy_primary['value_front'][primary_counter]])) / np.min([signal_buy_primary['value_back'][primary_counter],signal_buy_primary['value_front'][primary_counter]])) * 100
@@ -1979,6 +1979,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 		signal_good = signals.drop(np.where((signals[name_stp]=='st')|
 			(signals['st_pr']>max_st)|
 			(signals['tp_pr']<min_tp))[0])
+			#(signals['diff_pr_down']>max_st)
 
 	signal_good = signal_good.sort_values(by = ['index'])
 	signal_good = signal_good.reset_index(drop=True)
@@ -2161,35 +2162,37 @@ signal_buy_primary,signal_buy_secondry,signal_sell_primary,signal_sell_secondry 
 	name_stp_pr=False,name_stp_minmax=True)
 print('time Dive = ',time.time() - time_first)
 
+print('*************** Profits Min Max:')
+
 ramp_macd_intervals_minmax = Find_Best_intervals(signals=signal_buy_primary,apply_to='ramp_macd',
- min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.3)
+ min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.5)
 
 ramp_candle_intervals_minmax = Find_Best_intervals(signals=signal_buy_primary,apply_to='ramp_candle',
- min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.3)
+ min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.5)
 
 diff_ramps_intervals_minmax = Find_Best_intervals(signals=signal_buy_primary,apply_to='diff_ramps',
- min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.3)
+ min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.5)
 
 coef_ramps_intervals_minmax = Find_Best_intervals(signals=signal_buy_primary,apply_to='coef_ramps',
- min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.3)
+ min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.5)
 
 diff_min_max_macd_intervals_minmax = Find_Best_intervals(signals=signal_buy_primary,apply_to='diff_min_max_macd',
- min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.3)
+ min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.5)
 
 diff_min_max_candle_intervals_minmax = Find_Best_intervals(signals=signal_buy_primary,apply_to='diff_min_max_candle',
- min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.3)
+ min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.5)
 
 beta_intervals_minmax = Find_Best_intervals(signals=signal_buy_primary,apply_to='beta',
- min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.3)
+ min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.5)
 
 danger_line_intervals_minmax = Find_Best_intervals(signals=signal_buy_primary,apply_to='danger_line',
- min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.3)
+ min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.5)
 
 value_front_intervals_minmax = Find_Best_intervals(signals=signal_buy_primary,apply_to='value_front',
- min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.3)
+ min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.5)
 
 value_back_intervals_minmax = Find_Best_intervals(signals=signal_buy_primary,apply_to='value_back',
- min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.3)
+ min_tp=0.1, max_st=0.2, name_stp='flag_min_max',alpha=0.5)
 
 print('ramp_macd_intervals_minmax = ',ramp_macd_intervals_minmax)
 print('ramp_candle_intervals_minmax = ',ramp_candle_intervals_minmax)
@@ -2206,91 +2209,19 @@ upper = 0
 mid = 1
 lower = 2
 
-signal_buy = signal_buy_primary.drop(np.where((signal_buy_primary['ramp_macd']<ramp_macd_intervals_minmax['interval'][lower]))[0])
-
-signal_buy = signal_buy.sort_values(by = ['index'])
-signal_buy = signal_buy.reset_index(drop=True)
-
-signal_buy = signal_buy.drop(np.where((signal_buy['ramp_candle']<ramp_candle_intervals_minmax['interval'][lower]))[0])
-
-signal_buy = signal_buy.sort_values(by = ['index'])
-signal_buy = signal_buy.reset_index(drop=True)
-
-signal_buy = signal_buy.drop(np.where((signal_buy['diff_ramps']<diff_ramps_intervals_minmax['interval'][lower]))[0])
-
-signal_buy = signal_buy.sort_values(by = ['index'])
-signal_buy = signal_buy.reset_index(drop=True)
-
-signal_buy = signal_buy.drop(np.where((signal_buy['coef_ramps']<coef_ramps_intervals_minmax['interval'][lower]))[0])
-
-signal_buy = signal_buy.sort_values(by = ['index'])
-signal_buy = signal_buy.reset_index(drop=True)
-
-signal_buy = signal_buy.drop(np.where((signal_buy['diff_min_max_macd']<diff_min_max_macd_intervals_minmax['interval'][lower]))[0])
-
-signal_buy = signal_buy.sort_values(by = ['index'])
-signal_buy = signal_buy.reset_index(drop=True)
-
-signal_buy = signal_buy.drop(np.where((signal_buy['diff_min_max_candle']<diff_min_max_candle_intervals_minmax['interval'][lower]))[0])
-
-signal_buy = signal_buy.sort_values(by = ['index'])
-signal_buy = signal_buy.reset_index(drop=True)
-
-signal_buy = signal_buy.drop(np.where((signal_buy['beta']<beta_intervals_minmax['interval'][lower]))[0])
-
-signal_buy = signal_buy.sort_values(by = ['index'])
-signal_buy = signal_buy.reset_index(drop=True)
-
-signal_buy = signal_buy.drop(np.where((signal_buy['danger_line']<danger_line_intervals_minmax['interval'][lower]))[0])
-
-signal_buy = signal_buy.sort_values(by = ['index'])
-signal_buy = signal_buy.reset_index(drop=True)
-
-signal_buy = signal_buy.drop(np.where((signal_buy['value_back']>value_back_intervals_minmax['interval'][upper]))[0])
-
-signal_buy = signal_buy.sort_values(by = ['index'])
-signal_buy = signal_buy.reset_index(drop=True)
-
-signal_buy = signal_buy.drop(np.where((signal_buy['value_front']>value_front_intervals_minmax['interval'][upper]))[0])
-
-signal_buy = signal_buy.sort_values(by = ['index'])
-signal_buy = signal_buy.reset_index(drop=True)
-
-print('signal_buy_primary = ',signal_buy_primary)
-print('signal_buy = ',signal_buy)
-
-print('*************** Profits:')
-
-print('mean tp min_max = ',np.mean(signal_buy['tp_min_max']))
-print('mean st min_max = ',np.mean(signal_buy['st_min_max']))
-
-print('max tp min_max = ',np.max(signal_buy['tp_min_max']))
-print('max st min_max = ',np.max(signal_buy['st_min_max']))
-
-print('tp min_max = ',np.bincount(signal_buy['flag_min_max'] == 'tp'))
-print('st min_max = ',np.bincount(signal_buy['flag_min_max'] == 'st'))
-
-
-print('sum st min_max = ',np.sum(signal_buy['st_min_max'][np.where(signal_buy['flag_min_max'] == 'st')[0]].to_numpy()))
-print('sum tp min_max = ',np.sum(signal_buy['tp_min_max'][np.where(signal_buy['flag_min_max'] == 'tp')[0]].to_numpy()))
-
-
-
-list_index_ok = np.where(((signal_buy_primary['ramp_macd'].to_numpy()<=ramp_macd_intervals_minmax['interval'][upper])&(signal_buy_primary['ramp_macd'].to_numpy()<=ramp_macd_intervals_minmax['interval'][upper]))&
-	((signal_buy_primary['ramp_candle'].to_numpy()<=ramp_candle_intervals_minmax['interval'][upper])&(signal_buy_primary['ramp_candle'].to_numpy()<=ramp_candle_intervals_minmax['interval'][upper]))&
-	#((signal_buy_primary['diff_ramps'].to_numpy()<=diff_ramps_intervals_minmax['interval'][upper])&(signal_buy_primary['diff_ramps'].to_numpy()<=diff_ramps_intervals_minmax['interval'][upper]))&
-	#((signal_buy_primary['coef_ramps'].to_numpy()<=coef_ramps_intervals_minmax['interval'][upper])&(signal_buy_primary['coef_ramps'].to_numpy()<=coef_ramps_intervals_minmax['interval'][upper]))&
-	((signal_buy_primary['diff_min_max_macd'].to_numpy()<=diff_min_max_macd_intervals_minmax['interval'][upper])&(signal_buy_primary['diff_min_max_macd'].to_numpy()<=diff_min_max_macd_intervals_minmax['interval'][upper]))&
-	((signal_buy_primary['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_minmax['interval'][upper])&(signal_buy_primary['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_minmax['interval'][upper]))&
-	((signal_buy_primary['beta'].to_numpy()<=beta_intervals_minmax['interval'][upper])&(signal_buy_primary['beta'].to_numpy()<=beta_intervals_minmax['interval'][upper]))&
-	#((signal_buy_primary['danger_line'].to_numpy()<=danger_line_intervals_minmax['interval'][upper])&(signal_buy_primary['danger_line'].to_numpy()<=danger_line_intervals_minmax['interval'][upper]))&
-	((signal_buy_primary['value_back'].to_numpy()<=value_back_intervals_minmax['interval'][upper])&(signal_buy_primary['value_back'].to_numpy()<=value_back_intervals_minmax['interval'][upper]))&
-	((signal_buy_primary['value_front'].to_numpy()<=value_front_intervals_minmax['interval'][upper])&(signal_buy_primary['value_front'].to_numpy()<=value_front_intervals_minmax['interval'][upper]))
+list_index_ok = np.where(((signal_buy_primary['ramp_macd'].to_numpy()>=ramp_macd_intervals_minmax['interval'][lower]))&
+	((signal_buy_primary['ramp_candle'].to_numpy()<=ramp_candle_intervals_minmax['interval'][upper]))&
+	((signal_buy_primary['diff_ramps'].to_numpy()>=diff_ramps_intervals_minmax['interval'][lower]))&
+	((signal_buy_primary['coef_ramps'].to_numpy()>=coef_ramps_intervals_minmax['interval'][lower]))&
+	((signal_buy_primary['diff_min_max_macd'].to_numpy()<=diff_min_max_macd_intervals_minmax['interval'][upper]))&
+	((signal_buy_primary['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_minmax['interval'][upper]))&
+	((signal_buy_primary['beta'].to_numpy()<=2*beta_intervals_minmax['interval'][upper]))&
+	#((signal_buy_primary['danger_line'].to_numpy()<=danger_line_intervals_minmax['interval'][upper]))&
+	((signal_buy_primary['value_back'].to_numpy()<=value_back_intervals_minmax['interval'][upper]))&
+	((signal_buy_primary['value_front'].to_numpy()<=value_front_intervals_minmax['interval'][upper]))
 	)[0]
 
-print('list_index_ok = ',list_index_ok)
 
-print('*************** Profits and:')
 
 print('mean tp min_max = ',np.mean(signal_buy_primary['tp_min_max'][list_index_ok]))
 print('mean st min_max = ',np.mean(signal_buy_primary['st_min_max'][list_index_ok]))
@@ -2304,6 +2235,99 @@ print('st min_max = ',np.bincount(signal_buy_primary['flag_min_max'][list_index_
 
 print('sum st min_max = ',np.sum(signal_buy_primary['st_min_max'][np.where(signal_buy_primary['flag_min_max'][list_index_ok] == 'st')[0]].to_numpy()))
 print('sum tp min_max = ',np.sum(signal_buy_primary['tp_min_max'][np.where(signal_buy_primary['flag_min_max'][list_index_ok] == 'tp')[0]].to_numpy()))
+
+print('/////////////////////////////////////////////////////')
+
+print('*************** Profits PR:')
+
+signal_buy_primary,signal_buy_secondry,signal_sell_primary,signal_sell_secondry = divergence(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,Apply_to='close',symbol='AUDCAD_i',
+	macd_fast=2,macd_slow=4,macd_signal=2,mode='optimize',plot=False,
+	buy_doing=True,sell_doing=False,primary_doing=True,secondry_doing=False,
+	name_stp_pr=True,name_stp_minmax=False)
+print('time Dive = ',time.time() - time_first)
+
+ramp_macd_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='ramp_macd',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+ramp_candle_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='ramp_candle',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+diff_ramps_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='diff_ramps',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+coef_ramps_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='coef_ramps',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+diff_min_max_macd_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='diff_min_max_macd',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+diff_min_max_candle_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='diff_min_max_candle',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+beta_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='beta',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+danger_line_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='danger_line',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+value_front_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='value_front',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+value_back_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='value_back',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+diff_top_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='diff_pr_top',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+diff_down_intervals_pr = Find_Best_intervals(signals=signal_buy_primary,apply_to='diff_pr_down',
+ min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.3)
+
+print('ramp_macd_intervals_pr = ',ramp_macd_intervals_pr)
+print('ramp_candle_intervals_pr = ',ramp_candle_intervals_pr)
+print('diff_ramps_intervals_pr = ',diff_ramps_intervals_pr)
+print('coef_ramps_intervals_pr = ',coef_ramps_intervals_pr)
+print('diff_min_max_macd_intervals_pr = ',diff_min_max_macd_intervals_pr)
+print('diff_min_max_candle_intervals_pr = ',diff_min_max_candle_intervals_pr)
+print('beta_intervals_pr = ',beta_intervals_pr)
+print('danger_line_intervals_pr = ',danger_line_intervals_pr)
+print('value_back_intervals_pr = ',value_back_intervals_pr)
+print('value_front_intervals_pr = ',value_front_intervals_pr)
+print('diff_top_intervals_pr = ',diff_top_intervals_pr)
+print('diff_down_intervals_pr = ',diff_down_intervals_pr)
+
+upper = 0
+mid = 1
+lower = 2
+
+list_index_ok = np.where(((signal_buy_primary['ramp_macd'].to_numpy()>=ramp_macd_intervals_pr['interval'][lower]))&
+	((signal_buy_primary['ramp_candle'].to_numpy()<=ramp_candle_intervals_pr['interval'][upper]))&
+	((signal_buy_primary['diff_ramps'].to_numpy()>=diff_ramps_intervals_pr['interval'][lower]))&
+	((signal_buy_primary['coef_ramps'].to_numpy()>=coef_ramps_intervals_pr['interval'][lower]))&
+	((signal_buy_primary['diff_pr_top'].to_numpy()<=diff_top_intervals_pr['interval'][upper]))&
+	((signal_buy_primary['diff_pr_down'].to_numpy()<=diff_down_intervals_pr['interval'][upper]))&
+	((signal_buy_primary['beta'].to_numpy()<=2*beta_intervals_pr['interval'][upper]))&
+	((signal_buy_primary['diff_min_max_macd'].to_numpy()<=diff_min_max_macd_intervals_minmax['interval'][upper]))&
+	((signal_buy_primary['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_minmax['interval'][upper]))&
+	#((signal_buy_primary['danger_line'].to_numpy()<=danger_line_intervals_minmax['interval'][upper]))&
+	((signal_buy_primary['value_back'].to_numpy()<=value_back_intervals_pr['interval'][upper]))&
+	((signal_buy_primary['value_front'].to_numpy()<=value_front_intervals_pr['interval'][upper]))
+	)[0]
+
+
+print('mean tp pr = ',np.mean(signal_buy_primary['tp_pr'][list_index_ok]))
+print('mean st pr = ',np.mean(signal_buy_primary['st_pr'][list_index_ok]))
+
+print('max tp pr = ',np.max(signal_buy_primary['tp_pr'][list_index_ok]))
+print('max st pr = ',np.max(signal_buy_primary['st_pr'][list_index_ok]))
+
+print('tp pr = ',np.bincount(signal_buy_primary['flag_pr'][list_index_ok] == 'tp'))
+print('st pr = ',np.bincount(signal_buy_primary['flag_pr'][list_index_ok] == 'st'))
+
+
+print('sum st pr = ',np.sum(signal_buy_primary['st_pr'][np.where(signal_buy_primary['flag_pr'][list_index_ok] == 'st')[0]].to_numpy()))
+print('sum tp pr = ',np.sum(signal_buy_primary['tp_pr'][np.where(signal_buy_primary['flag_pr'][list_index_ok] == 'tp')[0]].to_numpy()))
+
+print('/////////////////////////////////////////////////////')
 
 #Four Panda DataFrams: signal_buy_primary, signal_buy_secondry, signal_sell_primary, signal_sell_secondry
 	#signal = buy_primary, buy_secondry, sell_primary, sell_secondry

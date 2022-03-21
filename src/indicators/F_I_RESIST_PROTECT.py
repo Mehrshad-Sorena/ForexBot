@@ -113,9 +113,10 @@ def Extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_cluster
 	kmeans = kmeans.fit(exterm_point['extremes'].to_numpy().reshape(-1,1), sample_weight= exterm_point['power'].to_numpy())
 
 	X_pred = kmeans.cluster_centers_
-	Power = np.bincount(kmeans.fit_predict(close.to_numpy().reshape(-1,1)))
+	
+	#Power = np.bincount(kmeans.fit_predict(close.to_numpy().reshape(-1,1)))
+	Power = np.bincount(kmeans.labels_)
 
-	Y_pred = kmeans.labels_
 
 	exterm_point_pred = pd.DataFrame(X_pred, columns=['extreme'])
 	exterm_point_pred['power'] = Power * weight
@@ -283,8 +284,8 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 		else:
 			n_clusters_high = int(len(high.to_numpy()[np.where(high>=low[len(low)-1])].reshape(-1,1))/4) + 1
 
-		kmeans_low = KMeans(n_clusters=n_clusters_low, random_state=0,init='k-means++',n_init=10,max_iter=10)
-		kmeans_high = KMeans(n_clusters=n_clusters_high, random_state=0,init='k-means++',n_init=10,max_iter=10)
+		kmeans_low = KMeans(n_clusters=n_clusters_low, random_state=0,init='k-means++',n_init=2,max_iter=3)
+		kmeans_high = KMeans(n_clusters=n_clusters_high, random_state=0,init='k-means++',n_init=2,max_iter=3)
 		#Model Fitting
 		kmeans_low = kmeans_low.fit(exterm_point['extremes'].to_numpy()[np.where(exterm_point['extremes']<=high[len(high)-1])].reshape(-1,1), sample_weight= exterm_point['power'].to_numpy()[np.where(exterm_point['extremes']<=high[len(high)-1])])
 		kmeans_high = kmeans_high.fit(exterm_point['extremes'].to_numpy()[np.where(exterm_point['extremes']>=low[len(low)-1])].reshape(-1,1), sample_weight= exterm_point['power'].to_numpy()[np.where(exterm_point['extremes']>=low[len(low)-1])])
@@ -347,20 +348,18 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			k += 1
 			z += 1
 		j += 1
-
 	#data = np.sort(data)
 	data_X_low = np.sort(data_X_low)
 	data_X_high = np.sort(data_X_high)
 
 	timeout = time.time() + timeout_break  # timeout_break Sec from now
-	distributions_low = ['foldnorm','dweibull','rayleigh','expon','nakagami','norm']
-	distributions_high = ['foldnorm','dweibull','rayleigh','expon','nakagami','norm']
-
+	#'rayleigh','nakagami','expon','foldnorm','dweibull',
+	distributions_low = ['expon','norm']
+	distributions_high = ['expon','norm']
 	#************************************ Finding Low ****************************
 
 	while True:
-		
-		f_low = Fitter(data = data_X_low, xmin=np.min(data_X_low), xmax=np.max(data_X_low), bins = len(exterm_point_pred_final_low['X']), distributions = distributions_low, timeout=30, density=True)
+		f_low = Fitter(data = data_X_low, xmin=np.min(data_X_low), xmax=np.max(data_X_low), bins = len(exterm_point_pred_final_low['X']), distributions = distributions_low, timeout=0.05, density=True)
 
 		f_low.fit(amp=1, progress=False, n_jobs=-1)
 
@@ -442,7 +441,7 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			if (distributions_low == None):
 				return 'timeout.error'
 
-		if ((Mid_Line_low <= Upper_Line_low)&(Mid_Line_low >= Lower_Line_low)): 
+		if ((Mid_Line_low <= Upper_Line_low)&(Mid_Line_low >= Lower_Line_low)&(Upper_Line_low>Lower_Line_low)): 
 			break
 		else:
 			distributions_low.remove(dist_name_low)
@@ -454,8 +453,7 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 	timeout = time.time() + timeout_break  # timeout_break Sec from now
 	#************************************ Finding High *************************************
 	while True:
-		
-		f_high = Fitter(data = data_X_high, xmin=np.min(data_X_high), xmax=np.max(data_X_high), bins = len(exterm_point_pred_final_high['X']), distributions = distributions_high, timeout=30, density=True)
+		f_high = Fitter(data = data_X_high, xmin=np.min(data_X_high), xmax=np.max(data_X_high), bins = len(exterm_point_pred_final_high['X']), distributions = distributions_high, timeout=0.05, density=True)
 
 		f_high.fit(amp=1, progress=False, n_jobs=-1)
 
@@ -537,7 +535,7 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 			if (distributions_high == None):
 				return 'timeout.error'
 
-		if ((Mid_Line_high <= Upper_Line_high)&(Mid_Line_high >= Lower_Line_high)): 
+		if ((Mid_Line_high <= Upper_Line_high)&(Mid_Line_high >= Lower_Line_high)&(Upper_Line_high>Lower_Line_high)): 
 			break
 		else:
 			distributions_high.remove(dist_name_high)
@@ -619,38 +617,37 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	trend_local_extreme_5M_short_2 = np.nan
 	if (T_5M == True):
 		trend_local_extreme_5M_short_2 = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],length='long',number_min=2,number_max=2,plot=False)
-
 	#ichi Extreme Finder Function
 
 	ichi_local_extreme_5M = pd.DataFrame()
 	ichi_local_extreme_5M['extreme'] = np.nan
 	ichi_local_extreme_5M['power'] = np.nan
 	if (T_5M == True):
-		ichi_local_extreme_5M = Extreme_points_ichimoko(dataset_5M['high'],dataset_5M['low'],dataset_5M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=1)
+		ichi_local_extreme_5M = Extreme_points_ichimoko(dataset_5M['high'],dataset_5M['low'],dataset_5M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=1)
 
 	ichi_local_extreme_15M = pd.DataFrame()
 	ichi_local_extreme_15M['extreme'] = np.nan
 	ichi_local_extreme_15M['power'] = np.nan
 	if (T_15M == True):
-		ichi_local_extreme_15M = Extreme_points_ichimoko(dataset_15M['high'],dataset_15M['low'],dataset_15M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=2)
+		ichi_local_extreme_15M = Extreme_points_ichimoko(dataset_15M['high'],dataset_15M['low'],dataset_15M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=2)
 
 	ichi_local_extreme_1H = pd.DataFrame()
 	ichi_local_extreme_1H['extreme'] = np.nan
 	ichi_local_extreme_1H['power'] = np.nan
 	if (T_1H == True):
-		ichi_local_extreme_1H = Extreme_points_ichimoko(dataset_1H['high'],dataset_1H['low'],dataset_1H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=5)
+		ichi_local_extreme_1H = Extreme_points_ichimoko(dataset_1H['high'],dataset_1H['low'],dataset_1H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=5)
 
 	ichi_local_extreme_4H = pd.DataFrame()
 	ichi_local_extreme_4H['extreme'] = np.nan
 	ichi_local_extreme_4H['power'] = np.nan
 	if (T_4H == True):
-		ichi_local_extreme_4H = Extreme_points_ichimoko(dataset_4H['high'],dataset_4H['low'],dataset_4H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=20)
+		ichi_local_extreme_4H = Extreme_points_ichimoko(dataset_4H['high'],dataset_4H['low'],dataset_4H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=20)
 
 	ichi_local_extreme_1D = pd.DataFrame()
 	ichi_local_extreme_1D['extreme'] = np.nan
 	ichi_local_extreme_1D['power'] = np.nan
 	if (T_1D == True):
-		ichi_local_extreme_1D = Extreme_points_ichimoko(dataset_1D['high'],dataset_1D['low'],dataset_1D['close'],tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=100)
+		ichi_local_extreme_1D = Extreme_points_ichimoko(dataset_1D['high'],dataset_1D['low'],dataset_1D['close'],tenkan=9,kijun=26,senkou=52,n_clusters=2,weight=100)
 
 	#concat Extremes
 
@@ -683,12 +680,11 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	exterm_point = exterm_point.dropna()
 
 	extereme = pd.DataFrame()
-	extereme = Best_Extreme_Finder(exterm_point=exterm_point,high=dataset_5M['high'],low=dataset_5M['low'],n_clusters_low=5,n_clusters_high=5,alpha_low=0.05,alpha_high=0.05,timeout_break=1)
+	extereme = Best_Extreme_Finder(exterm_point=exterm_point,high=dataset_5M['high'],low=dataset_5M['low'],n_clusters_low=4,n_clusters_high=4,alpha_low=0.05,alpha_high=0.05,timeout_break=1)
 	extereme['trend_long'] = [trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend']]
 	extereme['trend_mid'] = [trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend']]
 	extereme['trend_short1'] = [trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend']]
 	extereme['trend_short2'] = [trend_local_extreme_5M_short_2['trend'],trend_local_extreme_5M_short_2['trend'],trend_local_extreme_5M_short_2['trend']]
-
 
 	if (plot == True):
 		fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))
@@ -716,8 +712,8 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 #***************************** How To Use Functions **********************************************
 
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,500)
-symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2000)
+symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,700)
 symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,10)
 symbol_data_4H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,10)
 symbol_data_1D,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,10)

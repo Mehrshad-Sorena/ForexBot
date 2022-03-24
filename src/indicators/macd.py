@@ -407,15 +407,18 @@ def divergence(dataset,dataset_15M,Apply_to,symbol,macd_fast=12,macd_slow=26,mac
 							signal_buy_primary['st_min_max_index'][primary_counter] = -1
 							signal_buy_primary['st_min_max'][primary_counter] = 0
 
-						if (signal_buy_primary['st_min_max_index'][primary_counter] < signal_buy_primary['tp_min_max_index'][primary_counter]):
+						if (signal_buy_primary['st_min_max_index'][primary_counter] < signal_buy_primary['tp_min_max_index'][primary_counter])&(signal_buy_primary['st_min_max_index'][primary_counter] != -1):
 							signal_buy_primary['flag_min_max'][primary_counter] = 'st'
-							if (signal_buy_primary['st_min_max_index'][primary_counter] != -1):
-								signal_buy_primary['tp_min_max'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_min_max_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+							signal_buy_primary['tp_min_max'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_min_max_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						else:
-							signal_buy_primary['flag_min_max'][primary_counter] = 'tp'
+							
 							if (signal_buy_primary['tp_min_max_index'][primary_counter] != -1):
+								signal_buy_primary['flag_min_max'][primary_counter] = 'tp'
 								signal_buy_primary['st_min_max'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - np.min(dataset[symbol]['low'][extreme_min['index'][elm]:int(signal_buy_primary['tp_min_max_index'][primary_counter])]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 
+							if (signal_buy_primary['tp_min_max_index'][primary_counter] == -1) & (signal_buy_primary['st_min_max_index'][primary_counter] != -1):
+								signal_buy_primary['flag_min_max'][primary_counter] = 'st'
+								signal_buy_primary['tp_min_max'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_min_max_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						#///////////////////////////////////////////////////
 					if (name_stp_pr == True):
 						#Calculate ST and TP With Protect Resist Function
@@ -460,14 +463,18 @@ def divergence(dataset,dataset_15M,Apply_to,symbol,macd_fast=12,macd_slow=26,mac
 								signal_buy_primary['st_pr_index'][primary_counter] = -1
 								signal_buy_primary['st_pr'][primary_counter] = 0
 
-							if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]):
+							if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 								signal_buy_primary['flag_pr'][primary_counter] = 'st'
-								if (signal_buy_primary['st_pr_index'][primary_counter] != -1):
-									signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+								signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 							else:
-								signal_buy_primary['flag_pr'][primary_counter] = 'tp'
+								
 								if (signal_buy_primary['tp_pr_index'][primary_counter] != -1):
+									signal_buy_primary['flag_pr'][primary_counter] = 'tp'
 									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - np.min(dataset[symbol]['low'][extreme_min['index'][elm]:int(signal_buy_primary['tp_pr_index'][primary_counter])]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
+								
+								if (signal_buy_primary['tp_pr_index'][primary_counter] == -1) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
+									signal_buy_primary['flag_pr'][primary_counter] = 'st'
+									signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						
 						else:
 							signal_buy_primary['tp_pr_index'][primary_counter] = -1
@@ -521,15 +528,18 @@ def divergence(dataset,dataset_15M,Apply_to,symbol,macd_fast=12,macd_slow=26,mac
 							signal_buy_primary['st_min_max_index'][primary_counter] = -1
 							signal_buy_primary['st_min_max'][primary_counter] = 0
 
-						if (signal_buy_primary['st_min_max_index'][primary_counter] < signal_buy_primary['tp_min_max_index'][primary_counter]):
+						if (signal_buy_primary['st_min_max_index'][primary_counter] < signal_buy_primary['tp_min_max_index'][primary_counter])&(signal_buy_primary['st_min_max_index'][primary_counter] != -1):
 							signal_buy_primary['flag_min_max'][primary_counter] = 'st'
-							if (signal_buy_primary['st_min_max_index'][primary_counter] != -1):
-								signal_buy_primary['tp_min_max'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_min_max_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+							signal_buy_primary['tp_min_max'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_min_max_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						else:
-							signal_buy_primary['flag_min_max'][primary_counter] = 'tp'
+							
 							if (signal_buy_primary['tp_min_max_index'][primary_counter] != -1):
+								signal_buy_primary['flag_min_max'][primary_counter] = 'tp'
 								signal_buy_primary['st_min_max'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - np.min(dataset[symbol]['low'][extreme_min['index'][elm]:int(signal_buy_primary['tp_min_max_index'][primary_counter])]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 
+							if (signal_buy_primary['tp_min_max_index'][primary_counter] == -1) & (signal_buy_primary['st_min_max_index'][primary_counter] != -1):
+								signal_buy_primary['flag_min_max'][primary_counter] = 'st'
+								signal_buy_primary['tp_min_max'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_min_max_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						#///////////////////////////////////////////////////
 
 					if (name_stp_pr == True):
@@ -575,14 +585,18 @@ def divergence(dataset,dataset_15M,Apply_to,symbol,macd_fast=12,macd_slow=26,mac
 								signal_buy_primary['st_pr_index'][primary_counter] = -1
 								signal_buy_primary['st_pr'][primary_counter] = 0
 
-							if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]):
+							if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 								signal_buy_primary['flag_pr'][primary_counter] = 'st'
-								if (signal_buy_primary['st_pr_index'][primary_counter] != -1):
-									signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+								signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 							else:
-								signal_buy_primary['flag_pr'][primary_counter] = 'tp'
+								
 								if (signal_buy_primary['tp_pr_index'][primary_counter] != -1):
+									signal_buy_primary['flag_pr'][primary_counter] = 'tp'
 									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - np.min(dataset[symbol]['low'][extreme_min['index'][elm]:int(signal_buy_primary['tp_pr_index'][primary_counter])]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
+								
+								if (signal_buy_primary['tp_pr_index'][primary_counter] == -1) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
+									signal_buy_primary['flag_pr'][primary_counter] = 'st'
+									signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						
 						else:
 							signal_buy_primary['tp_pr_index'][primary_counter] = -1
@@ -637,15 +651,18 @@ def divergence(dataset,dataset_15M,Apply_to,symbol,macd_fast=12,macd_slow=26,mac
 							signal_buy_primary['st_min_max_index'][primary_counter] = -1
 							signal_buy_primary['st_min_max'][primary_counter] = 0
 
-						if (signal_buy_primary['st_min_max_index'][primary_counter] < signal_buy_primary['tp_min_max_index'][primary_counter]):
+						if (signal_buy_primary['st_min_max_index'][primary_counter] < signal_buy_primary['tp_min_max_index'][primary_counter])&(signal_buy_primary['st_min_max_index'][primary_counter] != -1):
 							signal_buy_primary['flag_min_max'][primary_counter] = 'st'
-							if (signal_buy_primary['st_min_max_index'][primary_counter] != -1):
-								signal_buy_primary['tp_min_max'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_min_max_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+							signal_buy_primary['tp_min_max'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_min_max_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						else:
-							signal_buy_primary['flag_min_max'][primary_counter] = 'tp'
+							
 							if (signal_buy_primary['tp_min_max_index'][primary_counter] != -1):
+								signal_buy_primary['flag_min_max'][primary_counter] = 'tp'
 								signal_buy_primary['st_min_max'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - np.min(dataset[symbol]['low'][extreme_min['index'][elm]:int(signal_buy_primary['tp_min_max_index'][primary_counter])]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 
+							if (signal_buy_primary['tp_min_max_index'][primary_counter] == -1) & (signal_buy_primary['st_min_max_index'][primary_counter] != -1):
+								signal_buy_primary['flag_min_max'][primary_counter] = 'st'
+								signal_buy_primary['tp_min_max'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_min_max_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						#///////////////////////////////////////////////////
 					if (name_stp_pr == True):
 						#Calculate ST and TP With Protect Resist Function
@@ -690,15 +707,18 @@ def divergence(dataset,dataset_15M,Apply_to,symbol,macd_fast=12,macd_slow=26,mac
 								signal_buy_primary['st_pr_index'][primary_counter] = -1
 								signal_buy_primary['st_pr'][primary_counter] = 0
 
-							if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]):
+							if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 								signal_buy_primary['flag_pr'][primary_counter] = 'st'
-								if (signal_buy_primary['st_pr_index'][primary_counter] != -1):
-									signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+								signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 							else:
-								signal_buy_primary['flag_pr'][primary_counter] = 'tp'
+								
 								if (signal_buy_primary['tp_pr_index'][primary_counter] != -1):
+									signal_buy_primary['flag_pr'][primary_counter] = 'tp'
 									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - np.min(dataset[symbol]['low'][extreme_min['index'][elm]:int(signal_buy_primary['tp_pr_index'][primary_counter])]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
-						
+								
+								if (signal_buy_primary['tp_pr_index'][primary_counter] == -1) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
+									signal_buy_primary['flag_pr'][primary_counter] = 'st'
+									signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 						else:
 							signal_buy_primary['tp_pr_index'][primary_counter] = -1
 							signal_buy_primary['tp_pr'][primary_counter] = 0
@@ -2136,8 +2156,8 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 
 #*********************************** How To Use Funcs ************************************************************
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,99000)
-symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,33000)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,12000)
+symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,4000)
 #symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,1000)
 print('get data')
 time_first = time.time()

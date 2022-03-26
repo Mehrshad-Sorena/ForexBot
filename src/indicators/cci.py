@@ -1341,6 +1341,7 @@ symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,12000)
 symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,4000)
 print('data get')
 
+
 buy_data,sell_data = golden_cross_zero(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i',
 	Low_Period=25,High_Period=50,
 	distance_lines=2,mode='optimize',
@@ -1355,3 +1356,4 @@ for clm in output_sell.columns:
 	print(output_sell[clm][0])
 
 genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol='AUDCAD_i',num_turn=2,max_score=0.2)
+

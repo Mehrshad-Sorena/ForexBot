@@ -1,7 +1,5 @@
-#from src.config import mongoConfig
 from pymongo import MongoClient
 from datetime import datetime
-# from src.utils import logs
 from uuid import uuid4
 
 

@@ -527,6 +527,8 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 		#f.summary(Nbest=5, lw=2, plot=True, method='sumsquare_error', clf=True)
 		#print(f.get_best(method = 'sumsquare_error').items())
 
+		print(f.get_best(method = 'sumsquare_error'))
+
 		items = list(f.get_best(method = 'sumsquare_error').items())
 		dist_name = items[0][0]
 		dist_parameters = items[0][1]
@@ -1199,10 +1201,9 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 				Chromosome[chrom_counter]['signal'] = ('sell' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
 				result_sell = result_sell.append(output_sell, ignore_index=True)
 				chromosome_sell = chromosome_sell.append(Chromosome[chrom_counter], ignore_index=True)
-		
+
 		if Chromosome[chrom_counter]['signal'] is None: continue
 
-		print(chrom_counter)
 		chrom_counter += 1
 		if (chrom_counter >= ((len(Chromosome)))):
 			chrom_counter = 0
@@ -1226,6 +1227,11 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 				{
 				clm: result_buy[clm][idx]
 				})
+		for clm in chromosome_buy.columns:
+			best_dict.update(
+				{
+				clm: chromosome_buy[clm][idx]
+				})
 
 		best_buy = best_buy.append(best_dict, ignore_index=True)
 	#//////////////////////
@@ -1242,12 +1248,20 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 				{
 				clm: result_sell[clm][idx]
 				})
+		for clm in chromosome_sell.columns:
+			best_dict.update(
+				{
+				clm: chromosome_sell[clm][idx]
+				})
 
 		best_sell = best_sell.append(best_dict, ignore_index=True)
 	#//////////////////////
 
-	print(best_sell)
-	print(best_buy)
+	for clm in best_sell.columns:
+		print('sell : ',best_sell[clm])
+
+	for clm in best_buy:
+		print('buy : ',best_buy[clm])
 
 	#********************************///////////////****************************************************************
 
@@ -1285,4 +1299,4 @@ symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
 symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
 print('data get')
 
-genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol='AUDCAD_i',num_turn=2,max_score=0.2)
+genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol='AUDCAD_i',num_turn=25,max_score=0.2)

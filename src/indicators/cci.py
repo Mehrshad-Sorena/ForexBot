@@ -519,19 +519,25 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 
 	while True:
 		
-		f = Fitter(data = data_X, xmin=np.min(data_X), xmax=np.max(data_X), bins = len(signal_final['Y']), distributions = distributions, timeout=30, density=True)
-
-		f.fit(amp=1, progress=False, n_jobs=-1)
-
-		#distributions=['foldnorm','dweibull','rayleigh','expon','nakagami','norm']
-		#f.summary(Nbest=5, lw=2, plot=True, method='sumsquare_error', clf=True)
-		#print(f.get_best(method = 'sumsquare_error').items())
-
-		print(f.get_best(method = 'sumsquare_error'))
-
-		items = list(f.get_best(method = 'sumsquare_error').items())
-		dist_name = items[0][0]
-		dist_parameters = items[0][1]
+		try:
+			f = Fitter(data = data_X, xmin=np.min(data_X), xmax=np.max(data_X), bins = len(signal_final['Y']), distributions = distributions, timeout=30, density=True)
+	
+			f.fit(amp=1, progress=False, n_jobs=-1)
+	
+			#distributions=['foldnorm','dweibull','rayleigh','expon','nakagami','norm']
+			#f.summary(Nbest=5, lw=2, plot=True, method='sumsquare_error', clf=True)
+			#print(f.get_best(method = 'sumsquare_error').items())
+	
+			items = list(f.get_best(method = 'sumsquare_error').items())
+			dist_name = items[0][0]
+			dist_parameters = items[0][1]
+		except:
+			best_signals_interval = pd.DataFrame()
+			best_signals_interval['interval'] = [0,0,0]
+			best_signals_interval['power'] = [0,0,0]
+			best_signals_interval['alpha'] = [alpha,alpha,alpha]
+			best_signals_interval[name_stp] = [name_stp,name_stp,name_stp]
+			return best_signals_interval
 
 		if dist_name == 'foldnorm':
 			Y = f.fitted_pdf['foldnorm']

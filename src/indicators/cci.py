@@ -1337,23 +1337,25 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #*************************** How To Use Funcs *****************************************
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,12000)
-symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,4000)
+symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
+symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
 print('data get')
 
 
-buy_data,sell_data = golden_cross_zero(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i',
-	Low_Period=25,High_Period=50,
-	distance_lines=2,mode='optimize',
-	name_stp_minmax=True,name_stp_pr=True,plot=False)
+#buy_data,sell_data = golden_cross_zero(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i',
+#	Low_Period=25,High_Period=50,
+#	distance_lines=2,mode='optimize',
+#	name_stp_minmax=True,name_stp_pr=True,plot=False)
 
-output_buy,output_sell = tester_golden_cross_zero(signal_buy=buy_data,signal_sell=sell_data,
-	min_tp=0.1,max_st=0.2,
-	alpha=0.1)
+#output_buy,output_sell = tester_golden_cross_zero(signal_buy=buy_data,signal_sell=sell_data,
+#	min_tp=0.1,max_st=0.2,
+#	alpha=0.1)
 
-for clm in output_sell.columns:
-	print(clm)
-	print(output_sell[clm][0])
+#for clm in output_sell.columns:
+#	print(clm)
+#	print(output_sell[clm][0])
 
-genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol='AUDCAD_i',num_turn=2,max_score=0.2)
+for sym in symbol:
+	if sym.name == 'RUBRUR': continue
+	genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score=5)
 

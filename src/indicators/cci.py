@@ -18,6 +18,10 @@ from random import randint
 import csv
 import os
 from progress.bar import Bar
+from db_helper import ForexMongo
+
+
+db = ForexMongo(username='root', password='rootpwd')
 
 
 # Create a DataFrame so 'ta' can be used.

@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 from datetime import datetime
-from uuid import uuid4
 
 
 class ForexMongo:
@@ -13,16 +12,14 @@ class ForexMongo:
     # password = params.get('password')
     host = '127.0.0.1'
     port = 27017
-    username = 'root'
-    password = 'rootpwd'
 
-    def __init__(self):
+    def __init__(self, username=None, password=None):
         try:
             self.client = MongoClient(
                     host=self.host,
                     port=self.port,
-                    username=self.username,
-                    password=self.password)
+                    username=username,
+                    password=password)
             self.db = self.client[self.dbname]
             self.forex = self.db[self.collection_name]
         except Exception as ex:

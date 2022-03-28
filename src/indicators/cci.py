@@ -1041,9 +1041,9 @@ def initilize_values_genetic():
 
 def gen_creator(Chromosome):
 
-	Chromosome_Cutter = randint(0, 3)
+	Chromosome_Cutter = randint(0, 5)
 
-	Chromosome_selector = randint(0, 7)
+	Chromosome_selector = randint(0, 19)
 
 	baby = {}
 
@@ -1055,12 +1055,12 @@ def gen_creator(Chromosome):
 
 	while (baby_counter_create < (len(Chromosome) * 2)):
 		baby[baby_counter_create] = {
-			'high_period': 0,
-			'low_period': 0,
-			'distance_lines': 0,
-			'min_tp': 0,
-			'max_st': 0,
-			'alfa': 0,
+			'high_period': randint(5, 120),
+			'low_period': randint(5, 60),
+			'distance_lines': randint(0, 10),
+			'min_tp': randint(0, 60)/100,
+			'max_st': randint(0, 40)/100,
+			'alfa': randint(1, 500)/1000,
 			'signal': None
 		}
 
@@ -1345,6 +1345,12 @@ symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
 print('data get')
 
 
+for i in range(100):
+	data = gen_creator(gen_creator(gen_creator(gen_creator(gen_creator(gen_creator(gen_creator(gen_creator(gen_creator(gen_creator(initilize_values_genetic()))))))))))
+	print(len(data))
+	for k,v in zip(data.keys(), data.values()):
+		if v.get('high_period') == 0 or v.get('low_period') == 0:
+			print('***************',k)
 
 
 #for clm in output_sell.columns:
@@ -1365,7 +1371,7 @@ symbol_black_list = np.array(
 
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
-	#genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score=5)
+	genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score=5)
 
 
 def read_ga_result(symbol):
@@ -1455,7 +1461,7 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 
 			if np.isnan(output_buy['score_min_max'][0]) : output_buy['score_min_max'][0] = 0
 
-			if output_buy['score_min_max'][0] >= ga_result_buy['score_min_max'][0]:
+			if output_buy['score_min_max'][0] >= ga_result_buy['score_min_max'][0]: pass
 
 		#////////////////////////////////////////////////////////////////
 
@@ -1519,7 +1525,7 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 
 			if np.isnan(output_buy['score_pr'][0]) : output_buy['score_pr'][0] = 0
 
-			if output_buy['score_pr'][0] >= ga_result_buy['score_pr'][0]:
+			if output_buy['score_pr'][0] >= ga_result_buy['score_pr'][0]: pass
 
 	#///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1594,7 +1600,7 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 
 			if np.isnan(output_sell['score_min_max'][0]) : output_sell['score_min_max'][0] = 0
 
-			if output_sell['score_min_max'][0] >= ga_result_sell['score_min_max'][0]:
+			if output_sell['score_min_max'][0] >= ga_result_sell['score_min_max'][0]: pass
 
 		#/////////////////////////////////////////
 
@@ -1656,10 +1662,10 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 
 			if np.isnan(output_sell['score_pr'][0]) : output_sell['score_pr'][0] = 0
 
-			if output_sell['score_pr'][0] >= ga_result_sell['score_pr'][0]:
+			if output_sell['score_pr'][0] >= ga_result_sell['score_pr'][0]: pass
 		#////////////////////////////////////////
 
 
-output_buy,output_sell = tester_golden_cross_zero(signal_buy=buy_data,signal_sell=sell_data,
-	min_tp=0.1,max_st=0.2,
-	alpha=0.1)
+#output_buy,output_sell = tester_golden_cross_zero(signal_buy=buy_data,signal_sell=sell_data,
+#	min_tp=0.1,max_st=0.2,
+#	alpha=0.1)

@@ -1006,7 +1006,10 @@ def initilize_values_genetic():
 	'distance_lines': 2,
 	'min_tp': 0.1,
 	'max_st': 0.2,
-	'alfa': 0.02
+	'alfa': 0.02,
+	'signal': None,
+	'score_buy': 0,
+	'score_sell': 0
 	}
 
 	Chromosome[1] = {
@@ -1015,7 +1018,10 @@ def initilize_values_genetic():
 	'distance_lines': 4,
 	'min_tp': 0.2,
 	'max_st': 0.1,
-	'alfa': 0.2
+	'alfa': 0.2,
+	'signal': None,
+	'score_buy': 0,
+	'score_sell': 0
 	}
 	i = 2
 	while i < 20:
@@ -1026,7 +1032,9 @@ def initilize_values_genetic():
 			'min_tp': randint(0, 60)/100,
 			'max_st': randint(0, 40)/100,
 			'alfa': randint(1, 500)/1000,
-			'signal': None
+			'signal': None,
+			'score_buy': 0,
+			'score_sell': 0
 		}
 		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']): continue
 		res = list(Chromosome[i].keys()) 
@@ -1038,6 +1046,8 @@ def initilize_values_genetic():
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #************************************************ Gen Creator ****************************************************************
+def takeSecond(elem):
+    return elem[1]
 
 def gen_creator(Chromosome):
 
@@ -1061,15 +1071,26 @@ def gen_creator(Chromosome):
 			'min_tp': randint(0, 60)/100,
 			'max_st': randint(0, 40)/100,
 			'alfa': randint(1, 500)/1000,
-			'signal': None
+			'signal': None,
+			'score_buy': 0,
+			'score_sell': 0
 		}
 
 		baby_counter_create += 1
+
+	scr = []
+	for k,v in zip(Chromosome.keys(), Chromosome.values()):
+		scr.append([k, (v.get('score_buy') + v.get('score_sell'))/2])
+
+	scr_idx = sorted(scr, key=takeSecond, reverse=True)[:int(len(Chromosome)/2)]
+
 	while chrom_creator_counter < len(Chromosome):
 
-		#********************************************* Baby ************************************************************
-		Chromosome_selector_1 = randint(0, 19)
-		Chromosome_selector_2 = randint(0, 19)
+		#********************************************* Baby ***********************************************************
+		
+		
+		Chromosome_selector_1 = np.random.choice(len(scr_idx), size=1)[0]
+		Chromosome_selector_2 = np.random.choice(len(scr_idx), size=1)[0]
 
 		res_1 = list(Chromosome[Chromosome_selector_1].keys())
 		res_2 = list(Chromosome[Chromosome_selector_2].keys())
@@ -1106,7 +1127,9 @@ def gen_creator(Chromosome):
 			'min_tp': randint(0, 60)/100,
 			'max_st': randint(0, 40)/100,
 			'alfa': randint(1, 500)/1000,
-			'signal': None
+			'signal': None,
+			'score_buy': 0,
+			'score_sell': 0
 		}
 
 		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']): continue
@@ -1121,6 +1144,8 @@ def gen_creator(Chromosome):
 		Chromosome[re_counter]['max_st'] = baby[re_counter]['max_st']
 		Chromosome[re_counter]['alfa'] = baby[re_counter]['alfa']
 		Chromosome[re_counter]['signal'] = baby[re_counter]['signal']
+		Chromosome[re_counter]['score_buy'] = baby[re_counter]['score_buy']
+		Chromosome[re_counter]['score_sell'] = baby[re_counter]['score_sell']
 		re_counter += 1
 		#print(Chromosome_5M[6])
 
@@ -1207,6 +1232,8 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 					Chromosome[chrom_counter]['signal'] = ('buy' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
 					result_buy = result_buy.append(output_buy, ignore_index=True)
 					chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
+					score = (output_buy['score_pr'][0]+output_buy['score_min_max'][0])/2
+					Chromosome[chrom_counter].update({'score_buy': score })
 
 			if not np.isnan(output_sell['score_pr'][0]) or not np.isnan(output_sell['score_min_max'][0]):
 				if (
@@ -1235,6 +1262,8 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 					Chromosome[chrom_counter]['signal'] = ('sell' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
 					result_sell = result_sell.append(output_sell, ignore_index=True)
 					chromosome_sell = chromosome_sell.append(Chromosome[chrom_counter], ignore_index=True)
+					score = (output_sell['score_pr'][0]+output_sell['score_min_max'][0])/2
+					Chromosome[chrom_counter].update({'score_sell': score })
 
 			pbar.update(int((len(chromosome_buy) + len(chromosome_sell))/2))
 

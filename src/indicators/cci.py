@@ -1028,8 +1028,8 @@ def initilize_values_genetic():
 	i = 2
 	while i < 20:
 		Chromosome[i] = {
-			'high_period': randint(5, 120),
-			'low_period': randint(5, 60),
+			'high_period': randint(5, 200),
+			'low_period': randint(5, 180),
 			'distance_lines': randint(0, 10),
 			'min_tp': randint(0, 60)/100,
 			'max_st': randint(0, 40)/100,
@@ -1067,8 +1067,8 @@ def gen_creator(Chromosome):
 
 	while (baby_counter_create < (len(Chromosome) * 2)):
 		baby[baby_counter_create] = {
-			'high_period': randint(5, 120),
-			'low_period': randint(5, 60),
+			'high_period': randint(5, 200),
+			'low_period': randint(5, 180),
 			'distance_lines': randint(0, 10),
 			'min_tp': randint(0, 60)/100,
 			'max_st': randint(0, 40)/100,
@@ -1123,8 +1123,8 @@ def gen_creator(Chromosome):
 	limit_counter = len(Chromosome) * 2 
 	while i < (limit_counter):
 		Chromosome[i] = {
-			'high_period': randint(5, 120),
-			'low_period': randint(5, 60),
+			'high_period': randint(5, 200),
+			'low_period': randint(5, 180),
 			'distance_lines': randint(0, 10),
 			'min_tp': randint(0, 60)/100,
 			'max_st': randint(0, 40)/100,
@@ -1157,13 +1157,19 @@ def gen_creator(Chromosome):
 
 #***************************************** Genetic Algorithm **************************************************************
 
-def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
+def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga_buy,max_score_ga_sell):
 
 	#*************************** Algorithm *************************************************//
 	Chromosome = initilize_values_genetic()
 
 	print('**************************** START Genetic BUY ',symbol,'****************************')
 	print('\n')
+
+	now = datetime.now()
+	log_name = 'log/cci/golden_cross_zero/GA'+str(now.year)+'-'+str(now.month)+'-'+str(now.day)+'-'+str(now.hour)+'-'+str(now.minute)+'-'+str(now.second)+'.log'
+	
+	logging.basicConfig(filename=log_name, level=logging.DEBUG)
+	logging.debug('=======================> %s' %symbol)
 
 	if os.path.exists("Genetic_cci_output_buy/"+symbol+'.csv'):
 		with open("Genetic_cci_output_buy/"+symbol+'.csv', 'r', newline='') as myfile:
@@ -1178,6 +1184,7 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 				Chromosome[19]['signal'] = Chromosome[19]['signal']
 				Chromosome[19]['score_buy'] = float(Chromosome[19]['score_buy'])
 				Chromosome[19]['score_sell'] = float(Chromosome[19]['score_sell'])
+				max_score_ga_buy = (float(Chromosome[19]['score_pr']) + float(Chromosome[19]['score_min_max']))/2
 
 	if os.path.exists("Genetic_cci_output_sell/"+symbol+'.csv'):
 		with open("Genetic_cci_output_sell/"+symbol+'.csv', 'r', newline='') as myfile:
@@ -1192,6 +1199,7 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 				Chromosome[18]['signal'] = Chromosome[18]['signal']
 				Chromosome[18]['score_buy'] = float(Chromosome[18]['score_buy'])
 				Chromosome[18]['score_sell'] = float(Chromosome[18]['score_sell'])
+				max_score_ga_sell = (float(Chromosome[18]['score_pr']) + float(Chromosome[18]['score_min_max']))/2
 
 	result_buy = pd.DataFrame()
 	chromosome_buy = pd.DataFrame()
@@ -1204,40 +1212,60 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 	with tqdm(total=num_turn) as pbar:
 		while chrom_counter < len(Chromosome):
 
-			buy_data,sell_data = golden_cross_zero(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=symbol,
-				Low_Period=Chromosome[chrom_counter]['low_period'],High_Period=Chromosome[chrom_counter]['high_period'],
-				distance_lines=Chromosome[chrom_counter]['distance_lines'],mode='optimize',
-				name_stp_minmax=True,name_stp_pr=True,plot=False)
+			try:
+				buy_data,sell_data = golden_cross_zero(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=symbol,
+					Low_Period=Chromosome[chrom_counter]['low_period'],High_Period=Chromosome[chrom_counter]['high_period'],
+					distance_lines=Chromosome[chrom_counter]['distance_lines'],mode='optimize',
+					name_stp_minmax=True,name_stp_pr=True,plot=False)
+				flag_golden_cross = False
+			except Exception as ex:
+				print('getting error: ', ex)
+				flag_golden_cross = True
+				logging.debug(Chromosome[chrom_counter])
+
+			if flag_golden_cross:
+				logging.debug(Chromosome[chrom_counter])
+				Chromosome.pop(chrom_counter)
+				high_period = randint(5, 200)
+				low_period = randint(5, 180)
+				while high_period <= low_period:
+					high_period = randint(5, 200)
+					low_period = randint(5, 180)
+
+				Chromosome[chrom_counter] = {
+					'high_period': high_period,
+					'low_period': low_period,
+					'distance_lines': randint(0, 10),
+					'min_tp': randint(0, 60)/100,
+					'max_st': randint(0, 40)/100,
+					'alfa': randint(1, 500)/1000,
+					'signal': None,
+					'score_buy': 0,
+					'score_sell': 0
+					}
+				continue
 
 			output_buy,output_sell = tester_golden_cross_zero(signal_buy=buy_data,signal_sell=sell_data,
 				min_tp=Chromosome[chrom_counter]['min_tp'],max_st=Chromosome[chrom_counter]['max_st'],
 				alpha=Chromosome[chrom_counter]['alfa'])
 
+			logging.debug('**************** buy *****************')
+			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				logging.debug(output_buy)
+
+			logging.debug('**************** sell *****************')
+			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				logging.debug(output_sell)
+
 			if not np.isnan(output_buy['score_pr'][0]) or not np.isnan(output_buy['score_min_max'][0]):
 				if (
-					output_buy['score_pr'][0] < max_score and
+					output_buy['score_pr'][0] < max_score_ga_buy and
 					not np.isnan(output_buy['score_pr'][0]) and
-					output_buy['score_min_max'][0] < max_score and
+					output_buy['score_min_max'][0] < max_score_ga_buy and
 					not np.isnan(output_buy['score_min_max'][0])
 					):
-					Chromosome.pop(chrom_counter)
-					high_period = randint(5, 120)
-					low_period = randint(5, 60)
-					while high_period <= low_period:
-						high_period = randint(5, 120)
-						low_period = randint(5, 60)
-
-					Chromosome[chrom_counter] = {
-						'high_period': high_period,
-						'low_period': low_period,
-						'distance_lines': randint(0, 10),
-						'min_tp': randint(0, 60)/100,
-						'max_st': randint(0, 40)/100,
-						'alfa': randint(1, 500)/1000,
-						'signal': None,
-						'score_buy': 0,
-						'score_sell': 0
-						}
+					
+					bad_buy = True
 				else:
 					Chromosome[chrom_counter]['signal'] = ('buy' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
 					result_buy = result_buy.append(output_buy, ignore_index=True)
@@ -1245,31 +1273,17 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 					score = (output_buy['score_pr'][0]+output_buy['score_min_max'][0])/2
 					Chromosome[chrom_counter].update({'score_buy': score })
 
+					bad_buy = False
+
 			if not np.isnan(output_sell['score_pr'][0]) or not np.isnan(output_sell['score_min_max'][0]):
 				if (
-					output_sell['score_pr'][0] < max_score and
+					output_sell['score_pr'][0] < max_score_ga_sell and
 					not np.isnan(output_sell['score_pr'][0]) and
-					output_sell['score_min_max'][0] < max_score and
+					output_sell['score_min_max'][0] < max_score_ga_sell and
 					not np.isnan(output_sell['score_min_max'][0])
 					):
-					Chromosome.pop(chrom_counter)
-					high_period = randint(5, 120)
-					low_period = randint(5, 60)
-					while high_period <= low_period:
-						high_period = randint(5, 120)
-						low_period = randint(5, 60)
-
-					Chromosome[chrom_counter] = {
-						'high_period': high_period,
-						'low_period': low_period,
-						'distance_lines': randint(0, 10),
-						'min_tp': randint(0, 60)/100,
-						'max_st': randint(0, 40)/100,
-						'alfa': randint(1, 500)/1000,
-						'signal': None,
-						'score_buy': 0,
-						'score_sell': 0
-						}
+					
+					bad_sell = True
 				else:
 					Chromosome[chrom_counter]['signal'] = ('sell' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
 					result_sell = result_sell.append(output_sell, ignore_index=True)
@@ -1277,11 +1291,46 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score):
 					score = (output_sell['score_pr'][0]+output_sell['score_min_max'][0])/2
 					Chromosome[chrom_counter].update({'score_sell': score })
 
+					bad_sell = False
+
+			if bad_buy == True or bad_sell == True:
+
+				Chromosome.pop(chrom_counter)
+				high_period = randint(5, 200)
+				low_period = randint(5, 180)
+				while high_period <= low_period:
+					high_period = randint(5, 200)
+					low_period = randint(5, 180)
+
+				Chromosome[chrom_counter] = {
+					'high_period': high_period,
+					'low_period': low_period,
+					'distance_lines': randint(0, 10),
+					'min_tp': randint(0, 60)/100,
+					'max_st': randint(0, 40)/100,
+					'alfa': randint(1, 500)/1000,
+					'signal': None,
+					'score_buy': 0,
+					'score_sell': 0
+					}
+
+			logging.debug('**************** num buy *****************')
+			logging.debug(len(chromosome_buy))
+
+			logging.debug('**************** num sell *****************')
+			logging.debug(len(chromosome_sell))
+
 			pbar.update(int((len(chromosome_buy) + len(chromosome_sell))/2))
 
 			if Chromosome[chrom_counter]['signal'] is None: continue
 
-			if len(chromosome_buy) > num_turn and len(chromosome_sell) > num_turn: break
+			if (
+				(len(chromosome_buy) + len(chromosome_sell))/2 >= num_turn and
+				len(chromosome_buy) != 0 and
+				len(chromosome_sell) != 0
+				):
+				break
+
 			chrom_counter += 1
 			if (chrom_counter >= ((len(Chromosome)))):
 				chrom_counter = 0
@@ -1953,7 +2002,11 @@ symbol_black_list = np.array(
 
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
-	#genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score=5)
+	try:
+		genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score=0.2)
+
+	except Exception as ex:
+		print('getting error: ', ex)
 
 symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2100)
 symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,700)

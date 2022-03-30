@@ -689,18 +689,26 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	output_buy['diff_min_max_candle_lower_min_max'] = [diff_min_max_candle_intervals_minmax_buy['interval'][lower]]
 
 	if output_buy['num_trade_min_max'][0] != 0:
-		score_num_tp = (tp_counter/output_buy['num_trade_min_max'][0])
-		if (score_num_tp >= 1):
-			score_num_tp = score_num_tp * 2
+		if output_buy['num_st_min_max'][0] != 0:
+			score_num_tp = (tp_counter-output_buy['num_st_min_max'][0])
+
+			if (score_num_tp > 0):
+				score_num_tp = score_num_tp * 9
+			else:
+				score_num_tp = 0
 		else:
-			score_num_tp = 0
+			if tp_counter != 0:
+				score_num_tp = tp_counter * 10
+			else:
+				score_num_tp = 0
 	else:
 		score_num_tp = 0
 
 	if output_buy['max_st_min_max'][0] != 0:
-		score_max_tp = (output_buy['max_tp_min_max'][0]/output_buy['max_st_min_max'][0])
-		if (score_max_tp >= 1):
-			score_max_tp = score_max_tp * 2
+		score_max_tp = (output_buy['max_tp_min_max'][0]-output_buy['max_st_min_max'][0])
+
+		if (score_max_tp > 0):
+			score_max_tp = score_max_tp * 9
 		else:
 			score_max_tp = 0
 	else:
@@ -709,9 +717,10 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 			score_max_tp = output_buy['max_tp_min_max'][0] * 10
 
 	if (output_buy['mean_st_min_max'][0] != 0):
-		score_mean_tp = (output_buy['mean_tp_min_max'][0]/output_buy['mean_st_min_max'][0])
-		if (score_mean_tp >= 1):
-			score_mean_tp = score_mean_tp * 2
+		score_mean_tp = (output_buy['mean_tp_min_max'][0]-output_buy['mean_st_min_max'][0])
+
+		if (score_mean_tp > 0):
+			score_mean_tp = score_mean_tp * 9
 		else:
 			score_mean_tp = 0
 	else:
@@ -720,9 +729,10 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 			score_mean_tp = output_buy['mean_tp_min_max'][0] * 10
 
 	if (output_buy['sum_st_min_max'][0] != 0):
-		score_sum_tp = (output_buy['sum_tp_min_max'][0]/output_buy['sum_st_min_max'][0])
-		if (score_sum_tp >= 1):
-			score_sum_tp = score_sum_tp * 2
+		score_sum_tp = (output_buy['sum_tp_min_max'][0]-output_buy['sum_st_min_max'][0])
+
+		if (score_sum_tp > 0):
+			score_sum_tp = score_sum_tp * 9
 		else:
 			score_sum_tp = 0
 	else:
@@ -781,18 +791,27 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	output_sell['diff_min_max_candle_lower_min_max'] = [diff_min_max_candle_intervals_minmax_sell['interval'][lower]]
 
 	if output_sell['num_trade_min_max'][0] != 0:
-		score_num_tp = (tp_counter/output_sell['num_trade_min_max'][0])
-		if (score_num_tp >= 1):
-			score_num_tp = score_num_tp * 2
+
+		if output_buy['num_st_min_max'][0] != 0:
+			score_num_tp = (tp_counter-output_buy['num_st_min_max'][0])
+
+			if (score_num_tp > 0):
+				score_num_tp = score_num_tp * 9
+			else:
+				score_num_tp = 0
 		else:
-			score_num_tp = 0
+			if tp_counter != 0:
+				score_num_tp = tp_counter * 10
+			else:
+				score_num_tp = 0
 	else:
 		score_num_tp = 0
 
 	if output_sell['max_st_min_max'][0] != 0:
-		score_max_tp = (output_sell['max_tp_min_max'][0]/output_sell['max_st_min_max'][0])
-		if (score_max_tp >= 1):
-			score_max_tp = score_max_tp * 2
+		score_max_tp = (output_sell['max_tp_min_max'][0]-output_sell['max_st_min_max'][0])
+
+		if (score_max_tp > 0):
+			score_max_tp = score_max_tp * 9
 		else:
 			score_max_tp = 0
 	else:
@@ -801,9 +820,10 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 			score_max_tp = output_sell['max_tp_min_max'][0] * 10
 
 	if (output_sell['mean_st_min_max'][0] != 0):
-		score_mean_tp = (output_sell['mean_tp_min_max'][0]/output_sell['mean_st_min_max'][0])
-		if (score_mean_tp >= 1):
-			score_mean_tp = score_mean_tp * 2
+		score_mean_tp = (output_sell['mean_tp_min_max'][0]-output_sell['mean_st_min_max'][0])
+
+		if (score_mean_tp > 0):
+			score_mean_tp = score_mean_tp * 9
 		else:
 			score_mean_tp = 0
 	else:
@@ -812,9 +832,10 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 			score_mean_tp = output_sell['mean_tp_min_max'][0] * 10
 
 	if (output_sell['sum_st_min_max'][0] != 0):
-		score_sum_tp = (output_sell['sum_tp_min_max'][0]/output_sell['sum_st_min_max'][0])
-		if (score_sum_tp >= 1):
-			score_sum_tp = score_sum_tp * 2
+		score_sum_tp = (output_sell['sum_tp_min_max'][0]-output_sell['sum_st_min_max'][0])
+
+		if (score_sum_tp > 0):
+			score_sum_tp = score_sum_tp * 9
 		else:
 			score_sum_tp = 0
 	else:
@@ -884,18 +905,27 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	output_buy['diff_down_lower_pr'] = [diff_down_intervals_pr_buy['interval'][lower]]
 
 	if output_buy['num_trade_pr'][0] != 0:
-		score_num_tp = (tp_counter/output_buy['num_trade_pr'][0])
-		if (score_num_tp >= 1):
-			score_num_tp = score_num_tp * 2
+
+		if output_buy['num_st_pr'][0] != 0:
+			score_num_tp = (tp_counter-output_buy['num_st_pr'][0])
+
+			if (score_num_tp > 0):
+				score_num_tp = score_num_tp * 9
+			else:
+				score_num_tp = 0
 		else:
-			score_num_tp = 0
+			if tp_counter != 0:
+				score_num_tp = tp_counter * 10
+			else:
+				score_num_tp = 0
 	else:
 		score_num_tp = 0
 
 	if output_buy['max_st_pr'][0] != 0:
-		score_max_tp = (output_buy['max_tp_pr'][0]/output_buy['max_st_pr'][0])
-		if (score_max_tp >= 1):
-			score_max_tp = score_max_tp * 2
+		score_max_tp = (output_buy['max_tp_pr'][0]-output_buy['max_st_pr'][0])
+
+		if (score_max_tp > 0):
+			score_max_tp = score_max_tp * 9
 		else:
 			score_max_tp = 0
 	else:
@@ -904,9 +934,10 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 			score_max_tp = output_buy['max_tp_pr'][0] * 10
 
 	if (output_buy['mean_st_pr'][0] != 0):
-		score_mean_tp = (output_buy['mean_tp_pr'][0]/output_buy['mean_st_pr'][0])
-		if (score_mean_tp >= 1):
-			score_mean_tp = score_mean_tp * 2
+		score_mean_tp = (output_buy['mean_tp_pr'][0]-output_buy['mean_st_pr'][0])
+
+		if (score_mean_tp > 0):
+			score_mean_tp = score_mean_tp * 9
 		else:
 			score_mean_tp = 0
 	else:
@@ -915,9 +946,10 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 			score_mean_tp = output_buy['mean_tp_pr'][0] * 10
 
 	if (output_buy['sum_st_pr'][0] != 0):
-		score_sum_tp = (output_buy['sum_tp_pr'][0]/output_buy['sum_st_pr'][0])
-		if (score_sum_tp >= 1):
-			score_sum_tp = score_sum_tp * 2
+		score_sum_tp = (output_buy['sum_tp_pr'][0]-output_buy['sum_st_pr'][0])
+
+		if (score_sum_tp > 0):
+			score_sum_tp = score_sum_tp * 9
 		else:
 			score_sum_tp = 0
 	else:
@@ -999,18 +1031,26 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	output_sell['diff_down_lower_pr'] = [diff_down_intervals_pr_sell['interval'][lower]]
 
 	if output_sell['num_trade_pr'][0] != 0:
-		score_num_tp = (tp_counter/output_sell['num_trade_pr'][0])
-		if (score_num_tp >= 1):
-			score_num_tp = score_num_tp * 2
+
+		if output_buy['num_st_pr'][0] != 0:
+			score_num_tp = (tp_counter-output_buy['num_st_pr'][0])
+
+			if (score_num_tp > 0):
+				score_num_tp = score_num_tp * 9
+			else:
+				score_num_tp = 0
 		else:
-			score_num_tp = 0
+			if tp_counter != 0:
+				score_num_tp = tp_counter * 10
+			else:
+				score_num_tp = 0
 	else:
 		score_num_tp = 0
 
 	if output_sell['max_st_pr'][0] != 0:
-		score_max_tp = (output_sell['max_tp_pr'][0]/output_sell['max_st_pr'][0])
-		if (score_max_tp >= 1):
-			score_max_tp = score_max_tp * 2
+		score_max_tp = (output_sell['max_tp_pr'][0]-output_sell['max_st_pr'][0])
+		if (score_max_tp > 0):
+			score_max_tp = score_max_tp * 9
 		else:
 			score_max_tp = 0
 	else:
@@ -1019,9 +1059,10 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 			score_max_tp = output_sell['max_tp_pr'][0] * 10
 
 	if (output_sell['mean_st_pr'][0] != 0):
-		score_mean_tp = (output_sell['mean_tp_pr'][0]/output_sell['mean_st_pr'][0])
-		if (score_mean_tp >= 1):
-			score_mean_tp = score_mean_tp * 2
+		score_mean_tp = (output_sell['mean_tp_pr'][0]-output_sell['mean_st_pr'][0])
+
+		if (score_mean_tp > 0):
+			score_mean_tp = score_mean_tp * 9
 		else:
 			score_mean_tp = 0
 	else:
@@ -1030,9 +1071,10 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 			score_mean_tp = output_sell['mean_tp_pr'][0] * 10
 
 	if (output_sell['sum_st_pr'][0] != 0):
-		score_sum_tp = (output_sell['sum_tp_pr'][0]/output_sell['sum_st_pr'][0])
-		if (score_sum_tp >= 1):
-			score_sum_tp = score_sum_tp * 2
+		score_sum_tp = (output_sell['sum_tp_pr'][0]-output_sell['sum_st_pr'][0])
+
+		if (score_sum_tp > 0):
+			score_sum_tp = score_sum_tp * 9
 		else:
 			score_sum_tp = 0
 	else:
@@ -2066,7 +2108,7 @@ symbol_black_list = np.array(
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
 	#try:
-	genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=10,max_score_ga_sell=10)
+	genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=1,max_score_ga_sell=1)
 
 	#except Exception as ex:
 		#print('getting error: ', ex)

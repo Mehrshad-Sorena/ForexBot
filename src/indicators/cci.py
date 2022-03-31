@@ -792,8 +792,8 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 
 	if output_sell['num_trade_min_max'][0] != 0:
 
-		if output_buy['num_st_min_max'][0] != 0:
-			score_num_tp = (tp_counter-output_buy['num_st_min_max'][0])
+		if output_sell['num_st_min_max'][0] != 0:
+			score_num_tp = (tp_counter-output_sell['num_st_min_max'][0])
 
 			if (score_num_tp > 0):
 				score_num_tp = score_num_tp * 9
@@ -1032,8 +1032,8 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 
 	if output_sell['num_trade_pr'][0] != 0:
 
-		if output_buy['num_st_pr'][0] != 0:
-			score_num_tp = (tp_counter-output_buy['num_st_pr'][0])
+		if output_sell['num_st_pr'][0] != 0:
+			score_num_tp = (tp_counter-output_sell['num_st_pr'][0])
 
 			if (score_num_tp > 0):
 				score_num_tp = score_num_tp * 9
@@ -1134,12 +1134,12 @@ def initilize_values_genetic():
 	i = 2
 	while i < 20:
 		Chromosome[i] = {
-			'high_period': randint(5, 200),
-			'low_period': randint(5, 180),
-			'distance_lines': randint(0, 10),
+			'high_period': randint(5, 150),
+			'low_period': randint(5, 150),
+			'distance_lines': randint(0, 4),
 			'min_tp': randint(0, 60)/100,
-			'max_st': randint(0, 40)/100,
-			'alfa': randint(1, 500)/1000,
+			'max_st': randint(0, 30)/100,
+			'alfa': randint(1, 250)/1000,
 			'signal': None,
 			'score_buy': 0,
 			'score_sell': 0
@@ -1173,12 +1173,12 @@ def gen_creator(Chromosome):
 
 	while (baby_counter_create < (len(Chromosome) * 2)):
 		baby[baby_counter_create] = {
-			'high_period': randint(5, 200),
-			'low_period': randint(5, 180),
-			'distance_lines': randint(0, 10),
+			'high_period': randint(5, 150),
+			'low_period': randint(5, 150),
+			'distance_lines': randint(0, 4),
 			'min_tp': randint(0, 60)/100,
-			'max_st': randint(0, 40)/100,
-			'alfa': randint(1, 500)/1000,
+			'max_st': randint(0, 30)/100,
+			'alfa': randint(1, 250)/1000,
 			'signal': None,
 			'score_buy': 0,
 			'score_sell': 0
@@ -1229,12 +1229,12 @@ def gen_creator(Chromosome):
 	limit_counter = len(Chromosome) * 2 
 	while i < (limit_counter):
 		Chromosome[i] = {
-			'high_period': randint(5, 200),
-			'low_period': randint(5, 180),
-			'distance_lines': randint(0, 10),
+			'high_period': randint(5, 150),
+			'low_period': randint(5, 150),
+			'distance_lines': randint(0, 4),
 			'min_tp': randint(0, 60)/100,
-			'max_st': randint(0, 40)/100,
-			'alfa': randint(1, 500)/1000,
+			'max_st': randint(0, 30)/100,
+			'alfa': randint(1, 250)/1000,
 			'signal': None,
 			'score_buy': 0,
 			'score_sell': 0
@@ -1332,19 +1332,19 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 			if flag_golden_cross:
 				logging.debug(Chromosome[chrom_counter])
 				Chromosome.pop(chrom_counter)
-				high_period = randint(5, 200)
-				low_period = randint(5, 180)
+				high_period = randint(5, 150)
+				low_period = randint(5, 150)
 				while high_period <= low_period:
-					high_period = randint(5, 200)
-					low_period = randint(5, 180)
+					high_period = randint(5, 150)
+					low_period = randint(5, 150)
 
 				Chromosome[chrom_counter] = {
 					'high_period': high_period,
 					'low_period': low_period,
-					'distance_lines': randint(0, 10),
+					'distance_lines': randint(0, 4),
 					'min_tp': randint(0, 60)/100,
-					'max_st': randint(0, 40)/100,
-					'alfa': randint(1, 500)/1000,
+					'max_st': randint(0, 30)/100,
+					'alfa': randint(1, 250)/1000,
 					'signal': None,
 					'score_buy': 0,
 					'score_sell': 0
@@ -1402,19 +1402,19 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 			if bad_buy == True or bad_sell == True:
 
 				Chromosome.pop(chrom_counter)
-				high_period = randint(5, 200)
-				low_period = randint(5, 180)
+				high_period = randint(5, 150)
+				low_period = randint(5, 150)
 				while high_period <= low_period:
-					high_period = randint(5, 200)
-					low_period = randint(5, 180)
+					high_period = randint(5, 150)
+					low_period = randint(5, 150)
 
 				Chromosome[chrom_counter] = {
 					'high_period': high_period,
 					'low_period': low_period,
-					'distance_lines': randint(0, 10),
+					'distance_lines': randint(0, 4),
 					'min_tp': randint(0, 60)/100,
-					'max_st': randint(0, 40)/100,
-					'alfa': randint(1, 500)/1000,
+					'max_st': randint(0, 30)/100,
+					'alfa': randint(1, 250)/1000,
 					'signal': None,
 					'score_buy': 0,
 					'score_sell': 0
@@ -2247,17 +2247,17 @@ symbol_black_list = np.array(
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
 	#try:
-	#genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=1,max_score_ga_sell=1)
+	genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=1,max_score_ga_sell=1)
 
 	#except Exception as ex:
 		#print('getting error: ', ex)
 
-symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,99000)
-symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,33000)
+symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,12000)
+symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,4000)
 
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
 	print('****************************** ',sym.name,' ******************************')
-	one_year_golden_cross_tester(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=sym.name)
+	#one_year_golden_cross_tester(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=sym.name)
 #print(last_signal(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i'))
 

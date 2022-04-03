@@ -2448,7 +2448,9 @@ print('diff_min_max_cci_intervals_pr_buy = ',diff_min_max_cci_intervals_pr_buy['
 print('diff_min_max_candle_intervals_pr_buy = ',diff_min_max_candle_intervals_pr_buy['interval'][upper])
 print('value_min_cci_pr_buy = ',value_min_cci_pr_buy['interval'][upper])
 print('value_max_cci_pr_buy = ',value_max_cci_pr_buy['interval'][lower])
-print('value_elm = ', signal_buy['value_elm'])
+
+for elm in signal_buy['diff_min_max_cci'].values:
+	print('value_elm = ', elm)
 
 
 print('mean tp = ',np.mean(signal_buy['tp_pr'][list_index_ok]))

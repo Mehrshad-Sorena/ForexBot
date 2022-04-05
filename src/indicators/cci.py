@@ -659,32 +659,34 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	lower = 2
 
 	#*********** Methode 1 Profits With MinMax Buy:
-	ramp_high_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_high',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#ramp_high_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_high',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	ramp_low_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_low',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#ramp_low_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_low',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	diff_min_max_cci_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#diff_min_max_cci_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_cci',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	diff_min_max_candle_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_candle',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#diff_min_max_candle_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_candle',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	value_min_cci_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#value_min_cci_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	value_max_cci_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_max_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#value_max_cci_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_max_cci',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
 
-	list_index_ok = np.where(((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_minmax_buy['interval'][lower]))&
-		((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_minmax_buy['interval'][lower]))&
-		((signal_buy['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_minmax_buy['interval'][upper]))&
-		((signal_buy['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_minmax_buy['interval'][upper]))&
-		((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_minmax_buy['interval'][upper]))&
-		((signal_buy['value_max_cci'].to_numpy()>=value_max_cci_minmax_buy['interval'][lower]))
-		)[0]
+	#list_index_ok = np.where(((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_minmax_buy['interval'][lower]))&
+		#((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_minmax_buy['interval'][lower]))&
+		#((signal_buy['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_minmax_buy['interval'][upper]))&
+		#((signal_buy['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_minmax_buy['interval'][upper]))&
+		#((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_minmax_buy['interval'][upper]))&
+		#((signal_buy['value_max_cci'].to_numpy()>=value_max_cci_minmax_buy['interval'][lower]))
+		#)[0]
+
+	list_index_ok = range(0,len(signal_buy))
 
 	output_buy = pd.DataFrame()
 	output_buy['mean_tp_min_max'] = [np.mean(signal_buy['tp_min_max'][list_index_ok])]
@@ -704,16 +706,16 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	output_buy['num_tp_min_max'] = [tp_counter]
 	output_buy['num_st_min_max'] = [st_counter]
 	output_buy['num_trade_min_max'] = [st_counter + tp_counter]
-	output_buy['ramp_low_upper_min_max'] = [ramp_low_intervals_minmax_buy['interval'][upper]]
-	output_buy['ramp_low_lower_min_max'] = [ramp_low_intervals_minmax_buy['interval'][lower]]
-	output_buy['ramp_high_upper_min_max'] = [ramp_high_intervals_minmax_buy['interval'][upper]]
-	output_buy['ramp_high_lower_min_max'] = [ramp_high_intervals_minmax_buy['interval'][lower]]
-	output_buy['diff_min_max_cci_upper_min_max'] = [diff_min_max_cci_intervals_minmax_buy['interval'][upper]]
-	output_buy['diff_min_max_cci_lower_min_max'] = [diff_min_max_cci_intervals_minmax_buy['interval'][lower]]
-	output_buy['diff_min_max_candle_upper_min_max'] = [diff_min_max_candle_intervals_minmax_buy['interval'][upper]]
-	output_buy['diff_min_max_candle_lower_min_max'] = [diff_min_max_candle_intervals_minmax_buy['interval'][lower]]
-	output_buy['value_max_lower_cci_min_max'] = [value_max_cci_minmax_buy['interval'][lower]]
-	output_buy['value_min_upper_cci_min_max'] = [value_min_cci_minmax_buy['interval'][upper]]
+	#output_buy['ramp_low_upper_min_max'] = [ramp_low_intervals_minmax_buy['interval'][upper]]
+	#output_buy['ramp_low_lower_min_max'] = [ramp_low_intervals_minmax_buy['interval'][lower]]
+	#output_buy['ramp_high_upper_min_max'] = [ramp_high_intervals_minmax_buy['interval'][upper]]
+	#output_buy['ramp_high_lower_min_max'] = [ramp_high_intervals_minmax_buy['interval'][lower]]
+	#output_buy['diff_min_max_cci_upper_min_max'] = [diff_min_max_cci_intervals_minmax_buy['interval'][upper]]
+	#output_buy['diff_min_max_cci_lower_min_max'] = [diff_min_max_cci_intervals_minmax_buy['interval'][lower]]
+	#output_buy['diff_min_max_candle_upper_min_max'] = [diff_min_max_candle_intervals_minmax_buy['interval'][upper]]
+	#output_buy['diff_min_max_candle_lower_min_max'] = [diff_min_max_candle_intervals_minmax_buy['interval'][lower]]
+	#output_buy['value_max_lower_cci_min_max'] = [value_max_cci_minmax_buy['interval'][lower]]
+	#output_buy['value_min_upper_cci_min_max'] = [value_min_cci_minmax_buy['interval'][upper]]
 
 	if output_buy['num_trade_min_max'][0] != 0:
 		if output_buy['num_st_min_max'][0] != 0:
@@ -772,31 +774,34 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	#///////////////////////////////////////////////
 
 	#*********** Methode 1 Profits With MinMax Sell:
-	ramp_high_intervals_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='ramp_high',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#ramp_high_intervals_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='ramp_high',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	ramp_low_intervals_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='ramp_low',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#ramp_low_intervals_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='ramp_low',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	diff_min_max_cci_intervals_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_min_max_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#diff_min_max_cci_intervals_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_min_max_cci',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	diff_min_max_candle_intervals_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_min_max_candle',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#diff_min_max_candle_intervals_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_min_max_candle',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	value_min_cci_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_min_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#value_min_cci_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_min_cci',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	value_max_cci_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_max_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#value_max_cci_minmax_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_max_cci',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	list_index_ok = np.where(((signal_sell['ramp_high'].to_numpy()<=ramp_high_intervals_minmax_sell['interval'][upper]))&
-		((signal_sell['ramp_low'].to_numpy()<=ramp_low_intervals_minmax_sell['interval'][upper]))&
-		((signal_sell['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_minmax_sell['interval'][upper]))&
-		((signal_sell['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_minmax_sell['interval'][upper]))&
-		((signal_sell['value_min_cci'].to_numpy()<=value_min_cci_minmax_sell['interval'][upper]))&
-		((signal_sell['value_max_cci'].to_numpy()>=value_max_cci_minmax_sell['interval'][lower]))
-		)[0]
+	#list_index_ok = np.where(((signal_sell['ramp_high'].to_numpy()<=ramp_high_intervals_minmax_sell['interval'][upper]))&
+		#((signal_sell['ramp_low'].to_numpy()<=ramp_low_intervals_minmax_sell['interval'][upper]))&
+		#((signal_sell['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_minmax_sell['interval'][upper]))&
+		#((signal_sell['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_minmax_sell['interval'][upper]))&
+		#((signal_sell['value_min_cci'].to_numpy()<=value_min_cci_minmax_sell['interval'][upper]))&
+		#((signal_sell['value_max_cci'].to_numpy()>=value_max_cci_minmax_sell['interval'][lower]))
+		#)[0]
+
+	list_index_ok = range(0,len(signal_sell))
+
 
 	output_sell = pd.DataFrame()
 	output_sell['mean_tp_min_max'] = [np.mean(signal_sell['tp_min_max'][list_index_ok])]
@@ -816,16 +821,16 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	output_sell['num_tp_min_max'] = [tp_counter]
 	output_sell['num_st_min_max'] = [st_counter]
 	output_sell['num_trade_min_max'] = [st_counter + tp_counter]
-	output_sell['ramp_low_upper_min_max'] = [ramp_low_intervals_minmax_sell['interval'][upper]]
-	output_sell['ramp_low_lower_min_max'] = [ramp_low_intervals_minmax_sell['interval'][lower]]
-	output_sell['ramp_high_upper_min_max'] = [ramp_high_intervals_minmax_sell['interval'][upper]]
-	output_sell['ramp_high_lower_min_max'] = [ramp_high_intervals_minmax_sell['interval'][lower]]
-	output_sell['diff_min_max_cci_upper_min_max'] = [diff_min_max_cci_intervals_minmax_sell['interval'][upper]]
-	output_sell['diff_min_max_cci_lower_min_max'] = [diff_min_max_cci_intervals_minmax_sell['interval'][lower]]
-	output_sell['diff_min_max_candle_upper_min_max'] = [diff_min_max_candle_intervals_minmax_sell['interval'][upper]]
-	output_sell['diff_min_max_candle_lower_min_max'] = [diff_min_max_candle_intervals_minmax_sell['interval'][lower]]
-	output_sell['value_max_lower_cci_min_max'] = [value_max_cci_minmax_sell['interval'][lower]]
-	output_sell['value_min_upper_cci_min_max'] = [value_min_cci_minmax_sell['interval'][upper]]
+	#output_sell['ramp_low_upper_min_max'] = [ramp_low_intervals_minmax_sell['interval'][upper]]
+	#output_sell['ramp_low_lower_min_max'] = [ramp_low_intervals_minmax_sell['interval'][lower]]
+	#output_sell['ramp_high_upper_min_max'] = [ramp_high_intervals_minmax_sell['interval'][upper]]
+	#output_sell['ramp_high_lower_min_max'] = [ramp_high_intervals_minmax_sell['interval'][lower]]
+	#output_sell['diff_min_max_cci_upper_min_max'] = [diff_min_max_cci_intervals_minmax_sell['interval'][upper]]
+	#output_sell['diff_min_max_cci_lower_min_max'] = [diff_min_max_cci_intervals_minmax_sell['interval'][lower]]
+	#output_sell['diff_min_max_candle_upper_min_max'] = [diff_min_max_candle_intervals_minmax_sell['interval'][upper]]
+	#output_sell['diff_min_max_candle_lower_min_max'] = [diff_min_max_candle_intervals_minmax_sell['interval'][lower]]
+	#output_sell['value_max_lower_cci_min_max'] = [value_max_cci_minmax_sell['interval'][lower]]
+	#output_sell['value_min_upper_cci_min_max'] = [value_min_cci_minmax_sell['interval'][upper]]
 
 	if output_sell['num_trade_min_max'][0] != 0:
 
@@ -885,38 +890,39 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	#///////////////////////////////////////////////
 	
 	#*********** Methode 2 Profits With PR Buy:
-	ramp_low_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_low',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+	#ramp_low_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_low',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-	ramp_high_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_high',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+	#ramp_high_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_high',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-	diff_min_max_cci_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+	#diff_min_max_cci_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_cci',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-	diff_min_max_candle_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_candle',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+	#diff_min_max_candle_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_candle',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
 	diff_top_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_top',
 	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-	diff_down_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_down',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+	#diff_down_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_down',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-	value_min_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#value_min_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	value_max_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_max_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#value_max_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_max_cci',
+	# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	list_index_ok = np.where(((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_pr_buy['interval'][lower]))&
-		((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_pr_buy['interval'][lower]))&
-		((signal_buy['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_buy['interval'][upper]))&
-		((signal_buy['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_buy['interval'][upper]))&
-		((signal_buy['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_buy['interval'][upper]))&
-		((signal_buy['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_buy['interval'][upper]))&
-		((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))&
-		((signal_buy['value_max_cci'].to_numpy()>=value_max_cci_pr_buy['interval'][lower]))
+	list_index_ok = np.where(
+		#((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_pr_buy['interval'][lower]))&
+		#((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_pr_buy['interval'][lower]))&
+		((signal_buy['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_buy['interval'][upper]))
+		#((signal_buy['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_buy['interval'][upper]))&
+		#((signal_buy['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_buy['interval'][upper]))&
+		#((signal_buy['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_buy['interval'][upper]))&
+		#((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))&
+		#((signal_buy['value_max_cci'].to_numpy()>=value_max_cci_pr_buy['interval'][lower]))
 		)[0]
 
 	output_buy['mean_tp_pr'] = [np.mean(signal_buy['tp_pr'][list_index_ok])]
@@ -936,20 +942,20 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	output_buy['num_tp_pr'] = [tp_counter]
 	output_buy['num_st_pr'] = [st_counter]
 	output_buy['num_trade_pr'] = [st_counter + tp_counter]
-	output_buy['ramp_low_upper_pr'] = [ramp_low_intervals_pr_buy['interval'][upper]]
-	output_buy['ramp_low_lower_pr'] = [ramp_low_intervals_pr_buy['interval'][lower]]
-	output_buy['ramp_high_upper_pr'] = [ramp_high_intervals_pr_buy['interval'][upper]]
-	output_buy['ramp_high_lower_pr'] = [ramp_high_intervals_pr_buy['interval'][lower]]
-	output_buy['diff_min_max_cci_upper_pr'] = [diff_min_max_cci_intervals_pr_buy['interval'][upper]]
-	output_buy['diff_min_max_cci_lower_pr'] = [diff_min_max_cci_intervals_pr_buy['interval'][lower]]
-	output_buy['diff_min_max_candle_upper_pr'] = [diff_min_max_candle_intervals_pr_buy['interval'][upper]]
-	output_buy['diff_min_max_candle_lower_pr'] = [diff_min_max_candle_intervals_pr_buy['interval'][lower]]
+	#output_buy['ramp_low_upper_pr'] = [ramp_low_intervals_pr_buy['interval'][upper]]
+	#output_buy['ramp_low_lower_pr'] = [ramp_low_intervals_pr_buy['interval'][lower]]
+	#output_buy['ramp_high_upper_pr'] = [ramp_high_intervals_pr_buy['interval'][upper]]
+	#output_buy['ramp_high_lower_pr'] = [ramp_high_intervals_pr_buy['interval'][lower]]
+	#output_buy['diff_min_max_cci_upper_pr'] = [diff_min_max_cci_intervals_pr_buy['interval'][upper]]
+	#output_buy['diff_min_max_cci_lower_pr'] = [diff_min_max_cci_intervals_pr_buy['interval'][lower]]
+	#output_buy['diff_min_max_candle_upper_pr'] = [diff_min_max_candle_intervals_pr_buy['interval'][upper]]
+	#output_buy['diff_min_max_candle_lower_pr'] = [diff_min_max_candle_intervals_pr_buy['interval'][lower]]
 	output_buy['diff_top_upper_pr'] = [diff_top_intervals_pr_buy['interval'][upper]]
 	output_buy['diff_top_lower_pr'] = [diff_top_intervals_pr_buy['interval'][lower]]
-	output_buy['diff_down_upper_pr'] = [diff_down_intervals_pr_buy['interval'][upper]]
-	output_buy['diff_down_lower_pr'] = [diff_down_intervals_pr_buy['interval'][lower]]
-	output_buy['value_max_lower_cci_pr'] = [value_max_cci_pr_buy['interval'][lower]]
-	output_buy['value_min_upper_cci_pr'] = [value_min_cci_pr_buy['interval'][upper]]
+	#output_buy['diff_down_upper_pr'] = [diff_down_intervals_pr_buy['interval'][upper]]
+	#output_buy['diff_down_lower_pr'] = [diff_down_intervals_pr_buy['interval'][lower]]
+	#output_buy['value_max_lower_cci_pr'] = [value_max_cci_pr_buy['interval'][lower]]
+	#output_buy['value_min_upper_cci_pr'] = [value_min_cci_pr_buy['interval'][upper]]
 
 	if output_buy['num_trade_pr'][0] != 0:
 
@@ -1021,38 +1027,39 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	#///////////////////////////////////////////////
 	
 	#*********** Methode 2 Profits With PR Sell:
-	ramp_low_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='ramp_low',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+	#ramp_low_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='ramp_low',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-	ramp_high_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='ramp_high',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+	#ramp_high_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='ramp_high',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-	diff_min_max_cci_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_min_max_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+	#diff_min_max_cci_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_min_max_cci',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-	diff_min_max_candle_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_min_max_candle',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+	#diff_min_max_candle_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_min_max_candle',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-	diff_top_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_pr_top',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+	#diff_top_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_pr_top',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
 	diff_down_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_pr_down',
 	 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-	value_min_cci_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_min_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#value_min_cci_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_min_cci',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	value_max_cci_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_max_cci',
-	 min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+	#value_max_cci_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_max_cci',
+	 #min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-	list_index_ok = np.where(((signal_sell['ramp_low'].to_numpy()<=ramp_low_intervals_pr_sell['interval'][upper]))&
-		((signal_sell['ramp_high'].to_numpy()<=ramp_high_intervals_pr_sell['interval'][upper]))&
-		((signal_sell['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_sell['interval'][upper]))&
-		((signal_sell['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_sell['interval'][upper]))&
-		((signal_sell['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_sell['interval'][upper]))&
-		((signal_sell['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_sell['interval'][upper]))&
-		((signal_sell['value_min_cci'].to_numpy()<=value_min_cci_pr_sell['interval'][upper]))&
-		((signal_sell['value_max_cci'].to_numpy()>=value_max_cci_pr_sell['interval'][lower]))
+	list_index_ok = np.where(
+		#((signal_sell['ramp_low'].to_numpy()<=ramp_low_intervals_pr_sell['interval'][upper]))&
+		#((signal_sell['ramp_high'].to_numpy()<=ramp_high_intervals_pr_sell['interval'][upper]))&
+		#((signal_sell['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_sell['interval'][upper]))&
+		((signal_sell['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_sell['interval'][upper]))
+		#((signal_sell['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_sell['interval'][upper]))&
+		#((signal_sell['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_sell['interval'][upper]))&
+		#((signal_sell['value_min_cci'].to_numpy()<=value_min_cci_pr_sell['interval'][upper]))&
+		#((signal_sell['value_max_cci'].to_numpy()>=value_max_cci_pr_sell['interval'][lower]))
 		)[0]
 
 	output_sell['mean_tp_pr'] = [np.mean(signal_sell['tp_pr'][list_index_ok])]
@@ -1072,20 +1079,20 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	output_sell['num_tp_pr'] = [tp_counter]
 	output_sell['num_st_pr'] = [st_counter]
 	output_sell['num_trade_pr'] = [st_counter + tp_counter]
-	output_sell['ramp_low_upper_pr'] = [ramp_low_intervals_pr_sell['interval'][upper]]
-	output_sell['ramp_low_lower_pr'] = [ramp_low_intervals_pr_sell['interval'][lower]]
-	output_sell['ramp_high_upper_pr'] = [ramp_high_intervals_pr_sell['interval'][upper]]
-	output_sell['ramp_high_lower_pr'] = [ramp_high_intervals_pr_sell['interval'][lower]]
-	output_sell['diff_min_max_cci_upper_pr'] = [diff_min_max_cci_intervals_pr_sell['interval'][upper]]
-	output_sell['diff_min_max_cci_lower_pr'] = [diff_min_max_cci_intervals_pr_sell['interval'][lower]]
-	output_sell['diff_min_max_candle_upper_pr'] = [diff_min_max_candle_intervals_pr_sell['interval'][upper]]
-	output_sell['diff_min_max_candle_lower_pr'] = [diff_min_max_candle_intervals_pr_sell['interval'][lower]]
-	output_sell['diff_top_upper_pr'] = [diff_top_intervals_pr_sell['interval'][upper]]
-	output_sell['diff_top_lower_pr'] = [diff_top_intervals_pr_sell['interval'][lower]]
+	#output_sell['ramp_low_upper_pr'] = [ramp_low_intervals_pr_sell['interval'][upper]]
+	#output_sell['ramp_low_lower_pr'] = [ramp_low_intervals_pr_sell['interval'][lower]]
+	#output_sell['ramp_high_upper_pr'] = [ramp_high_intervals_pr_sell['interval'][upper]]
+	#output_sell['ramp_high_lower_pr'] = [ramp_high_intervals_pr_sell['interval'][lower]]
+	#output_sell['diff_min_max_cci_upper_pr'] = [diff_min_max_cci_intervals_pr_sell['interval'][upper]]
+	#output_sell['diff_min_max_cci_lower_pr'] = [diff_min_max_cci_intervals_pr_sell['interval'][lower]]
+	#output_sell['diff_min_max_candle_upper_pr'] = [diff_min_max_candle_intervals_pr_sell['interval'][upper]]
+	#output_sell['diff_min_max_candle_lower_pr'] = [diff_min_max_candle_intervals_pr_sell['interval'][lower]]
+	#output_sell['diff_top_upper_pr'] = [diff_top_intervals_pr_sell['interval'][upper]]
+	#output_sell['diff_top_lower_pr'] = [diff_top_intervals_pr_sell['interval'][lower]]
 	output_sell['diff_down_upper_pr'] = [diff_down_intervals_pr_sell['interval'][upper]]
 	output_sell['diff_down_lower_pr'] = [diff_down_intervals_pr_sell['interval'][lower]]
-	output_sell['value_max_lower_cci_pr'] = [value_max_cci_pr_sell['interval'][lower]]
-	output_sell['value_min_upper_cci_pr'] = [value_min_cci_pr_sell['interval'][upper]]
+	#output_sell['value_max_lower_cci_pr'] = [value_max_cci_pr_sell['interval'][lower]]
+	#output_sell['value_min_upper_cci_pr'] = [value_min_cci_pr_sell['interval'][upper]]
 
 	if output_sell['num_trade_pr'][0] != 0:
 
@@ -2317,8 +2324,9 @@ for sym in symbol:
 	#except Exception as ex:
 		#print('getting error: ', ex)
 
-symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
-symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
+symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,99000)
+symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,33000)
+print('gotwarara 2')
 
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
@@ -2331,29 +2339,71 @@ upper = 0
 mid = 1
 lower = 2
 
-signal_buy,sell_data = golden_cross_zero(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i',
-	Low_Period=27,High_Period=39,
-	distance_lines=3,mode='optimize',
+signal_buy,sell_data = golden_cross_zero(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCHF_i',
+	Low_Period=76,High_Period=92,
+	distance_lines=4,mode='optimize',
 	name_stp_minmax=True,name_stp_pr=True,plot=False)
+
+print('===========> without filters MinMax: ')
+print('mean tp = ',np.mean(signal_buy['tp_min_max']))
+print('mean st = ',np.mean(signal_buy['st_min_max']))
+print('max tp = ',np.max(signal_buy['tp_min_max']))
+print('max st = ',np.max(signal_buy['st_min_max']))
+print('sum st = ',np.sum(signal_buy['st_min_max'][np.where(signal_buy['flag_min_max'] == 'st')[0]].to_numpy()))
+print('sum tp = ',np.sum(signal_buy['tp_min_max'][np.where(signal_buy['flag_min_max'] == 'tp')[0]].to_numpy()))
+
+tp_counter = 0
+st_counter = 0
+for elm in signal_buy['flag_min_max']:
+	if (elm == 'tp'):
+		tp_counter += 1
+	if (elm == 'st'):
+		st_counter += 1
+
+print('tp = ',tp_counter)
+print('st = ',st_counter)
+print('full = ',st_counter + tp_counter)
+
+
+print('===========> without filters PR: ')
+print('mean tp = ',np.mean(signal_buy['tp_pr']))
+print('mean st = ',np.mean(signal_buy['st_pr']))
+print('max tp = ',np.max(signal_buy['tp_pr']))
+print('max st = ',np.max(signal_buy['st_pr']))
+print('sum st = ',np.sum(signal_buy['st_pr'][np.where(signal_buy['flag_pr'] == 'st')[0]].to_numpy()))
+print('sum tp = ',np.sum(signal_buy['tp_pr'][np.where(signal_buy['flag_pr'] == 'tp')[0]].to_numpy()))
+
+tp_counter = 0
+st_counter = 0
+for elm in signal_buy['flag_pr']:
+	if (elm == 'tp'):
+		tp_counter += 1
+	if (elm == 'st'):
+		st_counter += 1
+
+print('tp = ',tp_counter)
+print('st = ',st_counter)
+print('full = ',st_counter + tp_counter)
+
 
 #*********** Methode 1 Profits With MinMax Buy:
 ramp_high_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_high',
-	min_tp=0.5, max_st=0.15, name_stp='flag_min_max',alpha=0.1)
+	min_tp=0.26, max_st=0.1, name_stp='flag_min_max',alpha=0.307)
 
 ramp_low_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_low',
-	min_tp=0.5, max_st=0.15, name_stp='flag_min_max',alpha=0.1)
+	min_tp=0.26, max_st=0.1, name_stp='flag_min_max',alpha=0.307)
 
 diff_min_max_cci_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_cci',
-	min_tp=0.5, max_st=0.15, name_stp='flag_min_max',alpha=0.1)
+	min_tp=0.26, max_st=0.1, name_stp='flag_min_max',alpha=0.307)
 
 diff_min_max_candle_intervals_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_candle',
-	min_tp=0.5, max_st=0.15, name_stp='flag_min_max',alpha=0.1)
+	min_tp=0.26, max_st=0.1, name_stp='flag_min_max',alpha=0.307)
 
 value_min_cci_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
-	min_tp=0.5, max_st=0.15, name_stp='flag_min_max',alpha=0.1)
+	min_tp=0.26, max_st=0.1, name_stp='flag_min_max',alpha=0.307)
 
 value_max_cci_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_max_cci',
-	min_tp=0.5, max_st=0.15, name_stp='flag_min_max',alpha=0.1)
+	min_tp=0.26, max_st=0.1, name_stp='flag_min_max',alpha=0.307)
 
 
 list_index_ok = np.where(((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_minmax_buy['interval'][lower]))&
@@ -2395,49 +2445,51 @@ print('full = ',st_counter + tp_counter)
 
 #*********** Methode 2 Profits With PR Buy:
 ramp_low_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_low',
-	min_tp=0.5, max_st=0.15, name_stp='flag_pr',alpha=0.391)
+	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)
 
 ramp_high_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='ramp_high',
-	min_tp=0.5, max_st=0.15, name_stp='flag_pr',alpha=0.391)
+	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)
 
 diff_min_max_cci_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_cci',
-	min_tp=0.5, max_st=0.15, name_stp='flag_pr',alpha=0.391)
+	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)
 
 diff_min_max_candle_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_candle',
-	min_tp=0.5, max_st=0.15, name_stp='flag_pr',alpha=0.391)
+	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)
 
 diff_top_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_top',
-	min_tp=0.5, max_st=0.15, name_stp='flag_pr',alpha=0.391)
+	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)
 
 diff_down_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_down',
-	min_tp=0.5, max_st=0.15, name_stp='flag_pr',alpha=0.391)
+	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)
 
 value_min_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
-	min_tp=0.5, max_st=0.15, name_stp='flag_pr',alpha=0.391)
+	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)
 
 value_max_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_max_cci',
-	min_tp=0.5, max_st=0.15, name_stp='flag_pr',alpha=0.391)
+	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)
 
-list_index_ok = np.where(((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_pr_buy['interval'][lower]))&
-	((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_pr_buy['interval'][lower]))&
-	((signal_buy['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_buy['interval'][upper]))&
-	((signal_buy['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_buy['interval'][upper]))&
-	((signal_buy['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_buy['interval'][upper]))&
-	((signal_buy['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_buy['interval'][upper]))&
-	((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))&
-	((signal_buy['value_max_cci'].to_numpy()>=value_max_cci_pr_buy['interval'][lower]))
+list_index_ok = np.where(
+	#((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_pr_buy['interval'][lower]))&
+	#((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_pr_buy['interval'][lower]))&
+	((signal_buy['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_buy['interval'][upper]))
+	#((signal_buy['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_buy['interval'][upper]))
+	#((signal_buy['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_buy['interval'][upper]))&
+	#((signal_buy['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_buy['interval'][upper]))&
+	#((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))
+	#((signal_buy['value_max_cci'].to_numpy()>=value_max_cci_pr_buy['interval'][lower]))
 	)[0]
 
 
-list_index_ok = np.where(((signal_buy['ramp_low'].to_numpy()>=-0.007100187963195031))&
-	((signal_buy['ramp_high'].to_numpy()>=-0.008157699025843335))&
-	((signal_buy['diff_pr_top'].to_numpy()<=0.9021831789516512))&
-	((signal_buy['diff_pr_down'].to_numpy()<=0.1485546974046229))&
-	((signal_buy['diff_min_max_cci'].to_numpy()<=8487.591779457132))&
-	((signal_buy['diff_min_max_candle'].to_numpy()<=0.16958596374431384))&
-	((signal_buy['value_min_cci'].to_numpy()<=-69.52783901180729))&
-	((signal_buy['value_max_cci'].to_numpy()>=95.51387090934823))
-	)[0]
+#list_index_ok = np.where(
+	#((signal_buy['ramp_low'].to_numpy()>=0.028202106868841167))&
+	#((signal_buy['ramp_high'].to_numpy()>=0.032791226607286394))&
+	#((signal_buy['diff_pr_top'].to_numpy()<=0.5961277880850214))&
+	#((signal_buy['diff_pr_down'].to_numpy()<=0.40840553382470157))&
+	#((signal_buy['diff_min_max_cci'].to_numpy()<=1631.9146477616375))&
+	#((signal_buy['diff_min_max_candle'].to_numpy()<=0.16193108344412474))&
+	#((signal_buy['value_min_cci'].to_numpy()<=-91.8371473965956))&
+	#((signal_buy['value_max_cci'].to_numpy()>=49.70415924888031))
+	#)[0]
 
 print('============> PR: ')
 print('ramp_low_intervals_pr_buy = ',ramp_low_intervals_pr_buy['interval'][lower])
@@ -2448,9 +2500,6 @@ print('diff_min_max_cci_intervals_pr_buy = ',diff_min_max_cci_intervals_pr_buy['
 print('diff_min_max_candle_intervals_pr_buy = ',diff_min_max_candle_intervals_pr_buy['interval'][upper])
 print('value_min_cci_pr_buy = ',value_min_cci_pr_buy['interval'][upper])
 print('value_max_cci_pr_buy = ',value_max_cci_pr_buy['interval'][lower])
-
-for elm in signal_buy['diff_min_max_cci'].values:
-	print('value_elm = ', elm)
 
 
 print('mean tp = ',np.mean(signal_buy['tp_pr'][list_index_ok]))

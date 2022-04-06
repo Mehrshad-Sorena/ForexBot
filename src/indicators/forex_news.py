@@ -5,6 +5,7 @@ from selenium.webdriver import Firefox
 from bs4 import BeautifulSoup
 from datetime import datetime
 import time
+import json
 
 
 options = Options()
@@ -13,8 +14,9 @@ options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--no-sandbox')
 
 
-def getData():
+def news():
     url = 'https://www.forexfactory.com/'
+    news_path = 'forexnews.json'
 
     chromedriver_path = './geckodriver.exe'
     driver = Firefox(options=options, executable_path=chromedriver_path)
@@ -29,6 +31,7 @@ def getData():
     tr_list = table_src.find_all('tr')
 
     result = dict()
+    time_holder = ''
 
     for tr in tr_list:
         timedate = (
@@ -39,7 +42,8 @@ def getData():
                     'td',
                     {'class': 'calendar__cell calendar__time time'}
                 ) is not None else '')
-        timedate = (datetime.strptime(timedate, '%I:%M%p') if timedate else '')
+        time_holder = (datetime.strptime(timedate, '%I:%M%p') if timedate else time_holder)
+        datetime = time_holder
 
         currency = (
                 tr.find(
@@ -58,17 +62,25 @@ def getData():
                     {'class': 'calendar__impact-icon calendar__impact-icon--screen'}
                 ) is not None else '')
 
-        result.update(
-                {
-                    currency: {
-                        'time': timedate,
-                        'impact': impact,
+        if currency:
+            print('======> currency: ', currency)
+            print('======> timedate: ', timedate)
+            result.update(
+                    {
+                        currency: {
+                            'hour': timedate.hour,
+                            'min': timedate.minute,
+                            'impact': impact
+                        }
                     }
-                }
-        )
+            )
 
     driver.close()
     driver.quit()
 
-    result.pop('')
+    with open(news_path, 'w') as file:
+        file.write(json.loads(result))
+
     return result
+
+news()

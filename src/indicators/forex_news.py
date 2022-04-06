@@ -3,11 +3,12 @@ from selenium.webdriver.firefox.options import Options
 #from selenium.webdriver import Chrome
 from selenium.webdriver import Firefox
 from bs4 import BeautifulSoup
+from datetime import datetime
 import time
 
 
 options = Options()
-# options.add_argument('--headless')
+options.add_argument('--headless')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--no-sandbox')
 
@@ -38,6 +39,8 @@ def getData():
                     'td',
                     {'class': 'calendar__cell calendar__time time'}
                 ) is not None else '')
+        timedate = (datetime.strptime(timedate, '%I:%M%p') if timedate else '')
+
         currency = (
                 tr.find(
                     'td',
@@ -66,6 +69,6 @@ def getData():
 
     driver.close()
     driver.quit()
-    return result
 
-print(getData())
+    result.pop('')
+    return result

@@ -2319,13 +2319,13 @@ symbol_black_list = np.array(
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
 	#try:
-	genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=1,max_score_ga_sell=1)
+	#genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=1,max_score_ga_sell=1)
 
 	#except Exception as ex:
 		#print('getting error: ', ex)
 
-symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,99000)
-symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,33000)
+symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,12000)
+symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,4000)
 print('gotwarara 2')
 
 for sym in symbol:
@@ -2340,8 +2340,8 @@ mid = 1
 lower = 2
 
 signal_buy,sell_data = golden_cross_zero(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCHF_i',
-	Low_Period=76,High_Period=92,
-	distance_lines=4,mode='optimize',
+	Low_Period=18,High_Period=27,
+	distance_lines=2,mode='optimize',
 	name_stp_minmax=True,name_stp_pr=True,plot=False)
 
 print('===========> without filters MinMax: ')
@@ -2457,7 +2457,7 @@ diff_min_max_candle_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,ap
 	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)
 
 diff_top_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_top',
-	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)
+	min_tp=0.01, max_st=0.27, name_stp='flag_pr',alpha=0.049)
 
 diff_down_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_down',
 	min_tp=0.26, max_st=0.1, name_stp='flag_pr',alpha=0.307)

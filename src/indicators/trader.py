@@ -1,0 +1,73 @@
+from log_get_data import log_get_data_Genetic
+from forex_news import news
+import MetaTrader5 as mt5
+import time
+import os
+import pandas as pd
+import numpy as np
+import json
+
+symbol_black_list = np.array(
+	[
+		'WSt30_m_i','SPX500_m_i','NQ100_m_i','GER40_m_i',
+		'GER40_i','USDRUR','USDRUR_i','USDRUB','USDRUB_i',
+		'USDHKD','WTI_i','BRN_i','STOXX50_i','NQ100_i',
+		'NG_i','HSI50_i','CAC40_i','ASX200_i','SPX500_i',
+		'NIKK225_i','IBEX35_i','FTSE100_i','RUBRUR',
+		'EURDKK_i','DAX30_i','XRPUSD_i','XBNUSD_i',
+		'LTCUSD_i','ETHUSD_i','BTCUSD_i','_DXY','_DJI',
+		'EURTRY_i','USDTRY_i','USDDKK_i'
+	])
+
+def get_all_deta_online():
+	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,3000)
+	symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,1200)
+	symbol_data_H1,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,600)
+	symbol_data_H4,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,360)
+	symbol_data_D1,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,60)
+
+	return symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,symbol,money
+
+
+def trader(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,symbol,money):
+	forexnews_path = 'forexnews.json'
+	time_last = time.time()
+
+	for sym in symbol:
+
+		if np.where(sym.name == symbol_black_list)[0].size != 0: continue
+
+		if os.path.exists(forexnews_path):
+			with open(forexnews_path, 'r') as file:
+				forex_news = json.loads(file.read())
+
+			now = datetime.now()
+			for fn in forex_news.keys():
+				if fn in sym.name:
+					hour = forex_news.get(fn).get('hour')
+					minute = forex_news.get(fn).get('min')
+					impact = forex_news.get(fn).get('impact')
+				else:
+					impact = None
+			
+			if impact == 'medium' or impact == 'high':
+				time_now_min = now.hour*60 + now.minute
+				time_forexnews_min = hour*60 + minute
+				if time_forexnews_min-30 < time_now_min < time_forexnews_min+30: continue
+		else:
+			news()
+
+		buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
+		sell_path = "Genetic_cci_output_sell/" + sym.name + '.csv'
+
+		if os.path.exists(buy_path):
+			ga_result_buy = pd.read_csv(buy_path)
+			ga_result_sell = pd.read_csv(sell_path)
+		else:
+			continue
+
+	print(time.time()-time_last)
+	return
+
+symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,symbol,money = get_all_deta_online()
+trader(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,symbol,money)

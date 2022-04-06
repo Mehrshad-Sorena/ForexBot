@@ -13,8 +13,8 @@ import time
 """
  ***************** Function Names ***********
 
- Extreme_points(high,low,number_min,number_max)
- Extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=1)
+ extreme_points(high,low,number_min,number_max)
+ extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=1)
  extreme_points_ramp_lines(high,low,close,length='short',number_min=10,number_max=10,plot=False)
  Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alpha_low,alpha_high,timeout_break)
  protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,dataset_4H,dataset_1D,plot=False)
@@ -37,7 +37,7 @@ import time
  print('data get')
 
 
- exterm_point_pred = Extreme_points_ichimoko(high=y3,low=y4,close=y1,tenkan=9,kijun=26,senkou=52,n_clusters=15)
+ exterm_point_pred = extreme_points_ichimoko(high=y3,low=y4,close=y1,tenkan=9,kijun=26,senkou=52,n_clusters=15)
  print(exterm_point_pred)
  i = 0
  for elm in exterm_point_pred['extremes']:
@@ -615,7 +615,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
     local_extreme_5M['extreme'] = np.nan
     local_extreme_5M['power'] = np.nan
     if (T_5M == True):
-        local_extreme_5M['extreme'] = pd.DataFrame(Extreme_points(high=dataset_5M['high'],low=dataset_5M['low'],
+        local_extreme_5M['extreme'] = pd.DataFrame(extreme_points(high=dataset_5M['high'],low=dataset_5M['low'],
             number_min=5,number_max=5))
         local_extreme_5M['power'] = np.ones(len(local_extreme_5M))*10
 
@@ -623,7 +623,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
     local_extreme_15M['extreme'] = np.nan
     local_extreme_15M['power'] = np.nan
     if (T_15M == True):
-        local_extreme_15M['extreme'] = pd.DataFrame(Extreme_points(high=dataset_15M['high'],low=dataset_15M['low'],
+        local_extreme_15M['extreme'] = pd.DataFrame(extreme_points(high=dataset_15M['high'],low=dataset_15M['low'],
             number_min=5,number_max=5))
         local_extreme_15M['power'] = np.ones(len(local_extreme_15M))*3
 
@@ -631,7 +631,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
     local_extreme_1H['extreme'] = np.nan
     local_extreme_1H['power'] = np.nan
     if (T_1H == True):
-        local_extreme_1H['extreme'] = pd.DataFrame(Extreme_points(high=dataset_1H['high'],low=dataset_1H['low'],
+        local_extreme_1H['extreme'] = pd.DataFrame(extreme_points(high=dataset_1H['high'],low=dataset_1H['low'],
             number_min=5,number_max=5))
         local_extreme_1H['power'] = np.ones(len(local_extreme_1H))*12
 
@@ -639,7 +639,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
     local_extreme_4H['extreme'] = np.nan
     local_extreme_4H['power'] = np.nan
     if (T_4H == True):
-        local_extreme_4H['extreme'] = pd.DataFrame(Extreme_points(high=dataset_4H['high'],low=dataset_4H['low'],
+        local_extreme_4H['extreme'] = pd.DataFrame(extreme_points(high=dataset_4H['high'],low=dataset_4H['low'],
             number_min=2,number_max=2))
         local_extreme_4H['power'] = np.ones(len(local_extreme_4H))*48
 
@@ -647,7 +647,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
     local_extreme_1D['extreme'] = np.nan
     local_extreme_1D['power'] = np.nan
     if (T_1D == True):
-        local_extreme_1D['extreme'] = pd.DataFrame(Extreme_points(high=dataset_1D['high'],low=dataset_1D['low'],
+        local_extreme_1D['extreme'] = pd.DataFrame(extreme_points(high=dataset_1D['high'],low=dataset_1D['low'],
             number_min=2,number_max=2))
         local_extreme_1D['power'] = np.ones(len(local_extreme_1D))*288
 
@@ -677,31 +677,31 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
     ichi_local_extreme_5M['extreme'] = np.nan
     ichi_local_extreme_5M['power'] = np.nan
     if (T_5M == True):
-        ichi_local_extreme_5M = Extreme_points_ichimoko(dataset_5M['high'],dataset_5M['low'],dataset_5M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=1)
+        ichi_local_extreme_5M = extreme_points_ichimoko(dataset_5M['high'],dataset_5M['low'],dataset_5M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=1)
 
     ichi_local_extreme_15M = pd.DataFrame()
     ichi_local_extreme_15M['extreme'] = np.nan
     ichi_local_extreme_15M['power'] = np.nan
     if (T_15M == True):
-        ichi_local_extreme_15M = Extreme_points_ichimoko(dataset_15M['high'],dataset_15M['low'],dataset_15M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=2)
+        ichi_local_extreme_15M = extreme_points_ichimoko(dataset_15M['high'],dataset_15M['low'],dataset_15M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=2)
 
     ichi_local_extreme_1H = pd.DataFrame()
     ichi_local_extreme_1H['extreme'] = np.nan
     ichi_local_extreme_1H['power'] = np.nan
     if (T_1H == True):
-        ichi_local_extreme_1H = Extreme_points_ichimoko(dataset_1H['high'],dataset_1H['low'],dataset_1H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=5)
+        ichi_local_extreme_1H = extreme_points_ichimoko(dataset_1H['high'],dataset_1H['low'],dataset_1H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=5)
 
     ichi_local_extreme_4H = pd.DataFrame()
     ichi_local_extreme_4H['extreme'] = np.nan
     ichi_local_extreme_4H['power'] = np.nan
     if (T_4H == True):
-        ichi_local_extreme_4H = Extreme_points_ichimoko(dataset_4H['high'],dataset_4H['low'],dataset_4H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=20)
+        ichi_local_extreme_4H = extreme_points_ichimoko(dataset_4H['high'],dataset_4H['low'],dataset_4H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=20)
 
     ichi_local_extreme_1D = pd.DataFrame()
     ichi_local_extreme_1D['extreme'] = np.nan
     ichi_local_extreme_1D['power'] = np.nan
     if (T_1D == True):
-        ichi_local_extreme_1D = Extreme_points_ichimoko(dataset_1D['high'],dataset_1D['low'],dataset_1D['close'],tenkan=9,kijun=26,senkou=52,n_clusters=2,weight=100)
+        ichi_local_extreme_1D = extreme_points_ichimoko(dataset_1D['high'],dataset_1D['low'],dataset_1D['close'],tenkan=9,kijun=26,senkou=52,n_clusters=2,weight=100)
 
     #concat Extremes
 

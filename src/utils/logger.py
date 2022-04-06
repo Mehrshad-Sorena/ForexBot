@@ -17,7 +17,8 @@ elif log_level == 'warning':
     logger.setLevel(logging.WARNING)
 elif log_level == 'debug':
     logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
+# formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
+formatter = logging.Formatter('%(message)s')
 
 stdout_handler = logging.StreamHandler(sys.stdout)
 stdout_handler.setLevel(logging.DEBUG)

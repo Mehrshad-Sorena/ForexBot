@@ -1,5 +1,7 @@
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver import Chrome
+#from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options
+#from selenium.webdriver import Chrome
+from selenium.webdriver import Firefox
 from bs4 import BeautifulSoup
 import time
 
@@ -9,16 +11,16 @@ options = Options()
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--no-sandbox')
 
+
 def getData():
     url = 'https://www.forexfactory.com/'
 
-    chromedriver_path = './chromedriver.exe'
-    driver = Chrome(options=options, executable_path=chromedriver_path)
+    chromedriver_path = './geckodriver.exe'
+    driver = Firefox(options=options, executable_path=chromedriver_path)
     driver.set_window_size(2048, 1024)
 
     driver.get(url)
     soup = BeautifulSoup(driver.page_source, 'lxml')
-
 
     driver.refresh()
     time.sleep(5)

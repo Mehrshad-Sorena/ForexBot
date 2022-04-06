@@ -12,7 +12,8 @@ options.add_argument('--no-sandbox')
 def getData():
     url = 'https://www.forexfactory.com/'
 
-    driver = Chrome(options=options)
+    chromedriver_path = './chromedriver.exe'
+    driver = Chrome(options=options, executable_path=chromedriver_path)
     driver.set_window_size(2048, 1024)
 
     driver.get(url)
@@ -64,3 +65,5 @@ def getData():
     driver.close()
     driver.quit()
     return result
+
+print(getData())

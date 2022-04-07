@@ -2308,7 +2308,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 #*************************** How To Use Funcs *****************************************
 
-"""
+
 symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
 symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
 print('data get')
@@ -2327,11 +2327,13 @@ symbol_black_list = np.array(
 
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
-	#try:
-	#genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=1,max_score_ga_sell=1)
+	if os.path.exists("Genetic_cci_output_buy/"+sym.name+'.csv'): continue
+	if os.path.exists("Genetic_cci_output_sell/"+sym.name+'.csv'): continue
+	try:
+		genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=1,max_score_ga_sell=1)
 
-	#except Exception as ex:
-		#print('getting error: ', ex)
+	except Exception as ex:
+		print('getting error: ', ex)
 
 symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,12000)
 symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,4000)
@@ -2528,5 +2530,3 @@ for elm in signal_buy['flag_pr'][list_index_ok]:
 print('tp = ',tp_counter)
 print('st = ',st_counter)
 print('full = ',st_counter + tp_counter)
-
-"""

@@ -9,7 +9,7 @@ import json
 
 
 options = Options()
-#options.add_argument('--headless')
+options.add_argument('--headless')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--no-sandbox')
 
@@ -97,4 +97,4 @@ def news_task():
         print('===== News ===> ',ex)
 
 
-news()
+#news()

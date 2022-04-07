@@ -9,9 +9,9 @@ import json
 
 
 options = Options()
-options.add_argument('--headless')
-options.add_argument('--disable-dev-shm-usage')
-options.add_argument('--no-sandbox')
+# options.add_argument('--headless')
+# options.add_argument('--disable-dev-shm-usage')
+# options.add_argument('--no-sandbox')
 
 
 def news():
@@ -20,13 +20,14 @@ def news():
 
     chromedriver_path = './geckodriver.exe'
     driver = Firefox(options=options, executable_path=chromedriver_path)
-    driver.set_window_size(2048, 1024)
+    #driver.set_window_size(800, 600)
 
     driver.get(url)
-    soup = BeautifulSoup(driver.page_source, 'lxml')
-
+    time.sleep(10)
     driver.refresh()
     time.sleep(5)
+    soup = BeautifulSoup(driver.page_source, 'lxml')
+
     table_src = soup.find('table', {'class': 'calendar__table'})
     tr_list = table_src.find_all('tr')
 
@@ -43,7 +44,7 @@ def news():
                     {'class': 'calendar__cell calendar__time time'}
                 ) is not None else '')
         time_holder = (datetime.strptime(timedate, '%I:%M%p') if timedate else time_holder)
-        datetime = time_holder
+        timedate = time_holder
 
         currency = (
                 tr.find(
@@ -63,8 +64,6 @@ def news():
                 ) is not None else '')
 
         if currency:
-            print('======> currency: ', currency)
-            print('======> timedate: ', timedate)
             result.update(
                     {
                         currency: {
@@ -79,8 +78,6 @@ def news():
     driver.quit()
 
     with open(news_path, 'w') as file:
-        file.write(json.loads(result))
+        file.write(json.dumps(result))
 
     return result
-
-news()

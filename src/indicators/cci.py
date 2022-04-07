@@ -208,7 +208,7 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 			signal_buy['ramp_low'][buy_counter] = (CCI_Low[int(finding_points['index'][elm])] - np.min(CCI_Low[int(finding_points['index'][elm-1]):int(finding_points['index'][elm])]))/(int(finding_points['index'][elm]) - np.argmin(CCI_Low[int(finding_points['index'][elm-1]):int(finding_points['index'][elm])]))#CCI_Low[finding_points['index'][elm]-1]
 			signal_buy['ramp_high'][buy_counter] = (CCI_High[int(finding_points['index'][elm])] - np.min(CCI_High[int(finding_points['index'][elm-1]):int(finding_points['index'][elm])]))/(int(finding_points['index'][elm]) - np.argmin(CCI_High[int(finding_points['index'][elm-1]):int(finding_points['index'][elm])]))#CCI_High[finding_points['index'][elm]-1]
 			signal_buy['diff_min_max_cci'][buy_counter] = ((np.max(CCI_Low[int(finding_points['index'][elm-2]):int(finding_points['index'][elm])]) - CCI_Low[int(finding_points['index'][elm])])/abs(CCI_Low[int(finding_points['index'][elm])]))*100
-			signal_buy['diff_min_max_candle'][buy_counter] = ((np.max(dataset[symbol]['high'][int(finding_points['index'][elm-2]):int(finding_points['index'][elm])]) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])])*100
+			signal_buy['diff_min_max_candle'][buy_counter] = ((np.max(dataset[symbol]['high'][int(finding_points['index'][elm-2]):int(finding_points['index'][elm])]) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])])*10
 
 			signal_buy['value_min_cci'][buy_counter] = np.min(CCI_Low[int(finding_points['index'][elm-1]):int(finding_points['index'][elm])])
 			signal_buy['value_max_cci'][buy_counter] = np.max(CCI_Low[int(finding_points['index'][elm-2]):int(finding_points['index'][elm])])
@@ -322,7 +322,7 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 			signal_sell['ramp_low'][sell_counter] = (CCI_Low[int(finding_points['index'][elm])] - np.max(CCI_Low[int(finding_points['index'][elm-1]):int(finding_points['index'][elm])]))/(int(finding_points['index'][elm]) - np.argmax(CCI_Low[int(finding_points['index'][elm-1]):int(finding_points['index'][elm])]))#CCI_Low[finding_points['index'][elm]-1]
 			signal_sell['ramp_high'][sell_counter] = (CCI_High[int(finding_points['index'][elm])] - np.max(CCI_High[int(finding_points['index'][elm-1]):int(finding_points['index'][elm])]))/(int(finding_points['index'][elm]) - np.argmax(CCI_High[int(finding_points['index'][elm-1]):int(finding_points['index'][elm])]))#CCI_High[finding_points['index'][elm]-1]
 			signal_sell['diff_min_max_cci'][sell_counter] = ((CCI_Low[int(finding_points['index'][elm])] - np.min(CCI_Low[int(finding_points['index'][elm-2]):int(finding_points['index'][elm])]))/abs(CCI_Low[int(finding_points['index'][elm])])) * 100
-			signal_sell['diff_min_max_candle'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - np.min(dataset[symbol]['low'][int(finding_points['index'][elm-2]):int(finding_points['index'][elm])]))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
+			signal_sell['diff_min_max_candle'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - np.min(dataset[symbol]['low'][int(finding_points['index'][elm-2]):int(finding_points['index'][elm])]))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 10
 
 
 			signal_sell['value_min_cci'][sell_counter] = np.min(CCI_Low[int(finding_points['index'][elm-2]):int(finding_points['index'][elm])])
@@ -1500,6 +1500,13 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 				):
 				break
 
+			if (
+				len(chromosome_buy) >= int(num_turn/12) or
+				len(chromosome_sell) >= int(num_turn/12)
+				):
+				if (len(chromosome_buy) >= int(num_turn/12)) and (len(chromosome_sell) >= 4): break
+				if (len(chromosome_sell) >= int(num_turn/12)) and (len(chromosome_buy) >= 4): break
+
 			chrom_counter += 1
 			if (chrom_counter >= ((len(Chromosome)))):
 				chrom_counter = 0
@@ -2177,6 +2184,15 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			resist = (res_pro['high'][0] * 0.9994)
 			protect = (res_pro['low'][2] * 0.9994)
 
+		else:
+			diff_pr_top_buy = 0
+			diff_pr_down_buy = 0
+			diff_pr_top_buy_power = 0
+			diff_pr_down_buy_power = 0
+
+			resist = 0
+			protect = 0
+
 	if ga_result_sell['methode'][0] == 'pr' and lst_idx_sell != 0:
 
 		res_pro = pd.DataFrame()
@@ -2196,10 +2212,18 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 			resist = (res_pro['high'][0] * 0.9994)
 			protect = (res_pro['low'][2] * 0.9994)
+		else:
+			diff_pr_top_sell = 0
+			diff_pr_down_sell = 0
+			diff_pr_top_sell_power = 0
+			diff_pr_down_sell_power = 0
+
+			resist = 0
+			protect = 0
 
 	#***** Last Signal:
 
-	if lst_idx_buy > lst_idx_sell and (lst_idx_buy - len(dataset[symbol]['close']) - 1) <= 1:
+	if lst_idx_buy > lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_buy) <= 1:
 
 		if ga_result_buy['methode'][0] == 'pr':
 
@@ -2228,7 +2252,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 				signal = 'buy'
 
-				resist = (1 + (buy_data['diff_min_max_candle']/100)) * dataset[symbol]['close'].iloc[-1]
+				resist = (1 + (buy_data['diff_min_max_candle'].iloc[-1]/100)) * dataset[symbol]['close'].iloc[-1]
 				protect = dataset[symbol]['low'].iloc[-1] * 0.9996
 
 
@@ -2236,7 +2260,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			else:
 				signal = 'no_trade'
 
-	elif lst_idx_buy < lst_idx_sell and (lst_idx_sell - len(dataset[symbol]['close']) - 1) <= 1:
+	elif lst_idx_buy < lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_sell) <= 1:
 		
 		if ga_result_sell['methode'][0] == 'pr':
 			if (
@@ -2263,8 +2287,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 				True):
 
 				signal = 'sell'
-
-				resist = (1 - (sell_data['diff_min_max_candle']/100)) * dataset[symbol]['close'].iloc[-1]
+				resist = (1 - (sell_data['diff_min_max_candle'].iloc[-1]/100)) * dataset[symbol]['close'].iloc[-1]
 				protect = dataset[symbol]['high'].iloc[-1] * 1.0006
 
 			else:

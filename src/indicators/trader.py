@@ -1,11 +1,14 @@
 from log_get_data import log_get_data_Genetic
+from datetime import datetime
 from forex_news import news
+from cci import last_signal
 import MetaTrader5 as mt5
-import time
-import os
 import pandas as pd
 import numpy as np
 import json
+import time
+import os
+
 
 symbol_black_list = np.array(
 	[
@@ -51,18 +54,24 @@ def trader(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_d
 					impact = None
 			
 			if impact == 'medium' or impact == 'high':
+				print('======> symbol name: ', sym.name)
 				time_now_min = now.hour*60 + now.minute
 				time_forexnews_min = hour*60 + minute
 				if time_forexnews_min-30 < time_now_min < time_forexnews_min+30: continue
 		else:
 			news()
 
-		buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
-		sell_path = "Genetic_cci_output_sell/" + sym.name + '.csv'
+		signal, tp, st = last_signal(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,sym.name)
 
-		if os.path.exists(buy_path):
-			ga_result_buy = pd.read_csv(buy_path)
-			ga_result_sell = pd.read_csv(sell_path)
+		lot = basket_manager(symbols=symbol,symbol=sym.name,my_money=money,signal=signal)
+
+		if lot:
+			if signal == 'buy':
+				carrier_buy(symbol=sym.name,lot=lot,st=st,tp=tp,comment='cci golden cross',magic=time.time_ns())
+			elif signal == 'sell':
+				carrier_sell(symbol=sym.name,lot=lot,st=st,tp=tp,comment='cci golden cross',magic=time.time_ns())
+			elif signal == 'no_trade':
+				continue
 		else:
 			continue
 

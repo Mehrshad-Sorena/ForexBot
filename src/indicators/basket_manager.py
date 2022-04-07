@@ -23,7 +23,7 @@ def find_max_score():
 
 			score_list.append(buy_data['score_pr'][0])
 			score_list.append(buy_data['score_min_max'][0])
-			score_list.append(sell_data['socre_pr'][0])
+			score_list.append(sell_data['score_pr'][0])
 			score_list.append(sell_data['score_min_max'][0])
 
 			return max(score_list)
@@ -151,7 +151,7 @@ def basket_manager(symbols,symbol,my_money,signal):
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #********************* How to Use ****************************************************************************
-symbol_data_5M,my_money,symbols = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,5)
+#symbol_data_5M,my_money,symbols = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,5)
 
-print(basket_manager(symbols=symbols,symbol='AUDCAD_i',my_money=my_money,signal='sell'))
+#print(basket_manager(symbols=symbols,symbol='AUDCAD_i',my_money=my_money,signal='sell'))
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////

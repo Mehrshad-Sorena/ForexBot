@@ -1,4 +1,6 @@
 from log_get_data import log_get_data_Genetic
+from carrier import carrier_buy, carrier_sell
+from basket_manager import basket_manager
 from datetime import datetime
 from forex_news import news
 from cci import last_signal
@@ -54,7 +56,6 @@ def trader(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_d
 					impact = None
 			
 			if impact == 'medium' or impact == 'high':
-				print('======> symbol name: ', sym.name)
 				time_now_min = now.hour*60 + now.minute
 				time_forexnews_min = hour*60 + minute
 				if time_forexnews_min-30 < time_now_min < time_forexnews_min+30: continue
@@ -78,5 +79,12 @@ def trader(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_d
 	print(time.time()-time_last)
 	return
 
-symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,symbol,money = get_all_deta_online()
-trader(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,symbol,money)
+def trader_task():
+	try:
+		print('****************** Start *************************')
+		symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,symbol,money = get_all_deta_online()
+		trader(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,symbol,money)
+		print('****************** Finish *************************')
+	except Exception as ex:
+		print('===== Trader ===> ',ex)
+	return

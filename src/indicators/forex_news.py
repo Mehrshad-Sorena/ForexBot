@@ -1,7 +1,7 @@
-#from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.firefox.options import Options
-#from selenium.webdriver import Chrome
-from selenium.webdriver import Firefox
+from selenium.webdriver.chrome.options import Options
+#from selenium.webdriver.firefox.options import Options
+from selenium.webdriver import Chrome
+#from selenium.webdriver import Firefox
 from bs4 import BeautifulSoup
 from datetime import datetime
 import time
@@ -9,17 +9,20 @@ import json
 
 
 options = Options()
-options.add_argument('--headless')
-# options.add_argument('--disable-dev-shm-usage')
-# options.add_argument('--no-sandbox')
+#options.add_argument('--headless')
+options.add_argument('--disable-dev-shm-usage')
+options.add_argument('--no-sandbox')
 
 
 def news():
     url = 'https://www.forexfactory.com/'
     news_path = 'forexnews.json'
+    result = dict()
 
-    chromedriver_path = './geckodriver.exe'
-    driver = Firefox(options=options, executable_path=chromedriver_path)
+    #chromedriver_path = './geckodriver.exe'
+    chromedriver_path = './chromedriver.exe'
+    #driver = Firefox(options=options, executable_path=chromedriver_path)
+    driver = Chrome(options=options, executable_path=chromedriver_path)
     #driver.set_window_size(800, 600)
 
     driver.get(url)
@@ -32,7 +35,6 @@ def news():
         table_src = soup.find('table', {'class': 'calendar__table'})
         tr_list = table_src.find_all('tr')
 
-        result = dict()
         time_holder = ''
 
         for tr in tr_list:
@@ -93,3 +95,6 @@ def news_task():
         news()
     except Exception as ex:
         print('===== News ===> ',ex)
+
+
+news()

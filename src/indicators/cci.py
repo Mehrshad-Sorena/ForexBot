@@ -2123,19 +2123,19 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 
 #******************************** Last Signal Out ******************************************************
 
-def last_signal(dataset,dataset_15M,symbol):
+def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 	""" Last signal out """
 	buy_path = "Genetic_cci_output_buy/" + symbol + '.csv'
 	sell_path = "Genetic_cci_output_sell/" + symbol + '.csv'
+	resist = protect = 0
 
-	signal = pd.DataFrame()
 
 	if os.path.exists(buy_path):
 		ga_result_buy = pd.read_csv(buy_path)
 		ga_result_sell = pd.read_csv(sell_path)
 	else:
-		signal['signal'] = ['no_trade']
-		return signal
+		signal = 'no_trade'
+		return signal, resist, protect
 
 	#**************** Buy Check:
 	if ga_result_buy['permit'][0]:
@@ -2159,24 +2159,9 @@ def last_signal(dataset,dataset_15M,symbol):
 	#***************** Calculate PR:
 	if ga_result_buy['methode'][0] == 'pr' and lst_idx_buy != 0:
 
-		dataset_pr_5M = pd.DataFrame()
-		dataset_pr_15M = pd.DataFrame()
-		cut_first = 0
-		if (lst_idx_buy > 2000):
-			cut_first = lst_idx_buy - 2000
-		dataset_pr_5M['low'] = dataset[symbol]['low'][cut_first:lst_idx_buy].reset_index(drop=True)
-		dataset_pr_5M['high'] = dataset[symbol]['high'][cut_first:lst_idx_buy].reset_index(drop=True)
-		dataset_pr_5M['close'] = dataset[symbol]['close'][cut_first:lst_idx_buy].reset_index(drop=True)
-		dataset_pr_5M['open'] = dataset[symbol]['open'][cut_first:lst_idx_buy].reset_index(drop=True)
-
-		dataset_pr_15M['low'] = dataset_15M[symbol]['low'][int(cut_first/3):int(lst_idx_buy/3)].reset_index(drop=True)
-		dataset_pr_15M['high'] = dataset_15M[symbol]['high'][int(cut_first/3):int(lst_idx_buy/3)].reset_index(drop=True)
-		dataset_pr_15M['close'] = dataset_15M[symbol]['close'][int(cut_first/3):int(lst_idx_buy/3)].reset_index(drop=True)
-		dataset_pr_15M['open'] = dataset_15M[symbol]['open'][int(cut_first/3):int(lst_idx_buy/3)].reset_index(drop=True)
-
 		res_pro = pd.DataFrame()
 		try:
-			res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=dataset_pr_5M,dataset_15M=dataset_pr_15M,dataset_1H=dataset,dataset_4H=dataset,dataset_1D=dataset,plot=False)
+			res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=True,T_4H=True,T_1D=True,dataset_5M=dataset,dataset_15M=dataset_15M,dataset_1H=dataset_1H,dataset_4H=dataset_4H,dataset_1D=dataset_1D,plot=False)
 		except:
 			res_pro['high'] = 'nan'
 			res_pro['low'] = 'nan'
@@ -2189,26 +2174,14 @@ def last_signal(dataset,dataset_15M,symbol):
 			diff_pr_top_buy_power = np.mean(res_pro['power_high'])
 			diff_pr_down_buy_power = np.mean(res_pro['power_low'])
 
+			resist = (res_pro['high'][0] * 0.9994)
+			protect = (res_pro['low'][2] * 0.9994)
+
 	if ga_result_sell['methode'][0] == 'pr' and lst_idx_sell != 0:
-
-		dataset_pr_5M = pd.DataFrame()
-		dataset_pr_15M = pd.DataFrame()
-		cut_first = 0
-		if (lst_idx_sell > 2000):
-			cut_first = lst_idx_sell - 2000
-		dataset_pr_5M['low'] = dataset[symbol]['low'][cut_first:lst_idx_sell].reset_index(drop=True)
-		dataset_pr_5M['high'] = dataset[symbol]['high'][cut_first:lst_idx_sell].reset_index(drop=True)
-		dataset_pr_5M['close'] = dataset[symbol]['close'][cut_first:lst_idx_sell].reset_index(drop=True)
-		dataset_pr_5M['open'] = dataset[symbol]['open'][cut_first:lst_idx_sell].reset_index(drop=True)
-
-		dataset_pr_15M['low'] = dataset_15M[symbol]['low'][int(cut_first/3):int(lst_idx_sell/3)].reset_index(drop=True)
-		dataset_pr_15M['high'] = dataset_15M[symbol]['high'][int(cut_first/3):int(lst_idx_sell/3)].reset_index(drop=True)
-		dataset_pr_15M['close'] = dataset_15M[symbol]['close'][int(cut_first/3):int(lst_idx_sell/3)].reset_index(drop=True)
-		dataset_pr_15M['open'] = dataset_15M[symbol]['open'][int(cut_first/3):int(lst_idx_sell/3)].reset_index(drop=True)
 
 		res_pro = pd.DataFrame()
 		try:
-			res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=dataset_pr_5M,dataset_15M=dataset_pr_15M,dataset_1H=dataset,dataset_4H=dataset,dataset_1D=dataset,plot=False)
+			res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=True,T_4H=True,T_1D=True,dataset_5M=dataset,dataset_15M=dataset_15M,dataset_1H=dataset_1H,dataset_4H=dataset_4H,dataset_1D=dataset_1D,plot=False)
 		except:
 			res_pro['high'] = 'nan'
 			res_pro['low'] = 'nan'
@@ -2221,6 +2194,9 @@ def last_signal(dataset,dataset_15M,symbol):
 			diff_pr_top_sell_power = np.mean(res_pro['power_high'])
 			diff_pr_down_sell_power = np.mean(res_pro['power_low'])
 
+			resist = (res_pro['high'][0] * 0.9994)
+			protect = (res_pro['low'][2] * 0.9994)
+
 	#***** Last Signal:
 
 	if lst_idx_buy > lst_idx_sell and (lst_idx_buy - len(dataset[symbol]['close']) - 1) <= 1:
@@ -2228,68 +2204,76 @@ def last_signal(dataset,dataset_15M,symbol):
 		if ga_result_buy['methode'][0] == 'pr':
 
 			if (
-				buy_data['ramp_low'].iloc[-1]>=ga_result_buy['ramp_low_lower_pr'][0] and
-				buy_data['ramp_high'].iloc[-1]>=ga_result_buy['ramp_high_lower_pr'][0] and
-				diff_pr_top_buy<=ga_result_buy['diff_top_upper_pr'][0] and
-				diff_pr_down_buy<=ga_result_buy['diff_down_upper_pr'][0] and
-				buy_data['diff_min_max_cci'].iloc[-1]<=ga_result_buy['diff_min_max_cci_upper_pr'][0] and
-				buy_data['diff_min_max_candle'].iloc[-1]<=ga_result_buy['diff_min_max_candle_upper_pr'][0]
+				#buy_data['ramp_low'].iloc[-1]>=ga_result_buy['ramp_low_lower_pr'][0] and
+				#buy_data['ramp_high'].iloc[-1]>=ga_result_buy['ramp_high_lower_pr'][0] and
+				diff_pr_top_buy<=ga_result_buy['diff_top_upper_pr'][0]
+				#diff_pr_down_buy<=ga_result_buy['diff_down_upper_pr'][0] and
+				#buy_data['diff_min_max_cci'].iloc[-1]<=ga_result_buy['diff_min_max_cci_upper_pr'][0] and
+				#buy_data['diff_min_max_candle'].iloc[-1]<=ga_result_buy['diff_min_max_candle_upper_pr'][0]
 				):
 				
-				signal['signal'] = ['buy']
+				signal = 'buy'
 
 			else:
-				signal['signal'] = ['no_trade']
+				signal = 'no_trade'
 				
 		if ga_result_buy['methode'][0] == 'min_max':
 
 			if (
-				buy_data['ramp_high'].iloc[-1]>=ga_result_buy['ramp_high_lower_min_max'][0] and
-				buy_data['ramp_low'].iloc[-1]>=ga_result_buy['ramp_low_lower_min_max'][0] and
-				buy_data['diff_min_max_cci'].iloc[-1]<ga_result_buy['diff_min_max_cci_upper_min_max'][0] and
-				buy_data['diff_min_max_candle'].iloc[-1]<=ga_result_buy['diff_min_max_candle_upper_min_max'][0]
-				):
+				#buy_data['ramp_high'].iloc[-1]>=ga_result_buy['ramp_high_lower_min_max'][0] and
+				#buy_data['ramp_low'].iloc[-1]>=ga_result_buy['ramp_low_lower_min_max'][0] and
+				#buy_data['diff_min_max_cci'].iloc[-1]<ga_result_buy['diff_min_max_cci_upper_min_max'][0] and
+				#buy_data['diff_min_max_candle'].iloc[-1]<=ga_result_buy['diff_min_max_candle_upper_min_max'][0]
+				True):
 
-				signal['signal'] = ['buy']
+				signal = 'buy'
+
+				resist = (1 + (buy_data['diff_min_max_candle']/100)) * dataset[symbol]['close'].iloc[-1]
+				protect = dataset[symbol]['low'].iloc[-1] * 0.9996
+
+
 
 			else:
-				signal['signal'] = ['no_trade']
+				signal = 'no_trade'
 
 	elif lst_idx_buy < lst_idx_sell and (lst_idx_sell - len(dataset[symbol]['close']) - 1) <= 1:
 		
 		if ga_result_sell['methode'][0] == 'pr':
 			if (
-				sell_data['ramp_low'].iloc[-1]<=ga_result_sell['ramp_low_upper_pr'][0] and
-				sell_data['ramp_high'].iloc[-1]<=ga_result_sell['ramp_high_upper_pr'][0] and
-				diff_pr_top_sell<=ga_result_sell['diff_top_upper_pr'][0] and
-				diff_pr_down_sell<=ga_result_sell['diff_down_upper_pr'][0] and
-				sell_data['diff_min_max_cci'].iloc[-1]<=ga_result_sell['diff_min_max_cci_upper_pr'][0] and
-				sell_data['diff_min_max_candle'].iloc[-1]<=ga_result_sell['diff_min_max_candle_upper_pr'][0]
+				#sell_data['ramp_low'].iloc[-1]<=ga_result_sell['ramp_low_upper_pr'][0] and
+				#sell_data['ramp_high'].iloc[-1]<=ga_result_sell['ramp_high_upper_pr'][0] and
+				#diff_pr_top_sell<=ga_result_sell['diff_top_upper_pr'][0] and
+				diff_pr_down_sell<=ga_result_sell['diff_down_upper_pr'][0]
+				#sell_data['diff_min_max_cci'].iloc[-1]<=ga_result_sell['diff_min_max_cci_upper_pr'][0] and
+				#sell_data['diff_min_max_candle'].iloc[-1]<=ga_result_sell['diff_min_max_candle_upper_pr'][0]
 				):
 
-				signal['signal'] = ['sell']
+				signal = 'sell'
 
 			else:
-				signal['signal'] = ['no_trade']
+				signal = 'no_trade'
 				
 
 		if ga_result_sell['methode'][0] == 'min_max':
 			if (
-				sell_data['ramp_high'].iloc[-1]<=ga_result_sell['ramp_high_upper_min_max'][0] and
-				sell_data['ramp_low'].iloc[-1]<=ga_result_sell['ramp_low_upper_min_max'][0] and
-				sell_data['diff_min_max_cci'].iloc[-1]<=ga_result_sell['diff_min_max_cci_upper_min_max'][0] and
-				sell_data['diff_min_max_candle'].iloc[-1]<=ga_result_sell['diff_min_max_candle_upper_min_max'][0]
-				):
+				#sell_data['ramp_high'].iloc[-1]<=ga_result_sell['ramp_high_upper_min_max'][0] and
+				#sell_data['ramp_low'].iloc[-1]<=ga_result_sell['ramp_low_upper_min_max'][0] and
+				#sell_data['diff_min_max_cci'].iloc[-1]<=ga_result_sell['diff_min_max_cci_upper_min_max'][0] and
+				#sell_data['diff_min_max_candle'].iloc[-1]<=ga_result_sell['diff_min_max_candle_upper_min_max'][0]
+				True):
 
-				signal['signal'] = ['sell']
+				signal = 'sell'
+
+				resist = (1 - (sell_data['diff_min_max_candle']/100)) * dataset[symbol]['close'].iloc[-1]
+				protect = dataset[symbol]['high'].iloc[-1] * 1.0006
 
 			else:
-				signal['signal'] = ['no_trade']
+				signal = 'no_trade'
 
 	else:
-		signal['signal'] = ['no_trade']
+		signal = 'no_trade'
 
-	return signal
+	return signal, resist, protect
 
 #//////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2300,6 +2284,8 @@ def last_signal(dataset,dataset_15M,symbol):
 #/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #*************************** How To Use Funcs *****************************************
+
+"""
 symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
 symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
 print('data get')
@@ -2520,3 +2506,4 @@ print('tp = ',tp_counter)
 print('st = ',st_counter)
 print('full = ',st_counter + tp_counter)
 
+"""

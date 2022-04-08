@@ -20,6 +20,7 @@ import os
 from tqdm import tqdm
 import logging
 from datetime import datetime
+from logger import logs
 
 
 # Create a DataFrame so 'ta' can be used.
@@ -2241,6 +2242,12 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 	if lst_idx_buy > lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_buy) <= (ga_result_buy['distance_lines'][0] + 1):
 
+		logs('======> last signal buy <=======')
+		logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
+		logs('ga result buy: {}'.format(ga_result_buy['distance_lines'][0]))
+		logs('last index: '.format(lst_idx_buy))
+		logs('================================')
+
 		if ga_result_buy['methode'][0] == 'pr':
 
 			if (
@@ -2277,7 +2284,13 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 				signal = 'no_trade'
 
 	elif lst_idx_buy < lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_sell) <= (ga_result_sell['distance_lines'][0] + 1):
-		
+				
+		logs('======> last signal sell <=======')
+		logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
+		logs('ga result sell: {}'.format(ga_result_sell['distance_lines'][0]))
+		logs('last index: {}'.format(lst_idx_sell))
+		logs('================================')
+
 		if ga_result_sell['methode'][0] == 'pr':
 			if (
 				#sell_data['ramp_low'].iloc[-1]<=ga_result_sell['ramp_low_upper_pr'][0] and

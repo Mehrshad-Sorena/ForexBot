@@ -8,7 +8,13 @@ import time
 import json
 
 
+user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) \
+        AppleWebKit/537.36 (KHTML, like Gecko) \
+        Chrome/83.0.4103.97 Safari/537.36'
+
 options = Options()
+options.add_argument('user-agent={}'.format(user_agent))
+options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_argument('--headless')
 options.add_argument('--disable-dev-shm-usage')
 options.add_argument('--no-sandbox')
@@ -23,6 +29,7 @@ def news():
     chromedriver_path = './chromedriver.exe'
     #driver = Firefox(options=options, executable_path=chromedriver_path)
     driver = Chrome(options=options, executable_path=chromedriver_path)
+    driver.implicitly_wait(10)
     #driver.set_window_size(800, 600)
 
     driver.get(url)
@@ -97,4 +104,4 @@ def news_task():
         print('===== News ===> ',ex)
 
 
-#news()
+news()

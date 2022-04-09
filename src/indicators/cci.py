@@ -2372,7 +2372,7 @@ for sym in symbol:
 	if os.path.exists("Genetic_cci_output_buy/"+sym.name+'.csv'): continue
 	if os.path.exists("Genetic_cci_output_sell/"+sym.name+'.csv'): continue
 	try:
-		#genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=1,max_score_ga_sell=1)
+		genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=1,max_score_ga_sell=1)
 		pass
 	except Exception as ex:
 		print('getting error: ', ex)
@@ -2387,7 +2387,7 @@ for sym in symbol:
 	if sym.name == 'AUDCHF_i': continue
 	if sym.name == 'AUDJPY_i': continue
 	print('****************************** ',sym.name,' ******************************')
-	one_year_golden_cross_tester(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=sym.name)
+	#one_year_golden_cross_tester(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=sym.name)
 #print(last_signal(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i'))
 
 """

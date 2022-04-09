@@ -21,6 +21,7 @@ from tqdm import tqdm
 import logging
 from datetime import datetime
 from logger import logs
+from timer import stTime
 
 
 # Create a DataFrame so 'ta' can be used.
@@ -50,6 +51,7 @@ from logger import logs
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************************************** Golden Cross Zero *******************************************************
+@stTime
 def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,distance_lines=2,mode='online',name_stp_minmax=True,name_stp_pr=False,plot=False,pbar_flag=False):
 	x = np.arange(0,len(dataset[symbol]['HLC/3']),1)
 
@@ -466,6 +468,7 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************************************** Find Best Intervals *******************************************************
+@stTime
 def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag_min_max', alpha=0.1):
 
 	if (name_stp == 'flag_min_max'):
@@ -663,6 +666,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************************************** Tester Golden Cross Zero *******************************************************
+@stTime
 def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 
 	upper = 0
@@ -1177,6 +1181,7 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************************************** Create First Cromosomes *******************************************************
+@stTime
 def initilize_values_genetic():
 	#************************** initialize Values ******************************************************
 	Chromosome = {}
@@ -1232,6 +1237,7 @@ def initilize_values_genetic():
 def takeSecond(elem):
     return elem[1]
 
+@stTime
 def gen_creator(Chromosome):
 
 	Chromosome_Cutter = randint(0, 5)
@@ -1338,6 +1344,7 @@ def gen_creator(Chromosome):
 
 #***************************************** Genetic Algorithm **************************************************************
 
+@stTime
 def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga_buy,max_score_ga_sell):
 
 	#*************************** Algorithm *************************************************//
@@ -1618,6 +1625,7 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 
 #********************** read GA result ****************************************************************************
 
+@stTime
 def read_ga_result(symbol):
 	buy_path = "Genetic_cci_output_buy/" + symbol + '.csv'
 	sell_path = "Genetic_cci_output_sell/" + symbol + '.csv'
@@ -1632,6 +1640,7 @@ def read_ga_result(symbol):
 
 #************************************ one year golden cross tester ***********************************************
 
+@stTime
 def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 
 	now = datetime.now()
@@ -2150,6 +2159,7 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 
 #******************************** Last Signal Out ******************************************************
 
+@stTime
 def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 	""" Last signal out """
 	buy_path = "Genetic_cci_output_buy/" + symbol + '.csv'

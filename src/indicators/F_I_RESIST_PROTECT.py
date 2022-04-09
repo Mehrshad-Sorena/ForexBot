@@ -40,6 +40,7 @@ from sklearn.utils import check_random_state
 #//////////////////////////////////////////////
 
 #**************************************************** extreme High Or Low Lines *******************************************************
+@stTime
 def Extreme_points(high,low,number_min,number_max):
 	
 	extremes = pd.DataFrame(low, columns=['low'])
@@ -57,6 +58,7 @@ def Extreme_points(high,low,number_min,number_max):
 
 
 #**************************************************** Ichimoko Lines *******************************************************
+@stTime
 def Extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_clusters=15,weight=1):
 	ichi = ind.ichimoku(high = high,low = low,close = close,tenkan = tenkan,kijun = kijun,senkou = senkou)
 
@@ -125,6 +127,7 @@ def Extreme_points_ichimoko(high,low,close,tenkan=9,kijun=26,senkou=52,n_cluster
 
 
 #**************************************************** Ramp Lines *******************************************************
+@stTime
 def extreme_points_ramp_lines(high,low,close,length='short',number_min=10,number_max=10,plot=False):
 	
 	#length:
@@ -261,6 +264,7 @@ def extreme_points_ramp_lines(high,low,close,length='short',number_min=10,number
 
 #**************************************************** Best Extreme Finder ***************************************************
 
+@stTime
 def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alpha_low,alpha_high,timeout_break):
 
 	#************************ Help ***********************************************************
@@ -553,6 +557,7 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 
 #***************************** Protect Resist Finder **************************************************************
 
+@stTime
 def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,dataset_4H,dataset_1D,plot=False):
 
 	#Extreme Points Finder Function

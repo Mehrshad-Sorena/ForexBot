@@ -103,7 +103,7 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 		cross_high['values'] = cross_index
 
 		if (plot == True):
-			plt.plot(cross_high['index'],cross_high['values'], 'o',c='g')
+			plt.plot(cross_high['index'],cross_high['values'], 'o',c='b')
     
 	elif intersection_high.geom_type == 'Point':
 		cross = pd.DataFrame(*intersection_high.xy)
@@ -113,7 +113,7 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 		cross_high['values'] = cross_index
 
 		if (plot == True):
-			plt.plot(cross_high['index'],cross_high['values'], 'o',c='g')
+			plt.plot(cross_high['index'],cross_high['values'], 'o',c='b')
 
 	#///////////////////////////////////////////////////////////////////////////////////
 
@@ -205,6 +205,7 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 
 		if (plot == True):
 			plt.axvline(x=finding_points['index'][elm],c='r')
+			print(finding_points['index'][elm])
 
 		if (elm-2 < 0): continue
 		#******************** Buy Signal Finding *********************************
@@ -452,6 +453,8 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 	signal_sell = signal_sell.dropna()
 	signal_sell = signal_sell.sort_values(by = ['index'])
 	signal_sell = signal_sell.reset_index(drop=True)
+
+	print('last index = ',signal_buy['index'].iloc[-1])
 
 
 	if (plot == True):
@@ -2240,13 +2243,19 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 	#***** Last Signal:
 
-	if lst_idx_buy > lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_buy) <= (ga_result_buy['distance_lines'][0] + 1):
+	logs('======> last signal buy ',symbol,' <========')
+	logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
+	logs('ga result buy: {}'.format(ga_result_buy['distance_lines'][0]))
+	logs('last index: '.format(lst_idx_buy))
+	logs('================================')
 
-		logs('======> last signal buy <=======')
-		logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
-		logs('ga result buy: {}'.format(ga_result_buy['distance_lines'][0]))
-		logs('last index: '.format(lst_idx_buy))
-		logs('================================')
+	logs('======> last signal sell ',symbol,' <========')
+	logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
+	logs('ga result sell: {}'.format(ga_result_sell['distance_lines'][0]))
+	logs('last index: {}'.format(lst_idx_sell))
+	logs('================================')
+
+	if lst_idx_buy > lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_buy) <= (ga_result_buy['distance_lines'][0] + 1):
 
 		if ga_result_buy['methode'][0] == 'pr':
 
@@ -2275,7 +2284,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 				signal = 'buy'
 
-				resist = (1 + (buy_data['diff_min_max_candle'].iloc[-1]/1000)) * dataset[symbol]['close'].iloc[-1]
+				resist = (1 + (buy_data['diff_min_max_candle'].iloc[-1]/100)) * dataset[symbol]['close'].iloc[-1]
 				protect = dataset[symbol]['low'].iloc[-1] * 0.9996
 
 
@@ -2284,12 +2293,6 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 				signal = 'no_trade'
 
 	elif lst_idx_buy < lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_sell) <= (ga_result_sell['distance_lines'][0] + 1):
-				
-		logs('======> last signal sell <=======')
-		logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
-		logs('ga result sell: {}'.format(ga_result_sell['distance_lines'][0]))
-		logs('last index: {}'.format(lst_idx_sell))
-		logs('================================')
 
 		if ga_result_sell['methode'][0] == 'pr':
 			if (
@@ -2316,7 +2319,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 				True):
 
 				signal = 'sell'
-				resist = (1 - (sell_data['diff_min_max_candle'].iloc[-1]/1000)) * dataset[symbol]['close'].iloc[-1]
+				resist = (1 - (sell_data['diff_min_max_candle'].iloc[-1]/100)) * dataset[symbol]['close'].iloc[-1]
 				protect = dataset[symbol]['high'].iloc[-1] * 1.0006
 
 			else:
@@ -2336,7 +2339,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 #/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #*************************** How To Use Funcs *****************************************
-"""
+
 
 symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
 symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
@@ -2370,10 +2373,14 @@ print('gotwarara 2')
 
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
-	#if sym.name == 'AUDCAD_i': continue
+	if sym.name == 'AUDCAD_i': continue
+	if sym.name == 'AUDCHF_i': continue
+	if sym.name == 'AUDJPY_i': continue
 	print('****************************** ',sym.name,' ******************************')
 	one_year_golden_cross_tester(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=sym.name)
 #print(last_signal(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i'))
+
+"""
 
 upper = 0
 mid = 1

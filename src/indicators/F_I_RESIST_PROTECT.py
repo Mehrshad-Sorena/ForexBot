@@ -18,6 +18,7 @@ from scipy.interpolate import interp1d
 from sklearn.linear_model import LinearRegression
 from sklearn.isotonic import IsotonicRegression
 from sklearn.utils import check_random_state
+from timer import stTime
 
 # Create a DataFrame so 'ta' can be used.
 #df = pd.DataFrame()

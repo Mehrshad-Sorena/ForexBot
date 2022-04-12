@@ -12,6 +12,9 @@ def carrier_buy(symbol,lot,st,tp,comment,magic):
 
 	if (spred > 0.045): return
 
+	tp = tp - abs(price_ask-price_bid)
+	st = st - abs(price_ask-price_bid)
+
 	if (tp <= (price)): return
 
 	if (st >= price_bid): return
@@ -63,17 +66,14 @@ def carrier_sell(symbol,lot,st,tp,comment,magic):
 	spred = ((abs(price_ask-price_bid)/price_ask) * 100)
 	deviation = 5
 
-	if (spred > 0.045):
-		print('re')
-		return
+	if (spred > 0.045): return
 
-	if (st <= price_ask):
-		print('tu')
-		return
+	tp = tp + abs(price_ask-price_bid)
+	st = st + abs(price_ask-price_bid)
 
-	if (tp >= (price_bid)):
-		print('rn')
-		return
+	if (st <= price_ask): return
+
+	if (tp >= (price_bid)): return
 
 	print(symbol,': ','sell')
 	request = {

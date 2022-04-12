@@ -104,4 +104,4 @@ def news_task():
         print('===== News ===> ',ex)
 
 
-news()
+#news()

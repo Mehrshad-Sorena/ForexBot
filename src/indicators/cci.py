@@ -2240,8 +2240,8 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			diff_pr_top_sell_power = np.mean(res_pro['power_high'])
 			diff_pr_down_sell_power = np.mean(res_pro['power_low'])
 
-			resist = (res_pro['high'][0] * 0.9994)
-			protect = (res_pro['low'][2] * 0.9994)
+			resist = (res_pro['high'][0] * 1.0006)
+			protect = (res_pro['low'][2] * 1.0006)
 		else:
 			diff_pr_top_sell = 0
 			diff_pr_down_sell = 0
@@ -2253,13 +2253,13 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 	#***** Last Signal:
 
-	logs('======> last signal buy ',symbol,' <========')
+	logs('======> last signal buy {}'.format(symbol))
 	logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
 	logs('ga result buy: {}'.format(ga_result_buy['distance_lines'][0]))
 	logs('last index: '.format(lst_idx_buy))
 	logs('================================')
 
-	logs('======> last signal sell ',symbol,' <========')
+	logs('======> last signal sell {}'.format(symbol))
 	logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
 	logs('ga result sell: {}'.format(ga_result_sell['distance_lines'][0]))
 	logs('last index: {}'.format(lst_idx_sell))
@@ -2350,7 +2350,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 #*************************** How To Use Funcs *****************************************
 
-
+"""
 symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
 symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
 print('data get')
@@ -2372,7 +2372,7 @@ for sym in symbol:
 	if os.path.exists("Genetic_cci_output_buy/"+sym.name+'.csv'): continue
 	if os.path.exists("Genetic_cci_output_sell/"+sym.name+'.csv'): continue
 	try:
-		genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=400,max_score_ga_buy=1,max_score_ga_sell=1)
+		genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=800,max_score_ga_buy=1,max_score_ga_sell=1)
 		pass
 	except Exception as ex:
 		print('getting error: ', ex)
@@ -2390,7 +2390,7 @@ for sym in symbol:
 	#one_year_golden_cross_tester(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=sym.name)
 #print(last_signal(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i'))
 
-"""
+
 
 upper = 0
 mid = 1

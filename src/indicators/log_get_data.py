@@ -48,7 +48,7 @@ def log_get_data(frame,number):
 #demo:
 #50825951
 #3zsvqxje
-	authorized=mt5.login(51029334, password="4ro0q9H8v")
+	authorized=mt5.login(51149098, password="zyowt2zj")
 	if True:#authorized:
 		account_info=mt5.account_info()
 		if account_info!=None:
@@ -142,7 +142,7 @@ def get_symbols(frame):
 	#else:
 	#	print("failed to connect at account #{}, error code: {}".format(17221085, mt5.last_error()))
 	
-	authorized=mt5.login(51029334, password="4ro0q9H8v")
+	authorized=mt5.login(51149098, password="zyowt2zj")
 	#print('0:',authorized)
 	if True:#authorized:
 		account_info=mt5.account_info()
@@ -164,7 +164,7 @@ def log_get_data_one_by_one(frame,number,sym_name):
 		print("initialize() failed, error code =",mt5.last_error())
 		quit()
 
-	authorized=mt5.login(51029334, password="4ro0q9H8v")
+	authorized=mt5.login(51149098, password="zyowt2zj")
 	if True:#authorized:
 		account_info=mt5.account_info()
 		if account_info!=None:
@@ -251,7 +251,7 @@ def log_get_data_Genetic(frame,number_start,number_end):
 #demo:
 #50825951
 #3zsvqxje
-	authorized=mt5.login(51029334, password="4ro0q9H8v")
+	authorized=mt5.login(51149098, password="zyowt2zj")
 	if True:#authorized:
 		account_info=mt5.account_info()
 		if account_info!=None:

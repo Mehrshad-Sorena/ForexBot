@@ -65,7 +65,11 @@ def lot_checker(my_money,symbol,signal,risk_lot=0.02,levrage=100):
 			else:
 				lot = 0
 
+	if 0 < lot < 0.01: lot = 0.01
+
 	lot = float("{:.2f}".format((lot)))
+
+	if lot > 0.09: lot = 0.09
 
 	vol_traded_max = (my_money/levrage) * risk_lot
 

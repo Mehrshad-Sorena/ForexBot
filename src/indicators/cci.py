@@ -2256,7 +2256,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 	logs('======> last signal buy {}'.format(symbol))
 	logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
 	logs('ga result buy: {}'.format(ga_result_buy['distance_lines'][0]))
-	logs('last index: '.format(lst_idx_buy))
+	logs('last index: {}'.format(lst_idx_buy))
 	logs('================================')
 
 	logs('======> last signal sell {}'.format(symbol))

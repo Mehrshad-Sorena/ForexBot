@@ -2198,7 +2198,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 		res_pro = pd.DataFrame()
 		try:
-			res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=True,T_4H=True,T_1D=True,dataset_5M=dataset,dataset_15M=dataset_15M,dataset_1H=dataset_1H,dataset_4H=dataset_4H,dataset_1D=dataset_1D,plot=False)
+			res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=True,T_4H=True,T_1D=True,dataset_5M=dataset[symbol],dataset_15M=dataset_15M[symbol],dataset_1H=dataset_1H[symbol],dataset_4H=dataset_4H[symbol],dataset_1D=dataset_1D[symbol],plot=False)
 		except:
 			res_pro['high'] = 'nan'
 			res_pro['low'] = 'nan'
@@ -2227,7 +2227,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 		res_pro = pd.DataFrame()
 		try:
-			res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=True,T_4H=True,T_1D=True,dataset_5M=dataset,dataset_15M=dataset_15M,dataset_1H=dataset_1H,dataset_4H=dataset_4H,dataset_1D=dataset_1D,plot=False)
+			res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=True,T_4H=True,T_1D=True,dataset_5M=dataset[symbol],dataset_15M=dataset_15M[symbol],dataset_1H=dataset_1H[symbol],dataset_4H=dataset_4H[symbol],dataset_1D=dataset_1D[symbol],plot=False)
 		except:
 			res_pro['high'] = 'nan'
 			res_pro['low'] = 'nan'
@@ -2256,12 +2256,14 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 	logs('======> last signal buy {}'.format(symbol))
 	logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
 	logs('ga result buy: {}'.format(ga_result_buy['distance_lines'][0]))
+	logs('ga result buy methode: {}'.format(ga_result_buy['methode'][0]))
 	logs('last index: {}'.format(lst_idx_buy))
 	logs('================================')
 
 	logs('======> last signal sell {}'.format(symbol))
 	logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
 	logs('ga result sell: {}'.format(ga_result_sell['distance_lines'][0]))
+	logs('ga result sell methode: {}'.format(ga_result_sell['methode'][0]))
 	logs('last index: {}'.format(lst_idx_sell))
 	logs('================================')
 

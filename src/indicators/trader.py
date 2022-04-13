@@ -5,6 +5,7 @@ from datetime import datetime
 from forex_news import news
 from cci import last_signal
 import MetaTrader5 as mt5
+from logger import logs
 import pandas as pd
 import numpy as np
 import json
@@ -65,6 +66,13 @@ def trader(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_d
 		signal, tp, st = last_signal(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,sym.name)
 
 		lot = basket_manager(symbols=symbol,symbol=sym.name,my_money=money,signal=signal)
+
+		logs('================> {}'.format(sym.name))
+		logs('signal =  {}'.format(signal))
+		logs('tp: {}'.format(tp))
+		logs('st: {}'.format(st))
+		logs('lot: '.format(lot))
+		logs('================================')
 
 		if lot:
 			if signal == 'buy':

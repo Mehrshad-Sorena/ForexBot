@@ -26,11 +26,11 @@ symbol_black_list = np.array(
 	])
 
 def get_all_deta_online():
-	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,1000)
+	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,3000)
 	symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,1200)
-	symbol_data_H1,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,600)
-	symbol_data_H4,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,360)
-	symbol_data_D1,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,60)
+	symbol_data_H1,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,700)
+	symbol_data_H4,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,500)
+	symbol_data_D1,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,250)
 
 	return symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_data_D1,symbol,money
 
@@ -67,11 +67,13 @@ def trader(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_d
 
 		lot = basket_manager(symbols=symbol,symbol=sym.name,my_money=money,signal=signal)
 
+		if lot > 0.09: lot = 0.09
+
 		logs('================> {}'.format(sym.name))
 		logs('signal =  {}'.format(signal))
 		logs('tp: {}'.format(tp))
 		logs('st: {}'.format(st))
-		logs('lot: '.format(lot))
+		logs('lot: {}'.format(lot))
 		logs('================================')
 
 		if lot:

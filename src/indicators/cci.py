@@ -232,8 +232,8 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 
 				if (name_stp_minmax == True):
 					#Calculate With Min Max Diff From MACD:
-					if ((len(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]-dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]).values*100) >= signal_buy['diff_min_max_candle'][buy_counter])[0]) - 1) > 1):
-						signal_buy['tp_min_max_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]-dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]).values*100) >= signal_buy['diff_min_max_candle'][buy_counter])[0])
+					if ((len(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]-dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]).values*100) >= (signal_buy['diff_min_max_candle'][buy_counter]+0.05))[0]) - 1) > 1):
+						signal_buy['tp_min_max_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]-dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]).values*100) >= (signal_buy['diff_min_max_candle'][buy_counter]+0.05))[0])
 						signal_buy['tp_min_max'][buy_counter] = ((dataset[symbol]['high'][signal_buy['tp_min_max_index'][buy_counter]] - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
 					else:
 						signal_buy['tp_min_max_index'][buy_counter] = -1
@@ -285,11 +285,11 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 						res_pro['low'] = 'nan'
 
 					if (res_pro.empty == False):
-						signal_buy['diff_pr_top'][buy_counter] = (((res_pro['high'][0] * 0.9994) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
-						signal_buy['diff_pr_down'][buy_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - (res_pro['low'][2] * 0.9994))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
+						signal_buy['diff_pr_top'][buy_counter] = (((res_pro['high'][0] * 0.9999) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
+						signal_buy['diff_pr_down'][buy_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - (res_pro['low'][2] * 0.9999))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
 
-						if ((len(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values) >= (res_pro['high'][0] * 0.9994)))[0]) - 1) > 1):
-							signal_buy['tp_pr_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values) >= (res_pro['high'][0] * 0.9994)))[0])
+						if ((len(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values) >= (res_pro['high'][0] * 0.9999)))[0]) - 1) > 1):
+							signal_buy['tp_pr_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values) >= (res_pro['high'][0] * 0.9999)))[0])
 							signal_buy['tp_pr'][buy_counter] = ((dataset[symbol]['high'][signal_buy['tp_pr_index'][buy_counter]] - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
 						else:
 							signal_buy['tp_pr_index'][buy_counter] = -1
@@ -347,8 +347,8 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 				if (name_stp_minmax == True):
 					#Calculate With Min Max Diff From MACD:
 
-					if ((len(np.where((((((dataset[symbol]['low'][int(finding_points['index'][elm])] - dataset[symbol]['low'][int(finding_points['index'][elm]):-1])/dataset[symbol]['low'][int(finding_points['index'][elm])]).values) * 100) >= (signal_sell['diff_min_max_candle'][sell_counter])))[0]) - 1) > 1):
-						signal_sell['tp_min_max_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where((((((dataset[symbol]['low'][int(finding_points['index'][elm])] - dataset[symbol]['low'][int(finding_points['index'][elm]):-1])/dataset[symbol]['low'][int(finding_points['index'][elm])]).values) * 100) >= (signal_sell['diff_min_max_candle'][sell_counter])))[0])
+					if ((len(np.where((((((dataset[symbol]['low'][int(finding_points['index'][elm])] - dataset[symbol]['low'][int(finding_points['index'][elm]):-1])/dataset[symbol]['low'][int(finding_points['index'][elm])]).values) * 100) >= (signal_sell['diff_min_max_candle'][sell_counter]+0.05)))[0]) - 1) > 1):
+						signal_sell['tp_min_max_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where((((((dataset[symbol]['low'][int(finding_points['index'][elm])] - dataset[symbol]['low'][int(finding_points['index'][elm]):-1])/dataset[symbol]['low'][int(finding_points['index'][elm])]).values) * 100) >= (signal_sell['diff_min_max_candle'][sell_counter]+0.05)))[0])
 						signal_sell['tp_min_max'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - dataset[symbol]['low'][signal_sell['tp_min_max_index'][sell_counter]])/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
 					else:
 						signal_sell['tp_min_max_index'][sell_counter] = -1
@@ -400,11 +400,11 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 						res_pro['low'] = 'nan'
 
 					if (res_pro.empty == False):
-						signal_sell['diff_pr_top'][sell_counter] = (((res_pro['high'][0] * 1.0006) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
-						signal_sell['diff_pr_down'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - (res_pro['low'][0] * 1.0006))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
+						signal_sell['diff_pr_top'][sell_counter] = (((res_pro['high'][0] * 1.0001) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
+						signal_sell['diff_pr_down'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - (res_pro['low'][0] * 1.0001))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
 
-						if ((len(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values) <= (res_pro['low'][0] * 1.0006)))[0]) - 1) > 1):
-							signal_sell['tp_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values) <= (res_pro['low'][0] * 1.0006)))[0])
+						if ((len(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values) <= (res_pro['low'][0] * 1.0001)))[0]) - 1) > 1):
+							signal_sell['tp_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values) <= (res_pro['low'][0] * 1.0001)))[0])
 							signal_sell['tp_pr'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - dataset[symbol]['low'][signal_sell['tp_pr_index'][sell_counter]])/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
 						else:
 							signal_sell['tp_pr_index'][sell_counter] = -1
@@ -2383,9 +2383,9 @@ print('gotwarara 2')
 
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
-	if sym.name == 'AUDCAD_i': continue
-	if sym.name == 'AUDCHF_i': continue
-	if sym.name == 'AUDJPY_i': continue
+	#if sym.name == 'AUDCAD_i': continue
+	#if sym.name == 'AUDCHF_i': continue
+	#if sym.name == 'AUDJPY_i': continue
 	print('****************************** ',sym.name,' ******************************')
 	#one_year_golden_cross_tester(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=sym.name)
 #print(last_signal(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i'))

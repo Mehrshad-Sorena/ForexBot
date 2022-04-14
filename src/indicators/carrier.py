@@ -1,5 +1,6 @@
 from log_get_data import *
 import MetaTrader5 as mt5
+from logger import logs
 
 def carrier_buy(symbol,lot,st,tp,comment,magic):
 
@@ -10,14 +11,25 @@ def carrier_buy(symbol,lot,st,tp,comment,magic):
 	spred = ((abs(price_ask-price_bid)/price_ask) * 100)
 	deviation = 5
 
-	if (spred > 0.045): return
+	logs('==== BUY =======> {}'.format(symbol))
+	logs('spred: {}'.format(spred))
+
+	if (spred > 0.045): 
+		logs('spred return: {}'.format(spred))
+		return
 
 	tp = tp - abs(price_ask-price_bid)
 	st = st - abs(price_ask-price_bid)
 
-	if (tp <= (price)): return
+	if (tp <= (price)): 
+		logs('tp return: {}'.format(price))
+		logs('tp: {}'.format(tp))
+		return
 
-	if (st >= price_bid): return
+	if (st >= price_bid): 
+		logs('st return: {}'.format(price_bid))
+		logs('st: {}'.format(st))
+		return
 
 	print(symbol,': ','buy')
 	request = {
@@ -66,14 +78,28 @@ def carrier_sell(symbol,lot,st,tp,comment,magic):
 	spred = ((abs(price_ask-price_bid)/price_ask) * 100)
 	deviation = 5
 
-	if (spred > 0.045): return
+	logs('==== SELL =======> {}'.format(symbol))
+	logs('spred: {}'.format(spred))
+	
+
+	if (spred > 0.045): 
+		logs('spred return: {}'.format(spred))
+		return
 
 	tp = tp + abs(price_ask-price_bid)
 	st = st + abs(price_ask-price_bid)
 
-	if (st <= price_ask): return
+	if (st <= price_ask): 
+		logs('st return: {}'.format(price_ask))
+		logs('st: {}'.format(st))
+		return
 
-	if (tp >= (price_bid)): return
+	if (tp >= (price_bid)): 
+		logs('tp return: {}'.format(price_bid))
+		logs('tp: {}'.format(tp))
+		return
+
+	logs('================================')
 
 	print(symbol,': ','sell')
 	request = {

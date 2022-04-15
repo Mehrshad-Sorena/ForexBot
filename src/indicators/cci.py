@@ -1442,6 +1442,8 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 	logging.basicConfig(filename=log_name, level=logging.DEBUG)
 	logging.debug('=======================> %s' %symbol)
 
+	logs('===============> {}'.format(symbol))
+
 	if os.path.exists("Genetic_cci_output_buy/"+symbol+'.csv'):
 		with open("Genetic_cci_output_buy/"+symbol+'.csv', 'r', newline='') as myfile:
 			for line in csv.DictReader(myfile):
@@ -1523,10 +1525,12 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 			logging.debug('**************** buy *****************')
 			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 				logging.debug(output_buy)
+				logs('=======> BUY = {}'.format(output_buy))
 
 			logging.debug('**************** sell *****************')
 			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 				logging.debug(output_sell)
+				logs('=======> SELL = {}'.format(output_sell))
 
 			if not np.isnan(output_buy['score_pr'][0]) or not np.isnan(output_buy['score_min_max'][0]):
 				if (
@@ -1588,8 +1592,15 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 			logging.debug('**************** num buy *****************')
 			logging.debug(len(chromosome_buy))
 
+			logs('**************** num buy *****************')
+			logs('=======> num buy = {}'.format(len(chromosome_buy)))
+
 			logging.debug('**************** num sell *****************')
 			logging.debug(len(chromosome_sell))
+
+			logs('**************** num sell *****************')
+			logs('=======> num sell = {}'.format(len(chromosome_sell)))
+			
 
 			pbar.update(int((len(chromosome_buy) + len(chromosome_sell))/2))
 

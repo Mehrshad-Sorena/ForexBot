@@ -10,6 +10,50 @@ from scipy.stats import foldnorm, dweibull, rayleigh, expon, nakagami, norm
 from scipy.optimize import fsolve
 from shapely.geometry import LineString
 import matplotlib.pyplot as plt
+from numpy.random import randint
+import numpy as np
+from datetime import datetime
+import logging
+import sys
+import os
+from tqdm import tqdm
+import csv
+
+#**************************************** Logger *****************
+now = datetime.now()
+log_path = 'log/sma/golden_cross/{}-{}-{}-{}-{}-{}.log'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
+log_level = 'info'
+logger = logging.getLogger()
+
+if not os.path.exists(os.path.dirname(log_path)):
+    os.makedirs(os.path.dirname(log_path))
+
+if log_level == 'info':
+    logger.setLevel(logging.INFO)
+elif log_level == 'warning':
+    logger.setLevel(logging.WARNING)
+elif log_level == 'debug':
+    logger.setLevel(logging.DEBUG)
+# formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
+formatter = logging.Formatter('%(asctime)s | %(message)s')
+
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.DEBUG)
+stdout_handler.setFormatter(formatter)
+
+file_handler = logging.FileHandler(log_path)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+
+
+logger.addHandler(file_handler)
+logger.addHandler(stdout_handler)
+
+
+def logs(message):
+    logger.info(message)
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 # Create a DataFrame so 'ta' can be used.
@@ -25,7 +69,7 @@ import matplotlib.pyplot as plt
 #help(ind.sma)
 
 #**************************************************** Golden Cross *******************************************************
-def Golden_Cross_SMA(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
+def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 
 	x = np.arange(0,len(dataset[Low_ApplyTo]),1)
 
@@ -75,9 +119,9 @@ def Golden_Cross_SMA(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 			signal_buy['index'][i] = elm
 
 			if ((j+1) < len(cross)):
-				signal_buy['profit'][i] = (np.max(close[elm:cross['index'][j+1]] - close[elm])/close[elm]) * 100
+				signal_buy['profit'][i] = (np.max(dataset['close'][elm:cross['index'][j+1]] - dataset['close'][elm])/dataset['close'][elm]) * 100
 			else:
-				signal_buy['profit'][i] = (np.max(close[elm:-1] - close[elm])/close[elm]) * 100
+				signal_buy['profit'][i] = (np.max(dataset['close'][elm:-1] - dataset['close'][elm])/dataset['close'][elm]) * 100
 			i += 1
 
 		if ((SMA_Low[elm-1]>SMA_High[elm-1])&(SMA_Low[elm+1]<SMA_High[elm+1])):
@@ -85,9 +129,9 @@ def Golden_Cross_SMA(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 			signal_sell['values'][k] = cross['values'][j]
 			signal_sell['index'][k] = elm
 			if ((j+1) < len(cross)):
-				signal_sell['profit'][k] = (np.max(close[elm] - close[elm:cross['index'][j+1]])/np.min(close[elm:cross['index'][j+1]])) * 100
+				signal_sell['profit'][k] = (np.max(dataset['close'][elm] - dataset['close'][elm:cross['index'][j+1]])/np.min(dataset['close'][elm:cross['index'][j+1]])) * 100
 			else:
-				signal_sell['profit'][k] = (np.max(close[elm] - close[elm:-1])/np.min(close[elm:-1])) * 100
+				signal_sell['profit'][k] = (np.max(dataset['close'][elm] - dataset['close'][elm:-1])/np.min(dataset['close'][elm:-1])) * 100
 			#print('elm_sell = ',elm)
 			k += 1
 		j += 1
@@ -103,6 +147,457 @@ def Golden_Cross_SMA(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#******************************* Genetic Algotithm ******************************************************************
+
+#**************************************************** Create First Cromosomes *******************************************************
+#@stTime
+
+apply_to_list_ga = [
+	'open',
+	'close',
+	'low',
+	'high',
+	'HL/2',
+	'HLC/3',
+	'HLCC/4',
+	'OHLC/4'
+	]
+
+def initilize_values_genetic():
+	#************************** initialize Values ******************************************************
+	Chromosome = {}
+
+	Chromosome[0] = {
+	'high_period': 50,
+	'low_period': 25,
+	'apply_to_low': 'close',
+	'apply_to_high': 'close',
+	'signal': None,
+	'score_buy': 0,
+	'score_sell': 0
+	}
+
+	Chromosome[1] = {
+	'high_period': 100,
+	'low_period': 50,
+	'apply_to_low': 'close',
+	'apply_to_high': 'close',
+	'signal': None,
+	'score_buy': 0,
+	'score_sell': 0
+	}
+	i = 2
+	while i < 20:
+		Chromosome[i] = {
+			'high_period': randint(30, 400),
+			'low_period': randint(10, 400),
+			'apply_to_low': np.random.choice(apply_to_list_ga),
+			'apply_to_high': np.random.choice(apply_to_list_ga),
+			'signal': None,
+			'score_buy': 0,
+			'score_sell': 0
+		}
+		if (Chromosome[i]['high_period'] < Chromosome[i]['low_period']): continue
+		res = list(Chromosome[i].keys()) 
+		#print(res[1])
+		#print(Chromosome[i][res[1]])
+		i += 1
+	#***********************************************************************************
+	return Chromosome
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#************************************************ Gen Creator ****************************************************************
+def takeSecond(elem):
+    return elem[1]
+
+def scoring(buy_data, sell_data):
+	buy_profit = buy_data['profit'] * 10
+	sell_profit = sell_data['profit'] * 10
+
+	success_score_buy = len(np.where(buy_profit > 0)[0]) - len(np.where(buy_profit <= 0)[0])
+	success_score_sell = len(np.where(sell_profit > 0)[0]) - len(np.where(sell_profit <= 0)[0])
+
+	if success_score_buy <= 0:
+		success_score_buy = 1
+	if success_score_sell <= 0:
+		success_score_sell = 1
+
+	profit_score_buy = 1
+	profit_score_sell = 1
+	for bf in buy_profit:
+		if bf <= 0:
+			bf = 1
+		profit_score_buy *= bf
+
+	for sf in sell_profit:
+		if sf <= 0:
+			sf = 1
+		profit_score_sell *= sf
+
+	score_buy = success_score_buy * profit_score_buy
+	score_sell = success_score_sell * profit_score_sell
+
+	return score_buy, score_sell
+
+
+def find_max_score(chromosome_buy, chromosome_sell):
+
+	buy = {}
+	sell = {}
+	max_buy = np.max(chromosome_buy['score_buy'])
+	max_sell = np.max(chromosome_sell['score_sell'])
+
+	max_buy_index = np.argmax(chromosome_buy['score_buy'])
+	max_sell_index = np.argmax(chromosome_sell['score_sell'])
+
+	print(chromosome_buy)
+
+	buy.update(
+		{
+			'high_period': chromosome_buy['high_period'][max_buy_index],
+			'low_period': chromosome_buy['low_period'][max_buy_index],
+			'apply_to_low': chromosome_buy['apply_to_low'][max_buy_index],
+			'apply_to_high': chromosome_buy['apply_to_high'][max_buy_index],
+			'signal': chromosome_buy['signal'][max_buy_index],
+			'score_buy': chromosome_buy['score_buy'][max_buy_index],
+			'score_sell': chromosome_buy['score_buy'][max_buy_index]
+		})
+	
+	sell.update(
+		{
+			'high_period': chromosome_sell['high_period'][max_sell_index],
+			'low_period': chromosome_sell['low_period'][max_sell_index],
+			'apply_to_low': chromosome_sell['apply_to_low'][max_sell_index],
+			'apply_to_high': chromosome_sell['apply_to_high'][max_sell_index],
+			'signal': chromosome_sell['signal'][max_sell_index],
+			'score_buy': chromosome_sell['score_buy'][max_sell_index],
+			'score_sell': chromosome_sell['score_sell'][max_sell_index]
+		})
+
+	return buy, sell
+
+
+#@stTime
+def gen_creator(Chromosome):
+
+	Chromosome_Cutter = randint(0, 3)
+
+	Chromosome_selector = randint(0, 19)
+
+	baby = {}
+
+	#print('Generate Baby')
+	chrom_creator_counter = 0
+	baby_counter = 0
+
+	baby_counter_create = 0
+
+	while (baby_counter_create < (len(Chromosome) * 2)):
+		baby[baby_counter_create] = {
+			'high_period': randint(30, 400),
+			'low_period': randint(10, 400),
+			'apply_to_low': np.random.choice(apply_to_list_ga),
+			'apply_to_high': np.random.choice(apply_to_list_ga),
+			'signal': None,
+			'score_buy': 0,
+			'score_sell': 0
+		}
+
+		baby_counter_create += 1
+
+	scr = []
+	for k,v in zip(Chromosome.keys(), Chromosome.values()):
+		scr.append([k, (v.get('score_buy') + v.get('score_sell'))/2])
+
+	scr_idx = sorted(scr, key=takeSecond, reverse=True)[:int(len(Chromosome)/2)]
+
+	while chrom_creator_counter < len(Chromosome):
+
+		#********************************************* Baby ***********************************************************
+		
+		
+		Chromosome_selector_1 = np.random.choice(len(scr_idx), size=1)[0]
+		Chromosome_selector_2 = np.random.choice(len(scr_idx), size=1)[0]
+
+		res_1 = list(Chromosome[Chromosome_selector_1].keys())
+		res_2 = list(Chromosome[Chromosome_selector_2].keys())
+
+		Chromosome_Cutter = randint(0, 3)
+		change_chrom_counter = 0
+
+		while change_chrom_counter < Chromosome_Cutter:
+						#print(change_chrom_counter)
+			baby[baby_counter].update({res_1[change_chrom_counter]: Chromosome[Chromosome_selector_1][res_1[change_chrom_counter]]})
+			baby[baby_counter + 1].update({res_2[change_chrom_counter]: Chromosome[Chromosome_selector_2][res_2[change_chrom_counter]]})
+
+			change_chrom_counter += 1
+
+		change_chrom_counter = Chromosome_Cutter
+
+		while change_chrom_counter < 4:
+			baby[baby_counter].update({res_2[change_chrom_counter]: Chromosome[Chromosome_selector_2][res_2[change_chrom_counter]]})
+			baby[baby_counter + 1].update({res_1[change_chrom_counter]: Chromosome[Chromosome_selector_1][res_1[change_chrom_counter]]})
+			change_chrom_counter += 1
+
+		baby_counter = baby_counter + 2
+
+					#********************************************///////***************************************************************************
+		chrom_creator_counter += 1
+
+	i = 0
+	limit_counter = len(Chromosome) * 2 
+	while i < (limit_counter):
+		Chromosome[i] = {
+			'high_period': randint(30, 400),
+			'low_period': randint(10, 400),
+			'apply_to_low': np.random.choice(apply_to_list_ga),
+			'apply_to_high': np.random.choice(apply_to_list_ga),
+			'signal': None,
+			'score_buy': 0,
+			'score_sell': 0
+		}
+
+		if (Chromosome[i]['high_period'] < Chromosome[i]['low_period']): continue
+		i += 1
+
+	re_counter = 0
+	while (re_counter < limit_counter):
+		Chromosome[re_counter]['high_period'] = baby[re_counter]['high_period']
+		Chromosome[re_counter]['low_period'] = baby[re_counter]['low_period']
+		Chromosome[re_counter]['apply_to_low'] = baby[re_counter]['apply_to_low']
+		Chromosome[re_counter]['apply_to_high'] = baby[re_counter]['apply_to_high']
+		Chromosome[re_counter]['signal'] = baby[re_counter]['signal']
+		Chromosome[re_counter]['score_buy'] = baby[re_counter]['score_buy']
+		Chromosome[re_counter]['score_sell'] = baby[re_counter]['score_sell']
+		re_counter += 1
+		#print(Chromosome_5M[6])
+
+	return Chromosome
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#***************************************** Genetic Algorithm **************************************************************
+
+#@stTime
+def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_ga_sell):
+
+	#*************************** Algorithm *************************************************//
+	Chromosome = initilize_values_genetic()
+
+	print('**************************** START Genetic BUY ',symbol,'****************************')
+	print('\n')
+
+	now = datetime.now()
+
+	logs('===============> {}'.format(symbol))
+
+	if os.path.exists("GA/SMA/BUY/"+symbol+'.csv'):
+		with open("GA/SMA/BUY/"+symbol+'.csv', 'r', newline='') as myfile:
+			for line in csv.DictReader(myfile):
+				Chromosome[19] = line
+				Chromosome[19]['high_period'] = float(Chromosome[19]['high_period'])
+				Chromosome[19]['low_period'] = float(Chromosome[19]['low_period'])
+				Chromosome[19]['apply_to_low'] = Chromosome[19]['apply_to_low']
+				Chromosome[19]['apply_to_high'] = Chromosome[19]['apply_to_high']
+				Chromosome[19]['signal'] = Chromosome[19]['signal']
+				Chromosome[19]['score_buy'] = float(Chromosome[19]['score_buy'])
+				Chromosome[19]['score_sell'] = float(Chromosome[19]['score_sell'])
+				max_score_ga_buy = float(Chromosome[19]['score_buy'])
+
+	if os.path.exists("GA/SMA/SELL/"+symbol+'.csv'):
+		with open("GA/SMA/SELL/"+symbol+'.csv', 'r', newline='') as myfile:
+			for line in csv.DictReader(myfile):
+				Chromosome[18] = line
+				Chromosome[18]['high_period'] = float(Chromosome[18]['high_period'])
+				Chromosome[18]['low_period'] = float(Chromosome[18]['low_period'])
+				Chromosome[18]['apply_to_low'] = Chromosome[18]['apply_to_low']
+				Chromosome[18]['apply_to_high'] = Chromosome[18]['apply_to_high']
+				Chromosome[18]['signal'] = Chromosome[18]['signal']
+				Chromosome[18]['score_buy'] = float(Chromosome[18]['score_buy'])
+				Chromosome[18]['score_sell'] = float(Chromosome[18]['score_sell'])
+				max_score_ga_sell = float(Chromosome[18]['score_sell'])
+
+
+	chromosome_buy = pd.DataFrame()
+
+	chromosome_sell = pd.DataFrame()
+
+	chrom_counter = 0
+
+	with tqdm(total=num_turn) as pbar:
+		while chrom_counter < len(Chromosome):
+
+			try:
+				buy_data,sell_data = golden_cross(
+					dataset=symbol_data_5M[symbol],
+					Low_Period=Chromosome[chrom_counter]['low_period'],
+					High_Period=Chromosome[chrom_counter]['high_period'],
+					Low_ApplyTo=Chromosome[chrom_counter]['apply_to_low'],
+					High_ApplyTo=Chromosome[chrom_counter]['apply_to_high']
+					)
+				flag_golden_cross = False
+			except Exception as ex:
+				print('getting error: ', ex)
+				flag_golden_cross = True
+				logging.debug(Chromosome[chrom_counter])
+
+			if flag_golden_cross:
+				logging.debug(Chromosome[chrom_counter])
+				Chromosome.pop(chrom_counter)
+				high_period = randint(30, 400)
+				low_period = randint(10, 400)
+				while high_period < low_period:
+					high_period = randint(30, 400)
+					low_period = randint(10, 400)
+
+				Chromosome[chrom_counter] = {
+					'high_period': high_period,
+					'low_period': low_period,
+					'apply_to_low': np.random.choice(apply_to_list_ga),
+					'apply_to_high': np.random.choice(apply_to_list_ga),
+					'signal': None,
+					'score_buy': 0,
+					'score_sell': 0
+					}
+				continue
+
+			score_buy,score_sell = scoring(buy_data,sell_data)
+
+			#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				#logs('=======> BUY = {}'.format(buy_data))
+
+			#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				#logs('=======> SELL = {}'.format(sell_data))
+
+			if (
+				score_buy < max_score_ga_buy
+				):
+					
+				bad_buy = True
+			else:
+				Chromosome[chrom_counter]['signal'] = ('buy' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
+				Chromosome[chrom_counter].update({'score_buy': score_buy })
+				chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
+				
+
+
+				bad_buy = False
+
+			if (
+				score_sell < max_score_ga_sell
+				):
+					
+				bad_sell = True
+			else:
+				Chromosome[chrom_counter]['signal'] = ('sell' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
+				Chromosome[chrom_counter].update({'score_sell': score_sell })
+				chromosome_sell = chromosome_sell.append(Chromosome[chrom_counter], ignore_index=True)
+				
+
+				bad_sell = False
+
+			if bad_buy == True or bad_sell == True:
+
+				Chromosome.pop(chrom_counter)
+				high_period = randint(30, 400)
+				low_period = randint(10, 400)
+				while high_period < low_period:
+					high_period = randint(30, 400)
+					low_period = randint(10, 400)
+
+
+
+				Chromosome[chrom_counter] = {
+					'high_period': high_period,
+					'low_period': low_period,
+					'apply_to_low': np.random.choice(apply_to_list_ga),
+					'apply_to_high': np.random.choice(apply_to_list_ga),
+					'signal': None,
+					'score_buy': 0,
+					'score_sell': 0
+					}
+
+			logs('**************** num buy *****************')
+			logs('=======> num buy = {}'.format(len(chromosome_buy)))
+
+			logs('**************** num sell *****************')
+			logs('=======> num sell = {}'.format(len(chromosome_sell)))
+			
+
+			pbar.update(int((len(chromosome_buy) + len(chromosome_sell))/2))
+
+			if (
+				len(chromosome_buy) >= int(num_turn/20) and
+				len(chromosome_sell) >= int(num_turn/20)
+				):
+				break
+
+			if (
+				len(chromosome_buy) >= int(num_turn/12) or
+				len(chromosome_sell) >= int(num_turn/12)
+				):
+				if (len(chromosome_buy) >= int(num_turn/12)) and (len(chromosome_sell) >= 1): break
+				if (len(chromosome_sell) >= int(num_turn/12)) and (len(chromosome_buy) >= 1): break
+
+			if Chromosome[chrom_counter]['signal'] is None: continue
+
+			chrom_counter += 1
+			if (chrom_counter >= ((len(Chromosome)))):
+				chrom_counter = 0
+				Chromosome = gen_creator(Chromosome)
+				continue
+
+			
+	
+	#**************************** Best Find *********************************************************
+
+	#************ Best Find:
+	bcb,bcs = find_max_score(chromosome_buy,chromosome_sell)
+	best_chromosome_buy = pd.DataFrame()
+	best_chromosome_sell = pd.DataFrame()
+
+	best_chromosome_buy = best_chromosome_buy.append(bcb, ignore_index=True)
+	best_chromosome_sell = best_chromosome_sell.append(bcs, ignore_index=True)
+	#*************************** Save to TXT File ***************************************************************
+	buy_path = "GA/SMA/BUY/" + symbol + '.csv'
+	sell_path = "GA/SMA/SELL/" + symbol + '.csv'
+	try:
+		if os.path.exists(buy_path):
+			os.remove(buy_path)
+
+		best_chromosome_buy.to_csv(buy_path)		
+	except Exception as ex:
+		print('some thing wrong: ', ex)
+
+
+	try:
+		if os.path.exists(sell_path):
+			os.remove(sell_path)
+
+		best_chromosome_sell.to_csv(sell_path)
+	except Exception as ex:
+		print('some thing wrong: ', ex)
+
+	print('/////////////////////// Finish Genetic BUY ',symbol,'///////////////////////////////////')
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#********************** read GA result ****************************************************************************
+
+#@stTime
+def read_ga_result(symbol):
+	buy_path = "GA/SMA/BUY/" + symbol + '.csv'
+	sell_path = "GA/SMA/SELL/" + symbol + '.csv'
+	if os.path.exists(buy_path):
+		ga_result_buy = pd.read_csv(buy_path)
+
+	if os.path.exists(sell_path):
+		ga_result_sell = pd.read_csv(sell_path)
+
+	return ga_result_buy, ga_result_sell
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************************************** Scalpe *******************************************************
 
@@ -421,32 +916,62 @@ def Find_Best_interval(dataset,period_low,period_high,Low_ApplyTo,High_ApplyTo,m
 
 
 #************************************************** Last Signals With Weight ******************************************************************************
-def Signal(best_signals,buy_signal,sell_signal,len_price):
+def last_signal_sma(dataset,symbol):
 	#**** 
 	#the inputs of Functions Must read From Data Base Number's
 
+	buy_path = "GA/SMA/BUY/" + symbol + '.csv'
+	sell_path = "GA/SMA/SELL/" + symbol + '.csv'
+
+	if os.path.exists(buy_path):
+		ga_result_buy, ga_result_sell = read_ga_result(symbol=symbol)
+	else:
+		return 0
+
+	buy_signal, _ = golden_cross(
+					dataset=dataset,
+					Low_Period=ga_result_buy['low_period'][0],
+					High_Period=ga_result_buy['high_period'][0],
+					Low_ApplyTo=ga_result_buy['apply_to_low'][0],
+					High_ApplyTo=ga_result_buy['apply_to_high'][0]
+					)
+
+	_, sell_signal = golden_cross(
+					dataset=dataset,
+					Low_Period=ga_result_sell['low_period'][0],
+					High_Period=ga_result_sell['high_period'][0],
+					Low_ApplyTo=ga_result_sell['apply_to_low'][0],
+					High_ApplyTo=ga_result_sell['apply_to_high'][0]
+					)
+
 	signal = pd.DataFrame()
-	#signal['signal'] = np.nan
-	#signal['power'] = np.nan
-	#signal['index'] = np.nan
+	signal['signal'] = ['no_flag']
+	#signal['power'] = [0]
+	signal['index'] = -1
+
+	#if not np.isnan(buy_signal['score_pr'][0]):
 
 	if (buy_signal['index'][len(buy_signal)-1] > sell_signal['index'][len(sell_signal)-1]):
 		signal['signal'] = ['buy']
 		signal['index'] = buy_signal['index'][len(buy_signal)-1]
 
-		if ((buy_signal['values'][len(buy_signal)-1] <= best_signals['buy'][0]) & (buy_signal['values'][len(buy_signal)-1] >= best_signals['buy'][2])):
-			signal['power'] = np.mean(best_signals['power_buy']) * (2/(len_price - buy_signal['index'][len(buy_signal)-1] + 1))
-		else:
-			signal['power'] = np.mean(best_signals['power_buy']) * (1 - best_signals['alpha_buy']) * (2/(len_price - buy_signal['index'][len(buy_signal)-1] + 1))
-	else:
+		#if ((buy_signal['values'][len(buy_signal)-1] <= best_signals['buy'][0]) & (buy_signal['values'][len(buy_signal)-1] >= best_signals['buy'][2])):
+			#signal['power'] = np.mean(best_signals['power_buy']) * (2/(len_price - buy_signal['index'][len(buy_signal)-1] + 1))
+		#else:
+			#signal['power'] = np.mean(best_signals['power_buy']) * (1 - best_signals['alpha_buy']) * (2/(len_price - buy_signal['index'][len(buy_signal)-1] + 1))
+	
+	elif (buy_signal['index'][len(buy_signal)-1] < sell_signal['index'][len(sell_signal)-1]):
 		signal['signal'] = ['sell']
 		signal['index'] = sell_signal['index'][len(sell_signal)-1]
 
-		if ((sell_signal['values'][len(sell_signal)-1] <= best_signals['sell'][0]) & (sell_signal['values'][len(sell_signal)-1] >= best_signals['sell'][2])):
-			signal['power'] = np.mean(best_signals['power_sell']) * (2/(len_price - sell_signal['index'][len(sell_signal)-1] + 1))
-		else:
-			signal['power'] = np.mean(best_signals['power_sell']) * (1 - best_signals['alpha_sell']) * (2/(len_price - sell_signal['index'][len(sell_signal)-1] + 1))
+		#if ((sell_signal['values'][len(sell_signal)-1] <= best_signals['sell'][0]) & (sell_signal['values'][len(sell_signal)-1] >= best_signals['sell'][2])):
+			#signal['power'] = np.mean(best_signals['power_sell']) * (2/(len_price - sell_signal['index'][len(sell_signal)-1] + 1))
+		#else:
+			#signal['power'] = np.mean(best_signals['power_sell']) * (1 - best_signals['alpha_sell']) * (2/(len_price - sell_signal['index'][len(sell_signal)-1] + 1))
 
+	else:
+		signal['signal'] = ['no_flag']
+		signal['index'] = -1
 		#Add Interval From Index Last to Signal For Power Decreasing
 	return signal
 
@@ -455,44 +980,44 @@ def Signal(best_signals,buy_signal,sell_signal,len_price):
 
 #************************************************** USE OF Funcyions ******************************************************************************
 
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,600)
+symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,48500)
+print('get data')
+#best_signals,buy_signal,sell_signal = Find_Best_interval(dataset = symbol_data_5M['AUDCAD_i'],period_low=2,period_high=5,Low_ApplyTo='close',High_ApplyTo='close',max_profit_buy=0.06,max_profit_sell=0.06,alpha_sell=0.1,alpha_buy=0.1)
+
+#signal = Signal(best_signals=best_signals ,buy_signal = buy_signal ,sell_signal = sell_signal,len_price=len(y1)-1)
+
+symbol_black_list = np.array(
+	[
+		'WSt30_m_i','SPX500_m_i','NQ100_m_i','GER40_m_i',
+		'GER40_i','USDRUR','USDRUR_i','USDRUB','USDRUB_i',
+		'USDHKD','WTI_i','BRN_i','STOXX50_i','NQ100_i',
+		'NG_i','HSI50_i','CAC40_i','ASX200_i','SPX500_i',
+		'NIKK225_i','IBEX35_i','FTSE100_i','RUBRUR',
+		'EURDKK_i','DAX30_i','XRPUSD_i','XBNUSD_i',
+		'LTCUSD_i','ETHUSD_i','BTCUSD_i','_DXY','_DJI',
+		'EURTRY_i','USDTRY_i','USDDKK_i','EURRUB_i'
+	])
+
+for sym in symbol:
+
+	if sym.name == 'AUDCAD_i': continue
+	if sym.name == 'AUDCHF_i': continue
+	if sym.name == 'AUDJPY_i': continue
+	if sym.name == 'AUDNZD_i': continue
+	if sym.name == 'AUDUSD_i': continue
+	if sym.name == 'CADCHF_i': continue
+	if sym.name == 'CADJPY_i': continue
+	if sym.name == 'CHFJPY_i': continue
+	if sym.name == 'EURAUD_i': continue
+	if sym.name == 'EURCAD_i': continue
+	if sym.name == 'EURCHF_i': continue
 
 
-y1 = symbol_data_5M['AUDCAD_i']['close']
-y2 = symbol_data_5M['AUDCAD_i']['open']
-y3 = symbol_data_5M['AUDCAD_i']['high']
-y4 = symbol_data_5M['AUDCAD_i']['low']
-time = symbol_data_5M['AUDCAD_i']['time']
-
-best_signals,buy_signal,sell_signal = Find_Best_interval(dataset = symbol_data_5M['AUDCAD_i'],period_low=2,period_high=5,Low_ApplyTo='close',High_ApplyTo='close',max_profit_buy=0.06,max_profit_sell=0.06,alpha_sell=0.1,alpha_buy=0.1)
-
-signal = Signal(best_signals=best_signals ,buy_signal = buy_signal ,sell_signal = sell_signal,len_price=len(y1)-1)
-
-print(signal)
-
-plt.axvline(x = signal['index'][0], color = 'r', linestyle = '-')
-
-plt.axhline(y = best_signals['buy'][0], color = 'r', linestyle = '-')
-plt.axhline(y = best_signals['buy'][1], color = 'g', linestyle = '-')
-plt.axhline(y = best_signals['buy'][2], color = 'r', linestyle = '-')
-
-plt.axhline(y = best_signals['sell'][0], color = 'b', linestyle = '-')
-plt.axhline(y = best_signals['sell'][1], color = 'g', linestyle = '-')
-plt.axhline(y = best_signals['sell'][2], color = 'b', linestyle = '-')
-
-print(np.mean(best_signals['power_buy']))
-print('buy')
-print(best_signals['buy'][0])
-print(best_signals['buy'][1])
-print(best_signals['buy'][2])
-
-print('sell')
-print(best_signals['sell'][0])
-print(best_signals['sell'][1])
-print(best_signals['sell'][2])
-
-#plt.plot(signal_buy['index'], signal_buy['values'],'o', c='#FF5733')
-#plt.plot(signal_sell['index'], signal_sell['values'],'o', c='g')
-plt.plot(y1.index[0:-1], y1[0:-1], c='r')
-#plt.plot(y1.index, sma_high, c='r')
-plt.show()
+	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
+	genetic_buy_algo(
+		symbol_data_5M=symbol_data_5M,
+		symbol=sym.name,
+		num_turn=80,
+		max_score_ga_buy=10,
+		max_score_ga_sell=10
+		)

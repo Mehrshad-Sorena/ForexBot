@@ -73,11 +73,11 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 
 	x = np.arange(0,len(dataset[Low_ApplyTo]),1)
 
-	SMA_Low = ind.sma(dataset[Low_ApplyTo], length = Low_Period)
-	SMA_High = ind.sma(dataset[High_ApplyTo], length = High_Period)
+	SMA_Low = ind.sma(dataset[Low_ApplyTo], length = int(Low_Period))
+	SMA_High = ind.sma(dataset[High_ApplyTo], length = int(High_Period))
 
-	first_line = LineString(np.column_stack((x[(High_Period-1):], SMA_Low[(High_Period-1):])))
-	second_line = LineString(np.column_stack((x[(High_Period-1):], SMA_High.dropna())))
+	first_line = LineString(np.column_stack((x[(int(High_Period)-1):], SMA_Low[(int(High_Period)-1):])))
+	second_line = LineString(np.column_stack((x[(int(High_Period)-1):], SMA_High.dropna())))
 
 	intersection = first_line.intersection(second_line)
 

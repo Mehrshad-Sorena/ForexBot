@@ -23,6 +23,7 @@ from datetime import datetime
 #from logger import logs
 from timer import stTime
 from sma import last_signal_sma
+import sys
 
 
 # Create a DataFrame so 'ta' can be used.
@@ -2581,6 +2582,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 #*************************** How To Use Funcs *****************************************
 
+"""
 
 symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
 symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
@@ -2896,5 +2898,5 @@ for elm in signal_buy['index'][list_index_ok[0] + np.where(signal_buy['flag_pr']
 	plt.show()
 	
 
-
+"""
 

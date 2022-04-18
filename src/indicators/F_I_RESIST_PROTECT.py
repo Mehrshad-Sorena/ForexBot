@@ -560,6 +560,10 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 
 def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,dataset_4H,dataset_1D,plot=False):
 
+	short_length_1 = 25
+	short_length_2 = 50
+	mid_length = 100
+	long_length = 200
 	#Extreme Points Finder Function
 
 	local_extreme_5M = pd.DataFrame()
@@ -605,23 +609,63 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	#Trend Line Extreme Finder Function
 	trend_local_extreme_5M_long = pd.DataFrame()
 	trend_local_extreme_5M_long = np.nan
+
+	dataset_ramp_5M = pd.DataFrame()
+	cut_first = 0
+	if (int(len(dataset_5M['low'])-1) > long_length):
+		cut_first = int(len(dataset_5M['low'])-1) - long_length
+	dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+
 	if (T_5M == True):
-		trend_local_extreme_5M_long = extreme_points_ramp_lines(high = dataset_5M['high'],low = dataset_5M['low'],close = dataset_5M['close'],length='long',number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_long = extreme_points_ramp_lines(high = dataset_ramp_5M['high'],low = dataset_ramp_5M['low'],close = dataset_ramp_5M['close'],length='long',number_min=2,number_max=2,plot=False)
 
 	trend_local_extreme_5M_mid = pd.DataFrame()
 	trend_local_extreme_5M_mid = np.nan
+
+	dataset_ramp_5M = pd.DataFrame()
+	cut_first = 0
+	if (int(len(dataset_5M['low'])-1) > mid_length):
+		cut_first = int(len(dataset_5M['low'])-1) - mid_length
+	dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+
 	if (T_5M == True):
-		trend_local_extreme_5M_mid = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/2):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['low'])-1)/2):len(dataset_5M['low'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/2):len(dataset_5M['high'])-1],length='long',number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_mid = extreme_points_ramp_lines(high = dataset_ramp_5M['high'],low = dataset_ramp_5M['low'],close = dataset_ramp_5M['close'],length='mid',number_min=2,number_max=2,plot=False)
 
 	trend_local_extreme_5M_short_1 = pd.DataFrame()
 	trend_local_extreme_5M_short_1 = np.nan
+
+	dataset_ramp_5M = pd.DataFrame()
+	cut_first = 0
+	if (int(len(dataset_5M['low'])-1) > short_length_1):
+		cut_first = int(len(dataset_5M['low'])-1) - short_length_1
+	dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+
 	if (T_5M == True):
-		trend_local_extreme_5M_short_1 = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/4):len(dataset_5M['high'])-1],length='long',number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_short_1 = extreme_points_ramp_lines(high = dataset_ramp_5M['high'],low = dataset_ramp_5M['low'],close = dataset_ramp_5M['close'],length='short',number_min=2,number_max=2,plot=False)
 
 	trend_local_extreme_5M_short_2 = pd.DataFrame()
 	trend_local_extreme_5M_short_2 = np.nan
+
+	dataset_ramp_5M = pd.DataFrame()
+	cut_first = 0
+	if (int(len(dataset_5M['low'])-1) > short_length_2):
+		cut_first = int(len(dataset_5M['low'])-1) - short_length_2
+	dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
+	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+
 	if (T_5M == True):
-		trend_local_extreme_5M_short_2 = extreme_points_ramp_lines(high = dataset_5M['high'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],low = dataset_5M['low'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],close = dataset_5M['close'][int((len(dataset_5M['high'])-1)/8):len(dataset_5M['high'])-1],length='long',number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_short_2 = extreme_points_ramp_lines(high = dataset_ramp_5M['high'],low = dataset_ramp_5M['low'],close = dataset_ramp_5M['close'],length='short',number_min=2,number_max=2,plot=False)
 	#ichi Extreme Finder Function
 
 	ichi_local_extreme_5M = pd.DataFrame()

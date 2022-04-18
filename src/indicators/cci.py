@@ -22,6 +22,7 @@ import logging
 from datetime import datetime
 #from logger import logs
 from timer import stTime
+from sma import last_signal_sma
 
 
 # Create a DataFrame so 'ta' can be used.
@@ -289,7 +290,6 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 					dataset_5M['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_5M['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 
-					sma_dataset = 
 					trend_sma = last_signal_sma(dataset_5M, symbol)
 					if (
 						signal_buy['value_min_max_candle'][buy_counter] > dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0006 and
@@ -2497,7 +2497,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			if (
 				trend_sma_buy['signal'][0] == 'buy' and
 				buy_data['value_min_max_candle'].iloc[-1] > dataset[symbol]['high'].iloc[-1]*1.0006 and
-				buy_data['diff_min_max_candle'].iloc[-1]>= 0.06 and
+				buy_data['diff_min_max_candle'].iloc[-1]>= 0.06
 				#buy_data['ramp_high'].iloc[-1]>=ga_result_buy['ramp_high_lower_min_max'][0] and
 				#buy_data['ramp_low'].iloc[-1]>=ga_result_buy['ramp_low_lower_min_max'][0] and
 				#buy_data['diff_min_max_cci'].iloc[-1]<ga_result_buy['diff_min_max_cci_upper_min_max'][0] and

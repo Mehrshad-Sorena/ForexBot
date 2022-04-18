@@ -980,7 +980,7 @@ def last_signal_sma(dataset,symbol):
 
 #************************************************** USE OF Funcyions ******************************************************************************
 
-symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,48500)
+symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,48000)
 print('get data')
 #best_signals,buy_signal,sell_signal = Find_Best_interval(dataset = symbol_data_5M['AUDCAD_i'],period_low=2,period_high=5,Low_ApplyTo='close',High_ApplyTo='close',max_profit_buy=0.06,max_profit_sell=0.06,alpha_sell=0.1,alpha_buy=0.1)
 
@@ -1011,6 +1011,7 @@ for sym in symbol:
 	if sym.name == 'EURAUD_i': continue
 	if sym.name == 'EURCAD_i': continue
 	if sym.name == 'EURCHF_i': continue
+	if sym.name == 'EURGBP_i': continue
 
 
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue

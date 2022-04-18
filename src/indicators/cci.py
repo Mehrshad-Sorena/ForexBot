@@ -20,7 +20,7 @@ import os
 from tqdm import tqdm
 import logging
 from datetime import datetime
-from logger import logs
+#from logger import logs
 from timer import stTime
 
 
@@ -35,6 +35,42 @@ from timer import stTime
 # Help about an indicator such as bbands
 #help(ta.sma)
 #help(ind.cci)
+
+#**************************************** Logger *****************
+now = datetime.now()
+log_path = 'log/sma/golden_cross/{}-{}-{}-{}-{}-{}.log'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
+log_level = 'info'
+logger = logging.getLogger()
+
+if not os.path.exists(os.path.dirname(log_path)):
+    os.makedirs(os.path.dirname(log_path))
+
+if log_level == 'info':
+    logger.setLevel(logging.INFO)
+elif log_level == 'warning':
+    logger.setLevel(logging.WARNING)
+elif log_level == 'debug':
+    logger.setLevel(logging.DEBUG)
+# formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
+formatter = logging.Formatter('%(asctime)s | %(message)s')
+
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.DEBUG)
+stdout_handler.setFormatter(formatter)
+
+file_handler = logging.FileHandler(log_path)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+
+
+logger.addHandler(file_handler)
+logger.addHandler(stdout_handler)
+
+
+def logs(message):
+    logger.info(message)
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************************************** High Low Toucehd *******************************************************
 
@@ -1487,10 +1523,6 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 	print('\n')
 
 	now = datetime.now()
-	log_name = 'log/cci/golden_cross_zero/GA'+str(now.year)+'-'+str(now.month)+'-'+str(now.day)+'-'+str(now.hour)+'-'+str(now.minute)+'-'+str(now.second)+'.log'
-	
-	logging.basicConfig(filename=log_name, level=logging.DEBUG)
-	logging.debug('=======================> %s' %symbol)
 
 	logs('===============> {}'.format(symbol))
 
@@ -1572,15 +1604,11 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 				min_tp=Chromosome[chrom_counter]['min_tp'],max_st=Chromosome[chrom_counter]['max_st'],
 				alpha=Chromosome[chrom_counter]['alfa'])
 
-			logging.debug('**************** buy *****************')
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				logging.debug(output_buy)
-				logs('=======> BUY = {}'.format(output_buy))
+			#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				#logs('=======> BUY = {}'.format(output_buy))
 
-			logging.debug('**************** sell *****************')
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				logging.debug(output_sell)
-				logs('=======> SELL = {}'.format(output_sell))
+			#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				#logs('=======> SELL = {}'.format(output_sell))
 
 			if not np.isnan(output_buy['score_pr'][0]) or not np.isnan(output_buy['score_min_max'][0]):
 				if (
@@ -1594,9 +1622,9 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 				else:
 					Chromosome[chrom_counter]['signal'] = ('buy' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
 					result_buy = result_buy.append(output_buy, ignore_index=True)
-					chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
 					score = (output_buy['score_pr'][0]+output_buy['score_min_max'][0])/2
 					Chromosome[chrom_counter].update({'score_buy': score })
+					chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
 
 					bad_buy = False
 
@@ -1612,9 +1640,9 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 				else:
 					Chromosome[chrom_counter]['signal'] = ('sell' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
 					result_sell = result_sell.append(output_sell, ignore_index=True)
-					chromosome_sell = chromosome_sell.append(Chromosome[chrom_counter], ignore_index=True)
 					score = (output_sell['score_pr'][0]+output_sell['score_min_max'][0])/2
 					Chromosome[chrom_counter].update({'score_sell': score })
+					chromosome_sell = chromosome_sell.append(Chromosome[chrom_counter], ignore_index=True)
 
 					bad_sell = False
 
@@ -1639,22 +1667,14 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 					'score_sell': 0
 					}
 
-			logging.debug('**************** num buy *****************')
-			logging.debug(len(chromosome_buy))
-
 			logs('**************** num buy *****************')
 			logs('=======> num buy = {}'.format(len(chromosome_buy)))
-
-			logging.debug('**************** num sell *****************')
-			logging.debug(len(chromosome_sell))
 
 			logs('**************** num sell *****************')
 			logs('=======> num sell = {}'.format(len(chromosome_sell)))
 			
 
 			pbar.update(int((len(chromosome_buy) + len(chromosome_sell))/2))
-
-			if Chromosome[chrom_counter]['signal'] is None: continue
 
 			if (
 				len(chromosome_buy) >= int(num_turn/20) and
@@ -1668,6 +1688,8 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 				):
 				if (len(chromosome_buy) >= int(num_turn/12)) and (len(chromosome_sell) >= 4): break
 				if (len(chromosome_sell) >= int(num_turn/12)) and (len(chromosome_buy) >= 4): break
+
+			if Chromosome[chrom_counter]['signal'] is None: continue
 
 			chrom_counter += 1
 			if (chrom_counter >= ((len(Chromosome)))):

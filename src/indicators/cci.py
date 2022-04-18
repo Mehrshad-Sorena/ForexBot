@@ -2570,7 +2570,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 	elif signal == 'sell':
 		return signal, resist_sell, protect_sell
 	else:
-		signal, 0, 0
+		return signal, 0, 0
 
 #//////////////////////////////////////////////////////////////////////////////////////////////////////
 

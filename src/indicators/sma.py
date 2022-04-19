@@ -382,6 +382,7 @@ def gen_creator(Chromosome):
 def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_ga_sell):
 
 	#*************************** Algorithm *************************************************//
+	trun_counter = 0
 	Chromosome = initilize_values_genetic()
 
 	print('**************************** START Genetic BUY ',symbol,'****************************')
@@ -525,6 +526,16 @@ def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_g
 			
 
 			pbar.update(int((len(chromosome_buy) + len(chromosome_sell))/2))
+
+			if (trun_counter >= num_turn*5): 
+				if (
+					len(chromosome_buy) == 0 or
+					len(chromosome_sell) == 0
+					):
+					return
+				else:
+					break
+			trun_counter += 1
 
 			if (
 				len(chromosome_buy) >= int(num_turn/20) and
@@ -979,7 +990,9 @@ def last_signal_sma(dataset,symbol):
 
 
 #************************************************** USE OF Funcyions ******************************************************************************
+
 """
+
 symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,48000)
 print('get data')
 #best_signals,buy_signal,sell_signal = Find_Best_interval(dataset = symbol_data_5M['AUDCAD_i'],period_low=2,period_high=5,Low_ApplyTo='close',High_ApplyTo='close',max_profit_buy=0.06,max_profit_sell=0.06,alpha_sell=0.1,alpha_buy=0.1)
@@ -1012,15 +1025,25 @@ for sym in symbol:
 	if sym.name == 'EURCAD_i': continue
 	if sym.name == 'EURCHF_i': continue
 	if sym.name == 'EURGBP_i': continue
+	if sym.name == 'EURJPY_i': continue
+	if sym.name == 'EURNZD_i': continue
+	if sym.name == 'EURUSD_i': continue
+	if sym.name == 'GBPAUD_i': continue
+	if sym.name == 'GBPCAD_i': continue
+	if sym.name == 'GBPCHF_i': continue
 
 
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
-	genetic_buy_algo(
-		symbol_data_5M=symbol_data_5M,
-		symbol=sym.name,
-		num_turn=80,
-		max_score_ga_buy=10,
-		max_score_ga_sell=10
-		)
 
+	try:
+		genetic_buy_algo(
+			symbol_data_5M=symbol_data_5M,
+			symbol=sym.name,
+			num_turn=80,
+			max_score_ga_buy=10,
+			max_score_ga_sell=10
+			)
+	except Exception as ex:
+		print('ex = ',ex)
+		
 """

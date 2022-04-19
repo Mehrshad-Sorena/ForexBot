@@ -1093,7 +1093,7 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 	list_index_ok = np.where(
 		#((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_pr_buy['interval'][lower]))&
 		#((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_pr_buy['interval'][lower]))&
-		(signal_buy['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_buy['interval'][upper])&
+		#(signal_buy['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_buy['interval'][upper])&
 		((signal_buy['trend_long'].to_numpy()!='sell')&
 		((signal_buy['trend_mid'].to_numpy()!='sell')&
 		(signal_buy['trend_short1'].to_numpy()=='buy')&
@@ -1240,7 +1240,7 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha):
 		#((signal_sell['ramp_low'].to_numpy()<=ramp_low_intervals_pr_sell['interval'][upper]))&
 		#((signal_sell['ramp_high'].to_numpy()<=ramp_high_intervals_pr_sell['interval'][upper]))&
 		#((signal_sell['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_sell['interval'][upper]))&
-		(signal_sell['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_sell['interval'][upper])&
+		#(signal_sell['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_sell['interval'][upper])&
 		((signal_sell['trend_long'].to_numpy()!='buy')&
 		((signal_sell['trend_mid'].to_numpy()!='buy')&
 		(signal_sell['trend_short1'].to_numpy()=='sell')&
@@ -2444,7 +2444,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			if (
 				#buy_data['ramp_low'].iloc[-1]>=ga_result_buy['ramp_low_lower_pr'][0] and
 				#buy_data['ramp_high'].iloc[-1]>=ga_result_buy['ramp_high_lower_pr'][0] and
-				diff_pr_top_buy <= ga_result_buy['diff_top_upper_pr'][0] and
+				#diff_pr_top_buy <= ga_result_buy['diff_top_upper_pr'][0] and
 				dataset[symbol]['high'].iloc[-1] < resist_buy and
 				dataset[symbol]['low'].iloc[-1] > protect_buy and
 				diff_pr_top_buy >= diff_pr_down_buy and
@@ -2561,7 +2561,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 				#sell_data['ramp_low'].iloc[-1]<=ga_result_sell['ramp_low_upper_pr'][0] and
 				#sell_data['ramp_high'].iloc[-1]<=ga_result_sell['ramp_high_upper_pr'][0] and
 				#diff_pr_top_sell<=ga_result_sell['diff_top_upper_pr'][0] and
-				diff_pr_down_sell <= ga_result_sell['diff_down_upper_pr'][0] and
+				#diff_pr_down_sell <= ga_result_sell['diff_down_upper_pr'][0] and
 				dataset[symbol]['high'].iloc[-1] < resist_sell and
 				dataset[symbol]['low'].iloc[-1] > protect_sell and
 				diff_pr_down_sell >= diff_pr_top_sell and

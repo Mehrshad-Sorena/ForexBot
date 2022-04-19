@@ -2556,8 +2556,8 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 				):
 
 				signal = 'sell'
-				resist_sell = (1 - (sell_data['diff_min_max_candle'].iloc[-1]/100)) * dataset[symbol]['close'].iloc[-1]
-				protect_sell = dataset[symbol]['high'].iloc[-1] * 1.0006
+				resist_sell = dataset[symbol]['high'].iloc[-1] * 1.0006
+				protect_sell = (1 - (sell_data['diff_min_max_candle'].iloc[-1]/100)) * dataset[symbol]['close'].iloc[-1]
 
 			else:
 				signal = 'no_trade'
@@ -2568,7 +2568,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 	if signal == 'buy':
 		return signal, resist_buy, protect_buy
 	elif signal == 'sell':
-		return signal, resist_sell, protect_sell
+		return signal, protect_sell, resist_sell
 	else:
 		return signal, 0, 0
 

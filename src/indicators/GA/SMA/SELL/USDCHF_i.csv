@@ -1,2 +1,2 @@
 ,high_period,low_period,apply_to_low,apply_to_high,signal,score_buy,score_sell
-0,223.0,70.0,HL/2,HL/2,sell,4.297209055510796e+25,3.1038690379204145e+23
+0,90.0,41.0,low,high,"buy,sell",0.0,9.124254477225339e+30

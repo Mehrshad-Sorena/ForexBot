@@ -281,7 +281,7 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 
 				if (name_stp_minmax == True):
 					#Calculate With Min Max Diff From MACD:
-					dataset_pr_5M = pd.DataFrame()
+					dataset_5M = pd.DataFrame()
 
 					cut_first = 0
 					if (int(finding_points['index'][elm]) > 1000):
@@ -290,6 +290,10 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 					dataset_5M['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_5M['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_5M['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+					dataset_5M['HL/2'] = dataset[symbol]['HL/2'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+					dataset_5M['HLC/3'] = dataset[symbol]['HLC/3'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+					dataset_5M['HLCC/4'] = dataset[symbol]['HLCC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+					dataset_5M['OHLC/4'] = dataset[symbol]['OHLC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 
 					trend_sma = last_signal_sma(dataset_5M, symbol)
 					if (
@@ -452,6 +456,10 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 					dataset_5M['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_5M['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_5M['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+					dataset_5M['HL/2'] = dataset[symbol]['HL/2'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+					dataset_5M['HLC/3'] = dataset[symbol]['HLC/3'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+					dataset_5M['HLCC/4'] = dataset[symbol]['HLCC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+					dataset_5M['OHLC/4'] = dataset[symbol]['OHLC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 
 					trend_sma = last_signal_sma(dataset_5M,symbol)
 
@@ -1577,10 +1585,8 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga
 			except Exception as ex:
 				print('getting error: ', ex)
 				flag_golden_cross = True
-				logging.debug(Chromosome[chrom_counter])
 
 			if flag_golden_cross:
-				logging.debug(Chromosome[chrom_counter])
 				Chromosome.pop(chrom_counter)
 				high_period = randint(5, 150)
 				low_period = randint(5, 150)
@@ -2582,7 +2588,6 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 #*************************** How To Use Funcs *****************************************
 
-"""
 
 symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
 symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
@@ -2605,7 +2610,7 @@ for sym in symbol:
 	if os.path.exists("Genetic_cci_output_buy/"+sym.name+'.csv'): continue
 	if os.path.exists("Genetic_cci_output_sell/"+sym.name+'.csv'): continue
 	try:
-		#genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=800,max_score_ga_buy=1,max_score_ga_sell=1)
+		genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=800,max_score_ga_buy=1,max_score_ga_sell=1)
 		pass
 	except Exception as ex:
 		print('getting error: ', ex)
@@ -2898,5 +2903,5 @@ for elm in signal_buy['index'][list_index_ok[0] + np.where(signal_buy['flag_pr']
 	plt.show()
 	
 
-"""
+
 

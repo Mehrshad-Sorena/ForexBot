@@ -1,2 +1,2 @@
 ,high_period,low_period,apply_to_low,apply_to_high,signal,score_buy,score_sell
-0,230.0,88.0,HLC/3,open,sell,7.15126452385636e+27,1.2916388851164264e+27
+0,220.0,59.0,low,open,"buy,sell",0.0,1.5050628819089972e+34

@@ -24,6 +24,7 @@ from datetime import datetime
 from timer import stTime
 from sma import last_signal_sma
 import sys
+#from numba import jit, cuda, njit
 
 
 # Create a DataFrame so 'ta' can be used.
@@ -1523,6 +1524,7 @@ def gen_creator(Chromosome):
 #***************************************** Genetic Algorithm **************************************************************
 
 #@stTime
+#@cuda.jit()
 def genetic_buy_algo(symbol_data_5M,symbol_data_15M,symbol,num_turn,max_score_ga_buy,max_score_ga_sell):
 
 	#*************************** Algorithm *************************************************//
@@ -2367,113 +2369,77 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 		lst_idx_sell = 0
 
 	#***************** Calculate PR:
-	if ga_result_buy['methode'][0] == 'pr' and lst_idx_buy != 0:
-
-		res_pro = pd.DataFrame()
-		try:
-			res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=dataset[symbol],dataset_15M=dataset_15M[symbol],dataset_1H=dataset_1H[symbol],dataset_4H=dataset_4H[symbol],dataset_1D=dataset_1D[symbol],plot=False)
-		except:
-			res_pro['high'] = 'nan'
-			res_pro['low'] = 'nan'
-			res_pro['power_high'] = 0
-			res_pro['power_low'] = 0
-
-		if (res_pro.empty == False):
-			diff_pr_top_buy = (((res_pro['high'][0] * 0.9994) - dataset[symbol]['high'][lst_idx_buy])/dataset[symbol]['high'][lst_idx_buy]) * 100
-			diff_pr_down_buy = ((dataset[symbol]['low'][lst_idx_buy] - (res_pro['low'][2] * 0.9994))/dataset[symbol]['low'][lst_idx_buy]) * 100
-			diff_pr_top_buy_power = np.mean(res_pro['power_high'])
-			diff_pr_down_buy_power = np.mean(res_pro['power_low'])
-
-			trend_long_buy = res_pro['trend_long'][0].values[0]
-			trend_mid_buy = res_pro['trend_mid'][0].values[0]
-			trend_short_1_buy = res_pro['trend_short1'][0].values[0]
-			trend_short_2_buy = res_pro['trend_short2'][0].values[0]
-
-			if trend_long_buy is np.nan: trend_long_buy = 'parcham'
-			if trend_mid_buy is np.nan: trend_mid_buy = 'parcham'
-			if trend_short_1_buy is np.nan: trend_short_1_buy = 'parcham'
-			if trend_short_2_buy is np.nan: trend_short_2_buy = 'parcham'
-
-			resist_buy = (res_pro['high'][0] * 0.9994)
-			protect_buy = (res_pro['low'][2] * 0.9994)
-
-		else:
-			diff_pr_top_buy = 0
-			diff_pr_down_buy = 0
-			diff_pr_top_buy_power = 0
-			diff_pr_down_buy_power = 0
-
-			resist_buy = 0
-			protect_buy = 0
-
-			trend_long_buy = 'no_flag'
-			trend_mid_buy = 'no_flag'
-			trend_short_1_buy = 'no_flag'
-			trend_short_2_buy = 'no_flag'
-
-	if ga_result_sell['methode'][0] == 'pr' and lst_idx_sell != 0:
-
-		res_pro = pd.DataFrame()
-		try:
-			res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=dataset[symbol],dataset_15M=dataset_15M[symbol],dataset_1H=dataset_1H[symbol],dataset_4H=dataset_4H[symbol],dataset_1D=dataset_1D[symbol],plot=False)
-		except:
-			res_pro['high'] = 'nan'
-			res_pro['low'] = 'nan'
-			res_pro['power_high'] = 0
-			res_pro['power_low'] = 0
-
-		if (res_pro.empty == False):
-			diff_pr_top_sell = (((res_pro['high'][0] * 1.0006) - dataset[symbol]['high'][lst_idx_sell])/dataset[symbol]['high'][lst_idx_sell]) * 100
-			diff_pr_down_sell = ((dataset[symbol]['low'][lst_idx_sell] - (res_pro['low'][0] * 1.0006))/dataset[symbol]['low'][lst_idx_sell]) * 100
-			diff_pr_top_sell_power = np.mean(res_pro['power_high'])
-			diff_pr_down_sell_power = np.mean(res_pro['power_low'])
-
-			trend_long_sell = res_pro['trend_long'][0].values[0]
-			trend_mid_sell = res_pro['trend_mid'][0].values[0]
-			trend_short_1_sell = res_pro['trend_short1'][0].values[0]
-			trend_short_2_sell = res_pro['trend_short2'][0].values[0]
-
-			if trend_long_sell is np.nan: trend_long_sell = 'parcham'
-			if trend_mid_sell is np.nan: trend_mid_sell = 'parcham'
-			if trend_short_1_sell is np.nan: trend_short_1_sell = 'parcham'
-			if trend_short_2_sell is np.nan: trend_short_2_sell = 'parcham'
-
-
-			resist_sell = (res_pro['high'][0] * 1.0006)
-			protect_sell = (res_pro['low'][2] * 1.0006)
-		else:
-			diff_pr_top_sell = 0
-			diff_pr_down_sell = 0
-			diff_pr_top_sell_power = 0
-			diff_pr_down_sell_power = 0
-
-			trend_long_sell = 'no_flag'
-			trend_mid_sell = 'no_flag'
-			trend_short_1_sell = 'no_flag'
-			trend_short_2_sell = 'no_flag'
-
-			resist_sell = 0
-			protect_sell = 0
+	
 
 	#***** Last Signal:
 
-	logs('======> last signal buy {}'.format(symbol))
-	logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
-	logs('ga result buy: {}'.format(ga_result_buy['distance_lines'][0]))
-	logs('ga result buy methode: {}'.format(ga_result_buy['methode'][0]))
-	logs('last index: {}'.format(lst_idx_buy))
-	logs('================================')
-
-	logs('======> last signal sell {}'.format(symbol))
-	logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
-	logs('ga result sell: {}'.format(ga_result_sell['distance_lines'][0]))
-	logs('ga result sell methode: {}'.format(ga_result_sell['methode'][0]))
-	logs('last index: {}'.format(lst_idx_sell))
-	logs('================================')
-
 	if lst_idx_buy > lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_buy) <= (ga_result_buy['distance_lines'][0] + 1):
 
+		logs('======> last signal buy {}'.format(symbol))
+		logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
+		logs('ga result buy: {}'.format(ga_result_buy['distance_lines'][0]))
+		logs('ga result buy methode: {}'.format(ga_result_buy['methode'][0]))
+		logs('last index: {}'.format(lst_idx_buy))
+		
+
 		if ga_result_buy['methode'][0] == 'pr':
+
+			if ga_result_buy['methode'][0] == 'pr' and lst_idx_buy != 0:
+
+				res_pro = pd.DataFrame()
+				try:
+					res_pro = protect_resist(
+						T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,
+						dataset_5M=dataset[symbol],
+						dataset_15M=dataset_15M[symbol],
+						dataset_1H=dataset_1H[symbol],
+						dataset_4H=dataset_4H[symbol],
+						dataset_1D=dataset_1D[symbol],
+						plot=False
+						)
+				except:
+					res_pro['high'] = 'nan'
+					res_pro['low'] = 'nan'
+					res_pro['power_high'] = 0
+					res_pro['power_low'] = 0
+
+				if (res_pro.empty == False):
+					diff_pr_top_buy = (((res_pro['high'][0] * 0.9994) - dataset[symbol]['high'][lst_idx_buy])/dataset[symbol]['high'][lst_idx_buy]) * 100
+					diff_pr_down_buy = ((dataset[symbol]['low'][lst_idx_buy] - (res_pro['low'][2] * 0.9994))/dataset[symbol]['low'][lst_idx_buy]) * 100
+					diff_pr_top_buy_power = np.mean(res_pro['power_high'])
+					diff_pr_down_buy_power = np.mean(res_pro['power_low'])
+
+					trend_long_buy = res_pro['trend_long'][0].values[0]
+					trend_mid_buy = res_pro['trend_mid'][0].values[0]
+					trend_short_1_buy = res_pro['trend_short1'][0].values[0]
+					trend_short_2_buy = res_pro['trend_short2'][0].values[0]
+
+					if trend_long_buy is np.nan: trend_long_buy = 'parcham'
+					if trend_mid_buy is np.nan: trend_mid_buy = 'parcham'
+					if trend_short_1_buy is np.nan: trend_short_1_buy = 'parcham'
+					if trend_short_2_buy is np.nan: trend_short_2_buy = 'parcham'
+
+					resist_buy = (res_pro['high'][0] * 0.9994)
+					protect_buy = (res_pro['low'][2] * 0.9994)
+
+				else:
+					diff_pr_top_buy = 0
+					diff_pr_down_buy = 0
+					diff_pr_top_buy_power = 0
+					diff_pr_down_buy_power = 0
+
+					resist_buy = 0
+					protect_buy = 0
+
+					trend_long_buy = 'no_flag'
+					trend_mid_buy = 'no_flag'
+					trend_short_1_buy = 'no_flag'
+					trend_short_2_buy = 'no_flag'
+
+			logs('trend_long_buy: {}'.format(trend_long_buy))
+			logs('trend_mid_buy: {}'.format(trend_mid_buy))
+			logs('trend_short_1_buy: {}'.format(trend_short_1_buy))
+			logs('trend_short_2_buy: {}'.format(trend_short_2_buy))
 
 			if (
 				#buy_data['ramp_low'].iloc[-1]>=ga_result_buy['ramp_low_lower_pr'][0] and
@@ -2501,6 +2467,8 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 			trend_sma_buy = last_signal_sma(dataset[symbol], symbol)
 
+			logs('trend_sma_buy: {}'.format(trend_sma_buy))
+
 			if (
 				trend_sma_buy['signal'][0] == 'buy' and
 				buy_data['value_min_max_candle'].iloc[-1] > dataset[symbol]['high'].iloc[-1]*1.0006 and
@@ -2520,10 +2488,75 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 			else:
 				signal = 'no_trade'
+		logs('================================')
 
 	elif lst_idx_buy < lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_sell) <= (ga_result_sell['distance_lines'][0] + 1):
 
+		logs('======> last signal sell {}'.format(symbol))
+		logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
+		logs('ga result sell: {}'.format(ga_result_sell['distance_lines'][0]))
+		logs('ga result sell methode: {}'.format(ga_result_sell['methode'][0]))
+		logs('last index: {}'.format(lst_idx_sell))
+		
+
 		if ga_result_sell['methode'][0] == 'pr':
+
+			if ga_result_sell['methode'][0] == 'pr' and lst_idx_sell != 0:
+
+				res_pro = pd.DataFrame()
+				try:
+					res_pro = protect_resist(
+						T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,
+						dataset_5M=dataset[symbol],
+						dataset_15M=dataset_15M[symbol],
+						dataset_1H=dataset_1H[symbol],
+						dataset_4H=dataset_4H[symbol],
+						dataset_1D=dataset_1D[symbol],
+						plot=False
+						)
+				except:
+					res_pro['high'] = 'nan'
+					res_pro['low'] = 'nan'
+					res_pro['power_high'] = 0
+					res_pro['power_low'] = 0
+
+				if (res_pro.empty == False):
+					diff_pr_top_sell = (((res_pro['high'][0] * 1.0006) - dataset[symbol]['high'][lst_idx_sell])/dataset[symbol]['high'][lst_idx_sell]) * 100
+					diff_pr_down_sell = ((dataset[symbol]['low'][lst_idx_sell] - (res_pro['low'][0] * 1.0006))/dataset[symbol]['low'][lst_idx_sell]) * 100
+					diff_pr_top_sell_power = np.mean(res_pro['power_high'])
+					diff_pr_down_sell_power = np.mean(res_pro['power_low'])
+
+					trend_long_sell = res_pro['trend_long'][0].values[0]
+					trend_mid_sell = res_pro['trend_mid'][0].values[0]
+					trend_short_1_sell = res_pro['trend_short1'][0].values[0]
+					trend_short_2_sell = res_pro['trend_short2'][0].values[0]
+
+					if trend_long_sell is np.nan: trend_long_sell = 'parcham'
+					if trend_mid_sell is np.nan: trend_mid_sell = 'parcham'
+					if trend_short_1_sell is np.nan: trend_short_1_sell = 'parcham'
+					if trend_short_2_sell is np.nan: trend_short_2_sell = 'parcham'
+
+
+					resist_sell = (res_pro['high'][0] * 1.0006)
+					protect_sell = (res_pro['low'][2] * 1.0006)
+				else:
+					diff_pr_top_sell = 0
+					diff_pr_down_sell = 0
+					diff_pr_top_sell_power = 0
+					diff_pr_down_sell_power = 0
+
+					trend_long_sell = 'no_flag'
+					trend_mid_sell = 'no_flag'
+					trend_short_1_sell = 'no_flag'
+					trend_short_2_sell = 'no_flag'
+
+					resist_sell = 0
+					protect_sell = 0
+
+			logs('trend_long_sell: {}'.format(trend_long_sell))
+			logs('trend_mid_sell: {}'.format(trend_mid_sell))
+			logs('trend_short_1_sell: {}'.format(trend_short_1_sell))
+			logs('trend_short_2_sell: {}'.format(trend_short_2_sell))
 			if (
 				#sell_data['ramp_low'].iloc[-1]<=ga_result_sell['ramp_low_upper_pr'][0] and
 				#sell_data['ramp_high'].iloc[-1]<=ga_result_sell['ramp_high_upper_pr'][0] and
@@ -2551,6 +2584,8 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 			trend_sma_sell = last_signal_sma(dataset[symbol],symbol)
 
+			logs('trend_sma_sell: {}'.format(trend_sma_sell))
+
 			if (
 				trend_sma_sell['signal'][0] == 'sell' and
 				sell_data['value_min_max_candle'].iloc[-1] < dataset[symbol]['low'].iloc[-1]*0.9994 and
@@ -2568,6 +2603,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			else:
 				signal = 'no_trade'
 
+		logs('================================')
 	else:
 		signal = 'no_trade'
 
@@ -2588,6 +2624,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 #*************************** How To Use Funcs *****************************************
 
+"""
 
 symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
 symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
@@ -2903,5 +2940,5 @@ for elm in signal_buy['index'][list_index_ok[0] + np.where(signal_buy['flag_pr']
 	plt.show()
 	
 
-
+"""
 

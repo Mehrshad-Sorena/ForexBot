@@ -2351,20 +2351,74 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 	#**************** Buy Check:
 	if ga_result_buy['permit'][0]:
-		buy_data, _ = golden_cross_zero(dataset=dataset,dataset_15M=dataset,symbol=symbol,
-			Low_Period=ga_result_buy['low_period'][0],High_Period=ga_result_buy['high_period'][0],
-			distance_lines=ga_result_buy['distance_lines'][0],mode='online',
-			name_stp_minmax=False,name_stp_pr=False,plot=False)
-		lst_idx_buy = buy_data['index'].iloc[-1]
+		
+		cross_cut_len = 200
+		cut_first = 0
+		if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
+			cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
+
+		dataset_5M_cross = {
+							symbol: dataset[symbol].copy()
+							}
+
+		dataset_5M_cross[symbol]['low'] = dataset_5M_cross[symbol]['low'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['low'])-1)].reset_index(drop=True)
+		dataset_5M_cross[symbol]['high'] = dataset_5M_cross[symbol]['high'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['high'])-1)].reset_index(drop=True)
+		dataset_5M_cross[symbol]['close'] = dataset_5M_cross[symbol]['close'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['close'])-1)].reset_index(drop=True)
+		dataset_5M_cross[symbol]['open'] = dataset_5M_cross[symbol]['open'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['open'])-1)].reset_index(drop=True)
+		dataset_5M_cross[symbol]['HLC/3'] = dataset_5M_cross[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLC/3'])-1)].reset_index(drop=True)
+
+		buy_data, _ = golden_cross_zero(
+			dataset=dataset_5M_cross,
+			dataset_15M=dataset_5M_cross,
+			symbol=symbol,
+			Low_Period=ga_result_buy['low_period'][0],
+			High_Period=ga_result_buy['high_period'][0],
+			distance_lines=ga_result_buy['distance_lines'][0],
+			mode='online',
+			name_stp_minmax=False,
+			name_stp_pr=False,
+			plot=False
+			)
+		if (buy_data.empty == False):
+			lst_idx_buy = buy_data['index'].iloc[-1] + cut_first + 1
+		else:
+			lst_idx_buy = 0
 	else:
 		lst_idx_buy = 0
 	#**************** Sell Check:
 	if ga_result_sell['permit'][0]:
-		_, sell_data = golden_cross_zero(dataset=dataset,dataset_15M=dataset,symbol=symbol,
-			Low_Period=ga_result_sell['low_period'][0],High_Period=ga_result_sell['high_period'][0],
-			distance_lines=ga_result_sell['distance_lines'][0],mode='online',
-			name_stp_minmax=False,name_stp_pr=False,plot=False)
-		lst_idx_sell = sell_data['index'].iloc[-1]
+
+		cross_cut_len = 200
+		cut_first = 0
+		if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
+			cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
+
+		dataset_5M_cross = {
+							symbol: dataset[symbol].copy()
+							}
+
+		dataset_5M_cross[symbol]['low'] = dataset_5M_cross[symbol]['low'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['low'])-1)].reset_index(drop=True)
+		dataset_5M_cross[symbol]['high'] = dataset_5M_cross[symbol]['high'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['high'])-1)].reset_index(drop=True)
+		dataset_5M_cross[symbol]['close'] = dataset_5M_cross[symbol]['close'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['close'])-1)].reset_index(drop=True)
+		dataset_5M_cross[symbol]['open'] = dataset_5M_cross[symbol]['open'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['open'])-1)].reset_index(drop=True)
+		dataset_5M_cross[symbol]['HLC/3'] = dataset_5M_cross[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLC/3'])-1)].reset_index(drop=True)
+
+		_, sell_data = golden_cross_zero(
+			dataset=dataset_5M_cross,
+			dataset_15M=dataset_5M_cross,
+			symbol=symbol,
+			Low_Period=ga_result_sell['low_period'][0],
+			High_Period=ga_result_sell['high_period'][0],
+			distance_lines=ga_result_sell['distance_lines'][0],
+			mode='online',
+			name_stp_minmax=False,
+			name_stp_pr=False,
+			plot=False
+			)
+		if (sell_data.empty == False):
+			lst_idx_sell = sell_data['index'].iloc[-1] + cut_first + 1
+		else:
+			lst_idx_sell = 0
 	else:
 		lst_idx_sell = 0
 
@@ -2626,9 +2680,18 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 """
 
-symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
-symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
+symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,3000)
+symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,1000)
 print('data get')
+
+#last_signal(
+	#dataset=symbol_data_5M,
+	#dataset_15M=symbol_data_5M,
+	#dataset_1H=symbol_data_5M,
+	#dataset_4H=symbol_data_5M,
+	#dataset_1D=symbol_data_5M,
+	#symbol='AUDCAD_i'
+	#)
 
 symbol_black_list = np.array(
 	[
@@ -2646,8 +2709,36 @@ for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
 	if os.path.exists("Genetic_cci_output_buy/"+sym.name+'.csv'): continue
 	if os.path.exists("Genetic_cci_output_sell/"+sym.name+'.csv'): continue
+
+	if not (
+		sym.name == 'AUDCAD_i' or
+		sym.name == 'AUDCHF_i' or
+		sym.name == 'AUDUSD_i' or
+		sym.name == 'CADJPY_i' or
+		sym.name == 'EURAUD_i' or
+		sym.name == 'EURCAD_i' or
+		sym.name == 'EURCHF_i' or
+		sym.name == 'EURGBP_i' or
+		sym.name == 'EURUSD_i' or
+		sym.name == 'EURJPY_i' or
+		sym.name == 'GBPAUD_i' or
+		sym.name == 'GBPCAD_i' or
+		sym.name == 'GBPJPY_i' or
+		sym.name == 'GBPUSD_i' or
+		sym.name == 'USDJPY_i' or
+		sym.name == 'USDCAD_i' or
+		sym.name == 'XAUUSD_i'
+		): continue
+
 	try:
-		genetic_buy_algo(symbol_data_5M=symbol_data_5M,symbol_data_15M=symbol_data_15M,symbol=sym.name,num_turn=800,max_score_ga_buy=1,max_score_ga_sell=1)
+		genetic_buy_algo(
+			symbol_data_5M=symbol_data_5M,
+			symbol_data_15M=symbol_data_15M,
+			symbol=sym.name,
+			num_turn=200,
+			max_score_ga_buy=0.1,
+			max_score_ga_sell=0.1
+			)
 		pass
 	except Exception as ex:
 		print('getting error: ', ex)
@@ -2940,5 +3031,5 @@ for elm in signal_buy['index'][list_index_ok[0] + np.where(signal_buy['flag_pr']
 	plt.show()
 	
 
-"""
 
+"""

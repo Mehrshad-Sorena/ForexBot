@@ -108,12 +108,16 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 
 	intersection_low = first_line.intersection(second_line)
 
+	cross_find_flag_low = False
+
 	if intersection_low.geom_type == 'MultiPoint':
 		cross = pd.DataFrame(*LineString(intersection_low).xy)
 		cross_index = cross.index.to_numpy()
 		cross_low = pd.DataFrame(cross.values.astype(int),columns=['index'])
 		cross_low['index'] = cross.values.astype(int)
 		cross_low['values'] = cross_index
+
+		cross_find_flag_low = True
 
 		if (plot == True):
 			plt.plot(cross_low['index'],cross_low['values'], 'o',c='g')
@@ -124,6 +128,8 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 		cross_low = pd.DataFrame(cross.values.astype(int),columns=['index'])
 		cross_low['index'] = cross.values.astype(int)
 		cross_low['values'] = cross_index
+
+		cross_find_flag_low = True
 
 		if (plot == True):
 			plt.plot(cross_low['index'],cross_low['values'], 'o',c='g')
@@ -136,12 +142,16 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 
 	intersection_high = first_line.intersection(second_line)
 
+	cross_find_flag_high = False
+
 	if intersection_high.geom_type == 'MultiPoint':
 		cross = pd.DataFrame(*LineString(intersection_high).xy)
 		cross_index = cross.index.to_numpy()
 		cross_high = pd.DataFrame(cross.values.astype(int),columns=['index'])
 		cross_high['index'] = cross.values.astype(int)
 		cross_high['values'] = cross_index
+
+		cross_find_flag_high = True
 
 		if (plot == True):
 			plt.plot(cross_high['index'],cross_high['values'], 'o',c='b')
@@ -153,6 +163,8 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 		cross_high['index'] = cross.values.astype(int)
 		cross_high['values'] = cross_index
 
+		cross_find_flag_high = True
+
 		if (plot == True):
 			plt.plot(cross_high['index'],cross_high['values'], 'o',c='b')
 
@@ -160,6 +172,34 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 
 	#print('high = ',cross_high)
 	#print('low = ',cross_low)
+
+	if (
+		not cross_find_flag_low or
+		not cross_find_flag_high
+		):
+		signal_buy = pd.DataFrame()
+		signal_buy['signal'] = 'no_flag'
+		signal_buy['index'] = -1
+		signal_buy['ramp_low'] = -1
+		signal_buy['ramp_high'] = -1
+		signal_buy['diff_min_max_cci'] = -1
+		signal_buy['diff_min_max_candle'] = -1
+		signal_buy['value_max_cci'] = -1
+		signal_buy['value_min_cci'] = -1
+		signal_buy['value_min_max_candle'] = -1
+
+		signal_sell = pd.DataFrame()
+		signal_sell['signal'] = 'no_flag'
+		signal_sell['index'] = -1
+		signal_sell['ramp_low'] = -1
+		signal_sell['ramp_high'] = -1
+		signal_sell['diff_min_max_cci'] = -1
+		signal_sell['diff_min_max_candle'] = -1
+		signal_sell['value_max_cci'] = -1
+		signal_sell['value_min_cci'] = -1
+		signal_sell['value_min_max_candle'] = -1
+
+		return signal_buy, signal_sell
 
 	i = 0
 	finding_points = pd.DataFrame(np.zeros(len(CCI_Low)))
@@ -340,8 +380,8 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 					dataset_pr_5M = pd.DataFrame()
 					dataset_pr_15M = pd.DataFrame()
 					cut_first = 0
-					if (int(finding_points['index'][elm]) > 2000):
-						cut_first = int(finding_points['index'][elm]) - 2000
+					if (int(finding_points['index'][elm]) > 1000):
+						cut_first = int(finding_points['index'][elm]) - 1000
 					dataset_pr_5M['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_pr_5M['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_pr_5M['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
@@ -378,15 +418,15 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 						if signal_buy['trend_short2'][buy_counter] is np.nan: signal_buy['trend_short2'][buy_counter] = 'parcham'
 
 						if (
-							dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0006 < (res_pro['high'][0] * 0.9999) and
+							dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004 < (res_pro['high'][0] * 0.9999) and
 							dataset[symbol]['low'][int(finding_points['index'][elm])] >= (res_pro['low'][2] * 0.9999) and
 							signal_buy['diff_pr_top'][buy_counter] >= signal_buy['diff_pr_down'][buy_counter] and
 							signal_buy['diff_pr_down'][buy_counter] <= 0.4
 							):
 
-							if ((len(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9994) >= (res_pro['high'][0] * 0.9999)))[0]) - 1) > 1):
-								signal_buy['tp_pr_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9994) >= (res_pro['high'][0] * 0.9999)))[0])
-								signal_buy['tp_pr'][buy_counter] = ((dataset[symbol]['high'][signal_buy['tp_pr_index'][buy_counter]]*0.9994 - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
+							if ((len(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9996) >= (res_pro['high'][0] * 0.9999)))[0]) - 1) > 1):
+								signal_buy['tp_pr_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9996) >= (res_pro['high'][0] * 0.9999)))[0])
+								signal_buy['tp_pr'][buy_counter] = ((dataset[symbol]['high'][signal_buy['tp_pr_index'][buy_counter]]*0.9996 - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
 							else:
 								signal_buy['tp_pr_index'][buy_counter] = -1
 								signal_buy['tp_pr'][buy_counter] = 0
@@ -451,8 +491,8 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 					#Calculate With Min Max Diff From MACD:
 					dataset_5M = pd.DataFrame()
 					cut_first = 0
-					if (int(finding_points['index'][elm]) > 2000):
-						cut_first = int(finding_points['index'][elm]) - 2000
+					if (int(finding_points['index'][elm]) > 1000):
+						cut_first = int(finding_points['index'][elm]) - 1000
 					dataset_5M['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_5M['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_5M['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
@@ -507,8 +547,8 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 					dataset_pr_5M = pd.DataFrame()
 					dataset_pr_15M = pd.DataFrame()
 					cut_first = 0
-					if (int(finding_points['index'][elm]) > 2000):
-						cut_first = int(finding_points['index'][elm]) - 2000
+					if (int(finding_points['index'][elm]) > 1000):
+						cut_first = int(finding_points['index'][elm]) - 1000
 					dataset_pr_5M['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_pr_5M['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 					dataset_pr_5M['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
@@ -542,14 +582,14 @@ def golden_cross_zero(dataset,dataset_15M,symbol,Low_Period=25,High_Period=50,di
 						if signal_sell['trend_short2'][sell_counter] is np.nan: signal_sell['trend_short2'][sell_counter] = 'parcham'
 
 						if (
-							dataset[symbol]['low'][int(finding_points['index'][elm])] * 0.9994 > (res_pro['low'][0] * 1.0001) and
+							dataset[symbol]['low'][int(finding_points['index'][elm])] * 0.9996 > (res_pro['low'][0] * 1.0001) and
 							dataset[symbol]['high'][int(finding_points['index'][elm])] < (res_pro['high'][0] * 1.0001) and
 							signal_sell['diff_pr_down'][sell_counter] >= signal_sell['diff_pr_top'][sell_counter] and
 							signal_sell['diff_pr_top'][sell_counter] <= 0.4
 							):
-							if ((len(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values*1.0006) <= (res_pro['low'][0] * 1.0001)))[0]) - 1) > 1):
-								signal_sell['tp_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values*1.0006) <= (res_pro['low'][0] * 1.0001)))[0])
-								signal_sell['tp_pr'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - dataset[symbol]['low'][signal_sell['tp_pr_index'][sell_counter]]*1.0006)/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
+							if ((len(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values*1.0005) <= (res_pro['low'][0] * 1.0001)))[0]) - 1) > 1):
+								signal_sell['tp_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values*1.0005) <= (res_pro['low'][0] * 1.0001)))[0])
+								signal_sell['tp_pr'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - dataset[symbol]['low'][signal_sell['tp_pr_index'][sell_counter]]*1.0005)/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
 							else:
 								signal_sell['tp_pr_index'][sell_counter] = -1
 								signal_sell['tp_pr'][sell_counter] = 0
@@ -2458,8 +2498,8 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 					res_pro['power_low'] = 0
 
 				if (res_pro.empty == False):
-					diff_pr_top_buy = (((res_pro['high'][0] * 0.9994) - dataset[symbol]['high'][lst_idx_buy])/dataset[symbol]['high'][lst_idx_buy]) * 100
-					diff_pr_down_buy = ((dataset[symbol]['low'][lst_idx_buy] - (res_pro['low'][2] * 0.9994))/dataset[symbol]['low'][lst_idx_buy]) * 100
+					diff_pr_top_buy = (((res_pro['high'][0] * 0.9995) - dataset[symbol]['high'][lst_idx_buy])/dataset[symbol]['high'][lst_idx_buy]) * 100
+					diff_pr_down_buy = ((dataset[symbol]['low'][lst_idx_buy] - (res_pro['low'][2] * 0.9995))/dataset[symbol]['low'][lst_idx_buy]) * 100
 					diff_pr_top_buy_power = np.mean(res_pro['power_high'])
 					diff_pr_down_buy_power = np.mean(res_pro['power_low'])
 
@@ -2473,8 +2513,8 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 					if trend_short_1_buy is np.nan: trend_short_1_buy = 'parcham'
 					if trend_short_2_buy is np.nan: trend_short_2_buy = 'parcham'
 
-					resist_buy = (res_pro['high'][0] * 0.9994)
-					protect_buy = (res_pro['low'][2] * 0.9994)
+					resist_buy = (res_pro['high'][0] * 0.9995)
+					protect_buy = (res_pro['low'][2] * 0.9995)
 
 				else:
 					diff_pr_top_buy = 0
@@ -2575,8 +2615,8 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 					res_pro['power_low'] = 0
 
 				if (res_pro.empty == False):
-					diff_pr_top_sell = (((res_pro['high'][0] * 1.0006) - dataset[symbol]['high'][lst_idx_sell])/dataset[symbol]['high'][lst_idx_sell]) * 100
-					diff_pr_down_sell = ((dataset[symbol]['low'][lst_idx_sell] - (res_pro['low'][0] * 1.0006))/dataset[symbol]['low'][lst_idx_sell]) * 100
+					diff_pr_top_sell = (((res_pro['high'][0] * 1.0005) - dataset[symbol]['high'][lst_idx_sell])/dataset[symbol]['high'][lst_idx_sell]) * 100
+					diff_pr_down_sell = ((dataset[symbol]['low'][lst_idx_sell] - (res_pro['low'][0] * 1.0005))/dataset[symbol]['low'][lst_idx_sell]) * 100
 					diff_pr_top_sell_power = np.mean(res_pro['power_high'])
 					diff_pr_down_sell_power = np.mean(res_pro['power_low'])
 
@@ -2591,8 +2631,8 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 					if trend_short_2_sell is np.nan: trend_short_2_sell = 'parcham'
 
 
-					resist_sell = (res_pro['high'][0] * 1.0006)
-					protect_sell = (res_pro['low'][2] * 1.0006)
+					resist_sell = (res_pro['high'][0] * 1.0005)
+					protect_sell = (res_pro['low'][2] * 1.0005)
 				else:
 					diff_pr_top_sell = 0
 					diff_pr_down_sell = 0
@@ -3030,6 +3070,5 @@ for elm in signal_buy['index'][list_index_ok[0] + np.where(signal_buy['flag_pr']
 	plt.plot(range(elm-50,elm+150),symbol_data_5M[syms]['close'][elm-50:elm+150],c='b')
 	plt.show()
 	
-
 
 """

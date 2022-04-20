@@ -43,6 +43,26 @@ def trader(symbol_data_5M,symbol_data_15M,symbol_data_H1,symbol_data_H4,symbol_d
 
 		if np.where(sym.name == symbol_black_list)[0].size != 0: continue
 
+		if not (
+			sym.name == 'AUDCAD_i' or
+			sym.name == 'AUDCHF_i' or
+			sym.name == 'AUDUSD_i' or
+			sym.name == 'CADJPY_i' or
+			sym.name == 'EURAUD_i' or
+			sym.name == 'EURCAD_i' or
+			sym.name == 'EURCHF_i' or
+			sym.name == 'EURGBP_i' or
+			sym.name == 'EURUSD_i' or
+			sym.name == 'EURJPY_i' or
+			sym.name == 'GBPAUD_i' or
+			sym.name == 'GBPCAD_i' or
+			sym.name == 'GBPJPY_i' or
+			sym.name == 'GBPUSD_i' or
+			sym.name == 'USDJPY_i' or
+			sym.name == 'USDCAD_i' or
+			sym.name == 'XAUUSD_i'
+			): continue
+
 		if os.path.exists(forexnews_path):
 			with open(forexnews_path, 'r') as file:
 				forex_news = json.loads(file.read())

@@ -190,6 +190,9 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 				signal_buy['profit'][i] = (np.max(dataset['close'][elm:cross['index'][j+1]] - dataset['close'][elm])/dataset['close'][elm]) * 100
 			else:
 				signal_buy['profit'][i] = (np.max(dataset['close'][elm:-1] - dataset['close'][elm])/dataset['close'][elm]) * 100
+			
+			if np.isnan(signal_buy['profit'][i]): signal_buy['profit'][i] = 0
+
 			i += 1
 
 		elif ((SMA_Low[elm-1]>SMA_High[elm-1])&(SMA_Low[elm+1]<SMA_High[elm+1])):
@@ -200,7 +203,8 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 				signal_sell['profit'][k] = (np.max(dataset['close'][elm] - dataset['close'][elm:cross['index'][j+1]])/np.min(dataset['close'][elm:cross['index'][j+1]])) * 100
 			else:
 				signal_sell['profit'][k] = (np.max(dataset['close'][elm] - dataset['close'][elm:-1])/np.min(dataset['close'][elm:-1])) * 100
-			#print('elm_sell = ',elm)
+			
+			if np.isnan(signal_sell['profit'][k]): signal_sell['profit'][k] = 0
 			k += 1
 		j += 1
 

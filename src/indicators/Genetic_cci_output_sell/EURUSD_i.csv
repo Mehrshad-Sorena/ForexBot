@@ -1,0 +1,2 @@
+mean_tp_min_max,mean_st_min_max,max_tp_min_max,max_st_min_max,sum_st_min_max,sum_tp_min_max,num_tp_min_max,num_st_min_max,num_trade_min_max,score_min_max,score_pr,methode,high_period,low_period,distance_lines,min_tp,max_st,alfa,signal,score_buy,score_sell
+nan,nan,nan,nan,nan,nan,nan,nan,nan,0,nan,nan,150,14,0,0.23,0.11,0.19,"buy,sell",0,4466.732378

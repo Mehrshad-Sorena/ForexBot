@@ -81,17 +81,27 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 		second_line = LineString(np.column_stack((x[(int(High_Period)-1):], SMA_High.dropna())))
 	except Exception as ex:
 		logs("===> No SMA Cross")
-		signal_buy = pd.DataFrame()
-		signal_buy['signal'] = 'no_flag'
-		signal_buy['values'] = -1
-		signal_buy['index'] = -1
-		signal_buy['profit'] = -1
+		signal_buy = pd.DataFrame(np.zeros(1))
+		signal_buy['signal'] = np.nan
+		signal_buy['values'] = np.nan
+		signal_buy['index'] = np.nan
+		signal_buy['profit'] = np.nan
 
-		signal_sell = pd.DataFrame()
-		signal_sell['signal'] = 'no_flag'
-		signal_sell['values'] = -1
-		signal_sell['index'] = -1
-		signal_sell['profit'] = -1
+		signal_buy['signal'][0] = 'no_flag'
+		signal_buy['values'][0] = -1
+		signal_buy['index'][0] = -1
+		signal_buy['profit'][0] = -1
+
+		signal_sell = pd.DataFrame(np.zeros(1))
+		signal_sell['signal'] = np.nan
+		signal_sell['values'] = np.nan
+		signal_sell['index'] = np.nan
+		signal_sell['profit'] = np.nan
+
+		signal_sell['signal'][0] = 'no_flag'
+		signal_sell['values'][0] = -1
+		signal_sell['index'][0] = -1
+		signal_sell['profit'][0] = -1
 
 		return signal_buy, signal_sell
 
@@ -119,31 +129,51 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 		cross_find_flag = True
 
 	if not cross_find_flag:
-		signal_buy = pd.DataFrame()
-		signal_buy['signal'] = 'no_flag'
-		signal_buy['values'] = -1
-		signal_buy['index'] = -1
-		signal_buy['profit'] = -1
+		signal_buy = pd.DataFrame(np.zeros(1))
+		signal_buy['signal'] = np.nan
+		signal_buy['values'] = np.nan
+		signal_buy['index'] = np.nan
+		signal_buy['profit'] = np.nan
 
-		signal_sell = pd.DataFrame()
-		signal_sell['signal'] = 'no_flag'
-		signal_sell['values'] = -1
-		signal_sell['index'] = -1
-		signal_sell['profit'] = -1
+		signal_buy['signal'][0] = 'no_flag'
+		signal_buy['values'][0] = -1
+		signal_buy['index'][0] = -1
+		signal_buy['profit'][0] = -1
+
+		signal_sell = pd.DataFrame(np.zeros(1))
+		signal_sell['signal'] = np.nan
+		signal_sell['values'] = np.nan
+		signal_sell['index'] = np.nan
+		signal_sell['profit'] = np.nan
+
+		signal_sell['signal'][0] = 'no_flag'
+		signal_sell['values'][0] = -1
+		signal_sell['index'][0] = -1
+		signal_sell['profit'][0] = -1
 
 		return signal_buy, signal_sell
 
-	signal_buy = pd.DataFrame(np.zeros(len(cross)))
+	signal_buy = pd.DataFrame(np.zeros(len(cross['index'])))
 	signal_buy['signal'] = np.nan
 	signal_buy['values'] = np.nan
 	signal_buy['index'] = np.nan
 	signal_buy['profit'] = np.nan
 
-	signal_sell = pd.DataFrame(np.zeros(len(cross)))
+	signal_buy['signal'][0] = 'no_flag'
+	signal_buy['values'][0] = -1
+	signal_buy['index'][0] = -1
+	signal_buy['profit'][0] = -1
+
+	signal_sell = pd.DataFrame(np.zeros(len(cross['index'])))
 	signal_sell['signal'] = np.nan
 	signal_sell['values'] = np.nan
 	signal_sell['index'] = np.nan
 	signal_sell['profit'] = np.nan
+
+	signal_sell['signal'][0] = 'no_flag'
+	signal_sell['values'][0] = -1
+	signal_sell['index'][0] = -1
+	signal_sell['profit'][0] = -1
 
 	i = 0
 	j = 0
@@ -162,7 +192,7 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 				signal_buy['profit'][i] = (np.max(dataset['close'][elm:-1] - dataset['close'][elm])/dataset['close'][elm]) * 100
 			i += 1
 
-		if ((SMA_Low[elm-1]>SMA_High[elm-1])&(SMA_Low[elm+1]<SMA_High[elm+1])):
+		elif ((SMA_Low[elm-1]>SMA_High[elm-1])&(SMA_Low[elm+1]<SMA_High[elm+1])):
 			signal_sell['signal'][k] = 'sell'
 			signal_sell['values'][k] = cross['values'][j]
 			signal_sell['index'][k] = elm
@@ -993,24 +1023,28 @@ def last_signal_sma(dataset,symbol):
 					High_ApplyTo=ga_result_sell['apply_to_high'][0]
 					)
 
-	signal = pd.DataFrame()
-	signal['signal'] = ['no_flag']
-	#signal['power'] = [0]
-	signal['index'] = -1
+	signal = pd.DataFrame(np.zeros(1))
+	signal['signal'] = np.nan
+	#signal['power'] = np.nan
+	signal['index'] = np.nan
 
-	if len(buy_signal) > 1 and len(sell_signal) > 1:
-		if (buy_signal['index'][len(buy_signal)-1] > sell_signal['index'][len(sell_signal)-1]):
-			signal['signal'] = ['buy']
-			signal['index'] = buy_signal['index'][len(buy_signal)-1]
+	signal['signal'][0] = 'no_flag'
+	#signal['power'][0] = 0
+	signal['index'][0] = -1
+
+	if True:#len(buy_signal) > 1 and len(sell_signal) > 1:
+		if (buy_signal['index'].iloc[-1] > sell_signal['index'].iloc[-1]):
+			signal['signal'][0] = 'buy'
+			signal['index'][0] = buy_signal['index'].iloc[-1]
 
 			#if ((buy_signal['values'][len(buy_signal)-1] <= best_signals['buy'][0]) & (buy_signal['values'][len(buy_signal)-1] >= best_signals['buy'][2])):
 				#signal['power'] = np.mean(best_signals['power_buy']) * (2/(len_price - buy_signal['index'][len(buy_signal)-1] + 1))
 			#else:
 				#signal['power'] = np.mean(best_signals['power_buy']) * (1 - best_signals['alpha_buy']) * (2/(len_price - buy_signal['index'][len(buy_signal)-1] + 1))
 	
-		elif (buy_signal['index'][len(buy_signal)-1] < sell_signal['index'][len(sell_signal)-1]):
-			signal['signal'] = ['sell']
-			signal['index'] = sell_signal['index'][len(sell_signal)-1]
+		elif (buy_signal['index'].iloc[-1] < sell_signal['index'].iloc[-1]):
+			signal['signal'][0] = 'sell'
+			signal['index'][0] = sell_signal['index'].iloc[-1]
 
 			#if ((sell_signal['values'][len(sell_signal)-1] <= best_signals['sell'][0]) & (sell_signal['values'][len(sell_signal)-1] >= best_signals['sell'][2])):
 				#signal['power'] = np.mean(best_signals['power_sell']) * (2/(len_price - sell_signal['index'][len(sell_signal)-1] + 1))
@@ -1018,12 +1052,12 @@ def last_signal_sma(dataset,symbol):
 				#signal['power'] = np.mean(best_signals['power_sell']) * (1 - best_signals['alpha_sell']) * (2/(len_price - sell_signal['index'][len(sell_signal)-1] + 1))
 
 		else:
-			signal['signal'] = ['no_flag']
-			signal['index'] = -1
+			signal['signal'][0] = 'no_flag'
+			signal['index'][0] = -1
 
 	else:
-		signal['signal'] = ['no_flag']
-		signal['index'] = -1
+		signal['signal'][0] = 'no_flag'
+		signal['index'][0] = -1
 		#Add Interval From Index Last to Signal For Power Decreasing
 	return signal
 

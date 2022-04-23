@@ -18,6 +18,7 @@ from scipy.interpolate import interp1d
 from sklearn.linear_model import LinearRegression
 from sklearn.isotonic import IsotonicRegression
 from sklearn.utils import check_random_state
+from timer import stTime
 
 # Create a DataFrame so 'ta' can be used.
 #df = pd.DataFrame()
@@ -363,7 +364,15 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 	#************************************ Finding Low ****************************
 
 	while True:
-		f_low = Fitter(data = data_X_low, xmin=np.min(data_X_low), xmax=np.max(data_X_low), bins = len(exterm_point_pred_final_low['X']), distributions = distributions_low, timeout=0.05, density=True)
+		f_low = Fitter(
+						data = data_X_low,
+						xmin=np.min(data_X_low),
+						xmax=np.max(data_X_low),
+						bins = len(exterm_point_pred_final_low['X']),
+						distributions = distributions_low,
+						timeout=0.1,
+						density=True
+						)
 
 		f_low.fit(amp=1, progress=False, n_jobs=-1)
 
@@ -457,7 +466,15 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 	timeout = time.time() + timeout_break  # timeout_break Sec from now
 	#************************************ Finding High *************************************
 	while True:
-		f_high = Fitter(data = data_X_high, xmin=np.min(data_X_high), xmax=np.max(data_X_high), bins = len(exterm_point_pred_final_high['X']), distributions = distributions_high, timeout=0.05, density=True)
+		f_high = Fitter(
+						data = data_X_high,
+						xmin=np.min(data_X_high),
+						xmax=np.max(data_X_high),
+						bins = len(exterm_point_pred_final_high['X']),
+						distributions = distributions_high,
+						timeout=0.1,
+						density=True
+						)
 
 		f_high.fit(amp=1, progress=False, n_jobs=-1)
 
@@ -557,7 +574,7 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 
 #***************************** Protect Resist Finder **************************************************************
 
-
+@stTime
 def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,dataset_4H,dataset_1D,plot=False):
 
 	short_length_1 = 25
@@ -570,40 +587,50 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	local_extreme_5M['extreme'] = np.nan
 	local_extreme_5M['power'] = np.nan
 	if (T_5M == True):
-		local_extreme_5M['extreme'] = pd.DataFrame(Extreme_points(high=dataset_5M['high'],low=dataset_5M['low'],
-			number_min=5,number_max=5))
-		local_extreme_5M['power'] = np.ones(len(local_extreme_5M))*10
+		local_extreme_5M['extreme'] = pd.DataFrame(Extreme_points(
+																	high=dataset_5M['high'],
+																	low=dataset_5M['low'],
+																	number_min=10,number_max=10))
+		local_extreme_5M['power'] = np.ones(len(local_extreme_5M))*5
 
 	local_extreme_15M = pd.DataFrame()
 	local_extreme_15M['extreme'] = np.nan
 	local_extreme_15M['power'] = np.nan
 	if (T_15M == True):
-		local_extreme_15M['extreme'] = pd.DataFrame(Extreme_points(high=dataset_15M['high'],low=dataset_15M['low'],
-			number_min=5,number_max=5))
-		local_extreme_15M['power'] = np.ones(len(local_extreme_15M))*3
+		local_extreme_15M['extreme'] = pd.DataFrame(Extreme_points(
+																	high=dataset_15M['high'],
+																	low=dataset_15M['low'],
+																	number_min=5,number_max=5))
+		local_extreme_15M['power'] = np.ones(len(local_extreme_15M))*15
 
 	local_extreme_1H = pd.DataFrame()
 	local_extreme_1H['extreme'] = np.nan
 	local_extreme_1H['power'] = np.nan
 	if (T_1H == True):
-		local_extreme_1H['extreme'] = pd.DataFrame(Extreme_points(high=dataset_1H['high'],low=dataset_1H['low'],
-			number_min=5,number_max=5))
-		local_extreme_1H['power'] = np.ones(len(local_extreme_1H))*12
+		local_extreme_1H['extreme'] = pd.DataFrame(Extreme_points(
+																	high=dataset_1H['high'],
+																	low=dataset_1H['low'],
+																	number_min=5,number_max=5))
+		local_extreme_1H['power'] = np.ones(len(local_extreme_1H))*30
 
 	local_extreme_4H = pd.DataFrame()
 	local_extreme_4H['extreme'] = np.nan
 	local_extreme_4H['power'] = np.nan
 	if (T_4H == True):
-		local_extreme_4H['extreme'] = pd.DataFrame(Extreme_points(high=dataset_4H['high'],low=dataset_4H['low'],
-			number_min=2,number_max=2))
+		local_extreme_4H['extreme'] = pd.DataFrame(Extreme_points(
+																	high=dataset_4H['high'],
+																	low=dataset_4H['low'],
+																	number_min=2,number_max=2))
 		local_extreme_4H['power'] = np.ones(len(local_extreme_4H))*48
 
 	local_extreme_1D = pd.DataFrame()
 	local_extreme_1D['extreme'] = np.nan
 	local_extreme_1D['power'] = np.nan
 	if (T_1D == True):
-		local_extreme_1D['extreme'] = pd.DataFrame(Extreme_points(high=dataset_1D['high'],low=dataset_1D['low'],
-			number_min=2,number_max=2))
+		local_extreme_1D['extreme'] = pd.DataFrame(Extreme_points(
+																	high=dataset_1D['high'],
+																	low=dataset_1D['low'],
+																	number_min=2,number_max=2))
 		local_extreme_1D['power'] = np.ones(len(local_extreme_1D))*288
 
 	#Trend Line Extreme Finder Function
@@ -620,7 +647,15 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
 
 	if (T_5M == True):
-		trend_local_extreme_5M_long = extreme_points_ramp_lines(high = dataset_ramp_5M['high'],low = dataset_ramp_5M['low'],close = dataset_ramp_5M['close'],length='long',number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_long = extreme_points_ramp_lines(
+																high = dataset_ramp_5M['high'],
+																low = dataset_ramp_5M['low'],
+																close = dataset_ramp_5M['close'],
+																length='long',
+																number_min=10,
+																number_max=10,
+																plot=False
+																)
 
 	trend_local_extreme_5M_mid = pd.DataFrame()
 	trend_local_extreme_5M_mid = np.nan
@@ -635,7 +670,15 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
 
 	if (T_5M == True):
-		trend_local_extreme_5M_mid = extreme_points_ramp_lines(high = dataset_ramp_5M['high'],low = dataset_ramp_5M['low'],close = dataset_ramp_5M['close'],length='mid',number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_mid = extreme_points_ramp_lines(
+																high = dataset_ramp_5M['high'],
+																low = dataset_ramp_5M['low'],
+																close = dataset_ramp_5M['close'],
+																length='mid',
+																number_min=5,
+																number_max=5,
+																plot=False
+																)
 
 	trend_local_extreme_5M_short_1 = pd.DataFrame()
 	trend_local_extreme_5M_short_1 = np.nan
@@ -650,7 +693,15 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
 
 	if (T_5M == True):
-		trend_local_extreme_5M_short_1 = extreme_points_ramp_lines(high = dataset_ramp_5M['high'],low = dataset_ramp_5M['low'],close = dataset_ramp_5M['close'],length='short',number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_short_1 = extreme_points_ramp_lines(
+																	high = dataset_ramp_5M['high'],
+																	low = dataset_ramp_5M['low'],
+																	close = dataset_ramp_5M['close'],
+																	length='short',
+																	number_min=2,
+																	number_max=2,
+																	plot=False
+																	)
 
 	trend_local_extreme_5M_short_2 = pd.DataFrame()
 	trend_local_extreme_5M_short_2 = np.nan
@@ -665,38 +716,91 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
 
 	if (T_5M == True):
-		trend_local_extreme_5M_short_2 = extreme_points_ramp_lines(high = dataset_ramp_5M['high'],low = dataset_ramp_5M['low'],close = dataset_ramp_5M['close'],length='short',number_min=2,number_max=2,plot=False)
+		trend_local_extreme_5M_short_2 = extreme_points_ramp_lines(
+																	high = dataset_ramp_5M['high'],
+																	low = dataset_ramp_5M['low'],
+																	close = dataset_ramp_5M['close'],
+																	length='short',
+																	number_min=2,
+																	number_max=2,
+																	plot=False
+																	)
 	#ichi Extreme Finder Function
 
 	ichi_local_extreme_5M = pd.DataFrame()
 	ichi_local_extreme_5M['extreme'] = np.nan
 	ichi_local_extreme_5M['power'] = np.nan
 	if (T_5M == True):
-		ichi_local_extreme_5M = Extreme_points_ichimoko(dataset_5M['high'],dataset_5M['low'],dataset_5M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=1)
+		ichi_local_extreme_5M = Extreme_points_ichimoko(
+														dataset_5M['high'],
+														dataset_5M['low'],
+														dataset_5M['close'],
+														tenkan=9,
+														kijun=26,
+														senkou=52,
+														n_clusters=10,
+														weight=5
+														)
 
 	ichi_local_extreme_15M = pd.DataFrame()
 	ichi_local_extreme_15M['extreme'] = np.nan
 	ichi_local_extreme_15M['power'] = np.nan
 	if (T_15M == True):
-		ichi_local_extreme_15M = Extreme_points_ichimoko(dataset_15M['high'],dataset_15M['low'],dataset_15M['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=2)
+		ichi_local_extreme_15M = Extreme_points_ichimoko(
+														dataset_15M['high'],
+														dataset_15M['low'],
+														dataset_15M['close'],
+														tenkan=9,
+														kijun=26,
+														senkou=52,
+														n_clusters=6,
+														weight=15
+														)
 
 	ichi_local_extreme_1H = pd.DataFrame()
 	ichi_local_extreme_1H['extreme'] = np.nan
 	ichi_local_extreme_1H['power'] = np.nan
 	if (T_1H == True):
-		ichi_local_extreme_1H = Extreme_points_ichimoko(dataset_1H['high'],dataset_1H['low'],dataset_1H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=5)
+		ichi_local_extreme_1H = Extreme_points_ichimoko(
+														dataset_1H['high'],
+														dataset_1H['low'],
+														dataset_1H['close'],
+														tenkan=9,
+														kijun=26,
+														senkou=52,
+														n_clusters=4,
+														weight=30
+														)
 
 	ichi_local_extreme_4H = pd.DataFrame()
 	ichi_local_extreme_4H['extreme'] = np.nan
 	ichi_local_extreme_4H['power'] = np.nan
 	if (T_4H == True):
-		ichi_local_extreme_4H = Extreme_points_ichimoko(dataset_4H['high'],dataset_4H['low'],dataset_4H['close'],tenkan=9,kijun=26,senkou=52,n_clusters=4,weight=20)
+		ichi_local_extreme_4H = Extreme_points_ichimoko(
+														dataset_4H['high'],
+														dataset_4H['low'],
+														dataset_4H['close'],
+														tenkan=9,
+														kijun=26,
+														senkou=52,
+														n_clusters=4,
+														weight=48
+														)
 
 	ichi_local_extreme_1D = pd.DataFrame()
 	ichi_local_extreme_1D['extreme'] = np.nan
 	ichi_local_extreme_1D['power'] = np.nan
 	if (T_1D == True):
-		ichi_local_extreme_1D = Extreme_points_ichimoko(dataset_1D['high'],dataset_1D['low'],dataset_1D['close'],tenkan=9,kijun=26,senkou=52,n_clusters=2,weight=100)
+		ichi_local_extreme_1D = Extreme_points_ichimoko(
+														dataset_1D['high'],
+														dataset_1D['low'],
+														dataset_1D['close'],
+														tenkan=9,
+														kijun=26,
+														senkou=52,
+														n_clusters=2,
+														weight=288
+														)
 
 	#concat Extremes
 
@@ -729,7 +833,17 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	exterm_point = exterm_point.dropna()
 
 	extereme = pd.DataFrame()
-	extereme = Best_Extreme_Finder(exterm_point=exterm_point,high=dataset_5M['high'],low=dataset_5M['low'],n_clusters_low=4,n_clusters_high=4,alpha_low=0.05,alpha_high=0.05,timeout_break=1)
+	extereme = Best_Extreme_Finder(
+									exterm_point=exterm_point,
+									high=dataset_5M['high'],
+									low=dataset_5M['low'],
+									n_clusters_low=10,
+									n_clusters_high=10,
+									alpha_low=0.01,
+									alpha_high=0.01,
+									timeout_break=1
+									)
+
 	extereme['trend_long'] = [trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend']]
 	extereme['trend_mid'] = [trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend']]
 	extereme['trend_short1'] = [trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend']]
@@ -762,10 +876,12 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 
 
 #symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2000)
-#symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,700)
-#symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,10)
-#symbol_data_4H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,10)
+#symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)
+#symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,167)
+#symbol_data_4H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,150)
 #symbol_data_1D,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,10)
+
+#print('data get')
 
 #x = np.arange(0,len(symbol_data_5M['AUDCAD_i']['close']),1)
 #y1 = symbol_data_5M['AUDCAD_i']['close']
@@ -786,7 +902,15 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 #plt.show()
 
 #time_last = time.time()
-#res_pro = protect_resist(T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,dataset_5M=symbol_data_5M['AUDCAD_i'],dataset_15M=symbol_data_15M['AUDCAD_i'],dataset_1H=symbol_data_1H['AUDCAD_i'],dataset_4H=symbol_data_4H['AUDCAD_i'],dataset_1D=symbol_data_1D['AUDCAD_i'],plot=False)
+#res_pro = protect_resist(
+						#T_5M=True,T_15M=False,T_1H=False,T_4H=False,T_1D=False,
+						#dataset_5M=symbol_data_5M['AUDCAD_i'],
+						#dataset_15M=symbol_data_15M['AUDCAD_i'],
+						#dataset_1H=symbol_data_1H['AUDCAD_i'],
+						#dataset_4H=symbol_data_4H['AUDCAD_i'],
+						#dataset_1D=symbol_data_1D['AUDCAD_i'],
+						#plot=True
+						#)
 #print('time left = ',time.time()-time_last)
 #print(res_pro['power_high'])
 #print('************************ Finish ***************************************')

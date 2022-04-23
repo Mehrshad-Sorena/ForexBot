@@ -1745,6 +1745,7 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,dataset_1H,dataset_4H,symbol
 	chromosome_sell = pd.DataFrame()
 
 	chrom_counter = 0
+	all_chorms = 0
 
 	with tqdm(total=num_turn) as pbar:
 		while chrom_counter < len(Chromosome):
@@ -1758,6 +1759,9 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,dataset_1H,dataset_4H,symbol
 
 			pbar_numbers = int((len(chromosome_buy) + len(chromosome_sell))/2)
 			pbar.update(pbar_numbers)
+
+			logs('====> All Chorms = {}'.format(all_chorms))
+			all_chorms += 1
 
 			try:
 				buy_data,sell_data = golden_cross_zero(
@@ -1796,7 +1800,7 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,dataset_1H,dataset_4H,symbol
 					'low_period': low_period,
 					'distance_lines': randint(0, 6),
 					'min_tp': randint(0, 40)/100,
-					'max_st': randint(0, 50)/100,
+					'max_st': randint(10, 50)/100,
 					'alfa': randint(1, 400)/1000,
 					'signal': None,
 					'score_buy': 0,
@@ -1882,7 +1886,7 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,dataset_1H,dataset_4H,symbol
 					'low_period': low_period,
 					'distance_lines': randint(0, 6),
 					'min_tp': randint(0, 40)/100,
-					'max_st': randint(0, 50)/100,
+					'max_st': randint(10, 50)/100,
 					'alfa': randint(1, 400)/1000,
 					'signal': None,
 					'score_buy': 0,
@@ -3038,8 +3042,8 @@ def read_dataset_csv(sym,num_5M,num_15M,num_1H,num_4H):
 
 symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																							sym='EURUSD_i',
-																							num_5M=6000,
-																							num_15M=2000,
+																							num_5M=25920,
+																							num_15M=8640,
 																							num_1H=500,
 																							num_4H=400
 																							)
@@ -3095,16 +3099,16 @@ for sym in symbol:
 	if not sym.name == 'EURUSD_i': continue
 
 	try:
-		#genetic_buy_algo(
-				#symbol_data_5M=symbol_data_5M,
-				#symbol_data_15M=symbol_data_15M,
-				#dataset_1H=symbol_data_1H,
-				#dataset_4H=symbol_data_4H,
-				#symbol=sym.name,
-				#num_turn=200,
-				#max_score_ga_buy=2,
-				#max_score_ga_sell=2
-				#)
+		genetic_buy_algo(
+				symbol_data_5M=symbol_data_5M,
+				symbol_data_15M=symbol_data_15M,
+				dataset_1H=symbol_data_1H,
+				dataset_4H=symbol_data_4H,
+				symbol=sym.name,
+				num_turn=500,
+				max_score_ga_buy=2,
+				max_score_ga_sell=2
+				)
 		pass
 	except Exception as ex:
 		print('getting error: ', ex)
@@ -3139,9 +3143,14 @@ symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_d
 																							sym='EURUSD_i',
 																							num_5M=99000,
 																							num_15M=33000,
-																							num_1H=500,
-																							num_4H=400
+																							num_1H=8250,
+																							num_4H=2063
 																							)
+
+#mem_data = pd.DataFrame()
+#mem_data = mem_data.append(symbol_data_5M,ignore_index=True)
+#print(mem_data)
+#print(mem_data.info(memory_usage='deep'))
 
 upper = 0
 mid = 1

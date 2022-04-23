@@ -364,7 +364,15 @@ def golden_cross_zero(
 						dataset_5M['HLCC/4'] = dataset[symbol]['HLCC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 						dataset_5M['OHLC/4'] = dataset[symbol]['OHLC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 
-						trend_sma = last_signal_sma(dataset_5M, symbol)
+						try:
+							trend_sma = last_signal_sma(dataset_5M, symbol)
+						except Exception as ex:
+							print('sma trend buy: ',ex)
+							trend_sma = pd.DataFrame()
+							trend_sma['signal'] = np.nan
+							trend_sma['index'] = np.nan
+							trend_sma['signal'][0] = 'no_flag'
+							trend_sma['index'][0] = -1
 
 						if (
 							signal_buy['value_min_max_candle'][buy_counter] > dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004 and
@@ -568,7 +576,15 @@ def golden_cross_zero(
 						dataset_5M['HLCC/4'] = dataset[symbol]['HLCC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 						dataset_5M['OHLC/4'] = dataset[symbol]['OHLC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 
-						trend_sma = last_signal_sma(dataset_5M,symbol)
+						try:
+							trend_sma = last_signal_sma(dataset_5M, symbol)
+						except Exception as ex:
+							print('sma trend sell: ',ex)
+							trend_sma = pd.DataFrame()
+							trend_sma['signal'] = np.nan
+							trend_sma['index'] = np.nan
+							trend_sma['signal'][0] = 'no_flag'
+							trend_sma['index'][0] = -1
 
 						if (
 							signal_sell['value_min_max_candle'][sell_counter] < dataset[symbol]['low'][int(finding_points['index'][elm])]*0.9994 and

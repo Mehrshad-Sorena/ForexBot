@@ -118,6 +118,8 @@ def log_get_data(frame,number):
 	except:
 		print("some thing wrong log get data_2!!!",i.name)
 
+	mt5.shutdown()
+
 	return symbol_data,account_info_dict["balance"],symbols
 
 def get_symbols(frame):
@@ -155,6 +157,8 @@ def get_symbols(frame):
 		print("failed to connect to trade account 51014854 with password=rmqmyjj8, error code =",mt5.last_error())
 
 	symbols=mt5.symbols_get()
+
+	mt5.shutdown()
 
 	return symbols,account_info_dict["balance"]
 
@@ -203,6 +207,8 @@ def log_get_data_one_by_one(frame,number,sym_name):
 				print("some thing wrong log get data!!!")
 	except:
 		print("some thing wrong log get data!!!")
+
+	mt5.shutdown()
 
 	return symbol_data,account_info_dict["balance"]
 
@@ -320,6 +326,8 @@ def log_get_data_Genetic(frame,number_start,number_end):
 				print("some thing wrong log get data genetic!!!")
 	except:
 		print("some thing wrong log get data genetic!!!")
+
+	mt5.shutdown()
 
 	return symbol_data,account_info_dict["balance"],symbols
 

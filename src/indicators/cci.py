@@ -108,7 +108,11 @@ def golden_cross_zero(
 						buy_flag=True,
 						sell_flag=True,
 						st_percent_minmax_buy = 0.1,
-						st_percent_minmax_sell = 0.1
+						st_percent_minmax_sell = 0.1,
+						tp_percent_minmax_sell_min = 0.04,
+						tp_percent_minmax_sell_max = 0.5,
+						tp_percent_minmax_buy_min = 0.04,
+						tp_percent_minmax_buy_max = 0.5
 						):
 	x = np.arange(0,len(dataset[symbol]['HLC/3']),1)
 
@@ -341,44 +345,62 @@ def golden_cross_zero(
 				signal_buy['st_point'][buy_counter] = np.min(dataset[symbol]['low'][int(finding_points['index'][elm-2]):int(finding_points['index'][elm])])
 				signal_buy['st_percent'][buy_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - signal_buy['st_point'][buy_counter])/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
 
-				if 0 <= signal_buy['st_percent'][buy_counter] <= st_percent_minmax_buy:
+				if signal_buy['st_percent'][buy_counter] <= st_percent_minmax_buy:
 					signal_buy['st_percent'][buy_counter] = st_percent_minmax_buy
 					signal_buy['st_point'][buy_counter] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(st_percent_minmax_buy/100))
+				
+				if signal_buy['diff_min_max_candle'][buy_counter] <= tp_percent_minmax_buy_min:
+					signal_buy['diff_min_max_candle'][buy_counter] = tp_percent_minmax_buy_min
+					signal_buy['value_min_max_candle'][buy_counter] = signal_buy['value_min_max_candle'][buy_counter]*(1+(tp_percent_minmax_buy_min/100))
+
+				if signal_buy['diff_min_max_candle'][buy_counter] > tp_percent_minmax_buy_max:
+					signal_buy['diff_min_max_candle'][buy_counter] = tp_percent_minmax_buy_max
+					signal_buy['value_min_max_candle'][buy_counter] = signal_buy['value_min_max_candle'][buy_counter]*(1-((signal_buy['diff_min_max_candle'][buy_counter] - tp_percent_minmax_buy_max)/100))
 				#Calculate porfits
 				#must read protect and resist from protect resist function
 				if (mode == 'optimize'):
 
 					if (name_stp_minmax == True):
 						#Calculate With Min Max Diff From MACD:
-						dataset_5M = pd.DataFrame()
+						dataset_5M_minmax = pd.DataFrame()
+						dataset_15M_minmax = pd.DataFrame()
 
 						cut_first = 0
-						if (int(finding_points['index'][elm]) > 1000):
-							cut_first = int(finding_points['index'][elm]) - 1000
-						dataset_5M['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['HL/2'] = dataset[symbol]['HL/2'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['HLC/3'] = dataset[symbol]['HLC/3'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['HLCC/4'] = dataset[symbol]['HLCC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['OHLC/4'] = dataset[symbol]['OHLC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						if (int(finding_points['index'][elm]) > 300):
+							cut_first = int(finding_points['index'][elm]) - 300
+
+						dataset_5M_minmax['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['HL/2'] = dataset[symbol]['HL/2'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['HLC/3'] = dataset[symbol]['HLC/3'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['HLCC/4'] = dataset[symbol]['HLCC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['OHLC/4'] = dataset[symbol]['OHLC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+
+						dataset_15M_minmax['low'] = dataset_15M[symbol]['low'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['high'] = dataset_15M[symbol]['high'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['close'] = dataset_15M[symbol]['close'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['open'] = dataset_15M[symbol]['open'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['HL/2'] = dataset_15M[symbol]['HL/2'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['HLC/3'] = dataset_15M[symbol]['HLC/3'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['HLCC/4'] = dataset_15M[symbol]['HLCC/4'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['OHLC/4'] = dataset_15M[symbol]['OHLC/4'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
 
 						try:
-							trend_sma = last_signal_sma(dataset_5M, symbol)
+							trend_sma_5M = last_signal_sma(dataset_5M_minmax, symbol, time_frame = '5M')['signal'][0]
+							trend_sma_15M = last_signal_sma(dataset_15M_minmax, symbol, time_frame = '15M')['signal'][0]
 						except Exception as ex:
 							print('sma trend buy: ',ex)
-							trend_sma = pd.DataFrame()
-							trend_sma['signal'] = np.nan
-							trend_sma['index'] = np.nan
-							trend_sma['signal'][0] = 'no_flag'
-							trend_sma['index'][0] = -1
+							trend_sma_5M = 'no_flag'
+							trend_sma_15M = 'no_flag'
 
 						if (
 							signal_buy['value_min_max_candle'][buy_counter] > dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004 and
 							signal_buy['diff_min_max_candle'][buy_counter] >= (signal_buy['st_percent'][buy_counter] + 0.04) and
 							dataset[symbol]['low'][int(finding_points['index'][elm])] > signal_buy['st_point'][buy_counter] and
-							trend_sma['signal'][0] == 'buy'
+							trend_sma_5M == 'buy' and
+							trend_sma_15M == 'buy'
 							):
 							if ((len(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]-dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004)/dataset[symbol]['high'][int(finding_points['index'][elm])]).values*100) >= (signal_buy['diff_min_max_candle'][buy_counter]+0.04))[0]) - 1) > 1):
 								signal_buy['tp_min_max_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]-dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004)/dataset[symbol]['high'][int(finding_points['index'][elm])]).values*100) >= (signal_buy['diff_min_max_candle'][buy_counter]+0.04))[0])
@@ -412,6 +434,13 @@ def golden_cross_zero(
 							signal_buy['st_min_max'][buy_counter] = 0
 							signal_buy['tp_min_max_index'][buy_counter] = -1
 							signal_buy['st_min_max_index'][buy_counter] = -1
+
+						if np.isnan(signal_buy['tp_min_max'][buy_counter]): 
+							signal_buy['tp_min_max'][buy_counter] = 0
+							signal_buy['flag_min_max'][buy_counter] = 'no_flag'
+						if np.isnan(signal_buy['st_min_max'][buy_counter]): signal_buy['st_min_max'][buy_counter] = 0
+						if np.isnan(signal_buy['tp_min_max_index'][buy_counter]): signal_buy['tp_min_max_index'][buy_counter] = -1
+						if np.isnan(signal_buy['st_min_max_index'][buy_counter]): signal_buy['st_min_max_index'][buy_counter] = -1
 						#///////////////////////////////////////////////////
 					if (name_stp_pr == True):
 						#Calculate ST and TP With Protect Resist Function
@@ -528,6 +557,13 @@ def golden_cross_zero(
 							signal_buy['st_pr_index'][buy_counter] = -1
 							signal_buy['st_pr'][buy_counter] = 0
 							signal_buy['flag_pr'][buy_counter] = 'no_flag'
+
+						if np.isnan(signal_buy['tp_pr'][buy_counter]): 
+							signal_buy['tp_pr'][buy_counter] = 0
+							signal_buy['flag_pr'][buy_counter] = 'no_flag'
+						if np.isnan(signal_buy['st_pr'][buy_counter]): signal_buy['st_pr'][buy_counter] = 0
+						if np.isnan(signal_buy['tp_pr_index'][buy_counter]): signal_buy['tp_pr_index'][buy_counter] = -1
+						if np.isnan(signal_buy['st_pr_index'][buy_counter]): signal_buy['st_pr_index'][buy_counter] = -1
 						#///////////////////////////////////////////////////
 
 				buy_counter += 1
@@ -554,43 +590,62 @@ def golden_cross_zero(
 				signal_sell['st_point'][sell_counter] = np.max(dataset[symbol]['high'][int(finding_points['index'][elm-2]):int(finding_points['index'][elm])])
 				signal_sell['st_percent'][sell_counter] = ((signal_sell['st_point'][sell_counter] - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
 
-				if 0 <= signal_sell['st_percent'][sell_counter] <= st_percent_minmax_sell:
+				if signal_sell['st_percent'][sell_counter] <= st_percent_minmax_sell:
 					signal_sell['st_percent'][sell_counter] = st_percent_minmax_sell
 					signal_sell['st_point'][sell_counter] = dataset[symbol]['high'][int(finding_points['index'][elm])] * (1-(st_percent_minmax_sell/100))
+				
+				if signal_sell['diff_min_max_candle'][sell_counter] <= tp_percent_minmax_sell_min:
+					signal_sell['diff_min_max_candle'][sell_counter] = tp_percent_minmax_sell_min
+					signal_sell['value_min_max_candle'][sell_counter] = signal_sell['value_min_max_candle'][sell_counter] * (1-(tp_percent_minmax_sell_min/100))
+
+				if signal_sell['diff_min_max_candle'][sell_counter] > tp_percent_minmax_sell_max:
+					signal_sell['diff_min_max_candle'][sell_counter] = tp_percent_minmax_sell_max
+					signal_sell['value_min_max_candle'][sell_counter] = signal_sell['value_min_max_candle'][sell_counter] * (1+((signal_sell['diff_min_max_candle'][sell_counter] - tp_percent_minmax_sell_max)/100))
 				#Calculate porfits
 				#must read protect and resist from protect resist function
 				if (mode == 'optimize'):
 
 					if (name_stp_minmax == True):
 						#Calculate With Min Max Diff From MACD:
-						dataset_5M = pd.DataFrame()
+						dataset_5M_minmax = pd.DataFrame()
+						dataset_15M_minmax = pd.DataFrame()
+
 						cut_first = 0
-						if (int(finding_points['index'][elm]) > 1000):
-							cut_first = int(finding_points['index'][elm]) - 1000
-						dataset_5M['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['HL/2'] = dataset[symbol]['HL/2'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['HLC/3'] = dataset[symbol]['HLC/3'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['HLCC/4'] = dataset[symbol]['HLCC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
-						dataset_5M['OHLC/4'] = dataset[symbol]['OHLC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						if (int(finding_points['index'][elm]) > 300):
+							cut_first = int(finding_points['index'][elm]) - 300
+
+						dataset_5M_minmax['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['HL/2'] = dataset[symbol]['HL/2'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['HLC/3'] = dataset[symbol]['HLC/3'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['HLCC/4'] = dataset[symbol]['HLCC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+						dataset_5M_minmax['OHLC/4'] = dataset[symbol]['OHLC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+
+						dataset_15M_minmax['low'] = dataset_15M[symbol]['low'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['high'] = dataset_15M[symbol]['high'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['close'] = dataset_15M[symbol]['close'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['open'] = dataset_15M[symbol]['open'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['HL/2'] = dataset_15M[symbol]['HL/2'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['HLC/3'] = dataset_15M[symbol]['HLC/3'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['HLCC/4'] = dataset_15M[symbol]['HLCC/4'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
+						dataset_15M_minmax['OHLC/4'] = dataset_15M[symbol]['OHLC/4'][int(cut_first/3):int(finding_points['index'][elm]/3)].reset_index(drop=True)
 
 						try:
-							trend_sma = last_signal_sma(dataset_5M, symbol)
+							trend_sma_5M = last_signal_sma(dataset_5M_minmax, symbol, time_frame = '5M')['signal'][0]
+							trend_sma_15M = last_signal_sma(dataset_15M_minmax, symbol, time_frame = '15M')['signal'][0]
 						except Exception as ex:
-							print('sma trend sell: ',ex)
-							trend_sma = pd.DataFrame()
-							trend_sma['signal'] = np.nan
-							trend_sma['index'] = np.nan
-							trend_sma['signal'][0] = 'no_flag'
-							trend_sma['index'][0] = -1
+							print('sma trend buy: ',ex)
+							trend_sma_5M = 'no_flag'
+							trend_sma_15M = 'no_flag'
 
 						if (
 							signal_sell['value_min_max_candle'][sell_counter] < dataset[symbol]['low'][int(finding_points['index'][elm])]*0.9994 and
 							signal_sell['diff_min_max_candle'][sell_counter] >= signal_sell['st_percent'][sell_counter] and
 							dataset[symbol]['high'][int(finding_points['index'][elm])] < signal_sell['st_point'][sell_counter] and
-							trend_sma['signal'][0] == 'sell'
+							trend_sma_5M == 'sell' and
+							trend_sma_15M == 'sell'
 							):
 							if ((len(np.where((((((dataset[symbol]['low'][int(finding_points['index'][elm])]*0.9994 - dataset[symbol]['low'][int(finding_points['index'][elm]):-1])/dataset[symbol]['low'][int(finding_points['index'][elm])]).values) * 100) >= (signal_sell['diff_min_max_candle'][sell_counter]+0.05)))[0]) - 1) > 1):
 								signal_sell['tp_min_max_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where((((((dataset[symbol]['low'][int(finding_points['index'][elm])]*0.9994 - dataset[symbol]['low'][int(finding_points['index'][elm]):-1])/dataset[symbol]['low'][int(finding_points['index'][elm])]).values) * 100) >= (signal_sell['diff_min_max_candle'][sell_counter]+0.05)))[0])
@@ -624,6 +679,13 @@ def golden_cross_zero(
 							signal_sell['st_min_max'][sell_counter] = 0
 							signal_sell['tp_min_max_index'][sell_counter] = -1
 							signal_sell['st_min_max_index'][sell_counter] = -1
+
+						if np.isnan(signal_sell['tp_min_max'][sell_counter]): 
+							signal_sell['tp_min_max'][sell_counter] = 0
+							signal_sell['flag_min_max'][sell_counter] = 'no_flag'
+						if np.isnan(signal_sell['st_min_max'][sell_counter]): signal_sell['st_min_max'][sell_counter] = 0
+						if np.isnan(signal_sell['tp_min_max_index'][sell_counter]): signal_sell['tp_min_max_index'][sell_counter] = -1
+						if np.isnan(signal_sell['st_min_max_index'][sell_counter]): signal_sell['st_min_max_index'][sell_counter] = -1
 						#///////////////////////////////////////////////////
 					if (name_stp_pr == True):
 						#Calculate ST and TP With Protect Resist Function
@@ -736,6 +798,13 @@ def golden_cross_zero(
 							signal_sell['st_pr_index'][sell_counter] = -1
 							signal_sell['st_pr'][sell_counter] = 0
 							signal_sell['flag_pr'][sell_counter] = 'no_flag'
+
+						if np.isnan(signal_sell['tp_pr'][sell_counter]): 
+							signal_sell['tp_pr'][sell_counter] = 0
+							signal_sell['flag_pr'][sell_counter] = 'no_flag'
+						if np.isnan(signal_sell['st_pr'][sell_counter]): signal_sell['st_pr'][sell_counter] = 0
+						if np.isnan(signal_sell['tp_pr_index'][sell_counter]): signal_sell['tp_pr_index'][sell_counter] = -1
+						if np.isnan(signal_sell['st_pr_index'][sell_counter]): signal_sell['st_pr_index'][sell_counter] = -1
 						#///////////////////////////////////////////////////
 					#print('tp = ',signal_sell['tp_pr'][sell_counter])
 					#print('tp index = ',signal_sell['tp_pr_index'][sell_counter])
@@ -1535,8 +1604,6 @@ def tester_golden_cross_zero(signal_buy,signal_sell,min_tp,max_st,alpha,name_stp
 def initilize_values_genetic():
 	#************************** initialize Values ******************************************************
 	Chromosome = {}
-	range(1)
-	value = randint(50, 100)
 
 	Chromosome[0] = {
 	'high_period': 50,
@@ -1544,7 +1611,7 @@ def initilize_values_genetic():
 	'distance_lines': 2,
 	'min_tp': 0.1,
 	'max_st': 0.4,
-	'alfa': 0.02,
+	'max_tp': 0.02,
 	'signal': None,
 	'score_buy': 0,
 	'score_sell': 0
@@ -1556,24 +1623,30 @@ def initilize_values_genetic():
 	'distance_lines': 4,
 	'min_tp': 0.2,
 	'max_st': 0.1,
-	'alfa': 0.2,
+	'max_tp': 0.2,
 	'signal': None,
 	'score_buy': 0,
 	'score_sell': 0
 	}
 	i = 2
 	while i < 20:
+		max_tp = randint(10, 80)/100
+		min_tp = randint(10, 50)/100
+		while max_tp <= min_tp:
+			max_tp = randint(10, 80)/100
+			min_tp = randint(10, 50)/100
+
 		Chromosome[i] = {
 			'high_period': randint(5, 150),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
-			'min_tp': randint(0, 40)/100,
-			'max_st': randint(0, 50)/100,
-			'alfa': randint(1, 400)/1000,
+			'min_tp': min_tp,
+			'max_st': randint(10, 50)/100,
+			'max_tp': max_tp,
 			'signal': None,
 			'score_buy': 0,
 			'score_sell': 0
-		}
+			}
 		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']): continue
 		res = list(Chromosome[i].keys()) 
 		#print(res[1])
@@ -1603,17 +1676,24 @@ def gen_creator(Chromosome):
 	baby_counter_create = 0
 
 	while (baby_counter_create < (len(Chromosome) * 2)):
+		
+		max_tp = randint(10, 80)/100
+		min_tp = randint(10, 50)/100
+		while max_tp <= min_tp:
+			max_tp = randint(10, 80)/100
+			min_tp = randint(10, 50)/100
+
 		baby[baby_counter_create] = {
 			'high_period': randint(5, 150),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
-			'min_tp': randint(0, 40)/100,
-			'max_st': randint(0, 50)/100,
-			'alfa': randint(1, 400)/1000,
+			'min_tp': min_tp,
+			'max_st': randint(10, 50)/100,
+			'max_tp': max_tp,
 			'signal': None,
 			'score_buy': 0,
 			'score_sell': 0
-		}
+			}
 
 		baby_counter_create += 1
 
@@ -1659,17 +1739,23 @@ def gen_creator(Chromosome):
 	i = 0
 	limit_counter = len(Chromosome) * 2 
 	while i < (limit_counter):
+		max_tp = randint(10, 80)/100
+		min_tp = randint(10, 50)/100
+		while max_tp <= min_tp:
+			max_tp = randint(10, 80)/100
+			min_tp = randint(10, 50)/100
+
 		Chromosome[i] = {
 			'high_period': randint(5, 150),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
-			'min_tp': randint(0, 40)/100,
-			'max_st': randint(0, 50)/100,
-			'alfa': randint(1, 400)/1000,
+			'min_tp': min_tp,
+			'max_st': randint(10, 50)/100,
+			'max_tp': max_tp,
 			'signal': None,
 			'score_buy': 0,
 			'score_sell': 0
-		}
+			}
 
 		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']): continue
 		i += 1
@@ -1681,7 +1767,7 @@ def gen_creator(Chromosome):
 		Chromosome[re_counter]['distance_lines'] = baby[re_counter]['distance_lines']
 		Chromosome[re_counter]['min_tp'] = baby[re_counter]['min_tp']
 		Chromosome[re_counter]['max_st'] = baby[re_counter]['max_st']
-		Chromosome[re_counter]['alfa'] = baby[re_counter]['alfa']
+		Chromosome[re_counter]['max_tp'] = baby[re_counter]['max_tp']
 		Chromosome[re_counter]['signal'] = baby[re_counter]['signal']
 		Chromosome[re_counter]['score_buy'] = baby[re_counter]['score_buy']
 		Chromosome[re_counter]['score_sell'] = baby[re_counter]['score_sell']
@@ -1717,7 +1803,7 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,dataset_1H,dataset_4H,symbol
 				Chromosome[19]['distance_lines'] = float(Chromosome[19]['distance_lines'])
 				Chromosome[19]['min_tp'] = float(Chromosome[19]['min_tp'])
 				Chromosome[19]['max_st'] = float(Chromosome[19]['max_st'])
-				Chromosome[19]['alfa'] = float(Chromosome[19]['alfa'])
+				Chromosome[19]['max_tp'] = float(Chromosome[19]['max_tp'])
 				Chromosome[19]['signal'] = Chromosome[19]['signal']
 				Chromosome[19]['score_buy'] = float(Chromosome[19]['score_buy'])
 				Chromosome[19]['score_sell'] = float(Chromosome[19]['score_sell'])
@@ -1732,7 +1818,7 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,dataset_1H,dataset_4H,symbol
 				Chromosome[18]['distance_lines'] = float(Chromosome[18]['distance_lines'])
 				Chromosome[18]['min_tp'] = float(Chromosome[18]['min_tp'])
 				Chromosome[18]['max_st'] = float(Chromosome[18]['max_st'])
-				Chromosome[18]['alfa'] = float(Chromosome[18]['alfa'])
+				Chromosome[18]['max_tp'] = float(Chromosome[18]['max_tp'])
 				Chromosome[18]['signal'] = Chromosome[18]['signal']
 				Chromosome[18]['score_buy'] = float(Chromosome[18]['score_buy'])
 				Chromosome[18]['score_sell'] = float(Chromosome[18]['score_sell'])
@@ -1778,7 +1864,11 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,dataset_1H,dataset_4H,symbol
 														pbar_flag=False,
 														buy_flag=True,sell_flag=True,
 														st_percent_minmax_buy=Chromosome[chrom_counter]['max_st'],
-														st_percent_minmax_sell=Chromosome[chrom_counter]['max_st']
+														st_percent_minmax_sell=Chromosome[chrom_counter]['max_st'],
+														tp_percent_minmax_sell_min = Chromosome[chrom_counter]['max_st'],
+														tp_percent_minmax_sell_max = Chromosome[chrom_counter]['max_tp'],
+														tp_percent_minmax_buy_min = Chromosome[chrom_counter]['max_st'],
+														tp_percent_minmax_buy_max = Chromosome[chrom_counter]['max_tp']
 														)
 
 	
@@ -1795,27 +1885,65 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,dataset_1H,dataset_4H,symbol
 					high_period = randint(5, 150)
 					low_period = randint(5, 150)
 
+				max_tp = randint(10, 80)/100
+				min_tp = randint(10, 50)/100
+				while max_tp <= min_tp:
+					max_tp = randint(10, 80)/100
+					min_tp = randint(10, 50)/100
+
 				Chromosome[chrom_counter] = {
 					'high_period': high_period,
 					'low_period': low_period,
 					'distance_lines': randint(0, 6),
-					'min_tp': randint(0, 40)/100,
+					'min_tp': min_tp,
 					'max_st': randint(10, 50)/100,
-					'alfa': randint(1, 400)/1000,
+					'max_tp': max_tp,
 					'signal': None,
 					'score_buy': 0,
 					'score_sell': 0
 					}
 				continue
 
-			output_buy,output_sell = tester_golden_cross_zero(
+			try:
+				output_buy,output_sell = tester_golden_cross_zero(
 																signal_buy=buy_data,
 																signal_sell=sell_data,
 																min_tp=Chromosome[chrom_counter]['min_tp'],
 																max_st=Chromosome[chrom_counter]['max_st'],
-																alpha=Chromosome[chrom_counter]['alfa'],
+																alpha=Chromosome[chrom_counter]['max_tp'],
 																name_stp_minmax=True,name_stp_pr=False
 																)
+				flag_tester = False
+			except Exception as ex:
+				print('GA tester: ',ex)
+				flag_tester = True
+
+			if flag_tester:
+				Chromosome.pop(chrom_counter)
+				high_period = randint(5, 150)
+				low_period = randint(5, 150)
+				while high_period <= low_period:
+					high_period = randint(5, 150)
+					low_period = randint(5, 150)
+
+				max_tp = randint(10, 80)/100
+				min_tp = randint(10, 50)/100
+				while max_tp <= min_tp:
+					max_tp = randint(10, 80)/100
+					min_tp = randint(10, 50)/100
+
+				Chromosome[chrom_counter] = {
+					'high_period': high_period,
+					'low_period': low_period,
+					'distance_lines': randint(0, 6),
+					'min_tp': min_tp,
+					'max_st': randint(10, 50)/100,
+					'max_tp': max_tp,
+					'signal': None,
+					'score_buy': 0,
+					'score_sell': 0
+					}
+				continue
 
 			#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 				#logs('=======> BUY = {}'.format(output_buy))
@@ -1881,13 +2009,19 @@ def genetic_buy_algo(symbol_data_5M,symbol_data_15M,dataset_1H,dataset_4H,symbol
 					high_period = randint(5, 150)
 					low_period = randint(5, 150)
 
+				max_tp = randint(10, 80)/100
+				min_tp = randint(10, 50)/100
+				while max_tp <= min_tp:
+					max_tp = randint(10, 80)/100
+					min_tp = randint(10, 50)/100
+
 				Chromosome[chrom_counter] = {
 					'high_period': high_period,
 					'low_period': low_period,
 					'distance_lines': randint(0, 6),
-					'min_tp': randint(0, 40)/100,
+					'min_tp': min_tp,
 					'max_st': randint(10, 50)/100,
-					'alfa': randint(1, 400)/1000,
+					'max_tp': max_tp,
 					'signal': None,
 					'score_buy': 0,
 					'score_sell': 0
@@ -2909,141 +3043,10 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 #*************************** How To Use Funcs *****************************************
 
-
-def write_dataset_csv():
-	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,99888)
-	symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,33296)
-	symbol_data_1H,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,8324)
-	symbol_data_4H,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,2081)
-	print('data get')
-
-	for sym in symbol:
-		dataset_path = 'dataset/5M/' + sym.name + '.csv'
-		data_5M = pd.DataFrame(symbol_data_5M[sym.name])
-		data_5M.to_csv(dataset_path)
-
-	for sym in symbol:
-		dataset_path = 'dataset/15M/' + sym.name + '.csv'
-		data_15M = pd.DataFrame(symbol_data_15M[sym.name])
-		data_15M.to_csv(dataset_path)
-
-	for sym in symbol:
-		dataset_path = 'dataset/1H/' + sym.name + '.csv'
-		data_1H = pd.DataFrame(symbol_data_1H[sym.name])
-		data_1H.to_csv(dataset_path)
-
-	for sym in symbol:
-		dataset_path = 'dataset/4H/' + sym.name + '.csv'
-		data_4H = pd.DataFrame(symbol_data_4H[sym.name])
-		data_4H.to_csv(dataset_path)
-
-def read_dataset_csv(sym,num_5M,num_15M,num_1H,num_4H):
-
-	dataset_path_5M = 'dataset/5M/' + sym + '.csv'
-	dataset_path_15M = 'dataset/15M/' + sym + '.csv'
-	dataset_path_1H = 'dataset/1H/' + sym + '.csv'
-	dataset_path_4H = 'dataset/4H/' + sym + '.csv'
-
-	if not mt5.initialize():
-		print("initialize() failed, error code =",mt5.last_error())
-		quit()
-
-	authorized=mt5.login(51149098, password="zyowt2zj")
-	if True:#authorized:
-		account_info=mt5.account_info()
-		if account_info!=None:
-			account_info_dict = mt5.account_info()._asdict()
-	else:
-		print("failed to connect to trade account 25115284 with password=gqz0343lbdm, error code =",mt5.last_error())
-
-	symbols=mt5.symbols_get()
-	count=0
-	symbol_data_5M = {}
-	symbol_data_15M = {}
-	symbol_data_1H = {}
-	symbol_data_4H = {}
-
-	if True:
-		for i in symbols:
-
-			if i.name != sym: continue
-
-			if True:
-				rates_frame = pd.read_csv(dataset_path_5M)
-				symbol_data_5M[i.name] = {
-								i.name: i.name,
-								'open': rates_frame['open'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
-								'close': rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
-								'low': rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
-								'high': rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
-								'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/2),
-								'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/3),
-								'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/4),
-								'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/4),
-								'volume': rates_frame['volume'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
-								'time': rates_frame['time'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)
-								}
-
-				rates_frame = pd.read_csv(dataset_path_15M)
-				symbol_data_15M[i.name] = {
-								i.name: i.name,
-								'open': rates_frame['open'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
-								'close': rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
-								'low': rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
-								'high': rates_frame['high'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
-								'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True))/2),
-								'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True))/3),
-								'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True))/4),
-								'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True))/4),
-								'volume': rates_frame['volume'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
-								'time': rates_frame['time'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)
-								}
-
-				rates_frame = pd.read_csv(dataset_path_1H)
-				symbol_data_1H[i.name] = {
-								i.name: i.name,
-								'open': rates_frame['open'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
-								'close': rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
-								'low': rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
-								'high': rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
-								'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/2),
-								'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/3),
-								'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/4),
-								'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/4),
-								'volume': rates_frame['volume'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
-								'time': rates_frame['time'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)
-								}
-
-
-				rates_frame = pd.read_csv(dataset_path_4H)
-				symbol_data_4H[i.name] = {
-								i.name: i.name,
-								'open': rates_frame['open'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
-								'close': rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
-								'low': rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
-								'high': rates_frame['high'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
-								'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True))/2),
-								'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True))/3),
-								'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True))/4),
-								'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True))/4),
-								'volume': rates_frame['volume'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
-								'time': rates_frame['time'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)
-								}
-
-
-			else:
-				print("some thing wrong log get data_1!!!",i.name)
-	else:
-		print("some thing wrong log get data_2!!!",i.name)
-
-	mt5.shutdown()
-
-	return symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbols
-
 symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
-																							sym='EURUSD_i',
-																							num_5M=25920,
-																							num_15M=8640,
+																							sym='GBPUSD_i',
+																							num_5M=12000,
+																							num_15M=4000,
 																							num_1H=500,
 																							num_4H=400
 																							)
@@ -3096,7 +3099,16 @@ for sym in symbol:
 		sym.name == 'XAUUSD_i'
 		): continue
 
-	if not sym.name == 'EURUSD_i': continue
+	if sym.name == 'GBPUSD_i': continue
+	if sym.name == 'EURUSD_i': continue
+
+	symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
+																							sym=sym,
+																							num_5M=12000,
+																							num_15M=4000,
+																							num_1H=500,
+																							num_4H=400
+																							)
 
 	try:
 		genetic_buy_algo(
@@ -3105,7 +3117,7 @@ for sym in symbol:
 				dataset_1H=symbol_data_1H,
 				dataset_4H=symbol_data_4H,
 				symbol=sym.name,
-				num_turn=500,
+				num_turn=200,
 				max_score_ga_buy=2,
 				max_score_ga_sell=2
 				)
@@ -3139,12 +3151,14 @@ for sym in symbol:
 	#one_year_golden_cross_tester(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=sym.name)
 #print(last_signal(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i'))
 
+syms = 'GBPUSD_i'
+
 symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
-																							sym='EURUSD_i',
+																							sym=syms,
 																							num_5M=99000,
 																							num_15M=33000,
-																							num_1H=8250,
-																							num_4H=2063
+																							num_1H=1,
+																							num_4H=1
 																							)
 
 #mem_data = pd.DataFrame()
@@ -3156,7 +3170,7 @@ upper = 0
 mid = 1
 lower = 2
 
-syms = 'EURUSD_i'
+
 
 buy_path = "Genetic_cci_output_buy/" + syms + '.csv'
 sell_path = "Genetic_cci_output_sell/" + syms + '.csv'
@@ -3183,7 +3197,12 @@ signal_buy,_ = golden_cross_zero(
 	buy_flag=True,
 	sell_flag=False,
 	st_percent_minmax_buy= ga_result_buy['max_st'][0],
-	st_percent_minmax_sell=0)
+	st_percent_minmax_sell=0,
+	tp_percent_minmax_sell_min = 0,
+	tp_percent_minmax_sell_max = 0,
+	tp_percent_minmax_buy_min = ga_result_buy['max_st'][0],
+	tp_percent_minmax_buy_max = ga_result_buy['max_tp'][0]
+	)
 
 _,signal_sell = golden_cross_zero(
 	dataset=symbol_data_5M,
@@ -3202,7 +3221,13 @@ _,signal_sell = golden_cross_zero(
 	sell_flag=True,
 	buy_flag=False,
 	st_percent_minmax_buy= 0,
-	st_percent_minmax_sell=ga_result_sell['max_st'][0])
+	st_percent_minmax_sell=ga_result_sell['max_st'][0],
+	tp_percent_minmax_sell_min = ga_result_sell['max_st'][0],
+	tp_percent_minmax_sell_max = ga_result_sell['max_tp'][0],
+	tp_percent_minmax_buy_min = 0,
+	tp_percent_minmax_buy_max = 0
+	)
+
 
 print('===========> without filters MinMax Buy: ')
 print('mean tp = ',np.mean(signal_buy['tp_min_max']))

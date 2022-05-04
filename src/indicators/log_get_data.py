@@ -332,5 +332,134 @@ def log_get_data_Genetic(frame,number_start,number_end):
 	return symbol_data,account_info_dict["balance"],symbols
 
 
+def write_dataset_csv():
+	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,99888)
+	symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,33296)
+	symbol_data_1H,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,8324)
+	symbol_data_4H,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,2081)
+	print('data get')
+
+	for sym in symbol:
+		dataset_path = 'dataset/5M/' + sym.name + '.csv'
+		data_5M = pd.DataFrame(symbol_data_5M[sym.name])
+		data_5M.to_csv(dataset_path)
+
+	for sym in symbol:
+		dataset_path = 'dataset/15M/' + sym.name + '.csv'
+		data_15M = pd.DataFrame(symbol_data_15M[sym.name])
+		data_15M.to_csv(dataset_path)
+
+	for sym in symbol:
+		dataset_path = 'dataset/1H/' + sym.name + '.csv'
+		data_1H = pd.DataFrame(symbol_data_1H[sym.name])
+		data_1H.to_csv(dataset_path)
+
+	for sym in symbol:
+		dataset_path = 'dataset/4H/' + sym.name + '.csv'
+		data_4H = pd.DataFrame(symbol_data_4H[sym.name])
+		data_4H.to_csv(dataset_path)
+
+def read_dataset_csv(sym,num_5M,num_15M,num_1H,num_4H):
+
+	dataset_path_5M = 'dataset/5M/' + sym + '.csv'
+	dataset_path_15M = 'dataset/15M/' + sym + '.csv'
+	dataset_path_1H = 'dataset/1H/' + sym + '.csv'
+	dataset_path_4H = 'dataset/4H/' + sym + '.csv'
+
+	if not mt5.initialize():
+		print("initialize() failed, error code =",mt5.last_error())
+		quit()
+
+	authorized=mt5.login(51149098, password="zyowt2zj")
+	if True:#authorized:
+		account_info=mt5.account_info()
+		if account_info!=None:
+			account_info_dict = mt5.account_info()._asdict()
+	else:
+		print("failed to connect to trade account 25115284 with password=gqz0343lbdm, error code =",mt5.last_error())
+
+	symbols=mt5.symbols_get()
+	count=0
+	symbol_data_5M = {}
+	symbol_data_15M = {}
+	symbol_data_1H = {}
+	symbol_data_4H = {}
+
+	if True:
+		for i in symbols:
+
+			if i.name != sym: continue
+
+			if True:
+				rates_frame = pd.read_csv(dataset_path_5M)
+				symbol_data_5M[i.name] = {
+								i.name: i.name,
+								'open': rates_frame['open'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
+								'close': rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
+								'low': rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
+								'high': rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
+								'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/2),
+								'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/3),
+								'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/4),
+								'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/4),
+								'volume': rates_frame['volume'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
+								'time': rates_frame['time'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)
+								}
+
+				rates_frame = pd.read_csv(dataset_path_15M)
+				symbol_data_15M[i.name] = {
+								i.name: i.name,
+								'open': rates_frame['open'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
+								'close': rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
+								'low': rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
+								'high': rates_frame['high'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
+								'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True))/2),
+								'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True))/3),
+								'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True))/4),
+								'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True))/4),
+								'volume': rates_frame['volume'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
+								'time': rates_frame['time'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True)
+								}
+
+				rates_frame = pd.read_csv(dataset_path_1H)
+				symbol_data_1H[i.name] = {
+								i.name: i.name,
+								'open': rates_frame['open'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
+								'close': rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
+								'low': rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
+								'high': rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
+								'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/2),
+								'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/3),
+								'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/4),
+								'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/4),
+								'volume': rates_frame['volume'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
+								'time': rates_frame['time'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)
+								}
+
+
+				rates_frame = pd.read_csv(dataset_path_4H)
+				symbol_data_4H[i.name] = {
+								i.name: i.name,
+								'open': rates_frame['open'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
+								'close': rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
+								'low': rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
+								'high': rates_frame['high'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
+								'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True))/2),
+								'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True))/3),
+								'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True))/4),
+								'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True))/4),
+								'volume': rates_frame['volume'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
+								'time': rates_frame['time'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True)
+								}
+
+
+			else:
+				print("some thing wrong log get data_1!!!",i.name)
+	else:
+		print("some thing wrong log get data_2!!!",i.name)
+
+	mt5.shutdown()
+
+	return symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbols
 #print(log_get_data(mt5.TIMEFRAME_M5,1000))
 #get_symbols(mt5.TIMEFRAME_M1)

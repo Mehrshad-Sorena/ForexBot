@@ -18,6 +18,7 @@ import sys
 import os
 from tqdm import tqdm
 import csv
+from timer import stTime
 
 #**************************************** Logger *****************
 now = datetime.now()
@@ -261,15 +262,15 @@ def initilize_values_genetic():
 	i = 2
 	while i < 20:
 		Chromosome[i] = {
-			'high_period': randint(30, 400),
-			'low_period': randint(10, 400),
+			'high_period': randint(50, 500),
+			'low_period': randint(25, 500),
 			'apply_to_low': np.random.choice(apply_to_list_ga),
 			'apply_to_high': np.random.choice(apply_to_list_ga),
 			'signal': None,
 			'score_buy': 0,
 			'score_sell': 0
 		}
-		if (Chromosome[i]['high_period'] < Chromosome[i]['low_period']): continue
+		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']+25): continue
 		res = list(Chromosome[i].keys()) 
 		#print(res[1])
 		#print(Chromosome[i][res[1]])
@@ -366,8 +367,8 @@ def gen_creator(Chromosome):
 
 	while (baby_counter_create < (len(Chromosome) * 2)):
 		baby[baby_counter_create] = {
-			'high_period': randint(30, 400),
-			'low_period': randint(10, 400),
+			'high_period': randint(50, 500),
+			'low_period': randint(25, 500),
 			'apply_to_low': np.random.choice(apply_to_list_ga),
 			'apply_to_high': np.random.choice(apply_to_list_ga),
 			'signal': None,
@@ -420,8 +421,8 @@ def gen_creator(Chromosome):
 	limit_counter = len(Chromosome) * 2 
 	while i < (limit_counter):
 		Chromosome[i] = {
-			'high_period': randint(30, 400),
-			'low_period': randint(10, 400),
+			'high_period': randint(50, 500),
+			'low_period': randint(25, 500),
 			'apply_to_low': np.random.choice(apply_to_list_ga),
 			'apply_to_high': np.random.choice(apply_to_list_ga),
 			'signal': None,
@@ -429,7 +430,7 @@ def gen_creator(Chromosome):
 			'score_sell': 0
 		}
 
-		if (Chromosome[i]['high_period'] < Chromosome[i]['low_period']): continue
+		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']+25): continue
 		i += 1
 
 	re_counter = 0
@@ -451,7 +452,22 @@ def gen_creator(Chromosome):
 #***************************************** Genetic Algorithm **************************************************************
 
 #@stTime
-def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_ga_sell):
+def genetic_buy_algo(
+					symbol_data_5M,
+					symbol,
+					num_turn,
+					max_score_ga_buy,
+					max_score_ga_sell,
+					time_frame
+					):
+	
+	if time_frame == '5M':
+		buy_path = "GA/SMA/BUY/5M/" + symbol + '.csv'
+		sell_path = "GA/SMA/SELL/5M/" + symbol + '.csv'
+
+	if time_frame == '15M':
+		buy_path = "GA/SMA/BUY/15M/" + symbol + '.csv'
+		sell_path = "GA/SMA/SELL/15M/" + symbol + '.csv'
 
 	#*************************** Algorithm *************************************************//
 	trun_counter = 0
@@ -464,8 +480,8 @@ def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_g
 
 	logs('===============> {}'.format(symbol))
 
-	if os.path.exists("GA/SMA/BUY/"+symbol+'.csv'):
-		with open("GA/SMA/BUY/"+symbol+'.csv', 'r', newline='') as myfile:
+	if os.path.exists(buy_path):
+		with open(buy_path, 'r', newline='') as myfile:
 			for line in csv.DictReader(myfile):
 				Chromosome[19] = line
 				Chromosome[19]['high_period'] = float(Chromosome[19]['high_period'])
@@ -477,8 +493,8 @@ def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_g
 				Chromosome[19]['score_sell'] = float(Chromosome[19]['score_sell'])
 				max_score_ga_buy = float(Chromosome[19]['score_buy'])
 
-	if os.path.exists("GA/SMA/SELL/"+symbol+'.csv'):
-		with open("GA/SMA/SELL/"+symbol+'.csv', 'r', newline='') as myfile:
+	if os.path.exists(sell_path):
+		with open(sell_path, 'r', newline='') as myfile:
 			for line in csv.DictReader(myfile):
 				Chromosome[18] = line
 				Chromosome[18]['high_period'] = float(Chromosome[18]['high_period'])
@@ -517,11 +533,11 @@ def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_g
 			if flag_golden_cross:
 				logging.debug(Chromosome[chrom_counter])
 				Chromosome.pop(chrom_counter)
-				high_period = randint(30, 400)
-				low_period = randint(10, 400)
-				while high_period < low_period:
-					high_period = randint(30, 400)
-					low_period = randint(10, 400)
+				high_period = randint(50, 500)
+				low_period = randint(25, 500)
+				while high_period <= low_period+25:
+					high_period = randint(50, 500)
+					low_period = randint(25, 500)
 
 				Chromosome[chrom_counter] = {
 					'high_period': high_period,
@@ -569,14 +585,14 @@ def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_g
 
 				bad_sell = False
 
-			if bad_buy == True or bad_sell == True:
+			if bad_buy == True and bad_sell == True:
 
 				Chromosome.pop(chrom_counter)
-				high_period = randint(30, 400)
-				low_period = randint(10, 400)
-				while high_period < low_period:
-					high_period = randint(30, 400)
-					low_period = randint(10, 400)
+				high_period = randint(50, 500)
+				low_period = randint(25, 500)
+				while high_period <= low_period+25:
+					high_period = randint(50, 500)
+					low_period = randint(25, 500)
 
 
 
@@ -589,6 +605,7 @@ def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_g
 					'score_buy': 0,
 					'score_sell': 0
 					}
+				continue
 
 			logs('**************** num buy *****************')
 			logs('=======> num buy = {}'.format(len(chromosome_buy)))
@@ -642,8 +659,7 @@ def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_g
 	best_chromosome_buy = best_chromosome_buy.append(bcb, ignore_index=True)
 	best_chromosome_sell = best_chromosome_sell.append(bcs, ignore_index=True)
 	#*************************** Save to TXT File ***************************************************************
-	buy_path = "GA/SMA/BUY/" + symbol + '.csv'
-	sell_path = "GA/SMA/SELL/" + symbol + '.csv'
+	
 	try:
 		if os.path.exists(buy_path):
 			os.remove(buy_path)
@@ -668,9 +684,15 @@ def genetic_buy_algo(symbol_data_5M,symbol,num_turn,max_score_ga_buy,max_score_g
 #********************** read GA result ****************************************************************************
 
 #@stTime
-def read_ga_result(symbol):
-	buy_path = "GA/SMA/BUY/" + symbol + '.csv'
-	sell_path = "GA/SMA/SELL/" + symbol + '.csv'
+def read_ga_result(symbol,time_frame):
+	if time_frame == '5M':
+		buy_path = "GA/SMA/BUY/5M/" + symbol + '.csv'
+		sell_path = "GA/SMA/SELL/5M/" + symbol + '.csv'
+
+	if time_frame == '15M':
+		buy_path = "GA/SMA/BUY/15M/" + symbol + '.csv'
+		sell_path = "GA/SMA/SELL/15M/" + symbol + '.csv'
+
 	if os.path.exists(buy_path):
 		ga_result_buy = pd.read_csv(buy_path)
 
@@ -999,15 +1021,21 @@ def Find_Best_interval(dataset,period_low,period_high,Low_ApplyTo,High_ApplyTo,m
 
 
 #************************************************** Last Signals With Weight ******************************************************************************
-def last_signal_sma(dataset,symbol):
+#@stTime
+def last_signal_sma(dataset,symbol,time_frame):
 	#**** 
 	#the inputs of Functions Must read From Data Base Number's
 
-	buy_path = "GA/SMA/BUY/" + symbol + '.csv'
-	sell_path = "GA/SMA/SELL/" + symbol + '.csv'
+	if time_frame == '5M':
+		buy_path = "GA/SMA/BUY/5M/" + symbol + '.csv'
+		sell_path = "GA/SMA/SELL/5M/" + symbol + '.csv'
+
+	if time_frame == '15M':
+		buy_path = "GA/SMA/BUY/15M/" + symbol + '.csv'
+		sell_path = "GA/SMA/SELL/15M/" + symbol + '.csv'
 
 	if os.path.exists(buy_path):
-		ga_result_buy, ga_result_sell = read_ga_result(symbol=symbol)
+		ga_result_buy, ga_result_sell = read_ga_result(symbol=symbol,time_frame=time_frame)
 	else:
 		return 0
 
@@ -1071,8 +1099,14 @@ def last_signal_sma(dataset,symbol):
 #************************************************** USE OF Funcyions ******************************************************************************
 
 """
-
-symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,48000)
+symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
+																							sym='GBPUSD_i',
+																							num_5M=3000,
+																							num_15M=30000,
+																							num_1H=500,
+																							num_4H=400
+																							)
+#symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,48000)
 print('get data')
 #best_signals,buy_signal,sell_signal = Find_Best_interval(dataset = symbol_data_5M['AUDCAD_i'],period_low=2,period_high=5,Low_ApplyTo='close',High_ApplyTo='close',max_profit_buy=0.06,max_profit_sell=0.06,alpha_sell=0.1,alpha_buy=0.1)
 
@@ -1106,23 +1140,25 @@ for sym in symbol:
 	if sym.name == 'EURGBP_i': continue
 	if sym.name == 'EURJPY_i': continue
 	if sym.name == 'EURNZD_i': continue
-	if sym.name == 'EURUSD_i': continue
+	#if sym.name == 'EURUSD_i': continue
 	if sym.name == 'GBPAUD_i': continue
 	if sym.name == 'GBPCAD_i': continue
 	if sym.name == 'GBPCHF_i': continue
+
+	if sym.name != 'GBPUSD_i': continue
 
 
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
 
 	try:
 		genetic_buy_algo(
-			symbol_data_5M=symbol_data_5M,
+			symbol_data_5M=symbol_data_15M,
 			symbol=sym.name,
-			num_turn=80,
+			num_turn=2000,
 			max_score_ga_buy=10,
-			max_score_ga_sell=10
+			max_score_ga_sell=10,
+			time_frame='15M'
 			)
 	except Exception as ex:
 		print('ex = ',ex)
-
 """

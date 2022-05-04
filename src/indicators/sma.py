@@ -1126,29 +1126,39 @@ symbol_black_list = np.array(
 
 for sym in symbol:
 
-	if sym.name == 'AUDCAD_i': continue
-	if sym.name == 'AUDCHF_i': continue
-	if sym.name == 'AUDJPY_i': continue
-	if sym.name == 'AUDNZD_i': continue
-	if sym.name == 'AUDUSD_i': continue
-	if sym.name == 'CADCHF_i': continue
-	if sym.name == 'CADJPY_i': continue
-	if sym.name == 'CHFJPY_i': continue
-	if sym.name == 'EURAUD_i': continue
-	if sym.name == 'EURCAD_i': continue
-	if sym.name == 'EURCHF_i': continue
-	if sym.name == 'EURGBP_i': continue
-	if sym.name == 'EURJPY_i': continue
-	if sym.name == 'EURNZD_i': continue
-	#if sym.name == 'EURUSD_i': continue
-	if sym.name == 'GBPAUD_i': continue
-	if sym.name == 'GBPCAD_i': continue
-	if sym.name == 'GBPCHF_i': continue
+	if not (
+		sym.name == 'AUDCAD_i' or
+		sym.name == 'AUDCHF_i' or
+		sym.name == 'AUDUSD_i' or
+		sym.name == 'CADJPY_i' or
+		sym.name == 'EURAUD_i' or
+		sym.name == 'EURCAD_i' or
+		sym.name == 'EURCHF_i' or
+		sym.name == 'EURGBP_i' or
+		sym.name == 'EURUSD_i' or
+		sym.name == 'EURJPY_i' or
+		sym.name == 'GBPAUD_i' or
+		sym.name == 'GBPCAD_i' or
+		sym.name == 'GBPJPY_i' or
+		sym.name == 'GBPUSD_i' or
+		sym.name == 'USDJPY_i' or
+		sym.name == 'USDCAD_i' or
+		sym.name == 'XAUUSD_i'
+		): continue
 
-	if sym.name != 'GBPUSD_i': continue
+	if sym.name == 'GBPUSD_i': continue
+	if sym.name == 'EURUSD_i': continue
 
 
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
+
+	symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
+																							sym=sym.name,
+																							num_5M=3000,
+																							num_15M=30000,
+																							num_1H=500,
+																							num_4H=400
+																							)
 
 	try:
 		genetic_buy_algo(

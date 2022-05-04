@@ -1,0 +1,2 @@
+,high_period,low_period,apply_to_low,apply_to_high,signal,score_buy,score_sell
+0,50,25,OHLC/4,HL/2,"buy,sell",1.6545772795215898e+186,1.6545772795215898e+186

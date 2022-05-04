@@ -3103,7 +3103,7 @@ for sym in symbol:
 	if sym.name == 'EURUSD_i': continue
 
 	symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
-																							sym=sym,
+																							sym=sym.name,
 																							num_5M=12000,
 																							num_15M=4000,
 																							num_1H=500,

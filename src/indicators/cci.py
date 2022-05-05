@@ -3122,7 +3122,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 #/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #*************************** How To Use Funcs *****************************************
-
+"""
 symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																							sym='GBPUSD_i',
 																							num_5M=12000,
@@ -3517,4 +3517,4 @@ for elm in signal_buy['index'][list_index_ok[0] + np.where(signal_buy['flag_pr']
 	plt.plot(range(elm-50,elm+150),symbol_data_5M[syms]['close'][elm-50:elm+150],c='b')
 	plt.show()
 	
-
+"""

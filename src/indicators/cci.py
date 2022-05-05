@@ -48,7 +48,8 @@ import sys
 #read_ga_result()
 #Find_Best_intervals()
 #initilize_values_genetic()
-#gen_creator():
+#gen_creator()
+#last_signal()
 
 #**************************************** Logger *****************
 now = datetime.now()
@@ -2382,7 +2383,7 @@ def one_year_golden_cross_tester(
 					#((buy_data['ramp_low'].to_numpy()>=ga_result_buy['ramp_low_lower_min_max'][0]))&
 					#((buy_data['diff_min_max_cci'].to_numpy()<ga_result_buy['diff_min_max_cci_upper_min_max'][0]))&
 					#((buy_data['diff_min_max_candle'].to_numpy()<=ga_result_buy['diff_min_max_candle_upper_min_max'][0]))&
-					((buy_data['value_max_cci'].to_numpy()>=ga_result_buy['value_max_lower_cci_min_max'][0])) and
+					((buy_data['value_max_cci'].to_numpy()>=ga_result_buy['value_max_lower_cci_min_max'][0])) &
 					((buy_data['value_min_cci'].to_numpy()<=ga_result_buy['value_min_upper_cci_min_max'][0]))
 					)[0]
 

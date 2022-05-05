@@ -2146,7 +2146,7 @@ def read_ga_result(symbol):
 #************************************ one year golden cross tester ***********************************************
 
 #@stTime
-def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
+def one_year_golden_cross_tester(dataset,dataset_15M,symbol_data_1H,symbol_data_4H,symbol):
 
 	logs('=================> {}'.format(symbol))
 
@@ -2168,10 +2168,29 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 			name_stp_minmax = True
 
 		print('******************* BUY *************************')
-		buy_data,sell_data = golden_cross_zero(dataset=dataset,dataset_15M=dataset_15M,symbol=symbol,
-			Low_Period=ga_result_buy['low_period'][0],High_Period=ga_result_buy['high_period'][0],
-			distance_lines=ga_result_buy['distance_lines'][0],mode='optimize',
-			name_stp_minmax=name_stp_minmax,name_stp_pr=name_stp_pr,plot=False,pbar_flag=True)
+		buy_data,_ = golden_cross_zero(
+									dataset=dataset,
+									dataset_15M=dataset_15M,
+									dataset_1H=symbol_data_1H,
+									dataset_4H=symbol_data_4H,
+									symbol=symbol,
+									Low_Period=ga_result_buy['low_period'][0],
+									High_Period=ga_result_buy['high_period'][0],
+									distance_lines=ga_result_buy['distance_lines'][0],
+									mode='optimize',
+									name_stp_minmax=name_stp_minmax,
+									name_stp_pr=name_stp_pr,
+									plot=False,
+									pbar_flag=True,
+									buy_flag=True,
+									sell_flag=False,
+									st_percent_minmax_buy= ga_result_buy['max_st'][0],
+									st_percent_minmax_sell=0,
+									tp_percent_minmax_sell_min = 0,
+									tp_percent_minmax_sell_max = 0,
+									tp_percent_minmax_buy_min = ga_result_buy['max_st'][0],
+									tp_percent_minmax_buy_max = ga_result_buy['max_tp'][0]
+									)
 
 		#*********************** Min Max Methode:
 
@@ -2187,16 +2206,22 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 				#)[0]
 
 			output_buy = pd.DataFrame()
-			output_buy['mean_tp_min_max'] = [np.mean(buy_data['tp_min_max'][list_index_ok])]
-			output_buy['mean_st_min_max'] = [np.mean(buy_data['st_min_max'][list_index_ok])]
-			output_buy['max_tp_min_max'] = [np.max(buy_data['tp_min_max'][list_index_ok])]
-			output_buy['max_st_min_max'] = [np.max(buy_data['st_min_max'][list_index_ok])]
-			output_buy['sum_st_min_max'] = [np.sum(buy_data['st_min_max'][list_index_ok[np.where(buy_data['flag_min_max'][list_index_ok] == 'st')[0]]].to_numpy())]
-			output_buy['sum_tp_min_max'] = [np.sum(buy_data['tp_min_max'][list_index_ok[np.where(buy_data['flag_min_max'][list_index_ok] == 'tp')[0]]].to_numpy())]
+			output_buy['mean_tp_min_max'] = [np.mean(buy_data['tp_min_max'])]
+			output_buy['mean_st_min_max'] = [np.mean(buy_data['st_min_max'])]
+			output_buy['max_tp_min_max'] = [np.max(buy_data['tp_min_max'])]
+			output_buy['max_st_min_max'] = [np.max(buy_data['st_min_max'])]
+
+			try:
+				output_buy['sum_st_min_max'] = [np.sum(buy_data['st_min_max'][np.where(buy_data['flag_min_max'] == 'st')[0]].to_numpy())]
+				output_buy['sum_tp_min_max'] = [np.sum(buy_data['tp_min_max'][np.where(buy_data['flag_min_max'] == 'tp')[0]].to_numpy())]
+			except Exception as ex:
+				print('tester minmax buy: ',ex)
+				output_buy['sum_st_min_max'] = 0
+				output_buy['sum_tp_min_max'] = 0
 
 			tp_counter = 0
 			st_counter = 0
-			for elm in buy_data['flag_min_max'][list_index_ok]:
+			for elm in buy_data['flag_min_max']:
 				if (elm == 'tp'):
 					tp_counter += 1
 				if (elm == 'st'):
@@ -2283,11 +2308,11 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 			logs('score_min_max= {}'.format(output_buy['score_min_max'][0]))
 			logs('score_min_max ga= {}'.format(ga_result_buy['score_min_max'][0]))
 
-			for idx in buy_data['tp_min_max'][list_index_ok[np.where(buy_data['flag_min_max'][list_index_ok] == 'tp')[0]]]:
-				logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
+			#for idx in buy_data['tp_min_max'][np.where(buy_data['flag_min_max'] == 'tp')[0]]:
+				#logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
 
-			for idx in buy_data['tp_min_max'][list_index_ok[np.where(buy_data['flag_min_max'][list_index_ok] == 'st')[0]]]:
-				logs('time st = {}'.format(dataset[symbol]['time'][idx]))
+			#for idx in buy_data['tp_min_max'][np.where(buy_data['flag_min_max'] == 'st')[0]]:
+				#logs('time st = {}'.format(dataset[symbol]['time'][idx]))
 
 
 			if output_buy['score_min_max'][0] >= ga_result_buy['score_min_max'][0]:
@@ -2439,10 +2464,29 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 
 		print('******************* SELL *************************')
 
-		buy_data,sell_data = golden_cross_zero(dataset=dataset,dataset_15M=dataset_15M,symbol=symbol,
-			Low_Period=ga_result_sell['low_period'][0],High_Period=ga_result_sell['high_period'][0],
-			distance_lines=ga_result_sell['distance_lines'][0],mode='optimize',
-			name_stp_minmax=name_stp_minmax,name_stp_pr=name_stp_pr,plot=False,pbar_flag=True)
+		_,sell_data = golden_cross_zero(
+									dataset=dataset,
+									dataset_15M=dataset_15M,
+									dataset_1H=symbol_data_1H,
+									dataset_4H=symbol_data_4H,
+									symbol=symbol,
+									Low_Period=ga_result_sell['low_period'][0],
+									High_Period=ga_result_sell['high_period'][0],
+									distance_lines=ga_result_sell['distance_lines'][0],
+									mode='optimize',
+									name_stp_minmax=name_stp_minmax,
+									name_stp_pr=name_stp_pr,
+									plot=False,
+									pbar_flag=True,
+									sell_flag=True,
+									buy_flag=False,
+									st_percent_minmax_buy= 0,
+									st_percent_minmax_sell=ga_result_sell['max_st'][0],
+									tp_percent_minmax_sell_min = ga_result_sell['max_st'][0],
+									tp_percent_minmax_sell_max = ga_result_sell['max_tp'][0],
+									tp_percent_minmax_buy_min = 0,
+									tp_percent_minmax_buy_max = 0
+									)
 
 		#*********************** Min Max Methode:
 		if ga_result_sell['methode'][0] == 'min_max':
@@ -2457,16 +2501,23 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 				#)[0]
 
 			output_sell = pd.DataFrame()
-			output_sell['mean_tp_min_max'] = [np.mean(sell_data['tp_min_max'][list_index_ok])]
-			output_sell['mean_st_min_max'] = [np.mean(sell_data['st_min_max'][list_index_ok])]
-			output_sell['max_tp_min_max'] = [np.max(sell_data['tp_min_max'][list_index_ok])]
-			output_sell['max_st_min_max'] = [np.max(sell_data['st_min_max'][list_index_ok])]
-			output_sell['sum_st_min_max'] = [np.sum(sell_data['st_min_max'][list_index_ok[np.where(sell_data['flag_min_max'][list_index_ok] == 'st')[0]]].to_numpy())]
-			output_sell['sum_tp_min_max'] = [np.sum(sell_data['tp_min_max'][list_index_ok[np.where(sell_data['flag_min_max'][list_index_ok] == 'tp')[0]]].to_numpy())]
-	
+			output_sell['mean_tp_min_max'] = [np.mean(sell_data['tp_min_max'])]
+			output_sell['mean_st_min_max'] = [np.mean(sell_data['st_min_max'])]
+			output_sell['max_tp_min_max'] = [np.max(sell_data['tp_min_max'])]
+			output_sell['max_st_min_max'] = [np.max(sell_data['st_min_max'])]
+
+			try:
+				output_sell['sum_st_min_max'] = [np.sum(sell_data['st_min_max'][np.where(sell_data['flag_min_max'] == 'st')[0]].to_numpy())]
+				output_sell['sum_tp_min_max'] = [np.sum(sell_data['tp_min_max'][np.where(sell_data['flag_min_max'] == 'tp')[0]].to_numpy())]
+			except Exception as ex:
+				print('tester minmax sell: ',ex)
+				output_sell['sum_st_min_max'] = 0
+				output_sell['sum_tp_min_max'] = 0
+
+
 			tp_counter = 0
 			st_counter = 0
-			for elm in sell_data['flag_min_max'][list_index_ok]:
+			for elm in sell_data['flag_min_max']:
 				if (elm == 'tp'):
 					tp_counter += 1
 				if (elm == 'st'):
@@ -2552,11 +2603,11 @@ def one_year_golden_cross_tester(dataset,dataset_15M,symbol):
 			logs('score_min_max= {}'.format(output_sell['score_min_max'][0]))
 			logs('score_min_max ga= {}'.format(ga_result_sell['score_min_max'][0]))
 
-			for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_min_max'][list_index_ok] == 'tp')[0]]]:
-				logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
+			#for idx in sell_data['index'][np.where(sell_data['flag_min_max'] == 'tp')[0]]:
+				#logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
 
-			for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_min_max'][list_index_ok] == 'st')[0]]]:
-				logs('time st = {}'.format(dataset[symbol]['time'][idx]))
+			#for idx in sell_data['index'][np.where(sell_data['flag_min_max'] == 'st')[0]]:
+				#logs('time st = {}'.format(dataset[symbol]['time'][idx]))
 
 			if output_sell['score_min_max'][0] >= ga_result_sell['score_min_max'][0]: 
 				ga_result_sell['permit'] = True
@@ -2735,6 +2786,8 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 		buy_data, _ = golden_cross_zero(
 			dataset=dataset_5M_cross,
 			dataset_15M=dataset_5M_cross,
+			dataset_1H=dataset_1H,
+			dataset_4H=dataset_4H,
 			symbol=symbol,
 			Low_Period=ga_result_buy['low_period'][0],
 			High_Period=ga_result_buy['high_period'][0],
@@ -2742,7 +2795,16 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			mode='online',
 			name_stp_minmax=False,
 			name_stp_pr=False,
-			plot=False
+			plot=False,
+			pbar_flag=True,
+			buy_flag=True,
+			sell_flag=False,
+			st_percent_minmax_buy= ga_result_buy['max_st'][0],
+			st_percent_minmax_sell=0,
+			tp_percent_minmax_sell_min = 0,
+			tp_percent_minmax_sell_max = 0,
+			tp_percent_minmax_buy_min = ga_result_buy['max_st'][0],
+			tp_percent_minmax_buy_max = ga_result_buy['max_tp'][0]
 			)
 		if (buy_data.empty == False):
 			lst_idx_buy = buy_data['index'].iloc[-1] + cut_first + 1
@@ -2771,6 +2833,8 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 		_, sell_data = golden_cross_zero(
 			dataset=dataset_5M_cross,
 			dataset_15M=dataset_5M_cross,
+			dataset_1H=dataset_1H,
+			dataset_4H=dataset_4H,
 			symbol=symbol,
 			Low_Period=ga_result_sell['low_period'][0],
 			High_Period=ga_result_sell['high_period'][0],
@@ -2778,8 +2842,18 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			mode='online',
 			name_stp_minmax=False,
 			name_stp_pr=False,
-			plot=False
+			plot=False,
+			pbar_flag=False,
+			sell_flag=True,
+			buy_flag=False,
+			st_percent_minmax_buy= 0,
+			st_percent_minmax_sell=ga_result_sell['max_st'][0],
+			tp_percent_minmax_sell_min = ga_result_sell['max_st'][0],
+			tp_percent_minmax_sell_max = ga_result_sell['max_tp'][0],
+			tp_percent_minmax_buy_min = 0,
+			tp_percent_minmax_buy_max = 0
 			)
+
 		if (sell_data.empty == False):
 			lst_idx_sell = sell_data['index'].iloc[-1] + cut_first + 1
 		else:
@@ -2884,14 +2958,17 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 				
 		if ga_result_buy['methode'][0] == 'min_max':
 
-			trend_sma_buy = last_signal_sma(dataset[symbol], symbol)
+			trend_sma_buy_5M = last_signal_sma(dataset[symbol], symbol)['signal'][0]
+			trend_sma_buy_15M = last_signal_sma(dataset_15M[symbol], symbol)['signal'][0]
 
-			logs('trend_sma_buy: {}'.format(trend_sma_buy))
+			logs('trend_sma_buy: {}'.format(trend_sma_buy_5M))
 
 			if (
-				trend_sma_buy['signal'][0] == 'buy' and
-				buy_data['value_min_max_candle'].iloc[-1] > dataset[symbol]['high'].iloc[-1]*1.0006 and
-				buy_data['diff_min_max_candle'].iloc[-1]>= 0.06
+				trend_sma_buy_5M == 'buy' and
+				trend_sma_buy_15M == 'buy' and
+				buy_data['value_min_max_candle'].iloc[-1] > dataset[symbol]['high'].iloc[-1]*1.0004 and
+				buy_data['diff_min_max_candle'].iloc[-1]>= (buy_data['st_percent'].iloc[-1] + 0.04) and
+				dataset[symbol]['low'].iloc[-1] > buy_data['st_point'].iloc[-1]
 				#buy_data['ramp_high'].iloc[-1]>=ga_result_buy['ramp_high_lower_min_max'][0] and
 				#buy_data['ramp_low'].iloc[-1]>=ga_result_buy['ramp_low_lower_min_max'][0] and
 				#buy_data['diff_min_max_cci'].iloc[-1]<ga_result_buy['diff_min_max_cci_upper_min_max'][0] and
@@ -2901,7 +2978,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 				signal = 'buy'
 
 				resist_buy = (1 + (buy_data['diff_min_max_candle'].iloc[-1]/100)) * dataset[symbol]['close'].iloc[-1]
-				protect_buy = dataset[symbol]['low'].iloc[-1] * 0.9996
+				protect_buy = (buy_data['st_point'].iloc[-1] * 0.9994)
 
 
 
@@ -3001,14 +3078,17 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 		if ga_result_sell['methode'][0] == 'min_max':
 
-			trend_sma_sell = last_signal_sma(dataset[symbol],symbol)
+			trend_sma_sell_5M = last_signal_sma(dataset[symbol],symbol)['signal'][0]
+			trend_sma_sell_15M = last_signal_sma(dataset_15M[symbol], symbol)['signal'][0]
 
-			logs('trend_sma_sell: {}'.format(trend_sma_sell))
+			logs('trend_sma_sell_5M: {}'.format(trend_sma_sell_5M))
 
 			if (
-				trend_sma_sell['signal'][0] == 'sell' and
+				trend_sma_sell_5M == 'sell' and
+				trend_sma_sell_15M == 'sell' and
 				sell_data['value_min_max_candle'].iloc[-1] < dataset[symbol]['low'].iloc[-1]*0.9994 and
-				sell_data['diff_min_max_candle'].iloc[-1] >= 0.06
+				sell_data['diff_min_max_candle'].iloc[-1] >= sell_data['st_percent'].iloc[-1] and
+				dataset[symbol]['high'].iloc[-1] < sell_data['st_point'].iloc[-1]
 				#sell_data['ramp_high'].iloc[-1]<=ga_result_sell['ramp_high_upper_min_max'][0] and
 				#sell_data['ramp_low'].iloc[-1]<=ga_result_sell['ramp_low_upper_min_max'][0] and
 				#sell_data['diff_min_max_cci'].iloc[-1]<=ga_result_sell['diff_min_max_cci_upper_min_max'][0] and
@@ -3016,7 +3096,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 				):
 
 				signal = 'sell'
-				resist_sell = dataset[symbol]['high'].iloc[-1] * 1.0006
+				resist_sell = (sell_data['st_point'].iloc[-1] * 1.0006)
 				protect_sell = (1 - (sell_data['diff_min_max_candle'].iloc[-1]/100)) * dataset[symbol]['close'].iloc[-1]
 
 			else:
@@ -3111,16 +3191,16 @@ for sym in symbol:
 																							)
 
 	try:
-		genetic_buy_algo(
-				symbol_data_5M=symbol_data_5M,
-				symbol_data_15M=symbol_data_15M,
-				dataset_1H=symbol_data_1H,
-				dataset_4H=symbol_data_4H,
-				symbol=sym.name,
-				num_turn=200,
-				max_score_ga_buy=2,
-				max_score_ga_sell=2
-				)
+		#genetic_buy_algo(
+				#symbol_data_5M=symbol_data_5M,
+				#symbol_data_15M=symbol_data_15M,
+				#dataset_1H=symbol_data_1H,
+				#dataset_4H=symbol_data_4H,
+				#symbol=sym.name,
+				#num_turn=200,
+				#max_score_ga_buy=2,
+				#max_score_ga_sell=2
+				#)
 		pass
 	except Exception as ex:
 		print('getting error: ', ex)
@@ -3134,6 +3214,26 @@ print('gotwarara 2')
 for sym in symbol:
 	if np.where(sym.name == symbol_black_list)[0].size != 0: continue
 	
+	if not (
+		sym.name == 'AUDCAD_i' or
+		sym.name == 'AUDCHF_i' or
+		sym.name == 'AUDUSD_i' or
+		sym.name == 'CADJPY_i' or
+		sym.name == 'EURAUD_i' or
+		sym.name == 'EURCAD_i' or
+		sym.name == 'EURCHF_i' or
+		sym.name == 'EURGBP_i' or
+		sym.name == 'EURUSD_i' or
+		sym.name == 'EURJPY_i' or
+		sym.name == 'GBPAUD_i' or
+		sym.name == 'GBPCAD_i' or
+		sym.name == 'GBPJPY_i' or
+		sym.name == 'GBPUSD_i' or
+		sym.name == 'USDJPY_i' or
+		sym.name == 'USDCAD_i' or
+		sym.name == 'XAUUSD_i'
+		): continue
+
 	#if sym.name == 'AUDCAD_i': continue
 	#if sym.name == 'AUDCHF_i': continue
 	#if sym.name == 'AUDJPY_i': continue
@@ -3146,9 +3246,23 @@ for sym in symbol:
 	#if sym.name == 'EURCAD_i': continue
 	#if sym.name == 'EURCHF_i': continue
 
+	symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
+																							sym=sym.name,
+																							num_5M=99000,
+																							num_15M=33000,
+																							num_1H=1,
+																							num_4H=1
+																							)
+
 	
 	print('****************************** ',sym.name,' ******************************')
-	#one_year_golden_cross_tester(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol=sym.name)
+	one_year_golden_cross_tester(
+								dataset=symbol_data_5M,
+								dataset_15M=symbol_data_15M,
+								symbol_data_1H=symbol_data_1H,
+								symbol_data_4H=symbol_data_4H,
+								symbol=sym.name
+								)
 #print(last_signal(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i'))
 
 syms = 'GBPUSD_i'

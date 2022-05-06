@@ -1100,6 +1100,9 @@ def tester_golden_cross_zero(
 			value_max_cci_minmax_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_max_cci',
 				min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=0.05)
 
+			print('==== value min 1 ==> ',value_min_cci_minmax_buy)
+			print('==== value max 1 ==> ',value_max_cci_minmax_buy)
+
 			list_index_ok = np.where(
 							#((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_minmax_buy['interval'][lower]))&
 							#((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_minmax_buy['interval'][lower]))&
@@ -1146,9 +1149,12 @@ def tester_golden_cross_zero(
 			output_buy['value_max_lower_cci_min_max'] = [value_max_cci_minmax_buy['interval'][lower]]
 			output_buy['value_min_upper_cci_min_max'] = [value_min_cci_minmax_buy['interval'][upper]]
 
+			print('==== value min 2 ==> ',output_buy['value_min_upper_cci_min_max'])
+			print('==== value max 2 ==> ',output_buy['value_max_lower_cci_min_max'])
+
 			if output_buy['num_trade_min_max'][0] != 0:
 				if output_buy['num_st_min_max'][0] != 0:
-					score_num_tp = (tp_counter-output_buy['num_st_min_max'][0])
+					score_num_tp = (tp_counter-output_buy['num_st_min_max'][0]) * 8
 
 					if (score_num_tp > 0):
 						score_num_tp = score_num_tp * 9
@@ -1278,7 +1284,7 @@ def tester_golden_cross_zero(
 			if output_sell['num_trade_min_max'][0] != 0:
 
 				if output_sell['num_st_min_max'][0] != 0:
-					score_num_tp = (tp_counter-output_sell['num_st_min_max'][0])
+					score_num_tp = (tp_counter-output_sell['num_st_min_max'][0]) * 8
 
 					if (score_num_tp > 0):
 						score_num_tp = score_num_tp * 9
@@ -1418,7 +1424,7 @@ def tester_golden_cross_zero(
 			if output_buy['num_trade_pr'][0] != 0:
 
 				if output_buy['num_st_pr'][0] != 0:
-					score_num_tp = (tp_counter-output_buy['num_st_pr'][0])
+					score_num_tp = (tp_counter-output_buy['num_st_pr'][0]) * 8
 
 					if (score_num_tp > 0):
 						score_num_tp = score_num_tp * 9
@@ -1575,7 +1581,7 @@ def tester_golden_cross_zero(
 			if output_sell['num_trade_pr'][0] != 0:
 
 				if output_sell['num_st_pr'][0] != 0:
-					score_num_tp = (tp_counter-output_sell['num_st_pr'][0])
+					score_num_tp = (tp_counter-output_sell['num_st_pr'][0]) * 8
 
 					if (score_num_tp > 0):
 						score_num_tp = score_num_tp * 9
@@ -1699,7 +1705,7 @@ def initilize_values_genetic():
 			'high_period': randint(5, 150),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
-			'cross_line': randint(0, 500),
+			'cross_line': randint(0, 100),
 			'max_st': randint(10, 50)/100,
 			'max_tp': max_tp,
 			'signal': None,
@@ -1746,7 +1752,7 @@ def gen_creator(Chromosome):
 			'high_period': randint(5, 150),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
-			'cross_line': randint(0, 500),
+			'cross_line': randint(0, 100),
 			'max_st': randint(10, 50)/100,
 			'max_tp': max_tp,
 			'signal': None,
@@ -1808,7 +1814,7 @@ def gen_creator(Chromosome):
 			'high_period': randint(5, 150),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
-			'cross_line': randint(0, 500),
+			'cross_line': randint(0, 100),
 			'max_st': randint(10, 50)/100,
 			'max_tp': max_tp,
 			'signal': None,
@@ -1877,13 +1883,14 @@ def genetic_algo_cci_golden_cross(
 				Chromosome[19]['score_buy'] = float(Chromosome[19]['score_buy'])
 				Chromosome[19]['score_sell'] = float(Chromosome[19]['score_sell'])
 
-				ga_result_buy, _ = read_ga_result(symbol=symbol)
+				if flag_trade == 'buy':
+					ga_result_buy, _ = read_ga_result(symbol=symbol)
 
-				if ga_result_buy['methode'][0] == 'min_max':
-					max_score_ga_buy = float(Chromosome[19]['score_min_max'])
+					if ga_result_buy['methode'][0] == 'min_max':
+						max_score_ga_buy = float(Chromosome[19]['score_min_max'])
 
-				if ga_result_buy['methode'][0] == 'pr':
-					max_score_ga_buy = float(Chromosome[19]['score_pr'])
+					if ga_result_buy['methode'][0] == 'pr':
+						max_score_ga_buy = float(Chromosome[19]['score_pr'])
 
 	if os.path.exists("Genetic_cci_output_sell/"+symbol+'.csv'):
 		with open("Genetic_cci_output_sell/"+symbol+'.csv', 'r', newline='') as myfile:
@@ -1899,13 +1906,14 @@ def genetic_algo_cci_golden_cross(
 				Chromosome[18]['score_buy'] = float(Chromosome[18]['score_buy'])
 				Chromosome[18]['score_sell'] = float(Chromosome[18]['score_sell'])
 
-				_, ga_result_sell = read_ga_result(symbol=symbol)
+				if flag_trade == 'sell':
+					_, ga_result_sell = read_ga_result(symbol=symbol)
 
-				if ga_result_buy['methode'][0] == 'min_max':
-					max_score_ga_sell = float(Chromosome[19]['score_min_max'])
+					if ga_result_sell['methode'][0] == 'min_max':
+						max_score_ga_sell = float(Chromosome[19]['score_min_max'])
 
-				if ga_result_buy['methode'][0] == 'pr':
-					max_score_ga_sell = float(Chromosome[19]['score_pr'])
+					if ga_result_sell['methode'][0] == 'pr':
+						max_score_ga_sell = float(Chromosome[19]['score_pr'])
 
 	result_buy = pd.DataFrame()
 	chromosome_buy = pd.DataFrame()
@@ -2015,7 +2023,7 @@ def genetic_algo_cci_golden_cross(
 					'high_period': high_period,
 					'low_period': low_period,
 					'distance_lines': randint(0, 6),
-					'cross_line': randint(0, 500),
+					'cross_line': randint(0, 100),
 					'max_st': randint(10, 50)/100,
 					'max_tp': max_tp,
 					'signal': None,
@@ -2029,7 +2037,7 @@ def genetic_algo_cci_golden_cross(
 					output_buy, _ = tester_golden_cross_zero(
 															signal_buy=buy_data,
 															signal_sell=buy_data,
-															min_tp=0.04,
+															min_tp=0.0,
 															max_st=Chromosome[chrom_counter]['max_st'],
 															alpha=Chromosome[chrom_counter]['max_tp'],
 															name_stp_minmax=True,name_stp_pr=False,
@@ -2042,7 +2050,7 @@ def genetic_algo_cci_golden_cross(
 					_, output_sell = tester_golden_cross_zero(
 															signal_buy=sell_data,
 															signal_sell=sell_data,
-															min_tp=0.04,
+															min_tp=0.0,
 															max_st=Chromosome[chrom_counter]['max_st'],
 															alpha=Chromosome[chrom_counter]['max_tp'],
 															name_stp_minmax=True,name_stp_pr=False,
@@ -2074,7 +2082,7 @@ def genetic_algo_cci_golden_cross(
 					'high_period': high_period,
 					'low_period': low_period,
 					'distance_lines': randint(0, 6),
-					'cross_line': randint(0, 500),
+					'cross_line': randint(0, 100),
 					'max_st': randint(10, 50)/100,
 					'max_tp': max_tp,
 					'signal': None,
@@ -2160,7 +2168,7 @@ def genetic_algo_cci_golden_cross(
 						'high_period': high_period,
 						'low_period': low_period,
 						'distance_lines': randint(0, 6),
-						'cross_line': randint(0, 500),
+						'cross_line': randint(0, 100),
 						'max_st': randint(10, 50)/100,
 						'max_tp': max_tp,
 						'signal': None,
@@ -2189,7 +2197,7 @@ def genetic_algo_cci_golden_cross(
 						'high_period': high_period,
 						'low_period': low_period,
 						'distance_lines': randint(0, 6),
-						'cross_line': randint(0, 500),
+						'cross_line': randint(0, 100),
 						'max_st': randint(10, 50)/100,
 						'max_tp': max_tp,
 						'signal': None,
@@ -2309,9 +2317,13 @@ def read_ga_result(symbol):
 	sell_path = "Genetic_cci_output_sell/" + symbol + '.csv'
 	if os.path.exists(buy_path):
 		ga_result_buy = pd.read_csv(buy_path)
+	else:
+		ga_result_buy = pd.DataFrame()
 
 	if os.path.exists(sell_path):
 		ga_result_sell = pd.read_csv(sell_path)
+	else:
+		ga_result_sell = pd.DataFrame()
 
 	return ga_result_buy, ga_result_sell
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2415,7 +2427,7 @@ def one_year_golden_cross_tester(
 				if output_buy['num_trade_min_max'][0] != 0:
 
 					if output_buy['num_st_min_max'][0] != 0:
-						score_num_tp = (tp_counter-output_buy['num_st_min_max'][0])
+						score_num_tp = (tp_counter-output_buy['num_st_min_max'][0]) * 8
 
 						if (score_num_tp > 0):
 							score_num_tp = score_num_tp * 9
@@ -2546,7 +2558,7 @@ def one_year_golden_cross_tester(
 				if output_buy['num_trade_pr'][0] != 0:
 
 					if output_buy['num_st_pr'][0] != 0:
-						score_num_tp = (tp_counter-output_buy['num_st_pr'][0])
+						score_num_tp = (tp_counter-output_buy['num_st_pr'][0]) * 8
 
 						if (score_num_tp > 0):
 							score_num_tp = score_num_tp * 9
@@ -2714,7 +2726,7 @@ def one_year_golden_cross_tester(
 				if output_sell['num_trade_min_max'][0] != 0:
 
 					if output_sell['num_st_min_max'][0] != 0:
-						score_num_tp = (tp_counter-output_sell['num_st_min_max'][0])
+						score_num_tp = (tp_counter-output_sell['num_st_min_max'][0]) * 8
 
 						if (score_num_tp > 0):
 							score_num_tp = score_num_tp * 9
@@ -2842,7 +2854,7 @@ def one_year_golden_cross_tester(
 				if output_sell['num_trade_pr'][0] != 0:
 
 					if output_sell['num_st_pr'][0] != 0:
-						score_num_tp = (tp_counter-output_sell['num_st_pr'][0])
+						score_num_tp = (tp_counter-output_sell['num_st_pr'][0]) * 8
 
 						if (score_num_tp > 0):
 							score_num_tp = score_num_tp * 9

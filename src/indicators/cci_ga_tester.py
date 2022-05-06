@@ -123,8 +123,8 @@ def ga_optimizer():
 
 				symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																									sym=sym.name,
-																									num_5M=12000,
-																									num_15M=4000,
+																									num_5M=36000,
+																									num_15M=12000,
 																									num_1H=1,
 																									num_4H=1
 																									)
@@ -187,8 +187,8 @@ def ga_optimizer():
 
 				symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																									sym=sym.name,
-																									num_5M=12000,
-																									num_15M=4000,
+																									num_5M=36000,
+																									num_15M=12000,
 																									num_1H=1,
 																									num_4H=1
 																									)

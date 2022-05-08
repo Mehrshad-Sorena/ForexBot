@@ -1,3 +1,4 @@
+from datetime import datetime
 from MetaTrader5 import *
 import MetaTrader5 as mt5
 import pandas as pd
@@ -459,6 +460,16 @@ def read_dataset_csv(sym,num_5M,num_15M,num_1H,num_4H):
 		print("some thing wrong log get data_2!!!",i.name)
 
 	mt5.shutdown()
+
+	time_counter = 0
+	for ti in symbol_data_1H[sym]['time']:
+		symbol_data_1H[sym]['time'][time_counter] = datetime.strptime(symbol_data_1H[sym]['time'][time_counter], "%Y-%m-%d %H:%M:%S")
+		time_counter += 1
+
+	time_counter = 0
+	for ti in symbol_data_5M[sym]['time']:
+		symbol_data_5M[sym]['time'][time_counter] = datetime.strptime(symbol_data_5M[sym]['time'][time_counter], "%Y-%m-%d %H:%M:%S")
+		time_counter += 1
 
 	return symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbols
 #print(log_get_data(mt5.TIMEFRAME_M5,1000))

@@ -80,6 +80,7 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 	try:
 		first_line = LineString(np.column_stack((x[(int(High_Period)-1):], SMA_Low[(int(High_Period)-1):])))
 		second_line = LineString(np.column_stack((x[(int(High_Period)-1):], SMA_High.dropna())))
+		intersection = first_line.intersection(second_line)
 	except Exception as ex:
 		logs("===> No SMA Cross")
 		signal_buy = pd.DataFrame(np.zeros(1))
@@ -88,10 +89,16 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 		signal_buy['index'] = np.nan
 		signal_buy['profit'] = np.nan
 
-		signal_buy['signal'][0] = 'no_flag'
-		signal_buy['values'][0] = -1
-		signal_buy['index'][0] = -1
-		signal_buy['profit'][0] = -1
+		if SMA_High.iloc[-1] < SMA_Low.iloc[-1]:
+			signal_buy['signal'][0] = 'buy'
+			signal_buy['values'][0] = -1
+			signal_buy['index'][0] = -1
+			signal_buy['profit'][0] = -1
+		else:
+			signal_buy['signal'][0] = 'sell'
+			signal_buy['values'][0] = -1
+			signal_buy['index'][0] = -1
+			signal_buy['profit'][0] = -1
 
 		signal_sell = pd.DataFrame(np.zeros(1))
 		signal_sell['signal'] = np.nan
@@ -99,15 +106,21 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 		signal_sell['index'] = np.nan
 		signal_sell['profit'] = np.nan
 
-		signal_sell['signal'][0] = 'no_flag'
-		signal_sell['values'][0] = -1
-		signal_sell['index'][0] = -1
-		signal_sell['profit'][0] = -1
+		if SMA_High.iloc[-1] > SMA_Low.iloc[-1]:
+			signal_sell['signal'][0] = 'sell'
+			signal_sell['values'][0] = -1
+			signal_sell['index'][0] = -1
+			signal_sell['profit'][0] = -1
+		else:
+			signal_sell['signal'][0] = 'buy'
+			signal_sell['values'][0] = -1
+			signal_sell['index'][0] = -1
+			signal_sell['profit'][0] = -1
 
 		return signal_buy, signal_sell
 
 
-	intersection = first_line.intersection(second_line)
+	
 
 	cross_find_flag = False
 
@@ -136,10 +149,16 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 		signal_buy['index'] = np.nan
 		signal_buy['profit'] = np.nan
 
-		signal_buy['signal'][0] = 'no_flag'
-		signal_buy['values'][0] = -1
-		signal_buy['index'][0] = -1
-		signal_buy['profit'][0] = -1
+		if SMA_High.iloc[-1] < SMA_Low.iloc[-1]:
+			signal_buy['signal'][0] = 'buy'
+			signal_buy['values'][0] = -1
+			signal_buy['index'][0] = -1
+			signal_buy['profit'][0] = -1
+		else:
+			signal_buy['signal'][0] = 'sell'
+			signal_buy['values'][0] = -1
+			signal_buy['index'][0] = -1
+			signal_buy['profit'][0] = -1
 
 		signal_sell = pd.DataFrame(np.zeros(1))
 		signal_sell['signal'] = np.nan
@@ -147,10 +166,16 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 		signal_sell['index'] = np.nan
 		signal_sell['profit'] = np.nan
 
-		signal_sell['signal'][0] = 'no_flag'
-		signal_sell['values'][0] = -1
-		signal_sell['index'][0] = -1
-		signal_sell['profit'][0] = -1
+		if SMA_High.iloc[-1] > SMA_Low.iloc[-1]:
+			signal_sell['signal'][0] = 'sell'
+			signal_sell['values'][0] = -1
+			signal_sell['index'][0] = -1
+			signal_sell['profit'][0] = -1
+		else:
+			signal_sell['signal'][0] = 'buy'
+			signal_sell['values'][0] = -1
+			signal_sell['index'][0] = -1
+			signal_sell['profit'][0] = -1
 
 		return signal_buy, signal_sell
 
@@ -160,10 +185,16 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 	signal_buy['index'] = np.nan
 	signal_buy['profit'] = np.nan
 
-	signal_buy['signal'][0] = 'no_flag'
-	signal_buy['values'][0] = -1
-	signal_buy['index'][0] = -1
-	signal_buy['profit'][0] = -1
+	if SMA_High.iloc[-1] < SMA_Low.iloc[-1]:
+		signal_buy['signal'][0] = 'buy'
+		signal_buy['values'][0] = -1
+		signal_buy['index'][0] = -1
+		signal_buy['profit'][0] = -1
+	else:
+		signal_buy['signal'][0] = 'sell'
+		signal_buy['values'][0] = -1
+		signal_buy['index'][0] = -1
+		signal_buy['profit'][0] = -1
 
 	signal_sell = pd.DataFrame(np.zeros(len(cross['index'])))
 	signal_sell['signal'] = np.nan
@@ -1084,7 +1115,7 @@ def last_signal_sma(dataset,symbol,time_frame):
 				#signal['power'] = np.mean(best_signals['power_sell']) * (1 - best_signals['alpha_sell']) * (2/(len_price - sell_signal['index'][len(sell_signal)-1] + 1))
 
 		else:
-			signal['signal'][0] = 'no_flag'
+			signal['signal'][0] = buy_signal['signal'].iloc[-1]
 			signal['index'][0] = -1
 
 	else:

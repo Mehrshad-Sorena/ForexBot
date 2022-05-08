@@ -635,18 +635,23 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 
 	#Trend Line Extreme Finder Function
 	trend_local_extreme_5M_long = pd.DataFrame()
-	trend_local_extreme_5M_long = np.nan
-
-	dataset_ramp_5M = pd.DataFrame()
-	cut_first = 0
-	if (int(len(dataset_5M['low'])-1) > long_length):
-		cut_first = int(len(dataset_5M['low'])-1) - long_length
-	dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+	trend_local_extreme_5M_long['min'] = np.nan
+	trend_local_extreme_5M_long['max'] = np.nan
+	trend_local_extreme_5M_long['power'] = np.nan
 
 	if (T_5M == True):
+		dataset_ramp_5M = pd.DataFrame()
+		cut_first = 0
+		if (int(len(dataset_5M['low'])-1) > long_length):
+			cut_first = int(len(dataset_5M['low'])-1) - long_length
+		dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+
+		trend_local_extreme_5M_long = pd.DataFrame()
+		trend_local_extreme_5M_long = np.nan
+
 		trend_local_extreme_5M_long = extreme_points_ramp_lines(
 																high = dataset_ramp_5M['high'],
 																low = dataset_ramp_5M['low'],
@@ -658,18 +663,23 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 																)
 
 	trend_local_extreme_5M_mid = pd.DataFrame()
-	trend_local_extreme_5M_mid = np.nan
-
-	dataset_ramp_5M = pd.DataFrame()
-	cut_first = 0
-	if (int(len(dataset_5M['low'])-1) > mid_length):
-		cut_first = int(len(dataset_5M['low'])-1) - mid_length
-	dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+	trend_local_extreme_5M_mid['min'] = np.nan
+	trend_local_extreme_5M_mid['max'] = np.nan
+	trend_local_extreme_5M_mid['power'] = np.nan
 
 	if (T_5M == True):
+		dataset_ramp_5M = pd.DataFrame()
+		cut_first = 0
+		if (int(len(dataset_5M['low'])-1) > mid_length):
+			cut_first = int(len(dataset_5M['low'])-1) - mid_length
+		dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+
+		trend_local_extreme_5M_mid = pd.DataFrame()
+		trend_local_extreme_5M_mid = np.nan
+
 		trend_local_extreme_5M_mid = extreme_points_ramp_lines(
 																high = dataset_ramp_5M['high'],
 																low = dataset_ramp_5M['low'],
@@ -681,18 +691,24 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 																)
 
 	trend_local_extreme_5M_short_1 = pd.DataFrame()
-	trend_local_extreme_5M_short_1 = np.nan
-
-	dataset_ramp_5M = pd.DataFrame()
-	cut_first = 0
-	if (int(len(dataset_5M['low'])-1) > short_length_1):
-		cut_first = int(len(dataset_5M['low'])-1) - short_length_1
-	dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+	trend_local_extreme_5M_short_1['min'] = np.nan
+	trend_local_extreme_5M_short_1['max'] = np.nan
+	trend_local_extreme_5M_short_1['power'] = np.nan
 
 	if (T_5M == True):
+
+		dataset_ramp_5M = pd.DataFrame()
+		cut_first = 0
+		if (int(len(dataset_5M['low'])-1) > short_length_1):
+			cut_first = int(len(dataset_5M['low'])-1) - short_length_1
+		dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+
+		trend_local_extreme_5M_short_1 = pd.DataFrame()
+		trend_local_extreme_5M_short_1 = np.nan
+
 		trend_local_extreme_5M_short_1 = extreme_points_ramp_lines(
 																	high = dataset_ramp_5M['high'],
 																	low = dataset_ramp_5M['low'],
@@ -704,18 +720,24 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 																	)
 
 	trend_local_extreme_5M_short_2 = pd.DataFrame()
-	trend_local_extreme_5M_short_2 = np.nan
-
-	dataset_ramp_5M = pd.DataFrame()
-	cut_first = 0
-	if (int(len(dataset_5M['low'])-1) > short_length_2):
-		cut_first = int(len(dataset_5M['low'])-1) - short_length_2
-	dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
-	dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+	trend_local_extreme_5M_short_2['min'] = np.nan
+	trend_local_extreme_5M_short_2['max'] = np.nan
+	trend_local_extreme_5M_short_2['power'] = np.nan
 
 	if (T_5M == True):
+
+		dataset_ramp_5M = pd.DataFrame()
+		cut_first = 0
+		if (int(len(dataset_5M['low'])-1) > short_length_2):
+			cut_first = int(len(dataset_5M['low'])-1) - short_length_2
+		dataset_ramp_5M['low'] = dataset_5M['low'][cut_first:int(len(dataset_5M['low'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['high'] = dataset_5M['high'][cut_first:int(len(dataset_5M['high'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['close'] = dataset_5M['close'][cut_first:int(len(dataset_5M['close'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['open'] = dataset_5M['open'][cut_first:int(len(dataset_5M['open'])-1)].reset_index(drop=True)
+
+		trend_local_extreme_5M_short_2 = pd.DataFrame()
+		trend_local_extreme_5M_short_2 = np.nan
+
 		trend_local_extreme_5M_short_2 = extreme_points_ramp_lines(
 																	high = dataset_ramp_5M['high'],
 																	low = dataset_ramp_5M['low'],
@@ -768,7 +790,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 														tenkan=9,
 														kijun=26,
 														senkou=52,
-														n_clusters=4,
+														n_clusters=10,
 														weight=30
 														)
 
@@ -804,31 +826,50 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 
 	#concat Extremes
 
-	exterm_point = pd.DataFrame(np.concatenate((local_extreme_5M['extreme'].to_numpy(), 
-			local_extreme_15M['extreme'].to_numpy(),local_extreme_1H['extreme'].to_numpy(),
-			local_extreme_4H['extreme'].to_numpy(),local_extreme_1D['extreme'].to_numpy(),
-			trend_local_extreme_5M_long['min'].to_numpy(),trend_local_extreme_5M_long['max'].to_numpy(),
-			trend_local_extreme_5M_mid['min'].to_numpy(),trend_local_extreme_5M_mid['max'].to_numpy(),
-			trend_local_extreme_5M_short_1['min'].to_numpy(),trend_local_extreme_5M_short_1['max'].to_numpy(),
-			trend_local_extreme_5M_short_2['min'].to_numpy(),trend_local_extreme_5M_short_2['max'].to_numpy(),
-			ichi_local_extreme_5M['extreme'].to_numpy(),
-			ichi_local_extreme_15M['extreme'].to_numpy(),
-			ichi_local_extreme_1H['extreme'].to_numpy(),
-			ichi_local_extreme_4H['extreme'].to_numpy(),
-			ichi_local_extreme_1D['extreme'].to_numpy()) , axis=None),columns=['extremes'])
+	exterm_point = pd.DataFrame(np.concatenate(
+											(
+											local_extreme_5M['extreme'].to_numpy(), 
+											local_extreme_15M['extreme'].to_numpy(),
+											local_extreme_1H['extreme'].to_numpy(),
+											local_extreme_4H['extreme'].to_numpy(),
+											local_extreme_1D['extreme'].to_numpy(),
+											trend_local_extreme_5M_long['min'].to_numpy(),
+											trend_local_extreme_5M_long['max'].to_numpy(),
+											trend_local_extreme_5M_mid['min'].to_numpy(),
+											trend_local_extreme_5M_mid['max'].to_numpy(),
+											trend_local_extreme_5M_short_1['min'].to_numpy(),
+											trend_local_extreme_5M_short_1['max'].to_numpy(),
+											trend_local_extreme_5M_short_2['min'].to_numpy(),
+											trend_local_extreme_5M_short_2['max'].to_numpy(),
+											ichi_local_extreme_5M['extreme'].to_numpy(),
+											ichi_local_extreme_15M['extreme'].to_numpy(),
+											ichi_local_extreme_1H['extreme'].to_numpy(),
+											ichi_local_extreme_4H['extreme'].to_numpy(),
+											ichi_local_extreme_1D['extreme'].to_numpy()
+											)
+											 , axis=None),columns=['extremes'])
 
-	exterm_point['power'] = np.concatenate((local_extreme_5M['power'].to_numpy(), 
-			local_extreme_15M['power'].to_numpy(),local_extreme_1H['power'].to_numpy(),
-			local_extreme_4H['power'].to_numpy(),local_extreme_1D['power'].to_numpy(),
-			trend_local_extreme_5M_long['power'].to_numpy(),trend_local_extreme_5M_long['power'].to_numpy(),
-			trend_local_extreme_5M_mid['power'].to_numpy(),trend_local_extreme_5M_mid['power'].to_numpy(),
-			trend_local_extreme_5M_short_1['power'].to_numpy(),trend_local_extreme_5M_short_1['power'].to_numpy(),
-			trend_local_extreme_5M_short_2['power'].to_numpy(),trend_local_extreme_5M_short_2['power'].to_numpy(),
-			ichi_local_extreme_5M['power'].to_numpy(),
-			ichi_local_extreme_15M['power'].to_numpy(),
-			ichi_local_extreme_1H['power'].to_numpy(),
-			ichi_local_extreme_4H['power'].to_numpy(),
-			ichi_local_extreme_1D['power'].to_numpy()) , axis=None)
+	exterm_point['power'] = np.concatenate(
+										(
+										local_extreme_5M['power'].to_numpy(), 
+										local_extreme_15M['power'].to_numpy(),
+										local_extreme_1H['power'].to_numpy(),
+										local_extreme_4H['power'].to_numpy(),
+										local_extreme_1D['power'].to_numpy(),
+										trend_local_extreme_5M_long['power'].to_numpy(),
+										trend_local_extreme_5M_long['power'].to_numpy(),
+										trend_local_extreme_5M_mid['power'].to_numpy(),
+										trend_local_extreme_5M_mid['power'].to_numpy(),
+										trend_local_extreme_5M_short_1['power'].to_numpy(),
+										trend_local_extreme_5M_short_1['power'].to_numpy(),
+										trend_local_extreme_5M_short_2['power'].to_numpy(),
+										trend_local_extreme_5M_short_2['power'].to_numpy(),
+										ichi_local_extreme_5M['power'].to_numpy(),
+										ichi_local_extreme_15M['power'].to_numpy(),
+										ichi_local_extreme_1H['power'].to_numpy(),
+										ichi_local_extreme_4H['power'].to_numpy(),
+										ichi_local_extreme_1D['power'].to_numpy()
+										) , axis=None)
 
 	exterm_point = exterm_point.dropna()
 
@@ -837,17 +878,18 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 									exterm_point=exterm_point,
 									high=dataset_5M['high'],
 									low=dataset_5M['low'],
-									n_clusters_low=10,
-									n_clusters_high=10,
+									n_clusters_low=2,
+									n_clusters_high=2,
 									alpha_low=0.01,
 									alpha_high=0.01,
 									timeout_break=1
 									)
 
-	extereme['trend_long'] = [trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend']]
-	extereme['trend_mid'] = [trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend']]
-	extereme['trend_short1'] = [trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend']]
-	extereme['trend_short2'] = [trend_local_extreme_5M_short_2['trend'],trend_local_extreme_5M_short_2['trend'],trend_local_extreme_5M_short_2['trend']]
+	if T_5M == True:
+		extereme['trend_long'] = [trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend']]
+		extereme['trend_mid'] = [trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend']]
+		extereme['trend_short1'] = [trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend']]
+		extereme['trend_short2'] = [trend_local_extreme_5M_short_2['trend'],trend_local_extreme_5M_short_2['trend'],trend_local_extreme_5M_short_2['trend']]
 
 	if (plot == True):
 		fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))
@@ -873,7 +915,40 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 
 
 #***************************** How To Use Functions **********************************************
+"""
+from datetime import datetime
+symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
+																								sym='EURUSD_i',
+																								num_5M=4000,
+																								num_15M=1,
+																								num_1H=2000,
+																								num_4H=1
+																								)
 
+sym = 'EURUSD_i'
+
+
+
+print('5M======> ',symbol_data_5M[sym]['time'][1796])
+
+
+print(symbol_data_1H[sym]['time'][location_1H])
+
+protect_resist(
+				T_5M=False,
+				T_15M=False,
+				T_1H=True,
+				T_4H=False,
+				T_1D=False,
+				dataset_5M=symbol_data_5M[sym],
+				dataset_15M=symbol_data_1H[sym],
+				dataset_1H=symbol_data_1H[sym],
+				dataset_4H=symbol_data_1H[sym],
+				dataset_1D=symbol_data_1H[sym],
+				plot=True
+				)
+
+"""
 
 #symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2000)
 #symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,2000)

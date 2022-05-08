@@ -282,12 +282,13 @@ def golden_cross_zero(
 				signal_buy['flag_pr'] = np.nan
 				signal_buy['diff_pr_top'] = np.nan
 				signal_buy['diff_pr_down'] = np.nan
-				signal_buy['trend_long'] = np.nan
-				signal_buy['trend_mid'] = np.nan
-				signal_buy['trend_short1'] = np.nan
-				signal_buy['trend_short2'] = np.nan
+				#signal_buy['trend_long'] = np.nan
+				#signal_buy['trend_mid'] = np.nan
+				#signal_buy['trend_short1'] = np.nan
+				#signal_buy['trend_short2'] = np.nan
 				signal_buy['tp_line'] = np.nan
 				signal_buy['st_line'] = np.nan
+				#signal_buy['time'] = np.nan
 
 		signal_sell = pd.DataFrame(np.zeros(len(finding_points)))
 		signal_sell['signal'] = np.nan
@@ -318,10 +319,10 @@ def golden_cross_zero(
 				signal_sell['flag_pr'] = np.nan
 				signal_sell['diff_pr_top'] = np.nan
 				signal_sell['diff_pr_down'] = np.nan
-				signal_sell['trend_long'] = np.nan
-				signal_sell['trend_mid'] = np.nan
-				signal_sell['trend_short1'] = np.nan
-				signal_sell['trend_short2'] = np.nan
+				#signal_sell['trend_long'] = np.nan
+				#signal_sell['trend_mid'] = np.nan
+				#signal_sell['trend_short1'] = np.nan
+				#signal_sell['trend_short2'] = np.nan
 
 	buy_counter = 0
 	sell_counter = 0
@@ -329,6 +330,12 @@ def golden_cross_zero(
 	if pbar_flag == True:
 		pbar = tqdm(total=len(finding_points['index']))
 		print(len(finding_points['index']))
+
+	#for elm in finding_points['index']:
+		#logs('time = {}'.format(dataset[symbol]['time'][elm]))
+
+	for elm in finding_points.index:
+		logs('time = > {}'.format(finding_points['index'][elm]))
 
 	for elm in finding_points.index:
 
@@ -370,6 +377,7 @@ def golden_cross_zero(
 				if signal_buy['diff_min_max_candle'][buy_counter] > tp_percent_minmax_buy_max:
 					signal_buy['diff_min_max_candle'][buy_counter] = tp_percent_minmax_buy_max
 					signal_buy['value_min_max_candle'][buy_counter] = signal_buy['value_min_max_candle'][buy_counter]*(1-((signal_buy['diff_min_max_candle'][buy_counter] - tp_percent_minmax_buy_max)/100))
+				
 				#Calculate porfits
 				#must read protect and resist from protect resist function
 				if (mode == 'optimize'):
@@ -457,11 +465,12 @@ def golden_cross_zero(
 						if np.isnan(signal_buy['st_min_max_index'][buy_counter]): signal_buy['st_min_max_index'][buy_counter] = -1
 						#///////////////////////////////////////////////////
 					if (name_stp_pr == True):
+
+						if (int(finding_points['index'][elm]) < 500): continue
+
 						#Calculate ST and TP With Protect Resist Function
 						dataset_pr_5M = pd.DataFrame()
-						dataset_pr_15M = pd.DataFrame()
 						dataset_pr_1H = pd.DataFrame()
-						dataset_pr_4H = pd.DataFrame()
 
 						cut_first = 0
 						if (int(finding_points['index'][elm]) > 2000):
@@ -472,37 +481,48 @@ def golden_cross_zero(
 						dataset_pr_5M['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 						dataset_pr_5M['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 
-						dataset_pr_15M['low'] = dataset_15M[symbol]['low'][int(cut_first/6):int(int(finding_points['index'][elm])/3)].reset_index(drop=True)
-						dataset_pr_15M['high'] = dataset_15M[symbol]['high'][int(cut_first/6):int(int(finding_points['index'][elm])/3)].reset_index(drop=True)
-						dataset_pr_15M['close'] = dataset_15M[symbol]['close'][int(cut_first/6):int(int(finding_points['index'][elm])/3)].reset_index(drop=True)
-						dataset_pr_15M['open'] = dataset_15M[symbol]['open'][int(cut_first/6):int(int(finding_points['index'][elm])/3)].reset_index(drop=True)
+						loc_1H = 0
+						location_1H = -1
+						for ti in dataset_1H[symbol]['time']:
+							#print('1H===> ',ti.year)
+							if (
+								ti.year == dataset[symbol]['time'][int(finding_points['index'][elm])].year and
+								ti.month == dataset[symbol]['time'][int(finding_points['index'][elm])].month and
+								ti.day == dataset[symbol]['time'][int(finding_points['index'][elm])].day and
+								ti.hour == dataset[symbol]['time'][int(finding_points['index'][elm])].hour
+								):
+								location_1H = loc_1H
 
-						dataset_pr_1H['low'] = dataset_1H[symbol]['low'][int(cut_first/24):int(int(finding_points['index'][elm])/12)].reset_index(drop=True)
-						dataset_pr_1H['high'] = dataset_1H[symbol]['high'][int(cut_first/24):int(int(finding_points['index'][elm])/12)].reset_index(drop=True)
-						dataset_pr_1H['close'] = dataset_1H[symbol]['close'][int(cut_first/24):int(int(finding_points['index'][elm])/12)].reset_index(drop=True)
-						dataset_pr_1H['open'] = dataset_1H[symbol]['open'][int(cut_first/24):int(int(finding_points['index'][elm])/12)].reset_index(drop=True)
+							loc_1H += 1
 
-						if int(int(finding_points['index'][elm])/48) < 60:
-							end_4H = 60
-						else:
-							end_4H = int(int(finding_points['index'][elm])/48)
+						print('location_1H=====> ',location_1H)
+						print('5M =====> ',dataset[symbol]['time'][int(finding_points['index'][elm])])
+						print('1H =====> ',dataset_1H[symbol]['time'][location_1H])
 
-						dataset_pr_4H['low'] = dataset_4H[symbol]['low'][0:end_4H].reset_index(drop=True)
-						dataset_pr_4H['high'] = dataset_4H[symbol]['high'][0:end_4H].reset_index(drop=True)
-						dataset_pr_4H['close'] = dataset_4H[symbol]['close'][0:end_4H].reset_index(drop=True)
-						dataset_pr_4H['open'] = dataset_4H[symbol]['open'][0:end_4H].reset_index(drop=True)
+						cut_first_1H = 0
+						if location_1H >= 500:
+							cut_first_1H = location_1H - 500
+
+						dataset_pr_1H['low'] = dataset_1H[symbol]['low'][cut_first_1H:location_1H].reset_index(drop=True)
+						dataset_pr_1H['high'] = dataset_1H[symbol]['high'][cut_first_1H:location_1H].reset_index(drop=True)
+						dataset_pr_1H['close'] = dataset_1H[symbol]['close'][cut_first_1H:location_1H].reset_index(drop=True)
+						dataset_pr_1H['open'] = dataset_1H[symbol]['open'][cut_first_1H:location_1H].reset_index(drop=True)
 
 
 						res_pro = pd.DataFrame()
 					
 						try:
 							res_pro = protect_resist(
-													T_5M=True,T_15M=True,T_1H=True,T_4H=True,T_1D=False,
+													T_5M=True,
+													T_15M=False,
+													T_1H=True,
+													T_4H=False,
+													T_1D=False,
 													dataset_5M=dataset_pr_5M,
-													dataset_15M=dataset_pr_15M,
+													dataset_15M=dataset_pr_1H,
 													dataset_1H=dataset_pr_1H,
-													dataset_4H=dataset_pr_4H,
-													dataset_1D=dataset_pr_5M,
+													dataset_4H=dataset_pr_1H,
+													dataset_1D=dataset_pr_1H,
 													plot=False
 													)
 						except Exception as ex:
@@ -511,39 +531,95 @@ def golden_cross_zero(
 							res_pro['low'] = 'nan'
 
 						if (res_pro.empty == False):
-							signal_buy['diff_pr_top'][buy_counter] = (((res_pro['high'][0] * 0.9999) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
-							signal_buy['diff_pr_down'][buy_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - (res_pro['low'][2] * 0.9999))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
-						
+
+							signal_buy['diff_pr_top'][buy_counter] = (((res_pro['high'][0]) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
+							signal_buy['diff_pr_down'][buy_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - (res_pro['low'][2]))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
+
+							
+							if signal_buy['diff_pr_top'][buy_counter] > tp_percent_minmax_buy_max:
+								signal_buy['diff_pr_top'][buy_counter] = tp_percent_minmax_buy_max
+								res_pro['high'][0] = dataset[symbol]['high'][int(finding_points['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
+							
+							if signal_buy['diff_pr_down'][buy_counter] <= signal_buy['diff_pr_top'][buy_counter]:
+								signal_buy['diff_pr_down'][buy_counter] = signal_buy['diff_pr_top'][buy_counter]
+								res_pro['low'][2] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(signal_buy['diff_pr_top'][buy_counter]/100))
+							
+
+							"""
 							signal_buy['trend_long'][buy_counter] = res_pro['trend_long'][0].values[0]
 							signal_buy['trend_mid'][buy_counter] = res_pro['trend_mid'][0].values[0]
 							signal_buy['trend_short1'][buy_counter] = res_pro['trend_short1'][0].values[0]
 							signal_buy['trend_short2'][buy_counter] = res_pro['trend_short2'][0].values[0]
 
-							signal_buy['tp_line'][buy_counter] = res_pro['high'][0] * 0.9999
-							signal_buy['st_line'][buy_counter] = res_pro['low'][2] * 0.9999
-
 							if signal_buy['trend_long'][buy_counter] is np.nan: signal_buy['trend_long'][buy_counter] = 'parcham'
 							if signal_buy['trend_mid'][buy_counter] is np.nan: signal_buy['trend_mid'][buy_counter] = 'parcham'
 							if signal_buy['trend_short1'][buy_counter] is np.nan: signal_buy['trend_short1'][buy_counter] = 'parcham'
 							if signal_buy['trend_short2'][buy_counter] is np.nan: signal_buy['trend_short2'][buy_counter] = 'parcham'
+							"""
+							signal_buy['tp_line'][buy_counter] = res_pro['high'][0]
+							signal_buy['st_line'][buy_counter] = res_pro['low'][2]
+
+
+							dataset_5M_minmax = pd.DataFrame()
+
+							cut_first = 0
+							if (int(finding_points['index'][elm]) > 500):
+								cut_first = int(finding_points['index'][elm]) - 500
+
+							dataset_5M_minmax['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['HL/2'] = dataset[symbol]['HL/2'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['HLC/3'] = dataset[symbol]['HLC/3'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['HLCC/4'] = dataset[symbol]['HLCC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['OHLC/4'] = dataset[symbol]['OHLC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+
+							try:
+								trend_sma_5M = last_signal_sma(dataset_5M_minmax, symbol, time_frame = '5M')['signal'][0]
+							except Exception as ex:
+								print('sma trend buy: ',ex)
+								trend_sma_5M = 'no_flag'
+
+
+							#print('dataset[symbol][high] = ',dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004)
+							#print('res_pro[high] = ',res_pro['high'][0])
+							#print(dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004 < (res_pro['high'][0]))
+
+							#print('dataset[symbol][low] = ',dataset[symbol]['low'][int(finding_points['index'][elm])])
+							#print('res_pro[low] = ',res_pro['low'][2])
+							#print(dataset[symbol]['low'][int(finding_points['index'][elm])] >= (res_pro['low'][2]))
+
+							#print('signal_buy[diff_pr_top] = ',signal_buy['diff_pr_top'][buy_counter])
+							#print('signal_buy[diff_pr_down] = ',signal_buy['diff_pr_down'][buy_counter])
+							#print(signal_buy['diff_pr_top'][buy_counter] >= signal_buy['diff_pr_down'][buy_counter])
+
+							#print('st_percent_minmax_buy = ',st_percent_minmax_buy)
+							#print(signal_buy['diff_pr_down'][buy_counter] <= st_percent_minmax_buy)
+
+							#print('trend_sma_5M = ',trend_sma_5M)
+
 
 							if (
-								dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004 < (res_pro['high'][0] * 0.9999) and
-								dataset[symbol]['low'][int(finding_points['index'][elm])] >= (res_pro['low'][2] * 0.9999) and
+								dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004 < (res_pro['high'][0]) and
+								dataset[symbol]['low'][int(finding_points['index'][elm])] >= (res_pro['low'][2]) and
 								signal_buy['diff_pr_top'][buy_counter] >= signal_buy['diff_pr_down'][buy_counter] and
-								signal_buy['diff_pr_down'][buy_counter] <= 0.4
+								signal_buy['diff_pr_down'][buy_counter] <= st_percent_minmax_buy and
+								trend_sma_5M == 'buy'
 								):
 
-								if ((len(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9996) >= (res_pro['high'][0] * 0.9999)))[0]) - 1) > 1):
-									signal_buy['tp_pr_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9996) >= (res_pro['high'][0] * 0.9999)))[0])
+								#signal_buy['time'][buy_counter] = dataset[symbol]['time'][int(finding_points['index'][elm])]
+
+								if ((len(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9996) >= (res_pro['high'][0])))[0]) - 1) > 1):
+									signal_buy['tp_pr_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9996) >= (res_pro['high'][0])))[0])
 									signal_buy['tp_pr'][buy_counter] = ((dataset[symbol]['high'][signal_buy['tp_pr_index'][buy_counter]]*0.9996 - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
 								else:
 									signal_buy['tp_pr_index'][buy_counter] = -1
 									signal_buy['tp_pr'][buy_counter] = 0
 
-								if ((len(np.where((((dataset[symbol]['low'][int(finding_points['index'][elm]):-1]).values) <= (res_pro['low'][2] * 0.9994)))[0])-1) > 1):
-									signal_buy['st_pr_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where((((dataset[symbol]['low'][int(finding_points['index'][elm]):-1]).values) <= (res_pro['low'][2] * 0.9994)))[0])
-									signal_buy['st_pr'][buy_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - dataset[symbol]['low'][signal_buy['st_pr_index'][buy_counter]])/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
+								if ((len(np.where((((dataset[symbol]['low'][int(finding_points['index'][elm]):-1]).values) <= (res_pro['low'][2])))[0])-1) > 1):
+									signal_buy['st_pr_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where((((dataset[symbol]['low'][int(finding_points['index'][elm]):-1]).values) <= (res_pro['low'][2])))[0])
+									signal_buy['st_pr'][buy_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - res_pro['low'][2])/res_pro['low'][2]) * 100
 								else:
 									signal_buy['st_pr_index'][buy_counter] = -1
 									signal_buy['st_pr'][buy_counter] = 0
@@ -578,6 +654,9 @@ def golden_cross_zero(
 						if np.isnan(signal_buy['st_pr'][buy_counter]): signal_buy['st_pr'][buy_counter] = 0
 						if np.isnan(signal_buy['tp_pr_index'][buy_counter]): signal_buy['tp_pr_index'][buy_counter] = -1
 						if np.isnan(signal_buy['st_pr_index'][buy_counter]): signal_buy['st_pr_index'][buy_counter] = -1
+
+						#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+							#print(signal_buy)
 						#///////////////////////////////////////////////////
 
 				buy_counter += 1
@@ -615,6 +694,7 @@ def golden_cross_zero(
 				if signal_sell['diff_min_max_candle'][sell_counter] > tp_percent_minmax_sell_max:
 					signal_sell['diff_min_max_candle'][sell_counter] = tp_percent_minmax_sell_max
 					signal_sell['value_min_max_candle'][sell_counter] = signal_sell['value_min_max_candle'][sell_counter] * (1+((signal_sell['diff_min_max_candle'][sell_counter] - tp_percent_minmax_sell_max)/100))
+				
 				#Calculate porfits
 				#must read protect and resist from protect resist function
 				if (mode == 'optimize'):
@@ -703,10 +783,10 @@ def golden_cross_zero(
 						#///////////////////////////////////////////////////
 					if (name_stp_pr == True):
 						#Calculate ST and TP With Protect Resist Function
+						if (int(finding_points['index'][elm]) < 500): continue
+
 						dataset_pr_5M = pd.DataFrame()
-						dataset_pr_15M = pd.DataFrame()
 						dataset_pr_1H = pd.DataFrame()
-						dataset_pr_4H = pd.DataFrame()
 
 						cut_first = 0
 						if (int(finding_points['index'][elm]) > 2000):
@@ -717,47 +797,66 @@ def golden_cross_zero(
 						dataset_pr_5M['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 						dataset_pr_5M['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 
-						dataset_pr_15M['low'] = dataset_15M[symbol]['low'][int(cut_first/3):int(int(finding_points['index'][elm])/3)].reset_index(drop=True)
-						dataset_pr_15M['high'] = dataset_15M[symbol]['high'][int(cut_first/3):int(int(finding_points['index'][elm])/3)].reset_index(drop=True)
-						dataset_pr_15M['close'] = dataset_15M[symbol]['close'][int(cut_first/3):int(int(finding_points['index'][elm])/3)].reset_index(drop=True)
-						dataset_pr_15M['open'] = dataset_15M[symbol]['open'][int(cut_first/3):int(int(finding_points['index'][elm])/3)].reset_index(drop=True)
+						loc_1H = 0
+						location_1H = -1
+						for ti in dataset_1H[symbol]['time']:
+							#print('1H===> ',ti.year)
+							if (
+								ti.year == dataset[symbol]['time'][int(finding_points['index'][elm])].year and
+								ti.month == dataset[symbol]['time'][int(finding_points['index'][elm])].month and
+								ti.day == dataset[symbol]['time'][int(finding_points['index'][elm])].day and
+								ti.hour == dataset[symbol]['time'][int(finding_points['index'][elm])].hour
+								):
+								location_1H = loc_1H
 
-						dataset_pr_1H['low'] = dataset_1H[symbol]['low'][int(cut_first/24):int(int(finding_points['index'][elm])/12)].reset_index(drop=True)
-						dataset_pr_1H['high'] = dataset_1H[symbol]['high'][int(cut_first/24):int(int(finding_points['index'][elm])/12)].reset_index(drop=True)
-						dataset_pr_1H['close'] = dataset_1H[symbol]['close'][int(cut_first/24):int(int(finding_points['index'][elm])/12)].reset_index(drop=True)
-						dataset_pr_1H['open'] = dataset_1H[symbol]['open'][int(cut_first/24):int(int(finding_points['index'][elm])/12)].reset_index(drop=True)
+							loc_1H += 1
 
-						if int(int(finding_points['index'][elm])/48) < 60:
-							end_4H = 60
-						else:
-							end_4H = int(int(finding_points['index'][elm])/48)
+						cut_first_1H = 0
+						if location_1H >= 500:
+							cut_first_1H = location_1H - 500
 
-						dataset_pr_4H['low'] = dataset_4H[symbol]['low'][0:end_4H].reset_index(drop=True)
-						dataset_pr_4H['high'] = dataset_4H[symbol]['high'][0:end_4H].reset_index(drop=True)
-						dataset_pr_4H['close'] = dataset_4H[symbol]['close'][0:end_4H].reset_index(drop=True)
-						dataset_pr_4H['open'] = dataset_4H[symbol]['open'][0:end_4H].reset_index(drop=True)
+						dataset_pr_1H['low'] = dataset_1H[symbol]['low'][cut_first_1H:location_1H].reset_index(drop=True)
+						dataset_pr_1H['high'] = dataset_1H[symbol]['high'][cut_first_1H:location_1H].reset_index(drop=True)
+						dataset_pr_1H['close'] = dataset_1H[symbol]['close'][cut_first_1H:location_1H].reset_index(drop=True)
+						dataset_pr_1H['open'] = dataset_1H[symbol]['open'][cut_first_1H:location_1H].reset_index(drop=True)
+
 
 						res_pro = pd.DataFrame()
 					
 						try:
 							res_pro = protect_resist(
-													T_5M=True,T_15M=True,T_1H=True,T_4H=True,T_1D=False,
+													T_5M=True,
+													T_15M=False,
+													T_1H=True,
+													T_4H=False,
+													T_1D=False,
 													dataset_5M=dataset_pr_5M,
-													dataset_15M=dataset_pr_15M,
+													dataset_15M=dataset_pr_1H,
 													dataset_1H=dataset_pr_1H,
-													dataset_4H=dataset_pr_4H,
+													dataset_4H=dataset_pr_1H,
 													dataset_1D=dataset_pr_5M,
 													plot=False
 													)
+
 						except Exception as ex:
 							print('pr sell: ',ex)
 							res_pro['high'] = 'nan'
 							res_pro['low'] = 'nan'
 
 						if (res_pro.empty == False):
-							signal_sell['diff_pr_top'][sell_counter] = (((res_pro['high'][0] * 1.0001) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
-							signal_sell['diff_pr_down'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - (res_pro['low'][0] * 1.0001))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
 
+							signal_sell['diff_pr_top'][sell_counter] = (((res_pro['high'][0]) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
+							signal_sell['diff_pr_down'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - (res_pro['low'][0]))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
+
+							if signal_sell['diff_pr_down'][sell_counter] > tp_percent_minmax_sell_max:
+								signal_sell['diff_pr_down'][sell_counter] = tp_percent_minmax_sell_max
+								res_pro['low'][0] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(tp_percent_minmax_sell_max/100))
+							
+							if signal_sell['diff_pr_top'][sell_counter] <= signal_sell['diff_pr_down'][sell_counter]:
+								signal_sell['diff_pr_top'][sell_counter] = signal_sell['diff_pr_down'][sell_counter]
+								res_pro['high'][0] = dataset[symbol]['high'][int(finding_points['index'][elm])] * (1-(signal_sell['diff_pr_down'][sell_counter]/100))
+
+							"""
 							signal_sell['trend_long'][sell_counter] = res_pro['trend_long'][0].values[0]
 							signal_sell['trend_mid'][sell_counter] = res_pro['trend_mid'][0].values[0]
 							signal_sell['trend_short1'][sell_counter] = res_pro['trend_short1'][0].values[0]
@@ -767,23 +866,48 @@ def golden_cross_zero(
 							if signal_sell['trend_mid'][sell_counter] is np.nan: signal_sell['trend_mid'][sell_counter] = 'parcham'
 							if signal_sell['trend_short1'][sell_counter] is np.nan: signal_sell['trend_short1'][sell_counter] = 'parcham'
 							if signal_sell['trend_short2'][sell_counter] is np.nan: signal_sell['trend_short2'][sell_counter] = 'parcham'
+	
+							"""
+
+							dataset_5M_minmax = pd.DataFrame()
+
+							cut_first = 0
+							if (int(finding_points['index'][elm]) > 500):
+								cut_first = int(finding_points['index'][elm]) - 500
+
+							dataset_5M_minmax['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['close'] = dataset[symbol]['close'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['open'] = dataset[symbol]['open'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['HL/2'] = dataset[symbol]['HL/2'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['HLC/3'] = dataset[symbol]['HLC/3'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['HLCC/4'] = dataset[symbol]['HLCC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+							dataset_5M_minmax['OHLC/4'] = dataset[symbol]['OHLC/4'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
+
+							try:
+								trend_sma_5M = last_signal_sma(dataset_5M_minmax, symbol, time_frame = '5M')['signal'][0]
+							except Exception as ex:
+								print('sma trend buy: ',ex)
+								trend_sma_5M = 'no_flag'
 
 							if (
-								dataset[symbol]['low'][int(finding_points['index'][elm])] * 0.9996 > (res_pro['low'][0] * 1.0001) and
-								dataset[symbol]['high'][int(finding_points['index'][elm])] < (res_pro['high'][0] * 1.0001) and
+								dataset[symbol]['low'][int(finding_points['index'][elm])] * 0.9996 > (res_pro['low'][0]) and
+								dataset[symbol]['high'][int(finding_points['index'][elm])] < (res_pro['high'][0]) and
 								signal_sell['diff_pr_down'][sell_counter] >= signal_sell['diff_pr_top'][sell_counter] and
-								signal_sell['diff_pr_top'][sell_counter] <= 0.4
+								signal_sell['diff_pr_top'][sell_counter] <= st_percent_minmax_sell and
+								trend_sma_5M == 'sell'
 								):
-								if ((len(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values*1.0004) <= (res_pro['low'][0] * 1.0001)))[0]) - 1) > 1):
-									signal_sell['tp_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values*1.0004) <= (res_pro['low'][0] * 1.0001)))[0])
+
+								if ((len(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values*1.0004) <= (res_pro['low'][0])))[0]) - 1) > 1):
+									signal_sell['tp_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values*1.0004) <= (res_pro['low'][0])))[0])
 									signal_sell['tp_pr'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - dataset[symbol]['low'][signal_sell['tp_pr_index'][sell_counter]]*1.0004)/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
 								else:
 									signal_sell['tp_pr_index'][sell_counter] = -1
 									signal_sell['tp_pr'][sell_counter] = 0
 
-								if ((len(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]).values) >= (res_pro['high'][0] * 1.0006)))[0])-1) > 1):
-									signal_sell['st_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]).values) >= (res_pro['high'][0] * 1.0006)))[0])
-									signal_sell['st_pr'][sell_counter] = ((dataset[symbol]['high'][signal_sell['st_pr_index'][sell_counter]] - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
+								if ((len(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]).values) * 1.0004 >= (res_pro['high'][0])))[0])-1) > 1):
+									signal_sell['st_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]).values)*1.0004 >= (res_pro['high'][0])))[0])
+									signal_sell['st_pr'][sell_counter] = ((res_pro['high'][0] - dataset[symbol]['high'][int(finding_points['index'][elm])])/res_pro['high'][0]) * 100
 								else:
 									signal_sell['st_pr_index'][sell_counter] = -1
 									signal_sell['st_pr'][sell_counter] = 0
@@ -829,12 +953,22 @@ def golden_cross_zero(
 				sell_counter += 1
 
 		#////////////////////////////////////////////////////////////////////////////
-	#print('last index = ',signal_buy)
+	
+	#print('last index sell = ',signal_sell)
 
 	signal_buy = signal_buy.drop(columns=0)
 	signal_buy = signal_buy.dropna()
 	signal_buy = signal_buy.sort_values(by = ['index'])
 	signal_buy = signal_buy.reset_index(drop=True)
+
+	with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		logs('last index buy = {}'.format(signal_buy))
+
+	for elm in signal_buy['index']:
+		logs('time = > {}'.format(elm))
+
+	#for elm in signal_buy['index']:
+		#logs('time ====> '.format(dataset[symbol]['time'][elm]))
 
 	signal_sell = signal_sell.drop(columns=0)
 	signal_sell = signal_sell.dropna()
@@ -1154,7 +1288,10 @@ def tester_golden_cross_zero(
 
 			if output_buy['num_trade_min_max'][0] != 0:
 				if output_buy['num_st_min_max'][0] != 0:
-					score_num_tp = (tp_counter-output_buy['num_st_min_max'][0]) * 8
+					score_num_tp = (tp_counter-output_buy['num_st_min_max'][0])
+
+					if (tp_counter-output_buy['num_st_min_max'][0]) == 0:
+						score_num_tp = 8
 
 					if (score_num_tp > 0):
 						score_num_tp = score_num_tp * 9
@@ -1284,7 +1421,10 @@ def tester_golden_cross_zero(
 			if output_sell['num_trade_min_max'][0] != 0:
 
 				if output_sell['num_st_min_max'][0] != 0:
-					score_num_tp = (tp_counter-output_sell['num_st_min_max'][0]) * 8
+					score_num_tp = (tp_counter-output_sell['num_st_min_max'][0])
+
+					if (tp_counter-output_sell['num_st_min_max'][0]) == 0:
+						score_num_tp = 8
 
 					if (score_num_tp > 0):
 						score_num_tp = score_num_tp * 9
@@ -1357,30 +1497,30 @@ def tester_golden_cross_zero(
 			#diff_min_max_candle_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_candle',
 			# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-			diff_top_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_top',
-	 		min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+			#diff_top_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_top',
+	 		#min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
 			#diff_down_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_down',
 			# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-			#value_min_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
-			# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+			value_min_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
+			 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=0.04)
 
 			#value_max_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_max_cci',
-			# min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+			# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
 			list_index_ok = np.where(
 				#((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_pr_buy['interval'][lower]))&
 				#((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_pr_buy['interval'][lower]))&
 				#(signal_buy['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_buy['interval'][upper])&
-				((signal_buy['trend_long'].to_numpy()!='sell')&
-				((signal_buy['trend_mid'].to_numpy()!='sell')&
-				(signal_buy['trend_short1'].to_numpy()=='buy')&
-				(signal_buy['trend_short2'].to_numpy()=='buy')))
+				#((signal_buy['trend_long'].to_numpy()!='sell')&
+				#((signal_buy['trend_mid'].to_numpy()!='sell')&
+				#(signal_buy['trend_short1'].to_numpy()=='buy')&
+				#(signal_buy['trend_short2'].to_numpy()=='buy')))
 				#((signal_buy['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_buy['interval'][upper]))&
 				#((signal_buy['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_buy['interval'][upper]))&
 				#((signal_buy['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_buy['interval'][upper]))&
-				#((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))&
+				((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))
 				#((signal_buy['value_max_cci'].to_numpy()>=value_max_cci_pr_buy['interval'][lower]))
 				)[0]
 
@@ -1392,7 +1532,7 @@ def tester_golden_cross_zero(
 				output_buy['sum_st_pr'] = [np.sum(signal_buy['st_pr'][list_index_ok[np.where(signal_buy['flag_pr'][list_index_ok] == 'st')[0]]].to_numpy())]
 				output_buy['sum_tp_pr'] = [np.sum(signal_buy['tp_pr'][list_index_ok[np.where(signal_buy['flag_pr'][list_index_ok] == 'tp')[0]]].to_numpy())]
 			except Exception as ex:
-				print('tester pr buy: ',ex)
+				print('error tester pr buy: ',ex)
 				output_buy['sum_st_pr'] = 0
 				output_buy['sum_tp_pr'] = 0
 
@@ -1414,17 +1554,20 @@ def tester_golden_cross_zero(
 	#output_buy['diff_min_max_cci_lower_pr'] = [diff_min_max_cci_intervals_pr_buy['interval'][lower]]
 	#output_buy['diff_min_max_candle_upper_pr'] = [diff_min_max_candle_intervals_pr_buy['interval'][upper]]
 	#output_buy['diff_min_max_candle_lower_pr'] = [diff_min_max_candle_intervals_pr_buy['interval'][lower]]
-			output_buy['diff_top_upper_pr'] = [diff_top_intervals_pr_buy['interval'][upper]]
-			output_buy['diff_top_lower_pr'] = [diff_top_intervals_pr_buy['interval'][lower]]
+			#output_buy['diff_top_upper_pr'] = [diff_top_intervals_pr_buy['interval'][upper]]
+			#output_buy['diff_top_lower_pr'] = [diff_top_intervals_pr_buy['interval'][lower]]
 	#output_buy['diff_down_upper_pr'] = [diff_down_intervals_pr_buy['interval'][upper]]
 	#output_buy['diff_down_lower_pr'] = [diff_down_intervals_pr_buy['interval'][lower]]
 	#output_buy['value_max_lower_cci_pr'] = [value_max_cci_pr_buy['interval'][lower]]
-	#output_buy['value_min_upper_cci_pr'] = [value_min_cci_pr_buy['interval'][upper]]
+			output_buy['value_min_upper_cci_pr'] = [value_min_cci_pr_buy['interval'][upper]]
 
 			if output_buy['num_trade_pr'][0] != 0:
 
 				if output_buy['num_st_pr'][0] != 0:
-					score_num_tp = (tp_counter-output_buy['num_st_pr'][0]) * 8
+					score_num_tp = (tp_counter-output_buy['num_st_pr'][0])
+
+					if (tp_counter-output_buy['num_st_pr'][0]) == 0:
+						score_num_tp = 8
 
 					if (score_num_tp > 0):
 						score_num_tp = score_num_tp * 9
@@ -1517,28 +1660,28 @@ def tester_golden_cross_zero(
 			#diff_top_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_pr_top',
 	 		#min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-			diff_down_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_pr_down',
-	 		min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
+			#diff_down_intervals_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='diff_pr_down',
+	 		#min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
 			#value_min_cci_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_min_cci',
 	 		#min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
-			#value_max_cci_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_max_cci',
-	 		#min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
+			value_max_cci_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_max_cci',
+	 		min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=0.04)
 
 			list_index_ok = np.where(
 				#((signal_sell['ramp_low'].to_numpy()<=ramp_low_intervals_pr_sell['interval'][upper]))&
 				#((signal_sell['ramp_high'].to_numpy()<=ramp_high_intervals_pr_sell['interval'][upper]))&
 				#((signal_sell['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_sell['interval'][upper]))&
 				#(signal_sell['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_sell['interval'][upper])&
-				((signal_sell['trend_long'].to_numpy()!='buy')&
-				((signal_sell['trend_mid'].to_numpy()!='buy')&
-				(signal_sell['trend_short1'].to_numpy()=='sell')&
-				(signal_sell['trend_short2'].to_numpy()=='sell')))
+				#((signal_sell['trend_long'].to_numpy()!='buy')&
+				#((signal_sell['trend_mid'].to_numpy()!='buy')&
+				#(signal_sell['trend_short1'].to_numpy()=='sell')&
+				#(signal_sell['trend_short2'].to_numpy()=='sell')))
 				#((signal_sell['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_sell['interval'][upper]))&
 				#((signal_sell['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_sell['interval'][upper]))&
 				#((signal_sell['value_min_cci'].to_numpy()<=value_min_cci_pr_sell['interval'][upper]))&
-				#((signal_sell['value_max_cci'].to_numpy()>=value_max_cci_pr_sell['interval'][lower]))
+				((signal_sell['value_max_cci'].to_numpy()>=value_max_cci_pr_sell['interval'][lower]))
 				)[0]
 
 			output_sell['mean_tp_pr'] = [np.mean(signal_sell['tp_pr'][list_index_ok])]
@@ -1549,7 +1692,7 @@ def tester_golden_cross_zero(
 				output_sell['sum_st_pr'] = [np.sum(signal_sell['st_pr'][list_index_ok[np.where(signal_sell['flag_pr'][list_index_ok] == 'st')[0]]].to_numpy())]
 				output_sell['sum_tp_pr'] = [np.sum(signal_sell['tp_pr'][list_index_ok[np.where(signal_sell['flag_pr'][list_index_ok] == 'tp')[0]]].to_numpy())]
 			except Exception as ex:
-				print('tester pr sell: ',ex)
+				print('error tester pr sell: ',ex)
 				output_sell['sum_st_pr'] = 0
 				output_sell['sum_tp_pr'] = 0
 
@@ -1573,15 +1716,18 @@ def tester_golden_cross_zero(
 	#output_sell['diff_min_max_candle_lower_pr'] = [diff_min_max_candle_intervals_pr_sell['interval'][lower]]
 	#output_sell['diff_top_upper_pr'] = [diff_top_intervals_pr_sell['interval'][upper]]
 	#output_sell['diff_top_lower_pr'] = [diff_top_intervals_pr_sell['interval'][lower]]
-			output_sell['diff_down_upper_pr'] = [diff_down_intervals_pr_sell['interval'][upper]]
-			output_sell['diff_down_lower_pr'] = [diff_down_intervals_pr_sell['interval'][lower]]
-	#output_sell['value_max_lower_cci_pr'] = [value_max_cci_pr_sell['interval'][lower]]
+			#output_sell['diff_down_upper_pr'] = [diff_down_intervals_pr_sell['interval'][upper]]
+			#output_sell['diff_down_lower_pr'] = [diff_down_intervals_pr_sell['interval'][lower]]
+			output_sell['value_max_lower_cci_pr'] = [value_max_cci_pr_sell['interval'][lower]]
 	#output_sell['value_min_upper_cci_pr'] = [value_min_cci_pr_sell['interval'][upper]]
 
 			if output_sell['num_trade_pr'][0] != 0:
 
 				if output_sell['num_st_pr'][0] != 0:
-					score_num_tp = (tp_counter-output_sell['num_st_pr'][0]) * 8
+					score_num_tp = (tp_counter-output_sell['num_st_pr'][0])
+
+					if (tp_counter-output_sell['num_st_pr'][0]):
+						score_num_tp = 8
 
 					if (score_num_tp > 0):
 						score_num_tp = score_num_tp * 9
@@ -1675,8 +1821,8 @@ def initilize_values_genetic():
 	'low_period': 25,
 	'distance_lines': 2,
 	'cross_line': 0,
-	'max_st': 0.4,
-	'max_tp': 0.02,
+	'max_st': 0.2,
+	'max_tp': 0.6,
 	'signal': None,
 	'score_buy': 0,
 	'score_sell': 0
@@ -1958,9 +2104,12 @@ def genetic_algo_cci_golden_cross(
 													distance_lines=Chromosome[chrom_counter]['distance_lines'],
 													cross_line=-Chromosome[chrom_counter]['cross_line'],
 													mode='optimize',
-													name_stp_minmax=True,name_stp_pr=False,plot=False,
+													name_stp_minmax=False,
+													name_stp_pr=True,
+													plot=False,
 													pbar_flag=False,
-													buy_flag=True,sell_flag=False,
+													buy_flag=True,
+													sell_flag=False,
 													st_percent_minmax_buy=Chromosome[chrom_counter]['max_st'],
 													st_percent_minmax_sell=Chromosome[chrom_counter]['max_st'],
 													tp_percent_minmax_sell_min = Chromosome[chrom_counter]['max_st'],
@@ -1968,6 +2117,8 @@ def genetic_algo_cci_golden_cross(
 													tp_percent_minmax_buy_min = Chromosome[chrom_counter]['max_st'],
 													tp_percent_minmax_buy_max = Chromosome[chrom_counter]['max_tp']
 													)
+					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						#logs('=======> buy_data = {}'.format(buy_data))
 
 				if flag_trade == 'sell':
 					_, sell_data = golden_cross_zero(
@@ -1981,9 +2132,12 @@ def genetic_algo_cci_golden_cross(
 													distance_lines=Chromosome[chrom_counter]['distance_lines'],
 													cross_line=Chromosome[chrom_counter]['cross_line'],
 													mode='optimize',
-													name_stp_minmax=True,name_stp_pr=False,plot=False,
+													name_stp_minmax=False,
+													name_stp_pr=True,
+													plot=False,
 													pbar_flag=False,
-													buy_flag=False,sell_flag=True,
+													buy_flag=False,
+													sell_flag=True,
 													st_percent_minmax_buy=Chromosome[chrom_counter]['max_st'],
 													st_percent_minmax_sell=Chromosome[chrom_counter]['max_st'],
 													tp_percent_minmax_sell_min = Chromosome[chrom_counter]['max_st'],
@@ -1991,6 +2145,8 @@ def genetic_algo_cci_golden_cross(
 													tp_percent_minmax_buy_min = Chromosome[chrom_counter]['max_st'],
 													tp_percent_minmax_buy_max = Chromosome[chrom_counter]['max_tp']
 													)
+					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						#logs('=======> sell_data = {}'.format(sell_data))
 
 	
 				flag_golden_cross = False
@@ -2040,11 +2196,12 @@ def genetic_algo_cci_golden_cross(
 															min_tp=0.04,
 															max_st=Chromosome[chrom_counter]['max_st'],
 															alpha=Chromosome[chrom_counter]['max_tp'],
-															name_stp_minmax=True,name_stp_pr=False,
+															name_stp_minmax=False,
+															name_stp_pr=True,
 															flag_trade=flag_trade
 															)
 					with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						logs('=======> Buy = {}'.format(output_buy))
+						logs('=======> Output Buy = {}'.format(output_buy))
 
 				if flag_trade == 'sell':
 					_, output_sell = tester_golden_cross_zero(
@@ -2053,11 +2210,12 @@ def genetic_algo_cci_golden_cross(
 															min_tp=0.04,
 															max_st=Chromosome[chrom_counter]['max_st'],
 															alpha=Chromosome[chrom_counter]['max_tp'],
-															name_stp_minmax=True,name_stp_pr=False,
+															name_stp_minmax=False,
+															name_stp_pr=True,
 															flag_trade=flag_trade
 															)
 					with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						logs('=======> SELL = {}'.format(output_sell))
+						logs('=======> Output SELL = {}'.format(output_sell))
 
 				flag_tester = False
 			except Exception as ex:
@@ -2427,7 +2585,10 @@ def one_year_golden_cross_tester(
 				if output_buy['num_trade_min_max'][0] != 0:
 
 					if output_buy['num_st_min_max'][0] != 0:
-						score_num_tp = (tp_counter-output_buy['num_st_min_max'][0]) * 8
+						score_num_tp = (tp_counter-output_buy['num_st_min_max'][0])
+
+						if (tp_counter-output_buy['num_st_min_max'][0]) == 0:
+							score_num_tp = 8
 
 						if (score_num_tp > 0):
 							score_num_tp = score_num_tp * 9
@@ -2488,7 +2649,7 @@ def one_year_golden_cross_tester(
 
 				if np.isnan(output_buy['score_min_max'][0]) : output_buy['score_min_max'][0] = 0
 
-				logs('=========> Buy: {}'.format(symbol))
+				logs('=========> one year Buy: {}'.format(symbol))
 
 				logs('mean_tp_min_max= {}'.format(output_buy['mean_tp_min_max'][0]))
 				logs('mean_st_min_max= {}'.format(output_buy['mean_st_min_max'][0]))
@@ -2524,14 +2685,14 @@ def one_year_golden_cross_tester(
 					#((buy_data['ramp_low'].to_numpy()>=ga_result_buy['ramp_low_lower_pr'][0]))&
 					#((buy_data['ramp_high'].to_numpy()>=ga_result_buy['ramp_high_lower_pr'][0]))&
 					#((buy_data['diff_pr_top'].to_numpy()<=ga_result_buy['diff_top_upper_pr'][0]))
-					((buy_data['trend_long'].to_numpy()!='sell')&
-					((buy_data['trend_mid'].to_numpy()!='sell')&
-					(buy_data['trend_short1'].to_numpy()=='buy')&
-					(buy_data['trend_short2'].to_numpy()=='buy')))
+					#((buy_data['trend_long'].to_numpy()!='sell')&
+					#((buy_data['trend_mid'].to_numpy()!='sell')&
+					#(buy_data['trend_short1'].to_numpy()=='buy')&
+					#(buy_data['trend_short2'].to_numpy()=='buy')))
 					#((buy_data['diff_pr_down'].to_numpy()<=ga_result_buy['diff_down_upper_pr'][0]))&
 					#((buy_data['diff_min_max_cci'].to_numpy()<=ga_result_buy['diff_min_max_cci_upper_pr'][0]))&
 					#((buy_data['diff_min_max_candle'].to_numpy()<=ga_result_buy['diff_min_max_candle_upper_pr'][0]))&
-					#((buy_data['value_min_cci'].to_numpy()<=ga_result_buy['value_min_upper_cci_pr'][0]))&
+					((buy_data['value_min_cci'].to_numpy()<=ga_result_buy['value_min_upper_cci_pr'][0]))
 					#((buy_data['value_max_cci'].to_numpy()>=ga_result_buy['value_max_lower_cci_pr'][0]))
 					)[0]
 
@@ -2558,7 +2719,10 @@ def one_year_golden_cross_tester(
 				if output_buy['num_trade_pr'][0] != 0:
 
 					if output_buy['num_st_pr'][0] != 0:
-						score_num_tp = (tp_counter-output_buy['num_st_pr'][0]) * 8
+						score_num_tp = (tp_counter-output_buy['num_st_pr'][0])
+
+						if (tp_counter-output_buy['num_st_pr'][0]) == 0:
+							score_num_tp = 8
 
 						if (score_num_tp > 0):
 							score_num_tp = score_num_tp * 9
@@ -2618,7 +2782,7 @@ def one_year_golden_cross_tester(
 
 				if np.isnan(output_buy['score_pr'][0]) : output_buy['score_pr'][0] = 0
 
-				logs('=========> Buy: {}'.format(symbol))
+				logs('=========> one year Buy: {}'.format(symbol))
 
 				logs('mean_tp_pr= {}'.format(output_buy['mean_tp_pr'][0]))
 				logs('mean_st_pr= {}'.format(output_buy['mean_st_pr'][0]))
@@ -2726,7 +2890,10 @@ def one_year_golden_cross_tester(
 				if output_sell['num_trade_min_max'][0] != 0:
 
 					if output_sell['num_st_min_max'][0] != 0:
-						score_num_tp = (tp_counter-output_sell['num_st_min_max'][0]) * 8
+						score_num_tp = (tp_counter-output_sell['num_st_min_max'][0])
+
+						if (tp_counter-output_sell['num_st_min_max'][0]) == 0:
+							score_num_tp = 8
 
 						if (score_num_tp > 0):
 							score_num_tp = score_num_tp * 9
@@ -2786,7 +2953,7 @@ def one_year_golden_cross_tester(
 
 				if np.isnan(output_sell['score_min_max'][0]) : output_sell['score_min_max'][0] = 0
 
-				logs('=========> Sell: {}'.format(symbol))
+				logs('=========> one year Sell: {}'.format(symbol))
 
 				logs('mean_tp_min_max= {}'.format(output_sell['mean_tp_min_max'][0]))
 				logs('mean_st_min_max= {}'.format(output_sell['mean_st_min_max'][0]))
@@ -2822,14 +2989,14 @@ def one_year_golden_cross_tester(
 					#((sell_data['ramp_high'].to_numpy()<=ga_result_sell['ramp_high_upper_pr'][0]))&
 					#((sell_data['diff_pr_top'].to_numpy()<=ga_result_sell['diff_top_upper_pr'][0]))&
 					#((sell_data['diff_pr_down'].to_numpy()<=ga_result_sell['diff_down_upper_pr'][0]))
-					((sell_data['trend_long'].to_numpy()!='buy')&
-					((sell_data['trend_mid'].to_numpy()!='buy')&
-					(sell_data['trend_short1'].to_numpy()=='sell')&
-					(sell_data['trend_short2'].to_numpy()=='sell')))
+					#((sell_data['trend_long'].to_numpy()!='buy')&
+					#((sell_data['trend_mid'].to_numpy()!='buy')&
+					#(sell_data['trend_short1'].to_numpy()=='sell')&
+					#(sell_data['trend_short2'].to_numpy()=='sell')))
 					#((sell_data['diff_min_max_cci'].to_numpy()<=ga_result_sell['diff_min_max_cci_upper_pr'][0]))&
 					#((sell_data['diff_min_max_candle'].to_numpy()<=ga_result_sell['diff_min_max_candle_upper_pr'][0]))&
 					#((sell_data['value_min_cci'].to_numpy()<=ga_result_sell['value_min_upper_cci_pr'][0]))&
-					#((sell_data['value_max_cci'].to_numpy()>=ga_result_sell['value_max_lower_cci_pr'][0]))
+					((sell_data['value_max_cci'].to_numpy()>=ga_result_sell['value_max_lower_cci_pr'][0]))
 					)[0]
 
 				output_sell = pd.DataFrame()
@@ -2854,7 +3021,10 @@ def one_year_golden_cross_tester(
 				if output_sell['num_trade_pr'][0] != 0:
 
 					if output_sell['num_st_pr'][0] != 0:
-						score_num_tp = (tp_counter-output_sell['num_st_pr'][0]) * 8
+						score_num_tp = (tp_counter-output_sell['num_st_pr'][0])
+
+						if (tp_counter-output_sell['num_st_pr'][0]) == 0:
+							score_num_tp = 8
 
 						if (score_num_tp > 0):
 							score_num_tp = score_num_tp * 9
@@ -2914,7 +3084,7 @@ def one_year_golden_cross_tester(
 
 				if np.isnan(output_sell['score_pr'][0]) : output_sell['score_pr'][0] = 0
 
-				logs('=========> Sell: {}'.format(symbol))
+				logs('=========> one year Sell: {}'.format(symbol))
 
 				logs('mean_tp_pr= {}'.format(output_sell['mean_tp_pr'][0]))
 				logs('mean_st_pr= {}'.format(output_sell['mean_st_pr'][0]))
@@ -3328,10 +3498,10 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 """
 symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																							sym='GBPUSD_i',
-																							num_5M=12000,
-																							num_15M=4000,
-																							num_1H=500,
-																							num_4H=400
+																							num_5M=10,
+																							num_15M=10,
+																							num_1H=1,
+																							num_4H=4
 																							)
 
 print('data get')
@@ -3384,13 +3554,14 @@ for sym in symbol:
 
 	if sym.name == 'GBPUSD_i': continue
 	if sym.name == 'EURUSD_i': continue
+	break
 
 	symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																							sym=sym.name,
-																							num_5M=12000,
-																							num_15M=4000,
-																							num_1H=500,
-																							num_4H=400
+																							num_5M=10,
+																							num_15M=10,
+																							num_1H=1,
+																							num_4H=4
 																							)
 
 	try:
@@ -3448,33 +3619,33 @@ for sym in symbol:
 	#if sym.name == 'EURAUD_i': continue
 	#if sym.name == 'EURCAD_i': continue
 	#if sym.name == 'EURCHF_i': continue
-
+	break
 	symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																							sym=sym.name,
-																							num_5M=99000,
-																							num_15M=33000,
+																							num_5M=10,
+																							num_15M=10,
 																							num_1H=1,
 																							num_4H=1
 																							)
 
 	
 	print('****************************** ',sym.name,' ******************************')
-	one_year_golden_cross_tester(
-								dataset=symbol_data_5M,
-								dataset_15M=symbol_data_15M,
-								symbol_data_1H=symbol_data_1H,
-								symbol_data_4H=symbol_data_4H,
-								symbol=sym.name
-								)
+	#one_year_golden_cross_tester(
+								#dataset=symbol_data_5M,
+								#dataset_15M=symbol_data_15M,
+								#symbol_data_1H=symbol_data_1H,
+								#symbol_data_4H=symbol_data_4H,
+								#symbol=sym.name
+								#)
 #print(last_signal(dataset=symbol_data_5M,dataset_15M=symbol_data_15M,symbol='AUDCAD_i'))
 
-syms = 'GBPUSD_i'
+syms = 'EURUSD_i'
 
 symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																							sym=syms,
-																							num_5M=99000,
-																							num_15M=33000,
-																							num_1H=1,
+																							num_5M=3000,
+																							num_15M=1000,
+																							num_1H=8000,
 																							num_4H=1
 																							)
 
@@ -3498,93 +3669,97 @@ else:
 	pass
 
 signal_buy,_ = golden_cross_zero(
-	dataset=symbol_data_5M,
-	dataset_15M=symbol_data_15M,
-	dataset_1H=symbol_data_1H,
-	dataset_4H=symbol_data_4H,
-	symbol=syms,
-	Low_Period=ga_result_buy['low_period'][0],
-	High_Period=ga_result_buy['high_period'][0],
-	distance_lines=ga_result_buy['distance_lines'][0],
-	mode='optimize',
-	name_stp_minmax=True,
-	name_stp_pr=False,
-	plot=False,
-	pbar_flag=True,
-	buy_flag=True,
-	sell_flag=False,
-	st_percent_minmax_buy= ga_result_buy['max_st'][0],
-	st_percent_minmax_sell=0,
-	tp_percent_minmax_sell_min = 0,
-	tp_percent_minmax_sell_max = 0,
-	tp_percent_minmax_buy_min = ga_result_buy['max_st'][0],
-	tp_percent_minmax_buy_max = ga_result_buy['max_tp'][0]
-	)
+								dataset=symbol_data_5M,
+								dataset_15M=symbol_data_15M,
+								dataset_1H=symbol_data_1H,
+								dataset_4H=symbol_data_1H,
+								symbol=syms,
+								Low_Period=50,
+								High_Period=ga_result_buy['high_period'][0],
+								distance_lines=ga_result_buy['distance_lines'][0],
+								cross_line=-ga_result_buy['cross_line'][0],
+								mode='optimize',
+								name_stp_minmax=False,
+								name_stp_pr=True,
+								plot=False,
+								pbar_flag=True,
+								buy_flag=True,
+								sell_flag=False,
+								st_percent_minmax_buy= ga_result_buy['max_st'][0],
+								st_percent_minmax_sell=0,
+								tp_percent_minmax_sell_min = 0,
+								tp_percent_minmax_sell_max = 0,
+								tp_percent_minmax_buy_min = ga_result_buy['max_st'][0],
+								tp_percent_minmax_buy_max = ga_result_buy['max_tp'][0]
+								)
 
 _,signal_sell = golden_cross_zero(
-	dataset=symbol_data_5M,
-	dataset_15M=symbol_data_15M,
-	dataset_1H=symbol_data_1H,
-	dataset_4H=symbol_data_4H,
-	symbol=syms,
-	Low_Period=ga_result_sell['low_period'][0],
-	High_Period=ga_result_sell['high_period'][0],
-	distance_lines=ga_result_sell['distance_lines'][0],
-	mode='optimize',
-	name_stp_minmax=True,
-	name_stp_pr=False,
-	plot=False,
-	pbar_flag=True,
-	sell_flag=True,
-	buy_flag=False,
-	st_percent_minmax_buy= 0,
-	st_percent_minmax_sell=ga_result_sell['max_st'][0],
-	tp_percent_minmax_sell_min = ga_result_sell['max_st'][0],
-	tp_percent_minmax_sell_max = ga_result_sell['max_tp'][0],
-	tp_percent_minmax_buy_min = 0,
-	tp_percent_minmax_buy_max = 0
-	)
+								dataset=symbol_data_5M,
+								dataset_15M=symbol_data_15M,
+								dataset_1H=symbol_data_1H,
+								dataset_4H=symbol_data_4H,
+								symbol=syms,
+								Low_Period=50,
+								High_Period=ga_result_sell['high_period'][0],
+								distance_lines=ga_result_sell['distance_lines'][0],
+								cross_line=ga_result_sell['cross_line'][0],
+								mode='optimize',
+								name_stp_minmax=False,
+								name_stp_pr=True,
+								plot=False,
+								pbar_flag=True,
+								sell_flag=True,
+								buy_flag=False,
+								st_percent_minmax_buy= 0,
+								st_percent_minmax_sell=ga_result_sell['max_st'][0],
+								tp_percent_minmax_sell_min = ga_result_sell['max_st'][0],
+								tp_percent_minmax_sell_max = ga_result_sell['max_tp'][0],
+								tp_percent_minmax_buy_min = 0,
+								tp_percent_minmax_buy_max = 0
+								)
 
+print('buy =====> ',signal_buy)
+print('sell =====> ',signal_sell)
 
-print('===========> without filters MinMax Buy: ')
-print('mean tp = ',np.mean(signal_buy['tp_min_max']))
-print('mean st = ',np.mean(signal_buy['st_min_max']))
-print('max tp = ',np.max(signal_buy['tp_min_max']))
-print('max st = ',np.max(signal_buy['st_min_max']))
-print('sum st = ',np.sum(signal_buy['st_min_max'][np.where(signal_buy['flag_min_max'] == 'st')[0]].to_numpy()))
-print('sum tp = ',np.sum(signal_buy['tp_min_max'][np.where(signal_buy['flag_min_max'] == 'tp')[0]].to_numpy()))
+#print('===========> without filters MinMax Buy: ')
+#print('mean tp = ',np.mean(signal_buy['tp_min_max']))
+#print('mean st = ',np.mean(signal_buy['st_min_max']))
+#print('max tp = ',np.max(signal_buy['tp_min_max']))
+#print('max st = ',np.max(signal_buy['st_min_max']))
+#print('sum st = ',np.sum(signal_buy['st_min_max'][np.where(signal_buy['flag_min_max'] == 'st')[0]].to_numpy()))
+#print('sum tp = ',np.sum(signal_buy['tp_min_max'][np.where(signal_buy['flag_min_max'] == 'tp')[0]].to_numpy()))
 
-tp_counter = 0
-st_counter = 0
-for elm in signal_buy['flag_min_max']:
-	if (elm == 'tp'):
-		tp_counter += 1
-	if (elm == 'st'):
-		st_counter += 1
+#tp_counter = 0
+#st_counter = 0
+#for elm in signal_buy['flag_min_max']:
+	#if (elm == 'tp'):
+		#tp_counter += 1
+	#if (elm == 'st'):
+		#st_counter += 1
 
-print('tp = ',tp_counter)
-print('st = ',st_counter)
-print('full = ',st_counter + tp_counter)
+#print('tp = ',tp_counter)
+#print('st = ',st_counter)
+#print('full = ',st_counter + tp_counter)
 
-print('===========> without filters MinMax Sell: ')
-print('mean tp = ',np.mean(signal_sell['tp_min_max']))
-print('mean st = ',np.mean(signal_sell['st_min_max']))
-print('max tp = ',np.max(signal_sell['tp_min_max']))
-print('max st = ',np.max(signal_sell['st_min_max']))
-print('sum st = ',np.sum(signal_sell['st_min_max'][np.where(signal_sell['flag_min_max'] == 'st')[0]].to_numpy()))
-print('sum tp = ',np.sum(signal_sell['tp_min_max'][np.where(signal_sell['flag_min_max'] == 'tp')[0]].to_numpy()))
+#print('===========> without filters MinMax Sell: ')
+#print('mean tp = ',np.mean(signal_sell['tp_min_max']))
+#print('mean st = ',np.mean(signal_sell['st_min_max']))
+#print('max tp = ',np.max(signal_sell['tp_min_max']))
+#print('max st = ',np.max(signal_sell['st_min_max']))
+#print('sum st = ',np.sum(signal_sell['st_min_max'][np.where(signal_sell['flag_min_max'] == 'st')[0]].to_numpy()))
+#print('sum tp = ',np.sum(signal_sell['tp_min_max'][np.where(signal_sell['flag_min_max'] == 'tp')[0]].to_numpy()))
 
-tp_counter = 0
-st_counter = 0
-for elm in signal_sell['flag_min_max']:
-	if (elm == 'tp'):
-		tp_counter += 1
-	if (elm == 'st'):
-		st_counter += 1
+#tp_counter = 0
+#st_counter = 0
+#for elm in signal_sell['flag_min_max']:
+	#if (elm == 'tp'):
+		#tp_counter += 1
+	#if (elm == 'st'):
+		#st_counter += 1
 
-print('tp = ',tp_counter)
-print('st = ',st_counter)
-print('full = ',st_counter + tp_counter)
+#print('tp = ',tp_counter)
+#print('st = ',st_counter)
+#print('full = ',st_counter + tp_counter)
 
 print('============> PR Buy: ')
 
@@ -3606,44 +3781,6 @@ print('tp = ',tp_counter)
 print('st = ',st_counter)
 print('full = ',st_counter + tp_counter)
 
-
-#********************** PR WITH TREND ***************
-
-list_index_ok = np.where(
-	#((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_pr_buy['interval'][lower]))&
-	#((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_pr_buy['interval'][lower]))&
-	#(signal_buy['diff_pr_top'].to_numpy()>=signal_buy['diff_pr_down'].to_numpy()*1.2)&
-	#(signal_buy['diff_pr_down'].to_numpy()<=0.4)&
-	((signal_buy['trend_long'].to_numpy()!='sell')&
-	((signal_buy['trend_mid'].to_numpy()!='sell')&
-	(signal_buy['trend_short1'].to_numpy()=='buy')&
-	(signal_buy['trend_short2'].to_numpy()=='buy')))
-	#((signal_buy['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_buy['interval'][upper]))&
-	#((signal_buy['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_buy['interval'][upper]))&
-	#((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))
-	#((signal_buy['value_max_cci'].to_numpy()>=value_max_cci_pr_buy['interval'][lower]))
-	)[0]
-
-print('============> PR Trend Buy: ')
-
-print('mean tp = ',np.mean(signal_buy['tp_pr'][list_index_ok]))
-print('mean st = ',np.mean(signal_buy['st_pr'][list_index_ok]))
-print('max tp = ',np.max(signal_buy['tp_pr'][list_index_ok]))
-print('max st = ',np.max(signal_buy['st_pr'][list_index_ok]))
-print('sum st = ',np.sum(signal_buy['st_pr'][list_index_ok[np.where(signal_buy['flag_pr'][list_index_ok] == 'st')[0]]].to_numpy()))
-print('sum tp = ',np.sum(signal_buy['tp_pr'][list_index_ok[np.where(signal_buy['flag_pr'][list_index_ok] == 'tp')[0]]].to_numpy()))
-
-tp_counter = 0
-st_counter = 0
-for elm in signal_buy['flag_pr'][list_index_ok]:
-	if (elm == 'tp'):
-		tp_counter += 1
-	if (elm == 'st'):
-		st_counter += 1
-print('tp = ',tp_counter)
-print('st = ',st_counter)
-print('full = ',st_counter + tp_counter)
-
 print('============> PR Sell: ')
 
 print('mean tp = ',np.mean(signal_sell['tp_pr']))
@@ -3656,44 +3793,6 @@ print('sum tp = ',np.sum(signal_sell['tp_pr'][np.where(signal_sell['flag_pr'] ==
 tp_counter = 0
 st_counter = 0
 for elm in signal_sell['flag_pr']:
-	if (elm == 'tp'):
-		tp_counter += 1
-	if (elm == 'st'):
-		st_counter += 1
-print('tp = ',tp_counter)
-print('st = ',st_counter)
-print('full = ',st_counter + tp_counter)
-
-
-#********************** PR WITH TREND ***************
-
-list_index_ok = np.where(
-	#((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_pr_buy['interval'][lower]))&
-	#((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_pr_buy['interval'][lower]))&
-	#(signal_buy['diff_pr_top'].to_numpy()>=signal_buy['diff_pr_down'].to_numpy()*1.2)&
-	#(signal_buy['diff_pr_down'].to_numpy()<=0.4)&
-	((signal_sell['trend_long'].to_numpy()!='buy')&
-	((signal_sell['trend_mid'].to_numpy()!='buy')&
-	(signal_sell['trend_short1'].to_numpy()=='sell')&
-	(signal_sell['trend_short2'].to_numpy()=='sell')))
-	#((signal_buy['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_buy['interval'][upper]))&
-	#((signal_buy['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_buy['interval'][upper]))&
-	#((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))
-	#((signal_buy['value_max_cci'].to_numpy()>=value_max_cci_pr_buy['interval'][lower]))
-	)[0]
-
-print('============> PR Trend Sell: ')
-
-print('mean tp = ',np.mean(signal_sell['tp_pr'][list_index_ok]))
-print('mean st = ',np.mean(signal_sell['st_pr'][list_index_ok]))
-print('max tp = ',np.max(signal_sell['tp_pr'][list_index_ok]))
-print('max st = ',np.max(signal_sell['st_pr'][list_index_ok]))
-print('sum st = ',np.sum(signal_sell['st_pr'][list_index_ok[np.where(signal_sell['flag_pr'][list_index_ok] == 'st')[0]]].to_numpy()))
-print('sum tp = ',np.sum(signal_sell['tp_pr'][list_index_ok[np.where(signal_sell['flag_pr'][list_index_ok] == 'tp')[0]]].to_numpy()))
-
-tp_counter = 0
-st_counter = 0
-for elm in signal_sell['flag_pr'][list_index_ok]:
 	if (elm == 'tp'):
 		tp_counter += 1
 	if (elm == 'st'):

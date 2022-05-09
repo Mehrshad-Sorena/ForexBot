@@ -1,0 +1,2 @@
+score_min_max,score_pr,mean_tp_pr,mean_st_pr,max_tp_pr,max_st_pr,sum_st_pr,sum_tp_pr,num_tp_pr,num_st_pr,num_trade_pr,value_max_lower_cci_pr,methode,high_period,low_period,distance_lines,cross_line,max_st,max_tp,signal,score_buy,score_sell,value_min_upper_cci_pr
+nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,nan,0.0,nan,131.0,114.0,4.0,20.0,0.23,0.66,"buy,sell",0.0,306.777426999506,nan

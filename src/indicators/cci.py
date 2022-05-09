@@ -334,8 +334,8 @@ def golden_cross_zero(
 	#for elm in finding_points['index']:
 		#logs('time = {}'.format(dataset[symbol]['time'][elm]))
 
-	for elm in finding_points.index:
-		logs('time = > {}'.format(finding_points['index'][elm]))
+	#for elm in finding_points.index:
+		#logs('time = > {}'.format(finding_points['index'][elm]))
 
 	for elm in finding_points.index:
 
@@ -543,6 +543,10 @@ def golden_cross_zero(
 							if signal_buy['diff_pr_down'][buy_counter] <= signal_buy['diff_pr_top'][buy_counter]:
 								signal_buy['diff_pr_down'][buy_counter] = signal_buy['diff_pr_top'][buy_counter]
 								res_pro['low'][2] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(signal_buy['diff_pr_top'][buy_counter]/100))
+							
+							if signal_buy['diff_pr_down'][buy_counter] >= st_percent_minmax_buy:
+								signal_buy['diff_pr_down'][buy_counter] = st_percent_minmax_buy
+								res_pro['low'][2] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(st_percent_minmax_buy/100))
 							
 
 							"""
@@ -834,7 +838,7 @@ def golden_cross_zero(
 													dataset_15M=dataset_pr_1H,
 													dataset_1H=dataset_pr_1H,
 													dataset_4H=dataset_pr_1H,
-													dataset_1D=dataset_pr_5M,
+													dataset_1D=dataset_pr_1H,
 													plot=False
 													)
 
@@ -845,7 +849,7 @@ def golden_cross_zero(
 
 						if (res_pro.empty == False):
 
-							signal_sell['diff_pr_top'][sell_counter] = (((res_pro['high'][0]) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
+							signal_sell['diff_pr_top'][sell_counter] = (((res_pro['high'][2]) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
 							signal_sell['diff_pr_down'][sell_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - (res_pro['low'][0]))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
 
 							if signal_sell['diff_pr_down'][sell_counter] > tp_percent_minmax_sell_max:
@@ -854,7 +858,11 @@ def golden_cross_zero(
 							
 							if signal_sell['diff_pr_top'][sell_counter] <= signal_sell['diff_pr_down'][sell_counter]:
 								signal_sell['diff_pr_top'][sell_counter] = signal_sell['diff_pr_down'][sell_counter]
-								res_pro['high'][0] = dataset[symbol]['high'][int(finding_points['index'][elm])] * (1-(signal_sell['diff_pr_down'][sell_counter]/100))
+								res_pro['high'][2] = dataset[symbol]['high'][int(finding_points['index'][elm])] * (1+(signal_sell['diff_pr_down'][sell_counter]/100))
+
+							if signal_sell['diff_pr_top'][sell_counter] >= st_percent_minmax_sell:
+								signal_sell['diff_pr_top'][sell_counter] = st_percent_minmax_sell
+								res_pro['high'][2] = dataset[symbol]['high'][int(finding_points['index'][elm])] * (1+(st_percent_minmax_sell/100))
 
 							"""
 							signal_sell['trend_long'][sell_counter] = res_pro['trend_long'][0].values[0]
@@ -890,9 +898,26 @@ def golden_cross_zero(
 								print('sma trend buy: ',ex)
 								trend_sma_5M = 'no_flag'
 
+							#print('dataset[symbol][low] = ',dataset[symbol]['low'][int(finding_points['index'][elm])] * 0.9996)
+							#print('res_pro[low] = ',res_pro['low'][0])
+							#print(dataset[symbol]['low'][int(finding_points['index'][elm])] * 0.9996 > (res_pro['low'][0]))
+
+							#print('dataset[symbol][high] = ',dataset[symbol]['high'][int(finding_points['index'][elm])])
+							#print('res_pro[high] = ',res_pro['high'][2])
+							#print(dataset[symbol]['high'][int(finding_points['index'][elm])] < (res_pro['high'][2]))
+
+							#print('signal_sell[diff_pr_top] = ',signal_sell['diff_pr_top'][sell_counter])
+							#print('signal_sell[diff_pr_down] = ',signal_sell['diff_pr_down'][sell_counter])
+							#print(signal_sell['diff_pr_top'][sell_counter] <= signal_sell['diff_pr_down'][sell_counter])
+
+							#print('st_percent_minmax_sell = ',st_percent_minmax_sell)
+							#print(signal_sell['diff_pr_top'][sell_counter] <= st_percent_minmax_sell)
+
+							#print('trend_sma_5M = ',trend_sma_5M)
+
 							if (
 								dataset[symbol]['low'][int(finding_points['index'][elm])] * 0.9996 > (res_pro['low'][0]) and
-								dataset[symbol]['high'][int(finding_points['index'][elm])] < (res_pro['high'][0]) and
+								dataset[symbol]['high'][int(finding_points['index'][elm])] < (res_pro['high'][2]) and
 								signal_sell['diff_pr_down'][sell_counter] >= signal_sell['diff_pr_top'][sell_counter] and
 								signal_sell['diff_pr_top'][sell_counter] <= st_percent_minmax_sell and
 								trend_sma_5M == 'sell'
@@ -905,9 +930,9 @@ def golden_cross_zero(
 									signal_sell['tp_pr_index'][sell_counter] = -1
 									signal_sell['tp_pr'][sell_counter] = 0
 
-								if ((len(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]).values) * 1.0004 >= (res_pro['high'][0])))[0])-1) > 1):
-									signal_sell['st_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]).values)*1.0004 >= (res_pro['high'][0])))[0])
-									signal_sell['st_pr'][sell_counter] = ((res_pro['high'][0] - dataset[symbol]['high'][int(finding_points['index'][elm])])/res_pro['high'][0]) * 100
+								if ((len(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]).values) * 1.0004 >= (res_pro['high'][2])))[0])-1) > 1):
+									signal_sell['st_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where((((dataset[symbol]['high'][int(finding_points['index'][elm]):-1]).values)*1.0004 >= (res_pro['high'][2])))[0])
+									signal_sell['st_pr'][sell_counter] = ((res_pro['high'][2] - dataset[symbol]['high'][int(finding_points['index'][elm])])/res_pro['high'][2]) * 100
 								else:
 									signal_sell['st_pr_index'][sell_counter] = -1
 									signal_sell['st_pr'][sell_counter] = 0
@@ -964,8 +989,8 @@ def golden_cross_zero(
 	with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 		logs('last index buy = {}'.format(signal_buy))
 
-	for elm in signal_buy['index']:
-		logs('time = > {}'.format(elm))
+	#for elm in signal_buy['index']:
+		#logs('time = > {}'.format(elm))
 
 	#for elm in signal_buy['index']:
 		#logs('time ====> '.format(dataset[symbol]['time'][elm]))
@@ -974,6 +999,9 @@ def golden_cross_zero(
 	signal_sell = signal_sell.dropna()
 	signal_sell = signal_sell.sort_values(by = ['index'])
 	signal_sell = signal_sell.reset_index(drop=True)
+
+	with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		logs('last index sell = {}'.format(signal_sell))
 
 	#print('last index = ',signal_buy)
 

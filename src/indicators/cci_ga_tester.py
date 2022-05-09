@@ -102,22 +102,27 @@ def ga_optimizer():
 		if os.path.exists(buy_path):
 			print('*********** Optimizer Buy *')
 
-			symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
-																									sym=sym.name,
-																									num_5M=99000,
-																									num_15M=1,
-																									num_1H=8250,
-																									num_4H=1
-																									)
+			ga_result_buy, _ = read_ga_result(symbol=sym.name)
 
-			one_year_golden_cross_tester(
-										dataset=symbol_data_5M,
-										dataset_15M=symbol_data_15M,
-										symbol_data_1H=symbol_data_1H,
-										symbol_data_4H=symbol_data_4H,
-										symbol=sym.name,
-										flag_trade='buy'
-										)
+			if 'permit' not in ga_result_buy.columns:
+
+
+				symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
+																										sym=sym.name,
+																										num_5M=99000,
+																										num_15M=1,
+																										num_1H=8250,
+																										num_4H=1
+																										)
+
+				one_year_golden_cross_tester(
+											dataset=symbol_data_5M,
+											dataset_15M=symbol_data_15M,
+											symbol_data_1H=symbol_data_1H,
+											symbol_data_4H=symbol_data_4H,
+											symbol=sym.name,
+											flag_trade='buy'
+											)
 
 			ga_result_buy, _ = read_ga_result(symbol=sym.name)
 
@@ -125,7 +130,7 @@ def ga_optimizer():
 
 				symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																									sym=sym.name,
-																									num_5M=8000,
+																									num_5M=4000,
 																									num_15M=1,
 																									num_1H=8000,
 																									num_4H=1
@@ -166,22 +171,25 @@ def ga_optimizer():
 		if os.path.exists(sell_path):
 			print('*********** Optimizer Sell *')
 
-			symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
-																									sym=sym.name,
-																									num_5M=99000,
-																									num_15M=1,
-																									num_1H=8250,
-																									num_4H=1
-																									)
+			_, ga_result_sell = read_ga_result(symbol=sym.name)
 
-			one_year_golden_cross_tester(
-										dataset=symbol_data_5M,
-										dataset_15M=symbol_data_15M,
-										symbol_data_1H=symbol_data_1H,
-										symbol_data_4H=symbol_data_4H,
-										symbol=sym.name,
-										flag_trade='sell'
-										)
+			if 'permit' not in ga_result_sell.columns:
+				symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
+																										sym=sym.name,
+																										num_5M=99000,
+																										num_15M=1,
+																										num_1H=8250,
+																										num_4H=1
+																										)
+
+				one_year_golden_cross_tester(
+											dataset=symbol_data_5M,
+											dataset_15M=symbol_data_15M,
+											symbol_data_1H=symbol_data_1H,
+											symbol_data_4H=symbol_data_4H,
+											symbol=sym.name,
+											flag_trade='sell'
+											)
 
 			_, ga_result_sell = read_ga_result(symbol=sym.name)
 
@@ -189,7 +197,7 @@ def ga_optimizer():
 
 				symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																									sym=sym.name,
-																									num_5M=8000,
+																									num_5M=4000,
 																									num_15M=1,
 																									num_1H=8000,
 																									num_4H=1

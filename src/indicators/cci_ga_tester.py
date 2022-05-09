@@ -41,26 +41,26 @@ def ga_optimizer():
 	for sym in symbols:
 
 		if not (
-			sym.name == 'AUDCAD_i' or
-			sym.name == 'AUDCHF_i' or
-			sym.name == 'AUDUSD_i' or
-			sym.name == 'CADJPY_i' or
-			sym.name == 'EURAUD_i' or
-			sym.name == 'EURCAD_i' or
-			sym.name == 'EURCHF_i' or
-			sym.name == 'EURGBP_i' or
-			sym.name == 'EURUSD_i' or
-			sym.name == 'EURJPY_i' or
-			sym.name == 'GBPAUD_i' or
-			sym.name == 'GBPCAD_i' or
-			sym.name == 'GBPJPY_i' or
-			sym.name == 'GBPUSD_i' or
-			sym.name == 'USDJPY_i' or
-			sym.name == 'USDCAD_i' or
+			#sym.name == 'AUDCAD_i' or
+			#sym.name == 'AUDCHF_i' or
+			#sym.name == 'AUDUSD_i' or
+			#sym.name == 'CADJPY_i' or
+			#sym.name == 'EURAUD_i' or
+			#sym.name == 'EURCAD_i' or
+			#sym.name == 'EURCHF_i' or
+			#sym.name == 'EURGBP_i' or
+			#sym.name == 'EURUSD_i' or
+			#sym.name == 'EURJPY_i' or
+			#sym.name == 'GBPAUD_i' or
+			#sym.name == 'GBPCAD_i' or
+			#sym.name == 'GBPJPY_i' or
+			#sym.name == 'GBPUSD_i' or
+			#sym.name == 'USDJPY_i' or
+			#sym.name == 'USDCAD_i' or
 			sym.name == 'XAUUSD_i'
 			): continue
 
-		if sym.name != 'GBPUSD_i': continue
+		#if sym.name != 'GBPUSD_i': continue
 
 		symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																								sym=sym.name,
@@ -80,7 +80,7 @@ def ga_optimizer():
 					symbol_data_1H=symbol_data_1H,
 					symbol_data_4H=symbol_data_4H,
 					symbol=sym.name,
-					num_turn=2000,
+					num_turn=500,
 					max_score_ga_buy=2,
 					max_score_ga_sell=2,
 					flag_trade='buy'
@@ -93,7 +93,7 @@ def ga_optimizer():
 					symbol_data_1H=symbol_data_1H,
 					symbol_data_4H=symbol_data_4H,
 					symbol=sym.name,
-					num_turn=2000,
+					num_turn=500,
 					max_score_ga_buy=2,
 					max_score_ga_sell=2,
 					flag_trade='sell'

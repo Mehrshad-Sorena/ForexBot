@@ -1,2 +1,0 @@
-,mean_tp_min_max,mean_st_min_max,max_tp_min_max,max_st_min_max,sum_st_min_max,sum_tp_min_max,num_tp_min_max,num_st_min_max,num_trade_min_max,score_min_max,score_pr,methode,high_period,low_period,distance_lines,min_tp,max_st,max_tp,signal,score_buy,score_sell,permit
-0,0.0110710426939413,0.0033875532602922,0.4843654005299341,0.1622271026392436,0.0,0.9963938424547252,3,0,3,59.92915671248857,0,min_max,143,70,2,0.24,0.1,0.43,sell,1.3987655591906063,29.964578356244285,False

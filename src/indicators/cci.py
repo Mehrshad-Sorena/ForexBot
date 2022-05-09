@@ -2221,7 +2221,7 @@ def genetic_algo_cci_golden_cross(
 					output_buy, _ = tester_golden_cross_zero(
 															signal_buy=buy_data,
 															signal_sell=buy_data,
-															min_tp=0.04,
+															min_tp=0.01,
 															max_st=Chromosome[chrom_counter]['max_st'],
 															alpha=Chromosome[chrom_counter]['max_tp'],
 															name_stp_minmax=False,
@@ -2235,7 +2235,7 @@ def genetic_algo_cci_golden_cross(
 					_, output_sell = tester_golden_cross_zero(
 															signal_buy=sell_data,
 															signal_sell=sell_data,
-															min_tp=0.04,
+															min_tp=0.01,
 															max_st=Chromosome[chrom_counter]['max_st'],
 															alpha=Chromosome[chrom_counter]['max_tp'],
 															name_stp_minmax=False,

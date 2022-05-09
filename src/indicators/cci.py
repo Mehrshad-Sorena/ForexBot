@@ -541,8 +541,8 @@ def golden_cross_zero(
 								res_pro['high'][0] = dataset[symbol]['high'][int(finding_points['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
 							
 							if signal_buy['diff_pr_down'][buy_counter] <= signal_buy['diff_pr_top'][buy_counter]:
-								signal_buy['diff_pr_down'][buy_counter] = signal_buy['diff_pr_top'][buy_counter]
-								res_pro['low'][2] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(signal_buy['diff_pr_top'][buy_counter]/100))
+								signal_buy['diff_pr_down'][buy_counter] = st_percent_minmax_buy
+								res_pro['low'][2] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(st_percent_minmax_buy/100))
 							
 							#if signal_buy['diff_pr_down'][buy_counter] >= st_percent_minmax_buy:
 								#signal_buy['diff_pr_down'][buy_counter] = st_percent_minmax_buy
@@ -857,8 +857,8 @@ def golden_cross_zero(
 								res_pro['low'][0] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(tp_percent_minmax_sell_max/100))
 							
 							if signal_sell['diff_pr_top'][sell_counter] <= signal_sell['diff_pr_down'][sell_counter]:
-								signal_sell['diff_pr_top'][sell_counter] = signal_sell['diff_pr_down'][sell_counter]
-								res_pro['high'][2] = dataset[symbol]['high'][int(finding_points['index'][elm])] * (1+(signal_sell['diff_pr_down'][sell_counter]/100))
+								signal_sell['diff_pr_top'][sell_counter] = st_percent_minmax_sell
+								res_pro['high'][2] = dataset[symbol]['high'][int(finding_points['index'][elm])] * (1+(st_percent_minmax_sell/100))
 
 							#if signal_sell['diff_pr_top'][sell_counter] >= st_percent_minmax_sell:
 								#signal_sell['diff_pr_top'][sell_counter] = st_percent_minmax_sell

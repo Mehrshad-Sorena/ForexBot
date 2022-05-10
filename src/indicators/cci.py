@@ -1885,13 +1885,14 @@ def initilize_values_genetic():
 	i = 2
 	while i < 20:
 		max_tp = randint(10, 80)/100
-		max_st = randint(10, 80)/100
-		while max_tp <= max_st:
+		max_st = randint(10, 70)/100
+		
+		while max_tp < max_st:
 			max_tp = randint(10, 80)/100
-			max_st = randint(10, 80)/100
+			max_st = randint(10, 70)/100
 
 		Chromosome[i] = {
-			'high_period': randint(5, 150),
+			'high_period': randint(5, 170),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
 			'cross_line': randint(0, 300),
@@ -1901,7 +1902,8 @@ def initilize_values_genetic():
 			'score_buy': 0,
 			'score_sell': 0
 			}
-		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']) + 10: continue
+
+		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period'] + 10): continue
 		res = list(Chromosome[i].keys()) 
 		#print(res[1])
 		#print(Chromosome[i][res[1]])
@@ -1932,13 +1934,13 @@ def gen_creator(Chromosome):
 	while (baby_counter_create < (len(Chromosome) * 2)):
 		
 		max_tp = randint(10, 80)/100
-		max_st = randint(10, 80)/100
+		max_st = randint(10, 70)/100
 		while max_tp <= max_st:
 			max_tp = randint(10, 80)/100
-			max_st = randint(10, 80)/100
+			max_st = randint(10, 70)/100
 
 		baby[baby_counter_create] = {
-			'high_period': randint(5, 150),
+			'high_period': randint(5, 170),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
 			'cross_line': randint(0, 300),
@@ -1994,13 +1996,13 @@ def gen_creator(Chromosome):
 	limit_counter = len(Chromosome) * 2 
 	while i < (limit_counter):
 		max_tp = randint(10, 80)/100
-		max_st = randint(10, 80)/100
+		max_st = randint(10, 70)/100
 		while max_tp <= max_st:
 			max_tp = randint(10, 80)/100
-			max_st = randint(10, 80)/100
+			max_st = randint(10, 70)/100
 
 		Chromosome[i] = {
-			'high_period': randint(5, 150),
+			'high_period': randint(5, 170),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
 			'cross_line': randint(0, 300),
@@ -2011,7 +2013,7 @@ def gen_creator(Chromosome):
 			'score_sell': 0
 			}
 
-		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']) + 10: continue
+		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period'] + 10): continue
 		i += 1
 
 	re_counter = 0
@@ -2206,17 +2208,17 @@ def genetic_algo_cci_golden_cross(
 
 			if flag_golden_cross:
 				Chromosome.pop(chrom_counter)
-				high_period = randint(5, 150)
+				high_period = randint(5, 170)
 				low_period = randint(5, 150)
 				while high_period <= low_period + 10:
-					high_period = randint(5, 150)
+					high_period = randint(5, 170)
 					low_period = randint(5, 150)
 
 				max_tp = randint(10, 80)/100
-				max_st = randint(10, 80)/100
+				max_st = randint(10, 70)/100
 				while max_tp <= max_st:
 					max_tp = randint(10, 80)/100
-					max_st = randint(10, 80)/100
+					max_st = randint(10, 70)/100
 
 				Chromosome[chrom_counter] = {
 					'high_period': high_period,
@@ -2267,17 +2269,17 @@ def genetic_algo_cci_golden_cross(
 
 			if flag_tester:
 				Chromosome.pop(chrom_counter)
-				high_period = randint(5, 150)
+				high_period = randint(5, 170)
 				low_period = randint(5, 150)
 				while high_period <= low_period + 10:
-					high_period = randint(5, 150)
+					high_period = randint(5, 170)
 					low_period = randint(5, 150)
 
 				max_tp = randint(10, 80)/100
-				max_st = randint(10, 80)/100
+				max_st = randint(10, 70)/100
 				while max_tp <= max_st:
 					max_tp = randint(10, 80)/100
-					max_st = randint(10, 80)/100
+					max_st = randint(10, 70)/100
 
 				Chromosome[chrom_counter] = {
 					'high_period': high_period,
@@ -2353,17 +2355,17 @@ def genetic_algo_cci_golden_cross(
 				if bad_buy == True:
 
 					Chromosome.pop(chrom_counter)
-					high_period = randint(5, 150)
+					high_period = randint(5, 170)
 					low_period = randint(5, 150)
 					while high_period <= low_period + 10:
-						high_period = randint(5, 150)
+						high_period = randint(5, 170)
 						low_period = randint(5, 150)
 
 					max_tp = randint(10, 80)/100
-					max_st = randint(10, 80)/100
+					max_st = randint(10, 70)/100
 					while max_tp <= max_st:
 						max_tp = randint(10, 80)/100
-						max_st = randint(10, 80)/100
+						max_st = randint(10, 70)/100
 
 					Chromosome[chrom_counter] = {
 						'high_period': high_period,
@@ -2382,17 +2384,17 @@ def genetic_algo_cci_golden_cross(
 				if bad_sell == True:
 
 					Chromosome.pop(chrom_counter)
-					high_period = randint(5, 150)
+					high_period = randint(5, 170)
 					low_period = randint(5, 150)
 					while high_period <= low_period + 10:
-						high_period = randint(5, 150)
+						high_period = randint(5, 170)
 						low_period = randint(5, 150)
 
 					max_tp = randint(10, 80)/100
-					max_st = randint(10, 80)/100
+					max_st = randint(10, 70)/100
 					while max_tp <= max_st:
 						max_tp = randint(10, 80)/100
-						max_st = randint(10, 80)/100
+						max_st = randint(10, 70)/100
 
 					Chromosome[chrom_counter] = {
 						'high_period': high_period,

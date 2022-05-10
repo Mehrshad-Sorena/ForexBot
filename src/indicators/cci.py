@@ -499,6 +499,8 @@ def golden_cross_zero(
 						print('5M =====> ',dataset[symbol]['time'][int(finding_points['index'][elm])])
 						print('1H =====> ',dataset_1H[symbol]['time'][location_1H])
 
+						if location_1H < 500: continue
+
 						cut_first_1H = 0
 						if location_1H >= 500:
 							cut_first_1H = location_1H - 500
@@ -815,6 +817,8 @@ def golden_cross_zero(
 
 							loc_1H += 1
 
+						if location_1H < 500: continue
+
 						cut_first_1H = 0
 						if location_1H >= 500:
 							cut_first_1H = location_1H - 500
@@ -1041,9 +1045,11 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 										(signals['st_pr']>max_st)|
 										(signals['tp_pr']<min_tp)
 										)[0])
+
 			#(signals['diff_pr_down']>max_st)
 
 		if (signal_good.empty == True): 
+			print('no good signal 1')
 			best_signals_interval = pd.DataFrame()
 			best_signals_interval['interval'] = [0,0,0]
 			best_signals_interval['power'] = [0,0,0]
@@ -1060,7 +1066,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 		if (len(signal_good[apply_to].to_numpy()) - 1) >= 25:
 			n_clusters = 5
 		else:
-			n_clusters = int((len(signal_good[apply_to].to_numpy()) - 1)/4)
+			n_clusters = int(len(signal_good[apply_to].to_numpy())/4)
 			if (n_clusters <= 0):
 				best_signals_interval = pd.DataFrame()
 				best_signals_interval['interval'] = [0,0,0]
@@ -1108,7 +1114,15 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 	while True:
 		
 		try:
-			f = Fitter(data = data_X, xmin=np.min(data_X), xmax=np.max(data_X), bins = len(signal_final['Y']), distributions = distributions, timeout=30, density=True)
+			f = Fitter(
+					data = data_X,
+					xmin=np.min(data_X),
+					xmax=np.max(data_X), 
+					bins = len(signal_final['Y'])-1, 
+					distributions = distributions, 
+					timeout=30, 
+					density=True
+					)
 	
 			f.fit(amp=1, progress=False, n_jobs=-1)
 	
@@ -1119,7 +1133,8 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 			items = list(f.get_best(method = 'sumsquare_error').items())
 			dist_name = items[0][0]
 			dist_parameters = items[0][1]
-		except:
+		except Exception as ex:
+			print('Find Best ERROR = ',ex)
 			best_signals_interval = pd.DataFrame()
 			best_signals_interval['interval'] = [0,0,0]
 			best_signals_interval['power'] = [0,0,0]
@@ -1849,7 +1864,7 @@ def initilize_values_genetic():
 	'low_period': 25,
 	'distance_lines': 2,
 	'cross_line': 0,
-	'max_st': 0.2,
+	'max_st': 0.4,
 	'max_tp': 0.6,
 	'signal': None,
 	'score_buy': 0,
@@ -1861,8 +1876,8 @@ def initilize_values_genetic():
 	'low_period': 50,
 	'distance_lines': 4,
 	'cross_line': 100,
-	'max_st': 0.1,
-	'max_tp': 0.2,
+	'max_st': 0.5,
+	'max_tp': 0.5,
 	'signal': None,
 	'score_buy': 0,
 	'score_sell': 0
@@ -1870,23 +1885,23 @@ def initilize_values_genetic():
 	i = 2
 	while i < 20:
 		max_tp = randint(10, 80)/100
-		min_tp = randint(10, 50)/100
-		while max_tp <= min_tp:
+		max_st = randint(10, 80)/100
+		while max_tp <= max_st:
 			max_tp = randint(10, 80)/100
-			min_tp = randint(10, 50)/100
+			max_st = randint(10, 80)/100
 
 		Chromosome[i] = {
 			'high_period': randint(5, 150),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
 			'cross_line': randint(0, 300),
-			'max_st': randint(10, 50)/100,
+			'max_st': max_st,
 			'max_tp': max_tp,
 			'signal': None,
 			'score_buy': 0,
 			'score_sell': 0
 			}
-		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']): continue
+		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']) + 10: continue
 		res = list(Chromosome[i].keys()) 
 		#print(res[1])
 		#print(Chromosome[i][res[1]])
@@ -1917,17 +1932,17 @@ def gen_creator(Chromosome):
 	while (baby_counter_create < (len(Chromosome) * 2)):
 		
 		max_tp = randint(10, 80)/100
-		min_tp = randint(10, 50)/100
-		while max_tp <= min_tp:
+		max_st = randint(10, 80)/100
+		while max_tp <= max_st:
 			max_tp = randint(10, 80)/100
-			min_tp = randint(10, 50)/100
+			max_st = randint(10, 80)/100
 
 		baby[baby_counter_create] = {
 			'high_period': randint(5, 150),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
 			'cross_line': randint(0, 300),
-			'max_st': randint(10, 50)/100,
+			'max_st': max_st,
 			'max_tp': max_tp,
 			'signal': None,
 			'score_buy': 0,
@@ -1979,24 +1994,24 @@ def gen_creator(Chromosome):
 	limit_counter = len(Chromosome) * 2 
 	while i < (limit_counter):
 		max_tp = randint(10, 80)/100
-		min_tp = randint(10, 50)/100
-		while max_tp <= min_tp:
+		max_st = randint(10, 80)/100
+		while max_tp <= max_st:
 			max_tp = randint(10, 80)/100
-			min_tp = randint(10, 50)/100
+			max_st = randint(10, 80)/100
 
 		Chromosome[i] = {
 			'high_period': randint(5, 150),
 			'low_period': randint(5, 150),
 			'distance_lines': randint(0, 6),
 			'cross_line': randint(0, 300),
-			'max_st': randint(10, 50)/100,
+			'max_st': max_st,
 			'max_tp': max_tp,
 			'signal': None,
 			'score_buy': 0,
 			'score_sell': 0
 			}
 
-		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']): continue
+		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period']) + 10: continue
 		i += 1
 
 	re_counter = 0
@@ -2193,22 +2208,22 @@ def genetic_algo_cci_golden_cross(
 				Chromosome.pop(chrom_counter)
 				high_period = randint(5, 150)
 				low_period = randint(5, 150)
-				while high_period <= low_period:
+				while high_period <= low_period + 10:
 					high_period = randint(5, 150)
 					low_period = randint(5, 150)
 
 				max_tp = randint(10, 80)/100
-				min_tp = randint(10, 50)/100
-				while max_tp <= min_tp:
+				max_st = randint(10, 80)/100
+				while max_tp <= max_st:
 					max_tp = randint(10, 80)/100
-					min_tp = randint(10, 50)/100
+					max_st = randint(10, 80)/100
 
 				Chromosome[chrom_counter] = {
 					'high_period': high_period,
 					'low_period': low_period,
 					'distance_lines': randint(0, 6),
 					'cross_line': randint(0, 300),
-					'max_st': randint(10, 50)/100,
+					'max_st': max_st,
 					'max_tp': max_tp,
 					'signal': None,
 					'score_buy': 0,
@@ -2254,22 +2269,22 @@ def genetic_algo_cci_golden_cross(
 				Chromosome.pop(chrom_counter)
 				high_period = randint(5, 150)
 				low_period = randint(5, 150)
-				while high_period <= low_period:
+				while high_period <= low_period + 10:
 					high_period = randint(5, 150)
 					low_period = randint(5, 150)
 
 				max_tp = randint(10, 80)/100
-				min_tp = randint(10, 50)/100
-				while max_tp <= min_tp:
+				max_st = randint(10, 80)/100
+				while max_tp <= max_st:
 					max_tp = randint(10, 80)/100
-					min_tp = randint(10, 50)/100
+					max_st = randint(10, 80)/100
 
 				Chromosome[chrom_counter] = {
 					'high_period': high_period,
 					'low_period': low_period,
 					'distance_lines': randint(0, 6),
 					'cross_line': randint(0, 300),
-					'max_st': randint(10, 50)/100,
+					'max_st': max_st,
 					'max_tp': max_tp,
 					'signal': None,
 					'score_buy': 0,
@@ -2340,22 +2355,22 @@ def genetic_algo_cci_golden_cross(
 					Chromosome.pop(chrom_counter)
 					high_period = randint(5, 150)
 					low_period = randint(5, 150)
-					while high_period <= low_period:
+					while high_period <= low_period + 10:
 						high_period = randint(5, 150)
 						low_period = randint(5, 150)
 
 					max_tp = randint(10, 80)/100
-					min_tp = randint(10, 50)/100
-					while max_tp <= min_tp:
+					max_st = randint(10, 80)/100
+					while max_tp <= max_st:
 						max_tp = randint(10, 80)/100
-						min_tp = randint(10, 50)/100
+						max_st = randint(10, 80)/100
 
 					Chromosome[chrom_counter] = {
 						'high_period': high_period,
 						'low_period': low_period,
 						'distance_lines': randint(0, 6),
 						'cross_line': randint(0, 300),
-						'max_st': randint(10, 50)/100,
+						'max_st': max_st,
 						'max_tp': max_tp,
 						'signal': None,
 						'score_buy': 0,
@@ -2369,22 +2384,22 @@ def genetic_algo_cci_golden_cross(
 					Chromosome.pop(chrom_counter)
 					high_period = randint(5, 150)
 					low_period = randint(5, 150)
-					while high_period <= low_period:
+					while high_period <= low_period + 10:
 						high_period = randint(5, 150)
 						low_period = randint(5, 150)
 
 					max_tp = randint(10, 80)/100
-					min_tp = randint(10, 50)/100
-					while max_tp <= min_tp:
+					max_st = randint(10, 80)/100
+					while max_tp <= max_st:
 						max_tp = randint(10, 80)/100
-						min_tp = randint(10, 50)/100
+						max_st = randint(10, 80)/100
 
 					Chromosome[chrom_counter] = {
 						'high_period': high_period,
 						'low_period': low_period,
 						'distance_lines': randint(0, 6),
 						'cross_line': randint(0, 300),
-						'max_st': randint(10, 50)/100,
+						'max_st': max_st,
 						'max_tp': max_tp,
 						'signal': None,
 						'score_buy': 0,
@@ -2525,6 +2540,10 @@ def one_year_golden_cross_tester(
 								symbol,
 								flag_trade
 								):
+
+	upper = 0
+	mid = 1
+	lower = 2
 
 	logs('=================> {}'.format(symbol))
 
@@ -2709,6 +2728,10 @@ def one_year_golden_cross_tester(
 
 		#*********************** PR Methode:
 			if ga_result_buy['methode'][0] == 'pr':
+
+				value_min_cci_pr_buy = Find_Best_intervals(signals=buy_data,apply_to='value_min_cci',
+			 		min_tp=0.04, max_st=ga_result_buy['max_st'][0], name_stp='flag_pr',alpha=0.01)
+
 				list_index_ok = np.where(
 					#((buy_data['ramp_low'].to_numpy()>=ga_result_buy['ramp_low_lower_pr'][0]))&
 					#((buy_data['ramp_high'].to_numpy()>=ga_result_buy['ramp_high_lower_pr'][0]))&
@@ -2720,7 +2743,7 @@ def one_year_golden_cross_tester(
 					#((buy_data['diff_pr_down'].to_numpy()<=ga_result_buy['diff_down_upper_pr'][0]))&
 					#((buy_data['diff_min_max_cci'].to_numpy()<=ga_result_buy['diff_min_max_cci_upper_pr'][0]))&
 					#((buy_data['diff_min_max_candle'].to_numpy()<=ga_result_buy['diff_min_max_candle_upper_pr'][0]))&
-					((buy_data['value_min_cci'].to_numpy()<=ga_result_buy['value_min_upper_cci_pr'][0]))
+					((buy_data['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))
 					#((buy_data['value_max_cci'].to_numpy()>=ga_result_buy['value_max_lower_cci_pr'][0]))
 					)[0]
 
@@ -2823,6 +2846,7 @@ def one_year_golden_cross_tester(
 				logs('num_trade_pr= {}'.format(output_buy['num_trade_pr'][0]))
 				logs('score_pr= {}'.format(output_buy['score_pr'][0]))
 				logs('score_pr ga= {}'.format(ga_result_buy['score_pr'][0]))
+				logs('value_min_cci_pr_buy = {}'.format(value_min_cci_pr_buy['interval'][upper]))
 
 				for idx in buy_data['index'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'tp')[0]]]:
 					logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
@@ -2832,9 +2856,19 @@ def one_year_golden_cross_tester(
 
 				if output_buy['score_pr'][0] >= ga_result_buy['score_pr'][0]: 
 					ga_result_buy['permit'] = True
+					ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
+
+					if os.path.exists(buy_path):
+						os.remove(buy_path)
+
 					ga_result_buy.to_csv(buy_path)
 				else:
 					ga_result_buy['permit'] = False
+					ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
+
+					if os.path.exists(buy_path):
+						os.remove(buy_path)
+
 					ga_result_buy.to_csv(buy_path)
 
 	#///////////////////////////////////////////////////////////////////////////////////////////////
@@ -3012,6 +3046,10 @@ def one_year_golden_cross_tester(
 
 		#*********************** PR Methode:
 			if ga_result_sell['methode'][0] == 'pr':
+
+				value_max_cci_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_max_cci',
+	 				min_tp=0.04, max_st=ga_result_sell['max_st'][0], name_stp='flag_pr',alpha=0.01)
+
 				list_index_ok = np.where(
 					#((sell_data['ramp_low'].to_numpy()<=ga_result_sell['ramp_low_upper_pr'][0]))&
 					#((sell_data['ramp_high'].to_numpy()<=ga_result_sell['ramp_high_upper_pr'][0]))&
@@ -3024,7 +3062,7 @@ def one_year_golden_cross_tester(
 					#((sell_data['diff_min_max_cci'].to_numpy()<=ga_result_sell['diff_min_max_cci_upper_pr'][0]))&
 					#((sell_data['diff_min_max_candle'].to_numpy()<=ga_result_sell['diff_min_max_candle_upper_pr'][0]))&
 					#((sell_data['value_min_cci'].to_numpy()<=ga_result_sell['value_min_upper_cci_pr'][0]))&
-					((sell_data['value_max_cci'].to_numpy()>=ga_result_sell['value_max_lower_cci_pr'][0]))
+					((sell_data['value_max_cci'].to_numpy()>=value_max_cci_pr_sell['interval'][lower]))
 					)[0]
 
 				output_sell = pd.DataFrame()
@@ -3125,6 +3163,7 @@ def one_year_golden_cross_tester(
 				logs('num_trade_pr= {}'.format(output_sell['num_trade_pr'][0]))
 				logs('score_pr= {}'.format(output_sell['score_pr'][0]))
 				logs('score_pr ga= {}'.format(ga_result_sell['score_pr'][0]))
+				logs('value_max_cci_pr_sell = {}'.format(value_max_cci_pr_sell['interval'][lower]))
 
 				for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'tp')[0]]]:
 					logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
@@ -3134,9 +3173,19 @@ def one_year_golden_cross_tester(
 
 				if output_sell['score_pr'][0] >= ga_result_sell['score_pr'][0]:
 					ga_result_sell['permit'] = True
+					ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
+
+					if os.path.exists(sell_path):
+						os.remove(sell_path)
+
 					ga_result_sell.to_csv(sell_path)
 				else:
 					ga_result_sell['permit'] = False
+					ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
+					
+					if os.path.exists(sell_path):
+						os.remove(sell_path)
+
 					ga_result_sell.to_csv(sell_path)
 		#////////////////////////////////////////
 	logs('//////////////////////////////////////////')

@@ -473,8 +473,8 @@ def golden_cross_zero(
 						dataset_pr_1H = pd.DataFrame()
 
 						cut_first = 0
-						if (int(finding_points['index'][elm]) > 2000):
-							cut_first = int(finding_points['index'][elm]) - 2000
+						if (int(finding_points['index'][elm]) > 500):
+							cut_first = int(finding_points['index'][elm]) - 500
 
 						dataset_pr_5M['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 						dataset_pr_5M['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
@@ -541,10 +541,6 @@ def golden_cross_zero(
 							if signal_buy['diff_pr_top'][buy_counter] > tp_percent_minmax_buy_max:
 								signal_buy['diff_pr_top'][buy_counter] = tp_percent_minmax_buy_max
 								res_pro['high'][0] = dataset[symbol]['high'][int(finding_points['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
-							
-							if signal_buy['diff_pr_down'][buy_counter] <= signal_buy['diff_pr_top'][buy_counter]:
-								signal_buy['diff_pr_down'][buy_counter] = st_percent_minmax_buy
-								res_pro['low'][2] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(st_percent_minmax_buy/100))
 							
 							#if signal_buy['diff_pr_down'][buy_counter] >= st_percent_minmax_buy:
 								#signal_buy['diff_pr_down'][buy_counter] = st_percent_minmax_buy
@@ -613,6 +609,11 @@ def golden_cross_zero(
 								signal_buy['diff_pr_down'][buy_counter] <= st_percent_minmax_buy and
 								trend_sma_5M == 'buy'
 								):
+
+								if signal_buy['diff_pr_down'][buy_counter] <= signal_buy['diff_pr_top'][buy_counter]:
+									signal_buy['diff_pr_down'][buy_counter] = st_percent_minmax_buy
+									res_pro['low'][2] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(st_percent_minmax_buy/100))
+							
 
 								#signal_buy['time'][buy_counter] = dataset[symbol]['time'][int(finding_points['index'][elm])]
 
@@ -795,8 +796,8 @@ def golden_cross_zero(
 						dataset_pr_1H = pd.DataFrame()
 
 						cut_first = 0
-						if (int(finding_points['index'][elm]) > 2000):
-							cut_first = int(finding_points['index'][elm]) - 2000
+						if (int(finding_points['index'][elm]) > 500):
+							cut_first = int(finding_points['index'][elm]) - 500
 
 						dataset_pr_5M['low'] = dataset[symbol]['low'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
 						dataset_pr_5M['high'] = dataset[symbol]['high'][cut_first:int(finding_points['index'][elm])].reset_index(drop=True)
@@ -860,10 +861,7 @@ def golden_cross_zero(
 								signal_sell['diff_pr_down'][sell_counter] = tp_percent_minmax_sell_max
 								res_pro['low'][0] = dataset[symbol]['low'][int(finding_points['index'][elm])] * (1-(tp_percent_minmax_sell_max/100))
 							
-							if signal_sell['diff_pr_top'][sell_counter] <= signal_sell['diff_pr_down'][sell_counter]:
-								signal_sell['diff_pr_top'][sell_counter] = st_percent_minmax_sell
-								res_pro['high'][2] = dataset[symbol]['high'][int(finding_points['index'][elm])] * (1+(st_percent_minmax_sell/100))
-
+							
 							#if signal_sell['diff_pr_top'][sell_counter] >= st_percent_minmax_sell:
 								#signal_sell['diff_pr_top'][sell_counter] = st_percent_minmax_sell
 								#res_pro['high'][2] = dataset[symbol]['high'][int(finding_points['index'][elm])] * (1+(st_percent_minmax_sell/100))
@@ -926,6 +924,11 @@ def golden_cross_zero(
 								signal_sell['diff_pr_top'][sell_counter] <= st_percent_minmax_sell and
 								trend_sma_5M == 'sell'
 								):
+
+								if signal_sell['diff_pr_top'][sell_counter] <= signal_sell['diff_pr_down'][sell_counter]:
+									signal_sell['diff_pr_top'][sell_counter] = st_percent_minmax_sell
+									res_pro['high'][2] = dataset[symbol]['high'][int(finding_points['index'][elm])] * (1+(st_percent_minmax_sell/100))
+
 
 								if ((len(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values*1.0004) <= (res_pro['low'][0])))[0]) - 1) > 1):
 									signal_sell['tp_pr_index'][sell_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['low'][int(finding_points['index'][elm]):-1].values*1.0004) <= (res_pro['low'][0])))[0])

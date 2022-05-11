@@ -146,8 +146,8 @@ def ga_optimizer():
 					symbol_data_4H=symbol_data_4H,
 					symbol=sym.name,
 					num_turn=2000,
-					max_score_ga_buy=73,
-					max_score_ga_sell=73,
+					max_score_ga_buy=2,
+					max_score_ga_sell=2,
 					flag_trade='buy'
 					)
 	
@@ -159,8 +159,8 @@ def ga_optimizer():
 					symbol_data_4H=symbol_data_4H,
 					symbol=sym.name,
 					num_turn=2000,
-					max_score_ga_buy=73,
-					max_score_ga_sell=73,
+					max_score_ga_buy=2,
+					max_score_ga_sell=2,
 					flag_trade='sell'
 					)
 
@@ -179,6 +179,13 @@ def ga_optimizer():
 																										num_1H=8000,
 																										num_4H=1
 																										)
+
+				#symbol_data_5M,symbol_data_1H = dataset_spliter(
+																#symbol=sym.name,
+																#dataset_5M=dataset_5M,
+																#dataset_1H=dataset_1H,
+																#spliter_5M=20000
+																#)
 
 				one_year_golden_cross_tester(
 											dataset=symbol_data_5M,

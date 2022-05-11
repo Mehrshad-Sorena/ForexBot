@@ -1552,7 +1552,7 @@ def tester_golden_cross_zero(
 			# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
 			value_min_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
-			 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=0.04)
+			 min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=0.1)
 
 			#value_max_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_max_cci',
 			# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
@@ -1617,7 +1617,7 @@ def tester_golden_cross_zero(
 					if (tp_counter-output_buy['num_st_pr'][0]) == 0:
 						score_num_tp = 8
 
-					if (score_num_tp > 0):
+					elif (score_num_tp > 0):
 						score_num_tp = score_num_tp * 9
 					else:
 						score_num_tp = 1
@@ -1715,7 +1715,7 @@ def tester_golden_cross_zero(
 	 		#min_tp=min_tp, max_st=max_st, name_stp='flag_min_max',alpha=alpha)
 
 			value_max_cci_pr_sell = Find_Best_intervals(signals=signal_sell,apply_to='value_max_cci',
-	 		min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=0.04)
+	 		min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=0.1)
 
 			list_index_ok = np.where(
 				#((signal_sell['ramp_low'].to_numpy()<=ramp_low_intervals_pr_sell['interval'][upper]))&
@@ -1777,7 +1777,7 @@ def tester_golden_cross_zero(
 					if (tp_counter-output_sell['num_st_pr'][0]):
 						score_num_tp = 8
 
-					if (score_num_tp > 0):
+					elif (score_num_tp > 0):
 						score_num_tp = score_num_tp * 9
 					else:
 						score_num_tp = 1
@@ -2079,6 +2079,23 @@ def genetic_algo_cci_golden_cross(
 				Chromosome[0]['score_buy'] = float(Chromosome[0]['score_buy'])
 				Chromosome[0]['score_sell'] = float(Chromosome[0]['score_sell'])
 
+				Chromosome[0].pop('score_min_max')
+				Chromosome[0].pop('score_pr')
+				Chromosome[0].pop('mean_tp_pr')
+				Chromosome[0].pop('mean_st_pr')
+				Chromosome[0].pop('')
+				Chromosome[0].pop('max_tp_pr')
+				Chromosome[0].pop('max_st_pr')
+				Chromosome[0].pop('sum_st_pr')
+				Chromosome[0].pop('sum_tp_pr')
+				Chromosome[0].pop('num_tp_pr')
+				Chromosome[0].pop('num_st_pr')
+				Chromosome[0].pop('num_trade_pr')
+				Chromosome[0].pop('value_min_upper_cci_pr')
+				Chromosome[0].pop('methode')
+				if 'permit' in Chromosome[0].keys():
+					Chromosome[0].pop('permit')
+
 				if flag_trade == 'buy':
 					ga_result_buy, _ = read_ga_result(symbol=symbol)
 
@@ -2101,6 +2118,23 @@ def genetic_algo_cci_golden_cross(
 				Chromosome[1]['signal'] = Chromosome[1]['signal']
 				Chromosome[1]['score_buy'] = float(Chromosome[1]['score_buy'])
 				Chromosome[1]['score_sell'] = float(Chromosome[1]['score_sell'])
+
+				Chromosome[1].pop('score_min_max')
+				Chromosome[1].pop('score_pr')
+				Chromosome[1].pop('mean_tp_pr')
+				Chromosome[1].pop('mean_st_pr')
+				Chromosome[1].pop('')
+				Chromosome[1].pop('max_tp_pr')
+				Chromosome[1].pop('max_st_pr')
+				Chromosome[1].pop('sum_st_pr')
+				Chromosome[1].pop('sum_tp_pr')
+				Chromosome[1].pop('num_tp_pr')
+				Chromosome[1].pop('num_st_pr')
+				Chromosome[1].pop('num_trade_pr')
+				Chromosome[1].pop('value_min_upper_cci_pr')
+				Chromosome[1].pop('methode')
+				if 'permit' in Chromosome[1].keys():
+					Chromosome[1].pop('permit')
 
 				if flag_trade == 'sell':
 					_, ga_result_sell = read_ga_result(symbol=symbol)
@@ -2785,8 +2819,9 @@ def one_year_golden_cross_tester(
 			if ga_result_buy['methode'][0] == 'pr':
 
 				value_min_cci_pr_buy = Find_Best_intervals(signals=buy_data,apply_to='value_min_cci',
-			 		min_tp=0.04, max_st=ga_result_buy['max_st'][0], name_stp='flag_pr',alpha=0.01)
+			 		min_tp=0.04, max_st=ga_result_buy['max_st'][0], name_stp='flag_pr',alpha=0.1)
 
+				print('value_min_cci_pr_buy = ',value_min_cci_pr_buy)
 				list_index_ok = np.where(
 					#((buy_data['ramp_low'].to_numpy()>=ga_result_buy['ramp_low_lower_pr'][0]))&
 					#((buy_data['ramp_high'].to_numpy()>=ga_result_buy['ramp_high_lower_pr'][0]))&
@@ -2798,7 +2833,7 @@ def one_year_golden_cross_tester(
 					#((buy_data['diff_pr_down'].to_numpy()<=ga_result_buy['diff_down_upper_pr'][0]))&
 					#((buy_data['diff_min_max_cci'].to_numpy()<=ga_result_buy['diff_min_max_cci_upper_pr'][0]))&
 					#((buy_data['diff_min_max_candle'].to_numpy()<=ga_result_buy['diff_min_max_candle_upper_pr'][0]))&
-					((buy_data['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))
+					((buy_data['value_min_cci'].to_numpy()<=ga_result_buy['value_min_upper_cci_pr'][0]))#value_min_cci_pr_buy['interval'][upper]))
 					#((buy_data['value_max_cci'].to_numpy()>=ga_result_buy['value_max_lower_cci_pr'][0]))
 					)[0]
 
@@ -2830,7 +2865,7 @@ def one_year_golden_cross_tester(
 						if (tp_counter-output_buy['num_st_pr'][0]) == 0:
 							score_num_tp = 8
 
-						if (score_num_tp > 0):
+						elif (score_num_tp > 0):
 							score_num_tp = score_num_tp * 9
 						else:
 							score_num_tp = 1
@@ -2909,9 +2944,9 @@ def one_year_golden_cross_tester(
 				for idx in buy_data['index'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'st')[0]]]:
 					logs('time st = {}'.format(dataset[symbol]['time'][idx]))
 
-				if output_buy['score_pr'][0] >= ga_result_buy['score_pr'][0]: 
+				if output_buy['score_pr'][0] * 80 >= ga_result_buy['score_pr'][0]: 
 					ga_result_buy['permit'] = True
-					ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
+					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 
 					if os.path.exists(buy_path):
 						os.remove(buy_path)
@@ -2919,7 +2954,7 @@ def one_year_golden_cross_tester(
 					ga_result_buy.to_csv(buy_path)
 				else:
 					ga_result_buy['permit'] = False
-					ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
+					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 
 					if os.path.exists(buy_path):
 						os.remove(buy_path)
@@ -3117,7 +3152,7 @@ def one_year_golden_cross_tester(
 					#((sell_data['diff_min_max_cci'].to_numpy()<=ga_result_sell['diff_min_max_cci_upper_pr'][0]))&
 					#((sell_data['diff_min_max_candle'].to_numpy()<=ga_result_sell['diff_min_max_candle_upper_pr'][0]))&
 					#((sell_data['value_min_cci'].to_numpy()<=ga_result_sell['value_min_upper_cci_pr'][0]))&
-					((sell_data['value_max_cci'].to_numpy()>=value_max_cci_pr_sell['interval'][lower]))
+					((sell_data['value_max_cci'].to_numpy()>=ga_result_sell['value_max_lower_cci_pr'][0]))#value_max_cci_pr_sell['interval'][lower]))
 					)[0]
 
 				output_sell = pd.DataFrame()
@@ -3147,7 +3182,7 @@ def one_year_golden_cross_tester(
 						if (tp_counter-output_sell['num_st_pr'][0]) == 0:
 							score_num_tp = 8
 
-						if (score_num_tp > 0):
+						elif (score_num_tp > 0):
 							score_num_tp = score_num_tp * 9
 						else:
 							score_num_tp = 1
@@ -3226,9 +3261,9 @@ def one_year_golden_cross_tester(
 				for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'st')[0]]]:
 					logs('time st = {}'.format(dataset[symbol]['time'][idx]))
 
-				if output_sell['score_pr'][0] >= ga_result_sell['score_pr'][0]:
+				if output_sell['score_pr'][0] * 80 >= ga_result_sell['score_pr'][0]:
 					ga_result_sell['permit'] = True
-					ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
+					#ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
 
 					if os.path.exists(sell_path):
 						os.remove(sell_path)
@@ -3236,7 +3271,7 @@ def one_year_golden_cross_tester(
 					ga_result_sell.to_csv(sell_path)
 				else:
 					ga_result_sell['permit'] = False
-					ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
+					#ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
 					
 					if os.path.exists(sell_path):
 						os.remove(sell_path)

@@ -497,9 +497,9 @@ def golden_cross_zero(
 
 						if location_1H < 500: continue
 						
-						print('location_1H=====> ',location_1H)
-						print('5M =====> ',dataset[symbol]['time'][int(finding_points['index'][elm])])
-						print('1H =====> ',dataset_1H[symbol]['time'][location_1H])
+						print('location_1H buy =====> ',location_1H)
+						print('5M buy =====> ',dataset[symbol]['time'][int(finding_points['index'][elm])])
+						print('1H buy =====> ',dataset_1H[symbol]['time'][location_1H])
 
 						
 
@@ -830,6 +830,10 @@ def golden_cross_zero(
 						dataset_pr_1H['high'] = dataset_1H[symbol]['high'][cut_first_1H:location_1H].reset_index(drop=True)
 						dataset_pr_1H['close'] = dataset_1H[symbol]['close'][cut_first_1H:location_1H].reset_index(drop=True)
 						dataset_pr_1H['open'] = dataset_1H[symbol]['open'][cut_first_1H:location_1H].reset_index(drop=True)
+
+						print('location_1H sell =====> ',location_1H)
+						print('5M sell =====> ',dataset[symbol]['time'][int(finding_points['index'][elm])])
+						print('1H sell =====> ',dataset_1H[symbol]['time'][location_1H])
 
 
 						res_pro = pd.DataFrame()
@@ -2033,6 +2037,47 @@ def gen_creator(Chromosome):
 		Chromosome[re_counter]['score_buy'] = baby[re_counter]['score_buy']
 		Chromosome[re_counter]['score_sell'] = baby[re_counter]['score_sell']
 		re_counter += 1
+
+	for key in Chromosome.keys():
+		i = 0
+		while i < len(Chromosome):
+			if key == i:
+				i += 1
+				continue
+			if (
+				Chromosome[key]['high_period'] == Chromosome[i]['high_period'] and
+				Chromosome[key]['low_period'] == Chromosome[i]['low_period'] and
+				Chromosome[key]['distance_lines'] == Chromosome[i]['distance_lines'] and
+				Chromosome[key]['cross_line'] == Chromosome[i]['cross_line'] and
+				Chromosome[key]['max_st'] == Chromosome[i]['max_st'] and
+				Chromosome[key]['max_tp'] == Chromosome[i]['max_tp']
+				):
+
+				max_tp = randint(10, 80)/100
+				max_st = randint(10, 70)/100
+		
+				while max_tp < max_st:
+					max_tp = randint(10, 80)/100
+					max_st = randint(10, 70)/100
+
+				high_period = randint(5, 500)
+				low_period = randint(5, 400)
+				while high_period <= low_period + 10:
+					high_period = randint(5, 500)
+					low_period = randint(5, 400)
+
+				Chromosome[i] = {
+							'high_period': high_period,
+							'low_period': low_period,
+							'distance_lines': randint(0, 6),
+							'cross_line': randint(0, 300),
+							'max_st': max_st,
+							'max_tp': max_tp,
+							'signal': None,
+							'score_buy': 0,
+							'score_sell': 0
+							}
+			i += 1
 		#print(Chromosome_5M[6])
 
 	return Chromosome
@@ -2080,7 +2125,6 @@ def genetic_algo_cci_golden_cross(
 				Chromosome[0]['score_sell'] = float(Chromosome[0]['score_sell'])
 
 				Chromosome[0].pop('score_min_max')
-				Chromosome[0].pop('score_pr')
 				Chromosome[0].pop('mean_tp_pr')
 				Chromosome[0].pop('mean_st_pr')
 				Chromosome[0].pop('')
@@ -2105,6 +2149,8 @@ def genetic_algo_cci_golden_cross(
 					if ga_result_buy['methode'][0] == 'pr':
 						max_score_ga_buy = float(Chromosome[0]['score_pr'])
 
+				Chromosome[0].pop('score_pr')
+
 	if os.path.exists("Genetic_cci_output_sell/"+symbol+'.csv'):
 		with open("Genetic_cci_output_sell/"+symbol+'.csv', 'r', newline='') as myfile:
 			for line in csv.DictReader(myfile):
@@ -2120,7 +2166,6 @@ def genetic_algo_cci_golden_cross(
 				Chromosome[1]['score_sell'] = float(Chromosome[1]['score_sell'])
 
 				Chromosome[1].pop('score_min_max')
-				Chromosome[1].pop('score_pr')
 				Chromosome[1].pop('mean_tp_pr')
 				Chromosome[1].pop('mean_st_pr')
 				Chromosome[1].pop('')
@@ -2131,7 +2176,7 @@ def genetic_algo_cci_golden_cross(
 				Chromosome[1].pop('num_tp_pr')
 				Chromosome[1].pop('num_st_pr')
 				Chromosome[1].pop('num_trade_pr')
-				Chromosome[1].pop('value_min_upper_cci_pr')
+				Chromosome[1].pop('value_max_lower_cci_pr')
 				Chromosome[1].pop('methode')
 				if 'permit' in Chromosome[1].keys():
 					Chromosome[1].pop('permit')
@@ -2144,6 +2189,8 @@ def genetic_algo_cci_golden_cross(
 
 					if ga_result_sell['methode'][0] == 'pr':
 						max_score_ga_sell = float(Chromosome[1]['score_pr'])
+
+				Chromosome[1].pop('score_pr')
 
 	result_buy = pd.DataFrame()
 	chromosome_buy = pd.DataFrame()
@@ -2369,12 +2416,11 @@ def genetic_algo_cci_golden_cross(
 				if not np.isnan(output_buy['score_pr'][0]) or not np.isnan(output_buy['score_min_max'][0]):
 					if (
 						(
-							output_buy['score_pr'][0] > max_score_ga_buy and
-							not np.isnan(output_buy['score_pr'][0])
-						) or
-						(
-							output_buy['score_min_max'][0] > max_score_ga_buy and
-							not np.isnan(output_buy['score_min_max'][0])
+							output_buy['score_pr'][0] >= max_score_ga_buy * 0.99 and
+							np.isnan(output_buy['score_pr'][0]) == False
+						) or						(
+							output_buy['score_min_max'][0] >= max_score_ga_buy * 0.99 and
+							np.isnan(output_buy['score_min_max'][0]) == False
 						)
 						):
 						
@@ -2383,21 +2429,25 @@ def genetic_algo_cci_golden_cross(
 						score = (output_buy['score_pr'][0]+output_buy['score_min_max'][0])/2
 						Chromosome[chrom_counter].update({'score_buy': score })
 						chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
+						#max_score_ga_buy = np.max(chromosome_buy['score_pr'],1)
+						#print('MMMMMMMMMaxxxxxxx ==========> ',max_score_ga_buy)
 
 						bad_buy = False
 					else:
 						bad_buy = True
 
+			logs('== Max Score Buy Must Be ====> {}'.format(max_score_ga_buy))
+
 			if flag_trade == 'sell':
 				if not np.isnan(output_sell['score_pr'][0]) or not np.isnan(output_sell['score_min_max'][0]):
 					if (
 						(
-							output_sell['score_pr'][0] > max_score_ga_sell and
-							not np.isnan(output_sell['score_pr'][0])
+							output_sell['score_pr'][0] >= max_score_ga_sell * 0.99 and
+							np.isnan(output_sell['score_pr'][0]) == False
 						) or
 						(
-							output_sell['score_min_max'][0] > max_score_ga_sell and
-							not np.isnan(output_sell['score_min_max'][0])
+							output_sell['score_min_max'][0] >= max_score_ga_sell * 0.99 and
+							np.isnan(output_sell['score_min_max'][0]) == False
 						)
 						):
 						
@@ -2406,10 +2456,13 @@ def genetic_algo_cci_golden_cross(
 						score = (output_sell['score_pr'][0]+output_sell['score_min_max'][0])/2
 						Chromosome[chrom_counter].update({'score_sell': score })
 						chromosome_sell = chromosome_sell.append(Chromosome[chrom_counter], ignore_index=True)
+						#max_score_ga_sell = np.max(chromosome_sell['score_pr'],1)
 
 						bad_sell = False
 					else:
 						bad_sell = True
+
+			logs('== Max Score Sell Must Be =====> {}'.format(max_score_ga_sell))
 
 			if flag_trade == 'buy':
 				if (
@@ -2944,7 +2997,7 @@ def one_year_golden_cross_tester(
 				for idx in buy_data['index'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'st')[0]]]:
 					logs('time st = {}'.format(dataset[symbol]['time'][idx]))
 
-				if output_buy['score_pr'][0] * 80 >= ga_result_buy['score_pr'][0]: 
+				if output_buy['score_pr'][0] >= ga_result_buy['score_pr'][0]*0.99: 
 					ga_result_buy['permit'] = True
 					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 
@@ -3261,7 +3314,7 @@ def one_year_golden_cross_tester(
 				for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'st')[0]]]:
 					logs('time st = {}'.format(dataset[symbol]['time'][idx]))
 
-				if output_sell['score_pr'][0] * 80 >= ga_result_sell['score_pr'][0]:
+				if output_sell['score_pr'][0] >= ga_result_sell['score_pr'][0]*0.99:
 					ga_result_sell['permit'] = True
 					#ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
 

@@ -162,15 +162,20 @@ def ga_optimizer_buy():
 
 		if sym.name != my_sym: continue
 
+
+
 		learn_counter = 0
 		while learn_counter < 4:
+
 
 			low_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
 			high_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
 			if high_distance < low_distance: continue
 			if high_distance - low_distance != 9000: continue
-			logs('high_distance = {}'.format(high_distance))
-			logs('low_distance = {}'.format(low_distance))
+			logs('high_distance buy = {}'.format(high_distance))
+			logs('low_distance buy = {}'.format(low_distance))
+
+			logs('====== my_sym optimizer buy ====> {}'.format(my_sym))
 
 			logs('************** ============= Learn Turn Buy ==========> {}'.format(learn_counter))
 
@@ -255,6 +260,7 @@ def ga_tester_buy():
 			): continue
 
 		if sym.name != my_sym: continue
+		logs('====== my_sym tester buy ====> {}'.format(my_sym))
 
 		buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
 
@@ -327,8 +333,10 @@ def ga_optimizer_sell():
 			high_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
 			if high_distance < low_distance: continue
 			if high_distance - low_distance != 9000: continue
-			logs('high_distance = {}'.format(high_distance))
-			print('low_distance = {}'.format(low_distance))
+			logs('high_distance sell = {}'.format(high_distance))
+			print('low_distance sell = {}'.format(low_distance))
+
+			logs('====== my_sym optimizer sell ====> {}'.format(my_sym))
 
 			logs('************** ============= Learn Turn Sell ==========> {}'.format(learn_counter))
 
@@ -413,6 +421,8 @@ def ga_tester_sell():
 
 		if sym.name != my_sym: continue
 
+		logs('====== my_sym tester sell ====> {}'.format(my_sym))
+
 		sell_path = "Genetic_cci_output_sell/" + sym.name + '.csv'
 
 		if os.path.exists(sell_path):
@@ -477,7 +487,7 @@ def Task_tester():
 	job_thread_sell.join()
 
 
-my_sym = 'AUDUSD_i'
+my_sym = 'EURUSD_i'
 
 Task_optimizer()
 

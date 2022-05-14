@@ -206,13 +206,17 @@ def ga_optimizer_buy():
 						flag_trade='buy'
 						)
 			else:
+				if learn_counter > 1: 
+					num_turn = 40
+				else:
+					num_turn = 200
 				ga_runner(
 						symbol_data_5M=symbol_data_5M,
 						symbol_data_15M=symbol_data_15M,
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=200,
+						num_turn=num_turn,
 						max_score_ga_buy=10,
 						max_score_ga_sell=10,
 						flag_trade='buy'
@@ -360,13 +364,17 @@ def ga_optimizer_sell():
 						flag_trade='sell'
 						)
 			else:
+				if learn_counter > 1: 
+					num_turn = 40
+				else:
+					num_turn = 200
 				ga_runner(
 						symbol_data_5M=symbol_data_5M,
 						symbol_data_15M=symbol_data_15M,
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=200,
+						num_turn=num_turn,
 						max_score_ga_buy=10,
 						max_score_ga_sell=10,
 						flag_trade='sell'

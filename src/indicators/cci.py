@@ -2202,6 +2202,7 @@ def genetic_algo_cci_golden_cross(
 
 	chrom_counter = 0
 	all_chorms = 0
+	chorm_reset_counter = 0
 
 	with tqdm(total=num_turn) as pbar:
 		while chrom_counter < len(Chromosome):
@@ -2223,7 +2224,8 @@ def genetic_algo_cci_golden_cross(
 
 			logs('====> All Chorms = {}'.format(all_chorms))
 
-			if (all_chorms%40 == 0) and (all_chorms != 0):
+			if (chorm_reset_counter == 40):
+				chorm_reset_counter = 0
 				Chromosome.pop(chrom_counter)
 				high_period = randint(5, 500)
 				low_period = randint(5, 400)
@@ -2251,6 +2253,7 @@ def genetic_algo_cci_golden_cross(
 				#all_chorms += 1
 				#continue
 
+			chorm_reset_counter += 1
 			all_chorms += 1
 
 			try:

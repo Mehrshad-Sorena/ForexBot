@@ -2127,7 +2127,8 @@ def genetic_algo_cci_golden_cross(
 				Chromosome[0].pop('score_min_max')
 				Chromosome[0].pop('mean_tp_pr')
 				Chromosome[0].pop('mean_st_pr')
-				Chromosome[0].pop('')
+				if '' in Chromosome[0].keys():
+					Chromosome[0].pop('')
 				Chromosome[0].pop('max_tp_pr')
 				Chromosome[0].pop('max_st_pr')
 				Chromosome[0].pop('sum_st_pr')
@@ -2168,7 +2169,8 @@ def genetic_algo_cci_golden_cross(
 				Chromosome[1].pop('score_min_max')
 				Chromosome[1].pop('mean_tp_pr')
 				Chromosome[1].pop('mean_st_pr')
-				Chromosome[1].pop('')
+				if '' in Chromosome[1].keys():
+					Chromosome[1].pop('')
 				Chromosome[1].pop('max_tp_pr')
 				Chromosome[1].pop('max_st_pr')
 				Chromosome[1].pop('sum_st_pr')

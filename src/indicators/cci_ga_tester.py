@@ -1,12 +1,50 @@
 from cci import genetic_algo_cci_golden_cross,one_year_golden_cross_tester, read_ga_result
 from log_get_data import read_dataset_csv, get_symbols
+from datetime import datetime
 from random import randint
 import MetaTrader5 as mt5
 from random import seed
 import pandas as pd
 import threading
+import logging
 import sys
 import os
+
+#**************************************** Logger *****************
+now = datetime.now()
+log_path = 'log/cci/golden_cross_zero/optimizer-{}-{}-{}-{}-{}-{}.log'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
+log_level = 'info'
+logger = logging.getLogger()
+
+if not os.path.exists(os.path.dirname(log_path)):
+    os.makedirs(os.path.dirname(log_path))
+
+if log_level == 'info':
+    logger.setLevel(logging.INFO)
+elif log_level == 'warning':
+    logger.setLevel(logging.WARNING)
+elif log_level == 'debug':
+    logger.setLevel(logging.DEBUG)
+# formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
+formatter = logging.Formatter('%(asctime)s | %(message)s')
+
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.DEBUG)
+stdout_handler.setFormatter(formatter)
+
+file_handler = logging.FileHandler(log_path)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+
+
+logger.addHandler(file_handler)
+logger.addHandler(stdout_handler)
+
+
+def logs(message):
+    logger.info(message)
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 def dataset_spliter(
@@ -96,7 +134,8 @@ def ga_runner(
 
 def ga_optimizer_buy():
 
-	print('===========> ga optimizer buy')
+	logs('=========> ga optimizer buy')
+
 	symbols,my_money = get_symbols(mt5.TIMEFRAME_M1)
 
 	for sym in symbols:
@@ -125,12 +164,15 @@ def ga_optimizer_buy():
 
 		learn_counter = 0
 		while learn_counter < 4:
-			low_distance = randint(0, 90000)
-			high_distance = randint(0, 90000)
+
+			low_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
+			high_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
 			if high_distance < low_distance: continue
 			if high_distance - low_distance != 9000: continue
-			print('high_distance = ',high_distance)
-			print('low_distance = ',low_distance)
+			logs('high_distance = {}'.format(high_distance))
+			logs('low_distance = {}'.format(low_distance))
+
+			logs('************** ============= Learn Turn Buy ==========> {}'.format(learn_counter))
 
 			dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
 																								sym=sym.name,
@@ -149,7 +191,7 @@ def ga_optimizer_buy():
 
 			buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
 			
-			print('*************> ',sym.name)
+			logs('*************> {}'.format(sym.name))
 
 			if not os.path.exists(buy_path):
 				ga_runner(
@@ -159,8 +201,8 @@ def ga_optimizer_buy():
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
 						num_turn=2000,
-						max_score_ga_buy=10,
-						max_score_ga_sell=10,
+						max_score_ga_buy=1.5,
+						max_score_ga_sell=1.5,
 						flag_trade='buy'
 						)
 			else:
@@ -176,13 +218,13 @@ def ga_optimizer_buy():
 						flag_trade='buy'
 						)
 
-			print('======= learn_counter buy ====> ',learn_counter)
+			#print('======= learn_counter buy ====> ',learn_counter)
 
 			learn_counter += 1
 
 def ga_tester_buy():
 
-	print('===========> ga tester buy')
+	logs('===========> ga tester buy')
 
 	symbols,my_money = get_symbols(mt5.TIMEFRAME_M1)
 
@@ -213,7 +255,7 @@ def ga_tester_buy():
 		buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
 
 		if os.path.exists(buy_path):
-			print('*********** Optimizer Buy *')
+			logs('*********** Optimizer Buy *')
 
 			ga_result_buy, _ = read_ga_result(symbol=sym.name)
 
@@ -240,13 +282,13 @@ def ga_tester_buy():
 			ga_result_buy, _ = read_ga_result(symbol=sym.name)
 			if 'permit' in ga_result_buy.columns:
 				while ga_result_buy['permit'][0] != True:
-					ga_optimizer_buy(my_sym=my_sym)
-					ga_tester_buy(my_sym=my_sym)
+					ga_optimizer_buy()
+					ga_tester_buy()
 
 
 def ga_optimizer_sell():
 
-	print('===========> ga optimizer sell')
+	logs('===========> ga optimizer sell')
 
 	symbols,my_money = get_symbols(mt5.TIMEFRAME_M1)
 
@@ -276,12 +318,15 @@ def ga_optimizer_sell():
 
 		learn_counter = 0
 		while learn_counter < 4:
-			low_distance = randint(0, 90000)
-			high_distance = randint(0, 90000)
+
+			low_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
+			high_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
 			if high_distance < low_distance: continue
 			if high_distance - low_distance != 9000: continue
-			print('high_distance = ',high_distance)
-			print('low_distance = ',low_distance)
+			logs('high_distance = {}'.format(high_distance))
+			print('low_distance = {}'.format(low_distance))
+
+			logs('************** ============= Learn Turn Sell ==========> {}'.format(learn_counter))
 
 			dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
 																								sym=sym.name,
@@ -300,7 +345,7 @@ def ga_optimizer_sell():
 
 			sell_path = "Genetic_cci_output_sell/" + sym.name + '.csv'
 			
-			print('*************> ',sym.name)
+			logs('*************> {}'.format(sym.name))
 
 			if not os.path.exists(sell_path):
 				ga_runner(
@@ -310,8 +355,8 @@ def ga_optimizer_sell():
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
 						num_turn=2000,
-						max_score_ga_buy=10,
-						max_score_ga_sell=10,
+						max_score_ga_buy=1.5,
+						max_score_ga_sell=1.5,
 						flag_trade='sell'
 						)
 			else:
@@ -327,13 +372,12 @@ def ga_optimizer_sell():
 						flag_trade='sell'
 						)
 
-			print('======= learn_counter sell ====> ',learn_counter)
 
 			learn_counter += 1
 
 def ga_tester_sell():
 
-	print('===========> ga tester sell')
+	logs('===========> ga tester sell')
 
 	symbols,my_money = get_symbols(mt5.TIMEFRAME_M1)
 
@@ -364,7 +408,7 @@ def ga_tester_sell():
 		sell_path = "Genetic_cci_output_sell/" + sym.name + '.csv'
 
 		if os.path.exists(sell_path):
-			print('*********** Optimizer Buy *')
+			logs('*********** Optimizer Buy *')
 
 			_, ga_result_sell = read_ga_result(symbol=sym.name)
 
@@ -391,19 +435,19 @@ def ga_tester_sell():
 			_, ga_result_sell = read_ga_result(symbol=sym.name)
 			if 'permit' in ga_result_sell.columns:
 				while ga_result_sell['permit'][0] != True:
-					ga_optimizer_sell(my_sym=my_sym)
-					ga_tester_sell(my_sym=my_sym)
+					ga_optimizer_sell()
+					ga_tester_sell()
 
 def Task_optimizer():
 	job_thread_buy = threading.Thread(target=ga_optimizer_buy)
 	job_thread_buy.start()
 	print()
-	print('optimizer job_thread_buy ===> optimizer job_thread_buy runed')
+	logs('optimizer job_thread_buy ===> optimizer job_thread_buy runed')
 
 	job_thread_sell = threading.Thread(target=ga_optimizer_sell)
 	job_thread_sell.start()
 	print()
-	print('optimizer job_thread_sell ===> optimizer job_thread_sell runed')
+	logs('optimizer job_thread_sell ===> optimizer job_thread_sell runed')
 
 	
 	job_thread_buy.join()
@@ -413,12 +457,12 @@ def Task_tester():
 	job_thread_buy = threading.Thread(target=ga_tester_buy)
 	job_thread_buy.start()
 	print()
-	print('tester job_thread_buy ===> tester job_thread_buy runed')
+	logs('tester job_thread_buy ===> tester job_thread_buy runed')
 
 	job_thread_sell = threading.Thread(target=ga_tester_sell)
 	job_thread_sell.start()
 	print()
-	print('tester job_thread_sell ===> tester job_thread_sell runed')
+	logs('tester job_thread_sell ===> tester job_thread_sell runed')
 
 	
 	job_thread_buy.join()

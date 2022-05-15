@@ -279,15 +279,15 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 
 	timeout = time.time() + timeout_break  # timeout_break Sec from now
 	while True:
-		if (len(low.to_numpy()[np.where(low<=high[len(high)-1])].reshape(-1,1)) > (n_clusters_low * 4)):
-			n_clusters_low = n_clusters_low
+		if (len(low.to_numpy()[np.where(low<=high[len(high)-1])].reshape(-1,1)) > 25):
+			n_clusters_low = 5
 		else:
-			n_clusters_low = int(len(low.to_numpy()[np.where(low<=high[len(high)-1])].reshape(-1,1))/4) + 1
+			n_clusters_low = int(len(low.to_numpy()[np.where(low<=high[len(high)-1])].reshape(-1,1))/4)
 
-		if (len(high.to_numpy()[np.where(high>=low[len(low)-1])].reshape(-1,1)) > (n_clusters_high * 4)):
-			n_clusters_high = n_clusters_high
+		if (len(high.to_numpy()[np.where(high>=low[len(low)-1])].reshape(-1,1)) > 25):
+			n_clusters_high = 5
 		else:
-			n_clusters_high = int(len(high.to_numpy()[np.where(high>=low[len(low)-1])].reshape(-1,1))/4) + 1
+			n_clusters_high = int(len(high.to_numpy()[np.where(high>=low[len(low)-1])].reshape(-1,1))/4)
 
 		kmeans_low = KMeans(n_clusters=n_clusters_low, random_state=0,init='k-means++',n_init=2,max_iter=3)
 		kmeans_high = KMeans(n_clusters=n_clusters_high, random_state=0,init='k-means++',n_init=2,max_iter=3)
@@ -295,17 +295,21 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 		kmeans_low = kmeans_low.fit(exterm_point['extremes'].to_numpy()[np.where(exterm_point['extremes']<=high[len(high)-1])].reshape(-1,1), sample_weight= exterm_point['power'].to_numpy()[np.where(exterm_point['extremes']<=high[len(high)-1])])
 		kmeans_high = kmeans_high.fit(exterm_point['extremes'].to_numpy()[np.where(exterm_point['extremes']>=low[len(low)-1])].reshape(-1,1), sample_weight= exterm_point['power'].to_numpy()[np.where(exterm_point['extremes']>=low[len(low)-1])])
 		
+		#kmeans_low = kmeans_low.fit(exterm_point['extremes'].to_numpy()[np.where(exterm_point['extremes']<=low[len(low)-1])].reshape(-1,1), sample_weight= exterm_point['power'].to_numpy()[np.where(exterm_point['extremes']<=low[len(low)-1])])
+		#kmeans_high = kmeans_high.fit(exterm_point['extremes'].to_numpy()[np.where(exterm_point['extremes']>=high[len(high)-1])].reshape(-1,1), sample_weight= exterm_point['power'].to_numpy()[np.where(exterm_point['extremes']>=high[len(high)-1])])
+
 		Y_low = kmeans_low.cluster_centers_
 		Y_high = kmeans_high.cluster_centers_
-
-		#Power_low = kmeans_low.labels_
 	
 		Power_low = kmeans_low.fit_predict(low.to_numpy()[np.where(low<=high[len(high)-1])].reshape(-1,1))
 		Power_high = kmeans_high.fit_predict(high.to_numpy()[np.where(high>=low[len(low)-1])].reshape(-1,1))
 
-		
 		X_low = kmeans_low.cluster_centers_
 		X_high = kmeans_high.cluster_centers_
+
+		#Power_low = kmeans_low.labels_
+		#Power_high = kmeans_high.labels_
+		
 
 		Power_low = np.bincount(Power_low)
 		Power_high = np.bincount(Power_high)
@@ -368,7 +372,7 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 						data = data_X_low,
 						xmin=np.min(data_X_low),
 						xmax=np.max(data_X_low),
-						bins = len(exterm_point_pred_final_low['X']),
+						bins = len(exterm_point_pred_final_low['X'])-1,
 						distributions = distributions_low,
 						timeout=0.1,
 						density=True
@@ -470,7 +474,7 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 						data = data_X_high,
 						xmin=np.min(data_X_high),
 						xmax=np.max(data_X_high),
-						bins = len(exterm_point_pred_final_high['X']),
+						bins = len(exterm_point_pred_final_high['X'])-1,
 						distributions = distributions_high,
 						timeout=0.1,
 						density=True
@@ -591,7 +595,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 																	high=dataset_5M['high'],
 																	low=dataset_5M['low'],
 																	number_min=10,number_max=10))
-		local_extreme_5M['power'] = np.ones(len(local_extreme_5M))*5
+		local_extreme_5M['power'] = np.ones(len(local_extreme_5M))*1#5
 
 	local_extreme_15M = pd.DataFrame()
 	local_extreme_15M['extreme'] = np.nan
@@ -611,7 +615,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 																	high=dataset_1H['high'],
 																	low=dataset_1H['low'],
 																	number_min=5,number_max=5))
-		local_extreme_1H['power'] = np.ones(len(local_extreme_1H))*30
+		local_extreme_1H['power'] = np.ones(len(local_extreme_1H))*12#30
 
 	local_extreme_4H = pd.DataFrame()
 	local_extreme_4H['extreme'] = np.nan
@@ -639,7 +643,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	trend_local_extreme_5M_long['max'] = np.nan
 	trend_local_extreme_5M_long['power'] = np.nan
 
-	if (T_5M == True):
+	if False:#(T_5M == True):
 		dataset_ramp_5M = pd.DataFrame()
 		cut_first = 0
 		if (int(len(dataset_5M['low'])-1) > long_length):
@@ -667,7 +671,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	trend_local_extreme_5M_mid['max'] = np.nan
 	trend_local_extreme_5M_mid['power'] = np.nan
 
-	if (T_5M == True):
+	if False:#(T_5M == True):
 		dataset_ramp_5M = pd.DataFrame()
 		cut_first = 0
 		if (int(len(dataset_5M['low'])-1) > mid_length):
@@ -695,7 +699,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	trend_local_extreme_5M_short_1['max'] = np.nan
 	trend_local_extreme_5M_short_1['power'] = np.nan
 
-	if (T_5M == True):
+	if False:#(T_5M == True):
 
 		dataset_ramp_5M = pd.DataFrame()
 		cut_first = 0
@@ -724,7 +728,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	trend_local_extreme_5M_short_2['max'] = np.nan
 	trend_local_extreme_5M_short_2['power'] = np.nan
 
-	if (T_5M == True):
+	if False:#(T_5M == True):
 
 		dataset_ramp_5M = pd.DataFrame()
 		cut_first = 0
@@ -761,7 +765,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 														kijun=26,
 														senkou=52,
 														n_clusters=10,
-														weight=5
+														weight=1#5
 														)
 
 	ichi_local_extreme_15M = pd.DataFrame()
@@ -791,7 +795,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 														kijun=26,
 														senkou=52,
 														n_clusters=10,
-														weight=30
+														weight=12
 														)
 
 	ichi_local_extreme_4H = pd.DataFrame()
@@ -885,7 +889,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 									timeout_break=1
 									)
 
-	if T_5M == True:
+	if False:#T_5M == True:
 		extereme['trend_long'] = [trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend']]
 		extereme['trend_mid'] = [trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend']]
 		extereme['trend_short1'] = [trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend']]

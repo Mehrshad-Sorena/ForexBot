@@ -2303,6 +2303,8 @@ def genetic_algo_cci_golden_cross(
 
 			if learning_interval_counter == 100:
 
+				learning_interval_counter = 0
+
 				if learn_counter >= 4: break
 
 				low_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
@@ -2791,15 +2793,15 @@ def one_year_golden_cross_tester(
 		return 0
 	#********************************************** Buy Test:
 
-	if ga_result_buy['methode'][0] is not 'no_trade':
-		if ga_result_buy['methode'][0] == 'pr':
-			name_stp_pr = True
-			name_stp_minmax = False
-		elif ga_result_buy['methode'][0] == 'min_max':
-			name_stp_pr = False
-			name_stp_minmax = True
+	if flag_trade == 'buy':
+		if ga_result_buy['methode'][0] is not 'no_trade':
+			if ga_result_buy['methode'][0] == 'pr':
+				name_stp_pr = True
+				name_stp_minmax = False
+			elif ga_result_buy['methode'][0] == 'min_max':
+				name_stp_pr = False
+				name_stp_minmax = True
 
-		if flag_trade == 'buy':
 			print('******************* BUY *************************')
 			buy_data,_ = golden_cross_zero(
 										dataset=dataset,
@@ -3135,15 +3137,14 @@ def one_year_golden_cross_tester(
 	#///////////////////////////////////////////////////////////////////////////////////////////////
 
 	#********************************************** Sell Test:
-	if ga_result_sell['methode'][0] is not 'no_trade':
-		if ga_result_sell['methode'][0] == 'pr':
-			name_stp_pr = True
-			name_stp_minmax = False
-		elif ga_result_sell['methode'][0] == 'min_max':
-			name_stp_pr = False
-			name_stp_minmax = True
-
-		if flag_trade == 'sell':
+	if flag_trade == 'sell':
+		if ga_result_sell['methode'][0] is not 'no_trade':
+			if ga_result_sell['methode'][0] == 'pr':
+				name_stp_pr = True
+				name_stp_minmax = False
+			elif ga_result_sell['methode'][0] == 'min_max':
+				name_stp_pr = False
+				name_stp_minmax = True
 
 			print('******************* SELL *************************')
 

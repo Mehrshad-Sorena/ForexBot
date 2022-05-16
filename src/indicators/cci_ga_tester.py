@@ -179,10 +179,10 @@ def ga_optimizer_buy():
 		while learn_counter < 1:
 
 
-			low_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
-			high_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
+			low_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
+			high_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
 			if high_distance < low_distance: continue
-			if high_distance - low_distance != 5000: continue
+			if high_distance - low_distance != 10000: continue
 			logs('high_distance buy = {}'.format(high_distance))
 			logs('low_distance buy = {}'.format(low_distance))
 
@@ -216,9 +216,9 @@ def ga_optimizer_buy():
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=10000,
-						max_score_ga_buy=30,
-						max_score_ga_sell=30,
+						num_turn=8000,
+						max_score_ga_buy=70,
+						max_score_ga_sell=70,
 						flag_trade='buy'
 						)
 			else:
@@ -339,10 +339,10 @@ def ga_optimizer_sell():
 		learn_counter = 0
 		while learn_counter < 1:
 
-			low_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
-			high_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
+			low_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
+			high_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
 			if high_distance < low_distance: continue
-			if high_distance - low_distance != 5000: continue
+			if high_distance - low_distance != 10000: continue
 			logs('high_distance sell = {}'.format(high_distance))
 			print('low_distance sell = {}'.format(low_distance))
 
@@ -376,9 +376,9 @@ def ga_optimizer_sell():
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=10000,
-						max_score_ga_buy=30,
-						max_score_ga_sell=30,
+						num_turn=8000,
+						max_score_ga_buy=70,
+						max_score_ga_sell=70,
 						flag_trade='sell'
 						)
 			else:

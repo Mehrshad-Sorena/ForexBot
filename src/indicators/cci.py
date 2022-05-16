@@ -2301,19 +2301,19 @@ def genetic_algo_cci_golden_cross(
 				#all_chorms += 1
 				#continue
 
-			if learning_interval_counter == 100:
+			if learning_interval_counter == 25:
 
 				learning_interval_counter = 0
 
-				if learn_counter >= 4: break
+				if learn_counter >= 15: break
 
-				low_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
-				high_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
+				low_distance = randint((learn_counter*6000), ((learn_counter*6000) + 6000))
+				high_distance = randint((learn_counter*6000), ((learn_counter*6000) + 6000))
 
 				while high_distance < low_distance & high_distance - low_distance != 5000:
 
-					low_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
-					high_distance = randint((learn_counter*22500), ((learn_counter*22500) + 22500))
+					low_distance = randint((learn_counter*6000), ((learn_counter*6000) + 6000))
+					high_distance = randint((learn_counter*6000), ((learn_counter*6000) + 6000))
 
 				logs('high_distance = {}'.format(high_distance))
 				print('low_distance = {}'.format(low_distance))

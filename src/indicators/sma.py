@@ -20,40 +20,41 @@ from tqdm import tqdm
 import csv
 from timer import stTime
 
-#**************************************** Logger *****************
+#**************************************** #logger *****************
+"""
 now = datetime.now()
-log_path = 'log/sma/golden_cross/{}-{}-{}-{}-{}-{}.log'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
-log_level = 'info'
-logger = logging.getLogger()
+#log_path = '#log/sma/golden_cross/-----.#log',now.year, now.month, now.day, now.hour, now.minute, now.second)
+#log_level = 'info'
+#logger = #logging.get#logger()
 
-if not os.path.exists(os.path.dirname(log_path)):
-    os.makedirs(os.path.dirname(log_path))
+if not os.path.exists(os.path.dirname(#log_path)):
+    os.makedirs(os.path.dirname(#log_path))
 
-if log_level == 'info':
-    logger.setLevel(logging.INFO)
-elif log_level == 'warning':
-    logger.setLevel(logging.WARNING)
-elif log_level == 'debug':
-    logger.setLevel(logging.DEBUG)
-# formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
-formatter = logging.Formatter('%(asctime)s | %(message)s')
+if #log_level == 'info':
+    #logger.setLevel(#logging.INFO)
+elif #log_level == 'warning':
+    #logger.setLevel(#logging.WARNING)
+elif #log_level == 'debug':
+    #logger.setLevel(#logging.DEBUG)
+# formatter = #logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
+formatter = #logging.Formatter('%(asctime)s | %(message)s')
 
-stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.DEBUG)
+stdout_handler = #logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(#logging.DEBUG)
 stdout_handler.setFormatter(formatter)
 
-file_handler = logging.FileHandler(log_path)
-file_handler.setLevel(logging.DEBUG)
+file_handler = #logging.FileHandler(#log_path)
+file_handler.setLevel(#logging.DEBUG)
 file_handler.setFormatter(formatter)
 
 
-logger.addHandler(file_handler)
-logger.addHandler(stdout_handler)
+#logger.addHandler(file_handler)
+#logger.addHandler(stdout_handler)
 
 
-def logs(message):
-    logger.info(message)
-
+def print(message):
+    #logger.info(message)
+"""
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -82,7 +83,7 @@ def golden_cross(dataset,Low_Period,High_Period,Low_ApplyTo,High_ApplyTo):
 		second_line = LineString(np.column_stack((x[(int(High_Period)-1):], SMA_High.dropna())))
 		intersection = first_line.intersection(second_line)
 	except Exception as ex:
-		logs("===> No SMA Cross")
+		print("===> No SMA Cross")
 		signal_buy = pd.DataFrame(np.zeros(1))
 		signal_buy['signal'] = np.nan
 		signal_buy['values'] = np.nan
@@ -509,7 +510,7 @@ def genetic_buy_algo(
 
 	now = datetime.now()
 
-	logs('===============> {}'.format(symbol))
+	print('===============> ',symbol)
 
 	if os.path.exists(buy_path):
 		with open(buy_path, 'r', newline='') as myfile:
@@ -559,10 +560,10 @@ def genetic_buy_algo(
 			except Exception as ex:
 				print('getting error: ', ex)
 				flag_golden_cross = True
-				logging.debug(Chromosome[chrom_counter])
+				#logging.debug(Chromosome[chrom_counter])
 
 			if flag_golden_cross:
-				logging.debug(Chromosome[chrom_counter])
+				#logging.debug(Chromosome[chrom_counter])
 				Chromosome.pop(chrom_counter)
 				high_period = randint(50, 500)
 				low_period = randint(25, 500)
@@ -584,10 +585,10 @@ def genetic_buy_algo(
 			score_buy,score_sell = scoring(buy_data,sell_data)
 
 			#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				#logs('=======> BUY = {}'.format(buy_data))
+				#print('=======> BUY = ',buy_data))
 
 			#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				#logs('=======> SELL = {}'.format(sell_data))
+				#print('=======> SELL = ',sell_data))
 
 			if (
 				score_buy < max_score_ga_buy
@@ -638,11 +639,11 @@ def genetic_buy_algo(
 					}
 				continue
 
-			logs('**************** num buy *****************')
-			logs('=======> num buy = {}'.format(len(chromosome_buy)))
+			print('**************** num buy *****************')
+			print('=======> num buy = ',len(chromosome_buy))
 
-			logs('**************** num sell *****************')
-			logs('=======> num sell = {}'.format(len(chromosome_sell)))
+			print('**************** num sell *****************')
+			print('=======> num sell = ',len(chromosome_sell))
 			
 
 			pbar.update(int((len(chromosome_buy) + len(chromosome_sell))/2))
@@ -1137,7 +1138,7 @@ symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_d
 																							num_1H=500,
 																							num_4H=400
 																							)
-#symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,48000)
+#symbol_data_5M,money,symbol = #log_get_data_Genetic(mt5.TIMEFRAME_M5,0,48000)
 print('get data')
 #best_signals,buy_signal,sell_signal = Find_Best_interval(dataset = symbol_data_5M['AUDCAD_i'],period_low=2,period_high=5,Low_ApplyTo='close',High_ApplyTo='close',max_profit_buy=0.06,max_profit_sell=0.06,alpha_sell=0.1,alpha_buy=0.1)
 

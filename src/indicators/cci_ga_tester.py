@@ -22,8 +22,9 @@ import os
 #learning_sell()
 
 #**************************************** Logger *****************
+"""
 now = datetime.now()
-log_path = 'log/cci/golden_cross_zero/optimizer-{}-{}-{}-{}-{}-{}.log'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
+log_path = 'log/cci/golden_cross_zero/optimizer------.log',now.year, now.month, now.day, now.hour, now.minute, now.second)
 log_level = 'info'
 logger = logging.getLogger()
 
@@ -52,8 +53,9 @@ logger.addHandler(file_handler)
 logger.addHandler(stdout_handler)
 
 
-def logs(message):
+def print(message):
     logger.info(message)
+"""
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -145,7 +147,7 @@ def ga_runner(
 
 def ga_optimizer_buy():
 
-	logs('=========> ga optimizer buy')
+	print('================================> ga optimizer buy')
 
 	symbols,my_money = get_symbols(mt5.TIMEFRAME_M1)
 
@@ -183,12 +185,13 @@ def ga_optimizer_buy():
 			high_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
 			if high_distance < low_distance: continue
 			if high_distance - low_distance != 10000: continue
-			logs('high_distance buy = {}'.format(high_distance))
-			logs('low_distance buy = {}'.format(low_distance))
+			print('===================== high_distance buy ==> ',high_distance)
+			print('===================== low_distance buy ===> ',low_distance)
 
-			logs('====== my_sym optimizer buy ====> {}'.format(my_sym))
+			print('=================== my_sym optimizer buy => ',my_sym)
 
-			logs('************** ============= AI Buy ==========> {}'.format(learn_counter))
+			print('======================== AI Buy ==========> ',learn_counter)
+			print()
 
 			dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
 																								sym=sym.name,
@@ -207,7 +210,7 @@ def ga_optimizer_buy():
 
 			buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
 			
-			logs('*************> {}'.format(sym.name))
+			#print('*************> ',sym.name)
 
 			if not os.path.exists(buy_path):
 				ga_runner(
@@ -244,7 +247,7 @@ def ga_optimizer_buy():
 
 def ga_tester_buy():
 
-	logs('===========> ga tester buy')
+	print('================================> ga tester buy')
 
 	symbols,my_money = get_symbols(mt5.TIMEFRAME_M1)
 
@@ -271,12 +274,12 @@ def ga_tester_buy():
 			): continue
 
 		if sym.name != my_sym: continue
-		logs('====== my_sym tester buy ====> {}'.format(my_sym))
+		print('======================== my_sym tester buy ====> ',my_sym)
 
 		buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
 
 		if os.path.exists(buy_path):
-			logs('*********** Tester Buy *')
+			print('*********** Tester Buy *')
 
 			ga_result_buy, _ = read_ga_result(symbol=sym.name)
 
@@ -308,7 +311,7 @@ def ga_tester_buy():
 
 def ga_optimizer_sell():
 
-	logs('===========> ga optimizer sell')
+	print('================================> ga optimizer sell')
 
 	symbols,my_money = get_symbols(mt5.TIMEFRAME_M1)
 
@@ -343,12 +346,13 @@ def ga_optimizer_sell():
 			high_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
 			if high_distance < low_distance: continue
 			if high_distance - low_distance != 10000: continue
-			logs('high_distance sell = {}'.format(high_distance))
-			print('low_distance sell = {}'.format(low_distance))
+			print('====================== high_distance sell ==> ',high_distance)
+			print('====================== low_distance sell ===> ',low_distance)
 
-			logs('====== my_sym optimizer sell ====> {}'.format(my_sym))
+			print('================= my_sym optimizer sell ====> ',my_sym)
 
-			logs('************** ============= AI Sell ==========> {}'.format(learn_counter))
+			print('========================= AI Sell ==========> ',learn_counter)
+			print()
 
 			dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
 																								sym=sym.name,
@@ -367,7 +371,7 @@ def ga_optimizer_sell():
 
 			sell_path = "Genetic_cci_output_sell/" + sym.name + '.csv'
 			
-			logs('*************> {}'.format(sym.name))
+			#print('*************> ',sym.name)
 
 			if not os.path.exists(sell_path):
 				ga_runner(
@@ -403,7 +407,7 @@ def ga_optimizer_sell():
 
 def ga_tester_sell():
 
-	logs('===========> ga tester sell')
+	print('================================> ga tester sell')
 
 	symbols,my_money = get_symbols(mt5.TIMEFRAME_M1)
 
@@ -431,12 +435,12 @@ def ga_tester_sell():
 
 		if sym.name != my_sym: continue
 
-		logs('====== my_sym tester sell ====> {}'.format(my_sym))
+		print('======================= my_sym tester sell ====> ',my_sym)
 
 		sell_path = "Genetic_cci_output_sell/" + sym.name + '.csv'
 
 		if os.path.exists(sell_path):
-			logs('*********** tester Permit Sell *')
+			print('=============================> tester Permit Sell *')
 
 			_, ga_result_sell = read_ga_result(symbol=sym.name)
 
@@ -538,8 +542,9 @@ def learning_buy():
 
 		learning_turn = 1
 		alfa = 0.1
+		max_learn_turn = 0
 		while learning_turn < max_learning_turn:
-			logs('========== Leraning Turn ======> {}'.format(learning_turn))
+			print('============================= Leraning Turn ======> ',learning_turn)
 			out_buy,_ = one_year_golden_cross_tester(
 									dataset=symbol_data_5M,
 									dataset_15M=symbol_data_15M,
@@ -559,19 +564,23 @@ def learning_buy():
 				learn_out['power_pr_low'][learning_turn] = out_buy['power_pr_low'][0]
 				learn_out['max_st'][learning_turn] = out_buy['max_st'][0]
 				learn_out['max_tp'][learning_turn] = out_buy['max_tp'][0]
+				learning_turn += 1
 			else:
 				alfa = randint(0, 50)/100
-				learning_turn += 1
+				max_learn_turn += 1
 				continue
+			if max_learn_turn >= 50: break
 
-			learning_turn += 1
+			max_learn_turn += 1
 
 		max_score_learn = np.max(learn_out['score'].dropna())
 		max_score_learn_index = np.where((learn_out['score']==max_score_learn))[0]
 
-		print('max_score_learn = ',max_score_learn)
-		print('max_score_learn_index = ',max_score_learn_index)
-		print('learn_out = ',learn_out)
+		print()
+		print('===================== max_score_learn => ',max_score_learn)
+		print('=============== max_score_learn_index => ',max_score_learn_index)
+		print('=========================== learn_out => ',learn_out)
+		print()
 
 		buy_path = "Genetic_cci_output_buy/" + 'AUDUSD_i' + '.csv'
 
@@ -663,8 +672,9 @@ def learning_sell():
 
 		learning_turn = 1
 		alfa = 0.1
+		max_learn_turn = 0
 		while learning_turn < max_learning_turn:
-			logs('========== Leraning Turn ======> {}'.format(learning_turn))
+			print('============================ Leraning Turn ======> ',learning_turn)
 			_, out_sell = one_year_golden_cross_tester(
 									dataset=symbol_data_5M,
 									dataset_15M=symbol_data_15M,
@@ -684,19 +694,24 @@ def learning_sell():
 				learn_out['power_pr_low'][learning_turn] = out_sell['power_pr_low'][0]
 				learn_out['max_st'][learning_turn] = out_sell['max_st'][0]
 				learn_out['max_tp'][learning_turn] = out_sell['max_tp'][0]
+				learning_turn += 1
 			else:
 				alfa = randint(0, 50)/100
-				learning_turn += 1
+				max_learn_turn += 1
 				continue
 
-			learning_turn += 1
+			if max_learn_turn >= 50: break
+
+			max_learn_turn += 1
 
 		max_score_learn = np.max(learn_out['score'].dropna())
 		max_score_learn_index = np.where((learn_out['score']==max_score_learn))[0]
 
-		print('max_score_learn = ',max_score_learn)
-		print('max_score_learn_index = ',max_score_learn_index)
-		print('learn_out = ',learn_out)
+		print()
+		print('====================== max_score_learn => ',max_score_learn)
+		print('================ max_score_learn_index => ',max_score_learn_index)
+		print('============================ learn_out => ',learn_out)
+		print()
 
 		sell_path = "Genetic_cci_output_sell/" + sym.name + '.csv'
 
@@ -719,12 +734,12 @@ def Task_optimizer():
 	job_thread_buy = threading.Thread(target=ga_optimizer_buy)
 	job_thread_buy.start()
 	print()
-	logs('optimizer job_thread_buy ===> optimizer job_thread_buy runed')
+	print('optimizer job_thread_buy ===> optimizer job_thread_buy runed')
 
 	job_thread_sell = threading.Thread(target=ga_optimizer_sell)
 	job_thread_sell.start()
 	print()
-	logs('optimizer job_thread_sell ===> optimizer job_thread_sell runed')
+	print('optimizer job_thread_sell ===> optimizer job_thread_sell runed')
 
 	
 	job_thread_buy.join()
@@ -734,12 +749,12 @@ def Task_tester():
 	job_thread_buy = threading.Thread(target=ga_tester_buy)
 	job_thread_buy.start()
 	print()
-	logs('tester job_thread_buy ===> tester job_thread_buy runed')
+	print('tester job_thread_buy ===> tester job_thread_buy runed')
 
 	job_thread_sell = threading.Thread(target=ga_tester_sell)
 	job_thread_sell.start()
 	print()
-	logs('tester job_thread_sell ===> tester job_thread_sell runed')
+	print('tester job_thread_sell ===> tester job_thread_sell runed')
 
 	
 	job_thread_buy.join()
@@ -747,6 +762,7 @@ def Task_tester():
 
 
 my_sym = 'AUDUSD_i'
+
 #learning_buy()
 #ga_tester_buy()
 

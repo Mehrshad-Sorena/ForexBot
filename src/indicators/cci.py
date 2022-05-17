@@ -20,7 +20,7 @@ import os
 from tqdm import tqdm
 import logging
 from datetime import datetime
-#from logger import logs
+#from logger import print
 from timer import stTime
 from sma import last_signal_sma
 import sys
@@ -52,8 +52,9 @@ import sys
 #last_signal()
 
 #**************************************** Logger *****************
+"""
 now = datetime.now()
-log_path = 'log/cci/golden_cross_zero/{}-{}-{}-{}-{}-{}.log'.format(now.year, now.month, now.day, now.hour, now.minute, now.second)
+log_path = 'log/cci/golden_cross_zero/-----.log',now.year, now.month, now.day, now.hour, now.minute, now.second)
 log_level = 'info'
 logger = logging.getLogger()
 
@@ -82,9 +83,9 @@ logger.addHandler(file_handler)
 logger.addHandler(stdout_handler)
 
 
-def logs(message):
+def print(message):
     logger.info(message)
-
+"""
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************** Data Splitter
@@ -161,7 +162,7 @@ def dataset_spliter(
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************************************** Golden Cross Zero *******************************************************
-#@stTime
+@stTime
 def golden_cross_zero(
 						dataset,
 						dataset_15M,
@@ -395,10 +396,10 @@ def golden_cross_zero(
 		print(len(finding_points['index']))
 
 	#for elm in finding_points['index']:
-		#logs('time = {}'.format(dataset[symbol]['time'][elm]))
+		#print('time = ',dataset[symbol]['time'][elm]))
 
 	#for elm in finding_points.index:
-		#logs('time = > {}'.format(finding_points['index'][elm]))
+		#print('time = > ',finding_points['index'][elm]))
 
 	for elm in finding_points.index:
 
@@ -560,9 +561,9 @@ def golden_cross_zero(
 
 						if location_1H < 500: continue
 						
-						print('location_1H buy =====> ',location_1H)
-						print('5M buy =====> ',dataset[symbol]['time'][int(finding_points['index'][elm])])
-						print('1H buy =====> ',dataset_1H[symbol]['time'][location_1H])
+						#print('location_1H buy =====> ',location_1H)
+						#print('5M buy =====> ',dataset[symbol]['time'][int(finding_points['index'][elm])])
+						#print('1H buy =====> ',dataset_1H[symbol]['time'][location_1H])
 
 						
 
@@ -593,7 +594,7 @@ def golden_cross_zero(
 													plot=False
 													)
 						except Exception as ex:
-							print('pr buy: ',ex)
+							#print('pr buy: ',ex)
 							res_pro['high'] = 'nan'
 							res_pro['low'] = 'nan'
 
@@ -897,9 +898,9 @@ def golden_cross_zero(
 						dataset_pr_1H['close'] = dataset_1H[symbol]['close'][cut_first_1H:location_1H].reset_index(drop=True)
 						dataset_pr_1H['open'] = dataset_1H[symbol]['open'][cut_first_1H:location_1H].reset_index(drop=True)
 
-						print('location_1H sell =====> ',location_1H)
-						print('5M sell =====> ',dataset[symbol]['time'][int(finding_points['index'][elm])])
-						print('1H sell =====> ',dataset_1H[symbol]['time'][location_1H])
+						#print('location_1H sell =====> ',location_1H)
+						#print('5M sell =====> ',dataset[symbol]['time'][int(finding_points['index'][elm])])
+						#print('1H sell =====> ',dataset_1H[symbol]['time'][location_1H])
 
 
 						res_pro = pd.DataFrame()
@@ -920,7 +921,7 @@ def golden_cross_zero(
 													)
 
 						except Exception as ex:
-							print('pr sell: ',ex)
+							#print('pr sell: ',ex)
 							res_pro['high'] = 'nan'
 							res_pro['low'] = 'nan'
 
@@ -1069,22 +1070,22 @@ def golden_cross_zero(
 	signal_buy = signal_buy.sort_values(by = ['index'])
 	signal_buy = signal_buy.reset_index(drop=True)
 
-	with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-		logs('last index buy = {}'.format(signal_buy))
+	#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		#print('last index buy = ',signal_buy)
 
 	#for elm in signal_buy['index']:
-		#logs('time = > {}'.format(elm))
+		#print('time = > ',elm))
 
 	#for elm in signal_buy['index']:
-		#logs('time ====> '.format(dataset[symbol]['time'][elm]))
+		#print('time ====> ',dataset[symbol]['time'][elm]))
 
 	signal_sell = signal_sell.drop(columns=0)
 	signal_sell = signal_sell.dropna()
 	signal_sell = signal_sell.sort_values(by = ['index'])
 	signal_sell = signal_sell.reset_index(drop=True)
 
-	with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-		logs('last index sell = {}'.format(signal_sell))
+	#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		#print('last index sell = ',signal_sell)
 
 	#print('last index = ',signal_buy)
 
@@ -1329,7 +1330,7 @@ def tester_golden_cross_zero(
 	mid = 1
 	lower = 2
 
-	print('flag =====> ',flag_trade)
+	#print('flag =====> ',flag_trade)
 
 	#*********** Methode 1 Profits With MinMax Buy:
 	if flag_trade == 'buy':
@@ -2181,12 +2182,12 @@ def genetic_algo_cci_golden_cross(
 	#*************************** Algorithm *************************************************//
 	Chromosome = initilize_values_genetic()
 
-	print('**************************** START Genetic BUY ',symbol,'****************************')
+	print('================================ START Genetic BUY ==> ',symbol)
 	print('\n')
 
 	now = datetime.now()
 
-	logs('===============> {}'.format(symbol))
+	#print('===============> ',symbol)
 
 	if os.path.exists("Genetic_cci_output_buy/"+symbol+'.csv'):
 		with open("Genetic_cci_output_buy/"+symbol+'.csv', 'r', newline='') as myfile:
@@ -2255,24 +2256,34 @@ def genetic_algo_cci_golden_cross(
 	with tqdm(total=num_turn) as pbar:
 		while chrom_counter < len(Chromosome):
 
-			print('==== flag trade===> ', flag_trade)
+			#print('==== flag trade===> ', flag_trade)
+			print()
 
 			if flag_trade == 'buy':
-				logs('**************** num buy *****************')
-				logs('=======> num buy = {}'.format(len(chromosome_buy)))
+				print()
+				print('================== Num BUY Symbol ==>',symbol)
+				print()
+				print('================== Num BUY =========> ',len(chromosome_buy))
 
 			if flag_trade == 'sell':
-				logs('**************** num sell *****************')
-				logs('=======> num sell = {}'.format(len(chromosome_sell)))
+				print()
+				print('================== Num SELL Symbol =>',symbol)
+				print()
+				print('================== Num SELL ========> ',len(chromosome_sell))
 
-			logs('num_chroms = {}'.format(chrom_counter))
+			print('================== Num Chroms ======> ',chrom_counter)
+			print('================== All Chorms ======> ',all_chorms)
+			print('================== Chorm Reseter ===> ',chorm_reset_counter)
+			print('================== AI Turn =========> ',learn_counter-1)
 
+			print()
 			pbar_numbers = int((len(chromosome_buy) + len(chromosome_sell))/2)
 			pbar.update(pbar_numbers)
 
-			logs('====> All Chorms = {}'.format(all_chorms))
+			print()
+			
 
-			if (chorm_reset_counter == 40):
+			if (chorm_reset_counter >= 40):
 				chorm_reset_counter = 0
 				Chromosome.pop(chrom_counter)
 				high_period = randint(5, 500)
@@ -2301,7 +2312,7 @@ def genetic_algo_cci_golden_cross(
 				#all_chorms += 1
 				#continue
 
-			if learning_interval_counter == 50:
+			if learning_interval_counter >= 50:
 
 				learning_interval_counter = 0
 
@@ -2310,17 +2321,18 @@ def genetic_algo_cci_golden_cross(
 				low_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
 				high_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
 
-				while high_distance < low_distance & high_distance - low_distance != 10000:
+				while (high_distance < low_distance) or (high_distance - low_distance != 10000):
 
 					low_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
 					high_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
 
-				logs('high_distance = {}'.format(high_distance))
-				print('low_distance = {}'.format(low_distance))
+				print('==== High Distance =============> ',high_distance)
+				print('==== Low Distance ==============> ',low_distance)
 
-				logs('====== my_sym ====> {}'.format(symbol))
+				print('==== Symbol ====================> ',symbol)
 
-				logs('************** ============= AI Turn ==========> {}'.format(learn_counter))
+				print('==== AI Turn ===================> ',learn_counter)
+				print('==== Length Dataset ============> ',high_distance - low_distance)
 
 				dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, _ = read_dataset_csv(
 																									sym=symbol,
@@ -2368,7 +2380,7 @@ def genetic_algo_cci_golden_cross(
 													tp_percent_minmax_buy_max = 1#Chromosome[chrom_counter]['max_tp']
 													)
 					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						#logs('=======> buy_data = {}'.format(buy_data))
+						#print('=======> buy_data = ',buy_data))
 
 				if flag_trade == 'sell':
 					_, sell_data = golden_cross_zero(
@@ -2396,7 +2408,7 @@ def genetic_algo_cci_golden_cross(
 													tp_percent_minmax_buy_max = 1#Chromosome[chrom_counter]['max_tp']
 													)
 					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						#logs('=======> sell_data = {}'.format(sell_data))
+						#print('=======> sell_data = ',sell_data))
 
 	
 				flag_golden_cross = False
@@ -2410,6 +2422,14 @@ def genetic_algo_cci_golden_cross(
 			except Exception as ex:
 				print('getting error GA Golden Cross: ', ex)
 				flag_golden_cross = True
+
+			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				print('======== Chorme ================> ')
+				print()
+				print('........................................................')
+				print(Chromosome[chrom_counter])
+				print('........................................................')
+				print()
 
 			if flag_golden_cross:
 				#Chromosome.pop(chrom_counter)
@@ -2451,7 +2471,12 @@ def genetic_algo_cci_golden_cross(
 															flag_trade=flag_trade
 															)
 					with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						logs('=======> Output Buy = {}'.format(output_buy))
+						print('======== Output Buy =======> ')
+						print()
+						print('........................................................')
+						print(output_buy)
+						print('........................................................')
+						print()
 
 				if flag_trade == 'sell':
 					_, output_sell = tester_golden_cross_zero(
@@ -2465,15 +2490,17 @@ def genetic_algo_cci_golden_cross(
 															flag_trade=flag_trade
 															)
 					with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						logs('=======> Output SELL = {}'.format(output_sell))
+						print('======== Output SELL ======> ')
+						print()
+						print('........................................................')
+						print(output_sell)
+						print('........................................................')
+						print()
 
 				flag_tester = False
 			except Exception as ex:
 				print('GA tester: ',ex)
 				flag_tester = True
-
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				logs('=======> Chorme = {}'.format(Chromosome[chrom_counter]))
 
 			if flag_tester:
 				#Chromosome.pop(chrom_counter)
@@ -2519,6 +2546,7 @@ def genetic_algo_cci_golden_cross(
 						score = (output_buy['score_pr'][0]+output_buy['score_min_max'][0])/2
 						Chromosome[chrom_counter].update({'score_buy': score })
 						chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
+						chorm_reset_counter = 0
 						#max_score_ga_buy = np.max(chromosome_buy['score_pr'],1)
 						#print('MMMMMMMMMaxxxxxxx ==========> ',max_score_ga_buy)
 
@@ -2526,7 +2554,7 @@ def genetic_algo_cci_golden_cross(
 					else:
 						bad_buy = True
 
-			logs('== Max Score Buy Must Be ====> {}'.format(max_score_ga_buy))
+			print('== Max Score Buy Must Be ====> ',max_score_ga_buy)
 
 			if flag_trade == 'sell':
 				if not np.isnan(output_sell['score_pr'][0]) or not np.isnan(output_sell['score_min_max'][0]):
@@ -2546,13 +2574,14 @@ def genetic_algo_cci_golden_cross(
 						score = (output_sell['score_pr'][0]+output_sell['score_min_max'][0])/2
 						Chromosome[chrom_counter].update({'score_sell': score })
 						chromosome_sell = chromosome_sell.append(Chromosome[chrom_counter], ignore_index=True)
+						chorm_reset_counter = 0
 						#max_score_ga_sell = np.max(chromosome_sell['score_pr'],1)
 
 						bad_sell = False
 					else:
 						bad_sell = True
 
-			logs('== Max Score Sell Must Be =====> {}'.format(max_score_ga_sell))
+			print('== Max Score Sell Must Be =====> ',max_score_ga_sell)
 
 			if flag_trade == 'buy':
 				if (
@@ -2648,7 +2677,12 @@ def genetic_algo_cci_golden_cross(
 	if flag_trade == 'buy':
 
 		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-			logs('=======> Chorme = {}'.format(chromosome_buy))
+			print('=======> Chorme ===> ')
+			print()
+			print('........................................................')
+			print(chromosome_buy)
+			print('........................................................')
+			print()
 
 		best_buy = pd.DataFrame()
 		max_score_buy_pr = np.max(result_buy['score_pr'].dropna())
@@ -2674,7 +2708,12 @@ def genetic_algo_cci_golden_cross(
 	if flag_trade == 'sell':
 
 		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-			logs('=======> Chorme = {}'.format(chromosome_sell))
+			print('=======> Chorme ===> ')
+			print()
+			print('........................................................')
+			print(chromosome_sell)
+			print('........................................................')
+			print()
 
 		best_sell = pd.DataFrame()
 		max_score_sell_pr = np.max(result_sell['score_pr'].dropna())
@@ -2782,7 +2821,7 @@ def one_year_golden_cross_tester(
 	mid = 1
 	lower = 2
 
-	logs('=================> {}'.format(symbol))
+	print('=================> ',symbol)
 
 	buy_path = "Genetic_cci_output_buy/" + symbol + '.csv'
 	sell_path = "Genetic_cci_output_sell/" + symbol + '.csv'
@@ -2933,25 +2972,25 @@ def one_year_golden_cross_tester(
 
 				if np.isnan(output_buy['score_min_max'][0]) : output_buy['score_min_max'][0] = 0
 
-				logs('=========> one year Buy: {}'.format(symbol))
+				print('=========> one year Buy: ',symbol)
 
-				logs('mean_tp_min_max= {}'.format(output_buy['mean_tp_min_max'][0]))
-				logs('mean_st_min_max= {}'.format(output_buy['mean_st_min_max'][0]))
-				logs('max_tp_min_max= {}'.format(output_buy['max_tp_min_max'][0]))
-				logs('max_st_min_max= {}'.format(output_buy['max_st_min_max'][0]))
-				logs('sum_st_min_max= {}'.format(output_buy['sum_st_min_max'][0]))
-				logs('sum_tp_min_max= {}'.format(output_buy['sum_tp_min_max'][0]))
-				logs('num_tp_min_max= {}'.format(output_buy['num_tp_min_max'][0]))
-				logs('num_st_min_max= {}'.format(output_buy['num_st_min_max'][0]))
-				logs('num_trade_min_max= {}'.format(output_buy['num_trade_min_max'][0]))
-				logs('score_min_max= {}'.format(output_buy['score_min_max'][0]))
-				logs('score_min_max ga= {}'.format(ga_result_buy['score_min_max'][0]))
+				print('mean_tp_min_max= ',output_buy['mean_tp_min_max'][0])
+				print('mean_st_min_max= ',output_buy['mean_st_min_max'][0])
+				print('max_tp_min_max= ',output_buy['max_tp_min_max'][0])
+				print('max_st_min_max= ',output_buy['max_st_min_max'][0])
+				print('sum_st_min_max= ',output_buy['sum_st_min_max'][0])
+				print('sum_tp_min_max= ',output_buy['sum_tp_min_max'][0])
+				print('num_tp_min_max= ',output_buy['num_tp_min_max'][0])
+				print('num_st_min_max= ',output_buy['num_st_min_max'][0])
+				print('num_trade_min_max= ',output_buy['num_trade_min_max'][0])
+				print('score_min_max= ',output_buy['score_min_max'][0])
+				print('score_min_max ga= ',ga_result_buy['score_min_max'][0])
 
 			#for idx in buy_data['tp_min_max'][np.where(buy_data['flag_min_max'] == 'tp')[0]]:
-				#logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
+				#print('time tp = ',dataset[symbol]['time'][idx]))
 
 			#for idx in buy_data['tp_min_max'][np.where(buy_data['flag_min_max'] == 'st')[0]]:
-				#logs('time st = {}'.format(dataset[symbol]['time'][idx]))
+				#print('time st = ',dataset[symbol]['time'][idx]))
 
 
 				if output_buy['score_min_max'][0] >= ga_result_buy['score_min_max'][0]:
@@ -3095,26 +3134,26 @@ def one_year_golden_cross_tester(
 
 				if np.isnan(output_buy['score_pr'][0]) : output_buy['score_pr'][0] = 0
 
-				logs('=========> one year Buy: {}'.format(symbol))
+				print('=========> one year Buy: ',symbol)
 
-				logs('mean_tp_pr= {}'.format(output_buy['mean_tp_pr'][0]))
-				logs('mean_st_pr= {}'.format(output_buy['mean_st_pr'][0]))
-				logs('max_tp_pr= {}'.format(output_buy['max_tp_pr'][0]))
-				logs('max_st_pr= {}'.format(output_buy['max_st_pr'][0]))
-				logs('sum_st_pr= {}'.format(output_buy['sum_st_pr'][0]))
-				logs('sum_tp_pr= {}'.format(output_buy['sum_tp_pr'][0]))
-				logs('num_tp_pr= {}'.format(output_buy['num_tp_pr'][0]))
-				logs('num_st_pr= {}'.format(output_buy['num_st_pr'][0]))
-				logs('num_trade_pr= {}'.format(output_buy['num_trade_pr'][0]))
-				logs('score_pr= {}'.format(output_buy['score_pr'][0]))
-				logs('score_pr ga= {}'.format(ga_result_buy['score_pr'][0]))
-				logs('value_min_cci_pr_buy = {}'.format(value_min_cci_pr_buy['interval'][upper]))
+				print('mean_tp_pr= ',output_buy['mean_tp_pr'][0])
+				print('mean_st_pr= ',output_buy['mean_st_pr'][0])
+				print('max_tp_pr= ',output_buy['max_tp_pr'][0])
+				print('max_st_pr= ',output_buy['max_st_pr'][0])
+				print('sum_st_pr= ',output_buy['sum_st_pr'][0])
+				print('sum_tp_pr= ',output_buy['sum_tp_pr'][0])
+				print('num_tp_pr= ',output_buy['num_tp_pr'][0])
+				print('num_st_pr= ',output_buy['num_st_pr'][0])
+				print('num_trade_pr= ',output_buy['num_trade_pr'][0])
+				print('score_pr= ',output_buy['score_pr'][0])
+				print('score_pr ga= ',ga_result_buy['score_pr'][0])
+				print('value_min_cci_pr_buy = ',value_min_cci_pr_buy['interval'][upper])
 
 				for idx in buy_data['index'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'tp')[0]]]:
-					logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
+					print('time tp = ',dataset[symbol]['time'][idx])
 
 				for idx in buy_data['index'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'st')[0]]]:
-					logs('time st = {}'.format(dataset[symbol]['time'][idx]))
+					print('time st = ',dataset[symbol]['time'][idx])
 
 				if permit_flag == True:
 					if output_buy['score_pr'][0] >= ga_result_buy['score_pr'][0]*0.99: 
@@ -3286,25 +3325,25 @@ def one_year_golden_cross_tester(
 
 				if np.isnan(output_sell['score_min_max'][0]) : output_sell['score_min_max'][0] = 0
 
-				logs('=========> one year Sell: {}'.format(symbol))
+				print('=========> one year Sell: ',symbol)
 
-				logs('mean_tp_min_max= {}'.format(output_sell['mean_tp_min_max'][0]))
-				logs('mean_st_min_max= {}'.format(output_sell['mean_st_min_max'][0]))
-				logs('max_tp_min_max= {}'.format(output_sell['max_tp_min_max'][0]))
-				logs('max_st_min_max= {}'.format(output_sell['max_st_min_max'][0]))
-				logs('sum_st_min_max= {}'.format(output_sell['sum_st_min_max'][0]))
-				logs('sum_tp_min_max= {}'.format(output_sell['sum_tp_min_max'][0]))
-				logs('num_tp_min_max= {}'.format(output_sell['num_tp_min_max'][0]))
-				logs('num_st_min_max= {}'.format(output_sell['num_st_min_max'][0]))
-				logs('num_trade_min_max= {}'.format(output_sell['num_trade_min_max'][0]))
-				logs('score_min_max= {}'.format(output_sell['score_min_max'][0]))
-				logs('score_min_max ga= {}'.format(ga_result_sell['score_min_max'][0]))
+				print('mean_tp_min_max= ',output_sell['mean_tp_min_max'][0])
+				print('mean_st_min_max= ',output_sell['mean_st_min_max'][0])
+				print('max_tp_min_max= ',output_sell['max_tp_min_max'][0])
+				print('max_st_min_max= ',output_sell['max_st_min_max'][0])
+				print('sum_st_min_max= ',output_sell['sum_st_min_max'][0])
+				print('sum_tp_min_max= ',output_sell['sum_tp_min_max'][0])
+				print('num_tp_min_max= ',output_sell['num_tp_min_max'][0])
+				print('num_st_min_max= ',output_sell['num_st_min_max'][0])
+				print('num_trade_min_max= ',output_sell['num_trade_min_max'][0])
+				print('score_min_max= ',output_sell['score_min_max'][0])
+				print('score_min_max ga= ',ga_result_sell['score_min_max'][0])
 
 			#for idx in sell_data['index'][np.where(sell_data['flag_min_max'] == 'tp')[0]]:
-				#logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
+				#print('time tp = ',dataset[symbol]['time'][idx]))
 
 			#for idx in sell_data['index'][np.where(sell_data['flag_min_max'] == 'st')[0]]:
-				#logs('time st = {}'.format(dataset[symbol]['time'][idx]))
+				#print('time st = ',dataset[symbol]['time'][idx]))
 
 				if output_sell['score_min_max'][0] >= ga_result_sell['score_min_max'][0]: 
 					ga_result_sell['permit'] = True
@@ -3440,26 +3479,26 @@ def one_year_golden_cross_tester(
 
 				if np.isnan(output_sell['score_pr'][0]) : output_sell['score_pr'][0] = 0
 
-				logs('=========> one year Sell: {}'.format(symbol))
+				print('=========> one year Sell: ',symbol)
 
-				logs('mean_tp_pr= {}'.format(output_sell['mean_tp_pr'][0]))
-				logs('mean_st_pr= {}'.format(output_sell['mean_st_pr'][0]))
-				logs('max_tp_pr= {}'.format(output_sell['max_tp_pr'][0]))
-				logs('max_st_pr= {}'.format(output_sell['max_st_pr'][0]))
-				logs('sum_st_pr= {}'.format(output_sell['sum_st_pr'][0]))
-				logs('sum_tp_pr= {}'.format(output_sell['sum_tp_pr'][0]))
-				logs('num_tp_pr= {}'.format(output_sell['num_tp_pr'][0]))
-				logs('num_st_pr= {}'.format(output_sell['num_st_pr'][0]))
-				logs('num_trade_pr= {}'.format(output_sell['num_trade_pr'][0]))
-				logs('score_pr= {}'.format(output_sell['score_pr'][0]))
-				logs('score_pr ga= {}'.format(ga_result_sell['score_pr'][0]))
-				logs('value_max_cci_pr_sell = {}'.format(value_max_cci_pr_sell['interval'][lower]))
+				print('mean_tp_pr= ',output_sell['mean_tp_pr'][0])
+				print('mean_st_pr= ',output_sell['mean_st_pr'][0])
+				print('max_tp_pr= ',output_sell['max_tp_pr'][0])
+				print('max_st_pr= ',output_sell['max_st_pr'][0])
+				print('sum_st_pr= ',output_sell['sum_st_pr'][0])
+				print('sum_tp_pr= ',output_sell['sum_tp_pr'][0])
+				print('num_tp_pr= ',output_sell['num_tp_pr'][0])
+				print('num_st_pr= ',output_sell['num_st_pr'][0])
+				print('num_trade_pr= ',output_sell['num_trade_pr'][0])
+				print('score_pr= ',output_sell['score_pr'][0])
+				print('score_pr ga= ',ga_result_sell['score_pr'][0])
+				print('value_max_cci_pr_sell = ',value_max_cci_pr_sell['interval'][lower])
 
 				for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'tp')[0]]]:
-					logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
+					print('time tp = ',dataset[symbol]['time'][idx])
 
 				for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'st')[0]]]:
-					logs('time st = {}'.format(dataset[symbol]['time'][idx]))
+					print('time st = ',dataset[symbol]['time'][idx])
 
 				if permit_flag == True:
 					if output_sell['score_pr'][0] >= ga_result_sell['score_pr'][0]*0.99:
@@ -3479,7 +3518,7 @@ def one_year_golden_cross_tester(
 
 						ga_result_sell.to_csv(sell_path)
 		#////////////////////////////////////////
-	logs('//////////////////////////////////////////')
+	print('//////////////////////////////////////////')
 
 	if flag_trade == 'buy':
 		output_sell = pd.DataFrame()
@@ -3507,7 +3546,7 @@ def golden_cross_tester_for_permit(
 	mid = 1
 	lower = 2
 
-	logs('=================> {}'.format(symbol))
+	print('=================> ',symbol)
 
 	buy_path = "Genetic_cci_output_buy/" + symbol + '.csv'
 	sell_path = "Genetic_cci_output_sell/" + symbol + '.csv'
@@ -3650,25 +3689,25 @@ def golden_cross_tester_for_permit(
 
 				if np.isnan(output_buy['score_pr'][0]) : output_buy['score_pr'][0] = 0
 
-				logs('=========> one year Buy: {}'.format(symbol))
+				print('=========> one year Buy: ',symbol)
 
-				logs('mean_tp_pr= {}'.format(output_buy['mean_tp_pr'][0]))
-				logs('mean_st_pr= {}'.format(output_buy['mean_st_pr'][0]))
-				logs('max_tp_pr= {}'.format(output_buy['max_tp_pr'][0]))
-				logs('max_st_pr= {}'.format(output_buy['max_st_pr'][0]))
-				logs('sum_st_pr= {}'.format(output_buy['sum_st_pr'][0]))
-				logs('sum_tp_pr= {}'.format(output_buy['sum_tp_pr'][0]))
-				logs('num_tp_pr= {}'.format(output_buy['num_tp_pr'][0]))
-				logs('num_st_pr= {}'.format(output_buy['num_st_pr'][0]))
-				logs('num_trade_pr= {}'.format(output_buy['num_trade_pr'][0]))
-				logs('score_pr= {}'.format(output_buy['score_pr'][0]))
-				logs('score_pr ga= {}'.format(ga_result_buy['score_pr'][0]))
+				print('mean_tp_pr= ',output_buy['mean_tp_pr'][0])
+				print('mean_st_pr= ',output_buy['mean_st_pr'][0])
+				print('max_tp_pr= ',output_buy['max_tp_pr'][0])
+				print('max_st_pr= ',output_buy['max_st_pr'][0])
+				print('sum_st_pr= ',output_buy['sum_st_pr'][0])
+				print('sum_tp_pr= ',output_buy['sum_tp_pr'][0])
+				print('num_tp_pr= ',output_buy['num_tp_pr'][0])
+				print('num_st_pr= ',output_buy['num_st_pr'][0])
+				print('num_trade_pr= ',output_buy['num_trade_pr'][0])
+				print('score_pr= ',output_buy['score_pr'][0])
+				print('score_pr ga= ',ga_result_buy['score_pr'][0])
 
 				for idx in buy_data['index'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'tp')[0]]]:
-					logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
+					print('time tp = ',dataset[symbol]['time'][idx])
 
 				for idx in buy_data['index'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'st')[0]]]:
-					logs('time st = {}'.format(dataset[symbol]['time'][idx]))
+					print('time st = ',dataset[symbol]['time'][idx])
 
 				if output_buy['score_pr'][0] >= ga_result_buy['score_pr'][0]*0.99: 
 					ga_result_buy['permit'] = True
@@ -3823,25 +3862,25 @@ def golden_cross_tester_for_permit(
 
 				if np.isnan(output_sell['score_pr'][0]) : output_sell['score_pr'][0] = 0
 
-				logs('=========> one year Sell: {}'.format(symbol))
+				print('=========> one year Sell: ',symbol)
 
-				logs('mean_tp_pr= {}'.format(output_sell['mean_tp_pr'][0]))
-				logs('mean_st_pr= {}'.format(output_sell['mean_st_pr'][0]))
-				logs('max_tp_pr= {}'.format(output_sell['max_tp_pr'][0]))
-				logs('max_st_pr= {}'.format(output_sell['max_st_pr'][0]))
-				logs('sum_st_pr= {}'.format(output_sell['sum_st_pr'][0]))
-				logs('sum_tp_pr= {}'.format(output_sell['sum_tp_pr'][0]))
-				logs('num_tp_pr= {}'.format(output_sell['num_tp_pr'][0]))
-				logs('num_st_pr= {}'.format(output_sell['num_st_pr'][0]))
-				logs('num_trade_pr= {}'.format(output_sell['num_trade_pr'][0]))
-				logs('score_pr= {}'.format(output_sell['score_pr'][0]))
-				logs('score_pr ga= {}'.format(ga_result_sell['score_pr'][0]))
+				print('mean_tp_pr= ',output_sell['mean_tp_pr'][0])
+				print('mean_st_pr= ',output_sell['mean_st_pr'][0])
+				print('max_tp_pr= ',output_sell['max_tp_pr'][0])
+				print('max_st_pr= ',output_sell['max_st_pr'][0])
+				print('sum_st_pr= ',output_sell['sum_st_pr'][0])
+				print('sum_tp_pr= ',output_sell['sum_tp_pr'][0])
+				print('num_tp_pr= ',output_sell['num_tp_pr'][0])
+				print('num_st_pr= ',output_sell['num_st_pr'][0])
+				print('num_trade_pr= ',output_sell['num_trade_pr'][0])
+				print('score_pr= ',output_sell['score_pr'][0])
+				print('score_pr ga= ',ga_result_sell['score_pr'][0])
 
 				for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'tp')[0]]]:
-					logs('time tp = {}'.format(dataset[symbol]['time'][idx]))
+					print('time tp = ',dataset[symbol]['time'][idx])
 
 				for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'st')[0]]]:
-					logs('time st = {}'.format(dataset[symbol]['time'][idx]))
+					print('time st = ',dataset[symbol]['time'][idx])
 
 				if output_sell['score_pr'][0] >= ga_result_sell['score_pr'][0]*0.99:
 					ga_result_sell['permit'] = True
@@ -3860,7 +3899,7 @@ def golden_cross_tester_for_permit(
 
 					ga_result_sell.to_csv(sell_path)
 		#////////////////////////////////////////
-	logs('//////////////////////////////////////////')
+	print('//////////////////////////////////////////')
 
 	if flag_trade == 'buy':
 		output_sell = pd.DataFrame()
@@ -3994,11 +4033,11 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 	if lst_idx_buy > lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_buy) <= (ga_result_buy['distance_lines'][0] + 1):
 
-		logs('======> last signal buy {}'.format(symbol))
-		logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
-		logs('ga result buy: {}'.format(ga_result_buy['distance_lines'][0]))
-		logs('ga result buy methode: {}'.format(ga_result_buy['methode'][0]))
-		logs('last index: {}'.format(lst_idx_buy))
+		print('======> last signal buy ',symbol)
+		print('dataset length: ',len(dataset[symbol]['close']))
+		print('ga result buy: ',ga_result_buy['distance_lines'][0])
+		print('ga result buy methode: ',ga_result_buy['methode'][0])
+		print('last index: ',lst_idx_buy)
 		
 
 		if ga_result_buy['methode'][0] == 'pr':
@@ -4055,10 +4094,10 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 					trend_short_1_buy = 'no_flag'
 					trend_short_2_buy = 'no_flag'
 
-			logs('trend_long_buy: {}'.format(trend_long_buy))
-			logs('trend_mid_buy: {}'.format(trend_mid_buy))
-			logs('trend_short_1_buy: {}'.format(trend_short_1_buy))
-			logs('trend_short_2_buy: {}'.format(trend_short_2_buy))
+			print('trend_long_buy: ',trend_long_buy)
+			print('trend_mid_buy: ',trend_mid_buy)
+			print('trend_short_1_buy: ',trend_short_1_buy)
+			print('trend_short_2_buy: ',trend_short_2_buy)
 
 			if (
 				#buy_data['ramp_low'].iloc[-1]>=ga_result_buy['ramp_low_lower_pr'][0] and
@@ -4087,7 +4126,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			trend_sma_buy_5M = last_signal_sma(dataset[symbol], symbol)['signal'][0]
 			trend_sma_buy_15M = last_signal_sma(dataset_15M[symbol], symbol)['signal'][0]
 
-			logs('trend_sma_buy: {}'.format(trend_sma_buy_5M))
+			print('trend_sma_buy: ',trend_sma_buy_5M)
 
 			if (
 				trend_sma_buy_5M == 'buy' and
@@ -4112,15 +4151,15 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 
 			else:
 				signal = 'no_trade'
-		logs('================================')
+		print('================================')
 
 	elif lst_idx_buy < lst_idx_sell and (len(dataset[symbol]['close']) - 1 - lst_idx_sell) <= (ga_result_sell['distance_lines'][0] + 1):
 
-		logs('======> last signal sell {}'.format(symbol))
-		logs('dataset length: {}'.format(len(dataset[symbol]['close'])))
-		logs('ga result sell: {}'.format(ga_result_sell['distance_lines'][0]))
-		logs('ga result sell methode: {}'.format(ga_result_sell['methode'][0]))
-		logs('last index: {}'.format(lst_idx_sell))
+		print('======> last signal sell ',symbol)
+		print('dataset length: ',len(dataset[symbol]['close']))
+		print('ga result sell: ',ga_result_sell['distance_lines'][0])
+		print('ga result sell methode: ',ga_result_sell['methode'][0])
+		print('last index: ',lst_idx_sell)
 		
 
 		if ga_result_sell['methode'][0] == 'pr':
@@ -4177,10 +4216,10 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 					resist_sell = 0
 					protect_sell = 0
 
-			logs('trend_long_sell: {}'.format(trend_long_sell))
-			logs('trend_mid_sell: {}'.format(trend_mid_sell))
-			logs('trend_short_1_sell: {}'.format(trend_short_1_sell))
-			logs('trend_short_2_sell: {}'.format(trend_short_2_sell))
+			print('trend_long_sell: ',trend_long_sell)
+			print('trend_mid_sell: ',trend_mid_sell)
+			print('trend_short_1_sell: ',trend_short_1_sell)
+			print('trend_short_2_sell: ',trend_short_2_sell)
 			if (
 				#sell_data['ramp_low'].iloc[-1]<=ga_result_sell['ramp_low_upper_pr'][0] and
 				#sell_data['ramp_high'].iloc[-1]<=ga_result_sell['ramp_high_upper_pr'][0] and
@@ -4209,7 +4248,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			trend_sma_sell_5M = last_signal_sma(dataset[symbol],symbol)['signal'][0]
 			trend_sma_sell_15M = last_signal_sma(dataset_15M[symbol], symbol)['signal'][0]
 
-			logs('trend_sma_sell_5M: {}'.format(trend_sma_sell_5M))
+			print('trend_sma_sell_5M: ',trend_sma_sell_5M)
 
 			if (
 				trend_sma_sell_5M == 'sell' and
@@ -4232,7 +4271,7 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 			else:
 				signal = 'no_trade'
 
-		logs('================================')
+		print('================================')
 	else:
 		signal = 'no_trade'
 

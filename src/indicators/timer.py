@@ -11,6 +11,7 @@ def stTime(func):
         r = func(*args, **keyArgs)
         t2 = time.time()
         print("Function=%s, Time=%s" % (func.__name__, t2 - t1))
+        print()
         return r
 
     return stFunc

@@ -181,8 +181,8 @@ def ga_optimizer_buy():
 		while learn_counter < 1:
 
 
-			low_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
-			high_distance = randint((learn_counter*12850), ((learn_counter*12850) + 12850))
+			low_distance = randint((learn_counter*16800)+6000, ((learn_counter*16800) + 16800))
+			high_distance = randint((learn_counter*16800), ((learn_counter*12850) + 16800))
 			if high_distance < low_distance: continue
 			if high_distance - low_distance != 10000: continue
 			print('===================== high_distance buy ==> ',high_distance)
@@ -508,8 +508,8 @@ def learning_buy():
 														symbol=sym.name,
 														dataset_5M=dataset_5M,
 														dataset_1H=dataset_1H,
-														spliter_5M_end=90000,
-														spliter_5M_first=0
+														spliter_5M_end=9000,
+														spliter_5M_first=6000
 														)
 
 
@@ -522,6 +522,9 @@ def learning_buy():
 		learn_out['max_st'] = np.nan
 		learn_out['max_tp'] = np.nan
 
+		print('5M = ',len(symbol_data_5M[sym.name]['open']))
+		print('1H = ',len(symbol_data_1H[sym.name]['open']))
+
 		out_buy,_ = one_year_golden_cross_tester(
 									dataset=symbol_data_5M,
 									dataset_15M=symbol_data_15M,
@@ -529,6 +532,7 @@ def learning_buy():
 									symbol_data_4H=symbol_data_4H,
 									symbol=sym.name,
 									flag_trade='buy',
+									alfa=0.1,
 									max_st=1,
 									max_tp=1,
 									permit_flag=False
@@ -545,6 +549,12 @@ def learning_buy():
 		max_learn_turn = 0
 		while learning_turn < max_learning_turn:
 			print('============================= Leraning Turn ======> ',learning_turn)
+			print('5M = ',len(symbol_data_5M[sym.name]['open']))
+			print('1H = ',len(symbol_data_1H[sym.name]['open']))
+
+			print('max_st = ',learn_out['max_st'][learning_turn-1])
+			print('max_tp = ',learn_out['max_tp'][learning_turn-1])
+
 			out_buy,_ = one_year_golden_cross_tester(
 									dataset=symbol_data_5M,
 									dataset_15M=symbol_data_15M,
@@ -557,17 +567,19 @@ def learning_buy():
 									max_tp=learn_out['max_tp'][learning_turn-1],
 									permit_flag=False
 									)
-			if out_buy['score_pr'][0] > learn_out['score'][learning_turn-1]:
-				learn_out['score'][learning_turn] = out_buy['score_pr'][0]
-				learn_out['value_min_upper_cci_pr'][learning_turn] = out_buy['value_min_upper_cci_pr'][0]
-				learn_out['power_pr_high'][learning_turn] = out_buy['power_pr_high'][0]
-				learn_out['power_pr_low'][learning_turn] = out_buy['power_pr_low'][0]
-				learn_out['max_st'][learning_turn] = out_buy['max_st'][0]
-				learn_out['max_tp'][learning_turn] = out_buy['max_tp'][0]
-				learning_turn += 1
-			else:
-				alfa = randint(0, 50)/100
-				max_learn_turn += 1
+			
+			learn_out['score'][learning_turn] = out_buy['score_pr'][0]
+			learn_out['value_min_upper_cci_pr'][learning_turn] = out_buy['value_min_upper_cci_pr'][0]
+			learn_out['power_pr_high'][learning_turn] = out_buy['power_pr_high'][0]
+			learn_out['power_pr_low'][learning_turn] = out_buy['power_pr_low'][0]
+			learn_out['max_st'][learning_turn] = out_buy['max_st'][0]
+			learn_out['max_tp'][learning_turn] = out_buy['max_tp'][0]
+			learning_turn += 1
+
+			if out_buy['score_pr'][0] <= learn_out['score'][learning_turn-1]:
+				alfa = randint(1, 50)/100
+				print('alfa = ',alfa)
+				#max_learn_turn += 1
 				continue
 			if max_learn_turn >= 50: break
 
@@ -761,17 +773,17 @@ def Task_tester():
 	job_thread_sell.join()
 
 
-my_sym = 'AUDUSD_i'
+my_sym = 'EURGBP_i'
 
 #learning_buy()
 #ga_tester_buy()
 
 ga_optimizer_buy()
-learning_buy()
+#learning_buy()
 #ga_tester_buy()
 
-ga_optimizer_sell()
-learning_sell()
+#ga_optimizer_sell()
+#learning_sell()
 #ga_tester_sell()
 
 

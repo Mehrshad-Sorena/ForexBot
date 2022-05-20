@@ -1146,7 +1146,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 	signal_good = signal_good.reset_index(drop=True)
 
 	#timeout = time.time() + 20  # timeout_break Sec from now
-	while True:
+	try:
 		if (len(signal_good[apply_to].to_numpy()) - 1) >= 25:
 			n_clusters = 5
 		else:
@@ -1167,14 +1167,25 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 		Power = kmeans.labels_
 		Power = np.bincount(Power)
 
-		if ((len(Y) != len(Power))):
+		#if ((len(Y) != len(Power))):
 			#timeout = time.time() + timeout_break
-			continue
-		if ((len(Y) == len(Power))): break
+			#continue
+		#if ((len(Y) == len(Power))): break
 
-	signal_final = pd.DataFrame(Y, columns=['Y'])
-	signal_final['power'] = Power
-	signal_final = signal_final.sort_values(by = ['Y'])
+		signal_final = pd.DataFrame(Y, columns=['Y'])
+		signal_final['power'] = Power
+		signal_final = signal_final.sort_values(by = ['Y'])
+
+	except Exception as ex:
+		print('no good signal 1')
+		best_signals_interval = pd.DataFrame()
+		best_signals_interval['interval'] = [0,0,0]
+		best_signals_interval['power'] = [0,0,0]
+		best_signals_interval['alpha'] = [alpha,alpha,alpha]
+		best_signals_interval[name_stp] = [name_stp,name_stp,name_stp]
+		return best_signals_interval
+
+	
 
 	#Fitting Model Finding ****************************
 	data_X = np.zeros(np.sum(signal_final['power']))
@@ -2129,6 +2140,25 @@ def gen_creator(Chromosome):
 		Chromosome[re_counter]['signal'] = baby[re_counter]['signal']
 		Chromosome[re_counter]['score_buy'] = baby[re_counter]['score_buy']
 		Chromosome[re_counter]['score_sell'] = baby[re_counter]['score_sell']
+
+		if (Chromosome[re_counter]['high_period'] <= Chromosome[re_counter]['low_period']):
+			high_period = randint(5, 500)
+			low_period = randint(5, 400)
+			while high_period <= low_period + 10:
+				high_period = randint(5, 500)
+				low_period = randint(5, 400)
+
+			Chromosome[re_counter] = {
+						'high_period': high_period,
+						'low_period': low_period,
+						'distance_lines': randint(0, 6),
+						'cross_line': randint(0, 300),
+						#'max_st': max_st,
+						#'max_tp': max_tp,
+						'signal': None,
+						'score_buy': 0,
+						'score_sell': 0
+						}
 		re_counter += 1
 
 	for key in Chromosome.keys():
@@ -2201,8 +2231,8 @@ def genetic_algo_cci_golden_cross(
 
 	now = datetime.now()
 
-	max_st_buy = 1
-	max_tp_buy = 1
+	max_st_buy = randint(10, 80)/100
+	max_tp_buy = randint(10, 80)/100
 
 	#print('===============> ',symbol)
 
@@ -2449,6 +2479,8 @@ def genetic_algo_cci_golden_cross(
 				print()
 
 			if flag_golden_cross:
+				max_st_buy = randint(10, 80)/100
+				max_tp_buy = randint(10, 80)/100
 				#Chromosome.pop(chrom_counter)
 				high_period = randint(5, 170)
 				low_period = randint(5, 150)
@@ -2520,6 +2552,8 @@ def genetic_algo_cci_golden_cross(
 				flag_tester = True
 
 			if flag_tester:
+				max_st_buy = randint(10, 80)/100
+				max_tp_buy = randint(10, 80)/100
 				#Chromosome.pop(chrom_counter)
 				high_period = randint(5, 170)
 				low_period = randint(5, 150)
@@ -2568,12 +2602,12 @@ def genetic_algo_cci_golden_cross(
 						if output_buy['max_st'][0] != 0:
 							max_st_buy = output_buy['max_st'][0]
 						else:
-							max_st_buy = randint(10, 50)/100
+							max_st_buy = randint(10, 80)/100
 
 						if output_buy['max_tp'][0] != 0:
 							max_tp_buy = output_buy['max_tp'][0]
 						else:
-							max_tp_buy = randint(10, 50)/100
+							max_tp_buy = randint(10, 80)/100
 						#max_score_ga_buy = np.max(chromosome_buy['score_pr'],1)
 						#print('MMMMMMMMMaxxxxxxx ==========> ',max_score_ga_buy)
 
@@ -2584,12 +2618,12 @@ def genetic_algo_cci_golden_cross(
 						if output_buy['max_st'][0] != 0:
 							max_st_buy = output_buy['max_st'][0]
 						else:
-							max_st_buy = randint(10, 50)/100
+							max_st_buy = randint(10, 80)/100
 
 						if output_buy['max_tp'][0] != 0:
 							max_tp_buy = output_buy['max_tp'][0]
 						else:
-							max_tp_buy = randint(10, 50)/100
+							max_tp_buy = randint(10, 80)/100
 
 			print('== Max Score Buy Must Be ====> ',max_score_ga_buy)
 

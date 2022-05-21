@@ -508,7 +508,7 @@ def learning_buy():
 														symbol=sym.name,
 														dataset_5M=dataset_5M,
 														dataset_1H=dataset_1H,
-														spliter_5M_end=9000,
+														spliter_5M_end=90000,
 														spliter_5M_first=6000
 														)
 
@@ -525,6 +525,13 @@ def learning_buy():
 		print('5M = ',len(symbol_data_5M[sym.name]['open']))
 		print('1H = ',len(symbol_data_1H[sym.name]['open']))
 
+		buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
+
+		if os.path.exists(buy_path):
+			print('*********** Tester Buy *')
+
+			ga_result_buy, _ = read_ga_result(symbol=sym.name)
+
 		out_buy,_ = one_year_golden_cross_tester(
 									dataset=symbol_data_5M,
 									dataset_15M=symbol_data_15M,
@@ -533,8 +540,8 @@ def learning_buy():
 									symbol=sym.name,
 									flag_trade='buy',
 									alfa=0.1,
-									max_st=1,
-									max_tp=1,
+									max_st=ga_result_buy['max_st'][0],
+									max_tp=ga_result_buy['max_tp'][0],
 									permit_flag=False
 									)
 		learn_out['score'][0] = out_buy['score_pr'][0]
@@ -778,8 +785,8 @@ my_sym = 'AUDUSD_i'
 #learning_buy()
 #ga_tester_buy()
 
-ga_optimizer_buy()
-#learning_buy()
+#ga_optimizer_buy()
+learning_buy()
 #ga_tester_buy()
 
 #ga_optimizer_sell()

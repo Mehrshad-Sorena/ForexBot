@@ -773,7 +773,7 @@ def Task_tester():
 	job_thread_sell.join()
 
 
-my_sym = 'EURGBP_i'
+my_sym = 'AUDUSD_i'
 
 #learning_buy()
 #ga_tester_buy()

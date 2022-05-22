@@ -1,2 +1,0 @@
-score_min_max,score_pr,mean_tp_pr,mean_st_pr,max_tp_pr,max_st_pr,sum_st_pr,sum_tp_pr,num_tp_pr,num_st_pr,num_trade_pr,value_max_lower_cci_pr,methode,high_period,low_period,distance_lines,cross_line,max_st,max_tp,signal,score_buy,score_sell
-0,3325.6135213142466,0.07709151014750962,0.023516101575361513,0.7652301634540641,0.19960079840319858,0.5988023952095746,2.689611163408445,7,3,10,162.92592005523193,pr,40,24,5,49,0.2,0.76,"buy,sell",0,1662.8067606571233

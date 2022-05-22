@@ -25,6 +25,8 @@ from timer import stTime
 from sma import last_signal_sma
 import sys
 #from numba import jit, cuda, njit
+import warnings
+warnings.filterwarnings("ignore")
 
 
 # Create a DataFrame so 'ta' can be used.
@@ -1215,7 +1217,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 					xmax=np.max(data_X), 
 					bins = len(signal_final['Y'])-1, 
 					distributions = distributions, 
-					timeout=30, 
+					timeout=1, 
 					density=True
 					)
 	
@@ -1649,8 +1651,8 @@ def tester_golden_cross_zero(
 			#diff_down_intervals_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='diff_pr_down',
 			# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
 
-			#value_min_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
-			 #min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=0.1)
+			value_min_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_min_cci',
+			 min_tp=0.0, max_st=0, name_stp='flag_pr',alpha=0.05)
 
 			#value_max_cci_pr_buy = Find_Best_intervals(signals=signal_buy,apply_to='value_max_cci',
 			# min_tp=min_tp, max_st=max_st, name_stp='flag_pr',alpha=alpha)
@@ -1715,7 +1717,7 @@ def tester_golden_cross_zero(
 	#output_buy['diff_down_upper_pr'] = [diff_down_intervals_pr_buy['interval'][upper]]
 	#output_buy['diff_down_lower_pr'] = [diff_down_intervals_pr_buy['interval'][lower]]
 	#output_buy['value_max_lower_cci_pr'] = [value_max_cci_pr_buy['interval'][lower]]
-			#output_buy['value_min_upper_cci_pr'] = [value_min_cci_pr_buy['interval'][upper]]
+			output_buy['value_min_upper_cci_pr'] = [value_min_cci_pr_buy['interval'][upper]]
 
 			if output_buy['num_trade_pr'][0] != 0:
 
@@ -1767,7 +1769,7 @@ def tester_golden_cross_zero(
 				if (score_sum_tp > 0):
 					score_sum_tp = score_sum_tp * 9
 				else:
-					score_sum_tp = 1
+					score_sum_tp = 0.1
 			else:
 				score_sum_tp = output_buy['sum_tp_pr'][0]
 				if (output_buy['sum_tp_pr'][0] != 0):
@@ -1793,7 +1795,7 @@ def tester_golden_cross_zero(
 		if (output_buy['score_min_max'][0] >= output_buy['score_pr'][0]):
 			output_buy['methode'] = ['min_max']
 
-		if (output_buy['score_pr'][0] is 0) and (output_buy['score_min_max'][0] is 0):
+		if (output_buy['score_pr'][0] == 0) and (output_buy['score_min_max'][0] == 0):
 			output_buy['methode'] = ['no_trade']
 
 	#///////////////////////////////////////////////
@@ -1926,7 +1928,7 @@ def tester_golden_cross_zero(
 				if (score_sum_tp > 0):
 					score_sum_tp = score_sum_tp * 9
 				else:
-					score_sum_tp = 1
+					score_sum_tp = 0.1
 			else:
 				score_sum_tp = output_sell['sum_tp_pr'][0]
 				if (output_sell['sum_tp_pr'][0] != 0):
@@ -1952,7 +1954,7 @@ def tester_golden_cross_zero(
 		if (output_sell['score_min_max'][0] >= output_sell['score_pr'][0]):
 			output_sell['methode'] = ['min_max']
 
-		if (output_sell['score_pr'][0] is 0) and (output_sell['score_min_max'][0] is 0):
+		if (output_sell['score_pr'][0] == 0) and (output_sell['score_min_max'][0] == 0):
 			output_sell['methode'] = ['no_trade']
 
 	#///////////////////////////////////////////////
@@ -1973,10 +1975,10 @@ def initilize_values_genetic():
 	Chromosome = {}
 
 	Chromosome[0] = {
-	'high_period': 50,
-	'low_period': 25,
+	'high_period': 600,
+	'low_period': 300,
 	'distance_lines': 2,
-	'cross_line': 0,
+	'cross_line': 70,
 	#'max_st': 0.4,
 	#'max_tp': 0.6,
 	'signal': None,
@@ -1985,8 +1987,8 @@ def initilize_values_genetic():
 	}
 
 	Chromosome[1] = {
-	'high_period': 100,
-	'low_period': 50,
+	'high_period': 700,
+	'low_period': 400,
 	'distance_lines': 4,
 	'cross_line': 100,
 	#'max_st': 0.5,
@@ -2005,10 +2007,10 @@ def initilize_values_genetic():
 			#max_st = randint(10, 70)/100
 
 		Chromosome[i] = {
-			'high_period': randint(5, 500),
-			'low_period': randint(5, 400),
+			'high_period': randint(300, 800),
+			'low_period': randint(250, 750),
 			'distance_lines': randint(0, 6),
-			'cross_line': randint(0, 300),
+			'cross_line': randint(0, 150),
 			#'max_st': max_st,
 			#'max_tp': max_tp,
 			'signal': None,
@@ -2053,10 +2055,10 @@ def gen_creator(Chromosome):
 			#max_st = randint(10, 70)/100
 
 		baby[baby_counter_create] = {
-			'high_period': randint(5, 500),
-			'low_period': randint(5, 400),
+			'high_period': randint(300, 800),
+			'low_period': randint(250, 750),
 			'distance_lines': randint(0, 6),
-			'cross_line': randint(0, 300),
+			'cross_line': randint(0, 150),
 			#'max_st': max_st,
 			#'max_tp': max_tp,
 			'signal': None,
@@ -2115,10 +2117,10 @@ def gen_creator(Chromosome):
 			#max_st = randint(10, 70)/100
 
 		Chromosome[i] = {
-			'high_period': randint(5, 500),
-			'low_period': randint(5, 400),
+			'high_period': randint(300, 800),
+			'low_period': randint(250, 750),
 			'distance_lines': randint(0, 6),
-			'cross_line': randint(0, 300),
+			'cross_line': randint(0, 150),
 			#'max_st': max_st,
 			#'max_tp': max_tp,
 			'signal': None,
@@ -2142,17 +2144,17 @@ def gen_creator(Chromosome):
 		Chromosome[re_counter]['score_sell'] = baby[re_counter]['score_sell']
 
 		if (Chromosome[re_counter]['high_period'] <= Chromosome[re_counter]['low_period']):
-			high_period = randint(5, 500)
-			low_period = randint(5, 400)
+			high_period = randint(300, 800)
+			low_period = randint(250, 750)
 			while high_period <= low_period + 10:
-				high_period = randint(5, 500)
-				low_period = randint(5, 400)
+				high_period = randint(300, 800)
+				low_period = randint(250, 750)
 
 			Chromosome[re_counter] = {
 						'high_period': high_period,
 						'low_period': low_period,
 						'distance_lines': randint(0, 6),
-						'cross_line': randint(0, 300),
+						'cross_line': randint(0, 150),
 						#'max_st': max_st,
 						#'max_tp': max_tp,
 						'signal': None,
@@ -2183,17 +2185,17 @@ def gen_creator(Chromosome):
 					#max_tp = randint(10, 80)/100
 					#max_st = randint(10, 70)/100
 
-				high_period = randint(5, 500)
-				low_period = randint(5, 400)
+				high_period = randint(300, 800)
+				low_period = randint(250, 750)
 				while high_period <= low_period + 10:
-					high_period = randint(5, 500)
-					low_period = randint(5, 400)
+					high_period = randint(300, 800)
+					low_period = randint(250, 750)
 
 				Chromosome[i] = {
 							'high_period': high_period,
 							'low_period': low_period,
 							'distance_lines': randint(0, 6),
-							'cross_line': randint(0, 300),
+							'cross_line': randint(0, 150),
 							#'max_st': max_st,
 							#'max_tp': max_tp,
 							'signal': None,
@@ -2231,8 +2233,15 @@ def genetic_algo_cci_golden_cross(
 
 	now = datetime.now()
 
-	max_st_buy = randint(10, 80)/100
-	max_tp_buy = randint(10, 80)/100
+	if flag_trade == 'buy':
+		buy_path = "Genetic_cci_output_buy/" + symbol + '.csv'
+		if os.path.exists(buy_path):
+			ga_result_buy, _ = read_ga_result(symbol=symbol)
+			max_st_buy = ga_result_buy['max_st_pr'][0]
+			max_tp_buy = ga_result_buy['max_tp_pr'][0]
+		else:
+			max_st_buy = randint(50, 80)/100
+			max_tp_buy = randint(50, 80)/100
 
 	#print('===============> ',symbol)
 
@@ -2299,6 +2308,7 @@ def genetic_algo_cci_golden_cross(
 
 	learning_interval_counter = 0
 	learn_counter = 1
+	cross_line_upper_out_tester = 150
 
 	with tqdm(total=num_turn) as pbar:
 		while chrom_counter < len(Chromosome):
@@ -2333,11 +2343,11 @@ def genetic_algo_cci_golden_cross(
 			if (chorm_reset_counter >= 40):
 				chorm_reset_counter = 0
 				Chromosome.pop(chrom_counter)
-				high_period = randint(5, 500)
-				low_period = randint(5, 400)
+				high_period = randint(300, 800)
+				low_period = randint(250, 750)
 				while high_period <= low_period + 10:
-					high_period = randint(5, 500)
-					low_period = randint(5, 400)
+					high_period = randint(300, 800)
+					low_period = randint(250, 750)
 
 				#max_tp = randint(10, 80)/100
 				#max_st = randint(10, 70)/100
@@ -2345,11 +2355,19 @@ def genetic_algo_cci_golden_cross(
 					#max_tp = randint(10, 80)/100
 					#max_st = randint(10, 70)/100
 
+				if flag_trade == 'buy':
+					cross_line_upper_out_tester = abs(int(np.min(ind.cci(
+																		high=symbol_data_5M[symbol]['high'],
+																		low=symbol_data_5M[symbol]['low'],
+																		close=symbol_data_5M[symbol]['close'],
+																		length = low_period
+																		))/2))
+
 				Chromosome[chrom_counter] = {
 					'high_period': high_period,
 					'low_period': low_period,
 					'distance_lines': randint(0, 10),
-					'cross_line': randint(0, 300),
+					'cross_line': randint(0, cross_line_upper_out_tester),
 					#'max_st': max_st,
 					#'max_tp': max_tp,
 					'signal': None,
@@ -2359,7 +2377,7 @@ def genetic_algo_cci_golden_cross(
 				#all_chorms += 1
 				#continue
 
-			if learning_interval_counter >= 50:
+			if learning_interval_counter >= 100:
 
 				learning_interval_counter = 0
 
@@ -2482,11 +2500,19 @@ def genetic_algo_cci_golden_cross(
 				max_st_buy = randint(10, 80)/100
 				max_tp_buy = randint(10, 80)/100
 				#Chromosome.pop(chrom_counter)
-				high_period = randint(5, 170)
-				low_period = randint(5, 150)
+				high_period = randint(300, 800)
+				low_period = randint(250, 750)
 				while high_period <= low_period + 10:
-					high_period = randint(5, 170)
-					low_period = randint(5, 150)
+					high_period = randint(300, 800)
+					low_period = randint(250, 750)
+
+				if flag_trade == 'buy':
+					cross_line_upper_out_tester = abs(int(np.min(ind.cci(
+																		high=symbol_data_5M[symbol]['high'],
+																		low=symbol_data_5M[symbol]['low'],
+																		close=symbol_data_5M[symbol]['close'],
+																		length = low_period
+																		))/2))
 
 				#max_tp = randint(10, 80)/100
 				#max_st = randint(10, 70)/100
@@ -2498,7 +2524,7 @@ def genetic_algo_cci_golden_cross(
 					'high_period': Chromosome[chrom_counter]['high_period'],#high_period,
 					'low_period': Chromosome[chrom_counter]['low_period'],#low_period,
 					'distance_lines': randint(0, 6),
-					'cross_line': randint(0, 300),
+					'cross_line': randint(0, cross_line_upper_out_tester),
 					#'max_st': max_st,
 					#'max_tp': max_tp,
 					'signal': None,
@@ -2561,6 +2587,14 @@ def genetic_algo_cci_golden_cross(
 					high_period = randint(5, 170)
 					low_period = randint(5, 150)
 
+				if flag_trade == 'buy':
+					cross_line_upper_out_tester = abs(int(np.min(ind.cci(
+																		high=symbol_data_5M[symbol]['high'],
+																		low=symbol_data_5M[symbol]['low'],
+																		close=symbol_data_5M[symbol]['close'],
+																		length = low_period
+																		))/2))
+
 				#max_tp = randint(10, 80)/100
 				#max_st = randint(10, 70)/100
 				#while max_tp <= max_st:
@@ -2571,7 +2605,7 @@ def genetic_algo_cci_golden_cross(
 					'high_period': Chromosome[chrom_counter]['high_period'],#high_period,
 					'low_period': Chromosome[chrom_counter]['low_period'],#low_period,
 					'distance_lines': randint(0, 6),
-					'cross_line': randint(0, 300),
+					'cross_line': randint(0, cross_line_upper_out_tester),
 					#'max_st': max_st,
 					#'max_tp': max_tp,
 					'signal': None,
@@ -2599,15 +2633,27 @@ def genetic_algo_cci_golden_cross(
 						chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
 						chorm_reset_counter = 0
 
-						if output_buy['max_st'][0] != 0:
-							max_st_buy = output_buy['max_st'][0]
+						if output_buy['max_st_pr'][0] != 0:
+							max_st_buy = output_buy['max_st_pr'][0]
 						else:
 							max_st_buy = randint(10, 80)/100
 
-						if output_buy['max_tp'][0] != 0:
-							max_tp_buy = output_buy['max_tp'][0]
+						if output_buy['max_tp_pr'][0] != 0:
+							max_tp_buy = output_buy['max_tp_pr'][0]
 						else:
 							max_tp_buy = randint(10, 80)/100
+
+						if output_buy['value_min_upper_cci_pr'][0] != 0:
+							cross_line_upper_out_tester = abs(int(output_buy['value_min_upper_cci_pr'][0]))
+						else:
+							if flag_trade == 'buy':
+								cross_line_upper_out_tester = abs(int(np.min(ind.cci(
+																					high=symbol_data_5M[symbol]['high'],
+																					low=symbol_data_5M[symbol]['low'],
+																					close=symbol_data_5M[symbol]['close'],
+																					length = Chromosome[chrom_counter]['low_period']
+																					))/2))
+								print('cross_line_upper_out_tester1 = ',cross_line_upper_out_tester)
 						#max_score_ga_buy = np.max(chromosome_buy['score_pr'],1)
 						#print('MMMMMMMMMaxxxxxxx ==========> ',max_score_ga_buy)
 
@@ -2615,15 +2661,26 @@ def genetic_algo_cci_golden_cross(
 					else:
 						bad_buy = True
 
-						if output_buy['max_st'][0] != 0:
-							max_st_buy = output_buy['max_st'][0]
+						if output_buy['max_st_pr'][0] != 0:
+							max_st_buy = output_buy['max_st_pr'][0]
 						else:
 							max_st_buy = randint(10, 80)/100
 
-						if output_buy['max_tp'][0] != 0:
-							max_tp_buy = output_buy['max_tp'][0]
+						if output_buy['max_tp_pr'][0] != 0:
+							max_tp_buy = output_buy['max_tp_pr'][0]
 						else:
 							max_tp_buy = randint(10, 80)/100
+
+						if output_buy['value_min_upper_cci_pr'][0] != 0:
+							cross_line_upper_out_tester = abs(int(output_buy['value_min_upper_cci_pr'][0]))
+						else:
+							cross_line_upper_out_tester = abs(int(np.min(ind.cci(
+																				high=symbol_data_5M[symbol]['high'],
+																				low=symbol_data_5M[symbol]['low'],
+																				close=symbol_data_5M[symbol]['close'],
+																				length = Chromosome[chrom_counter]['low_period']
+																				))/2))
+							print('cross_line_upper_out_tester2 = ',cross_line_upper_out_tester)
 
 			print('== Max Score Buy Must Be ====> ',max_score_ga_buy)
 
@@ -2693,7 +2750,7 @@ def genetic_algo_cci_golden_cross(
 						'high_period': Chromosome[chrom_counter]['high_period'],#high_period,
 						'low_period': Chromosome[chrom_counter]['low_period'],#low_period,
 						'distance_lines': randint(0, 6),
-						'cross_line': randint(0, 300),
+						'cross_line': randint(0, cross_line_upper_out_tester),
 						#'max_st': max_st,
 						#'max_tp': max_tp,
 						'signal': None,
@@ -2722,7 +2779,7 @@ def genetic_algo_cci_golden_cross(
 						'high_period': Chromosome[chrom_counter]['high_period'],#high_period,
 						'low_period': Chromosome[chrom_counter]['low_period'],#low_period,
 						'distance_lines': randint(0, 6),
-						'cross_line': randint(0, 300),
+						'cross_line': randint(0, cross_line_upper_out_tester),
 						#'max_st': max_st,
 						#'max_tp': max_tp,
 						'signal': None,
@@ -2904,7 +2961,7 @@ def one_year_golden_cross_tester(
 	#********************************************** Buy Test:
 
 	if flag_trade == 'buy':
-		if ga_result_buy['methode'][0] is not 'no_trade':
+		if ga_result_buy['methode'][0] != 'no_trade':
 			if ga_result_buy['methode'][0] == 'pr':
 				name_stp_pr = True
 				name_stp_minmax = False
@@ -3032,7 +3089,7 @@ def one_year_golden_cross_tester(
 					if score_sum_tp > 0:
 						score_sum_tp = score_sum_tp * 9
 					else:
-						score_sum_tp = 1
+						score_sum_tp = 0.1
 
 				else:
 					score_sum_tp = output_buy['sum_tp_min_max'][0]
@@ -3202,7 +3259,7 @@ def one_year_golden_cross_tester(
 					if score_sum_tp > 0:
 						score_sum_tp = score_sum_tp * 9
 					else:
-						score_sum_tp = 1
+						score_sum_tp = 0.1
 
 				else:
 					score_sum_tp = output_buy['sum_tp_pr'][0]
@@ -3256,7 +3313,7 @@ def one_year_golden_cross_tester(
 
 	#********************************************** Sell Test:
 	if flag_trade == 'sell':
-		if ga_result_sell['methode'][0] is not 'no_trade':
+		if ga_result_sell['methode'][0] != 'no_trade':
 			if ga_result_sell['methode'][0] == 'pr':
 				name_stp_pr = True
 				name_stp_minmax = False
@@ -3393,7 +3450,7 @@ def one_year_golden_cross_tester(
 					if score_sum_tp > 0:
 						score_sum_tp = score_sum_tp * 9
 					else:
-						score_sum_tp = 1
+						score_sum_tp = 0.1
 
 				else:
 					score_sum_tp = output_sell['sum_tp_min_max'][0]
@@ -3547,7 +3604,7 @@ def one_year_golden_cross_tester(
 					if score_sum_tp > 0:
 						score_sum_tp = score_sum_tp * 9
 					else:
-						score_sum_tp = 1
+						score_sum_tp = 0.1
 
 				else:
 					score_sum_tp = output_sell['sum_tp_pr'][0]
@@ -3636,7 +3693,7 @@ def golden_cross_tester_for_permit(
 		return 0
 	#********************************************** Buy Test:
 
-	if ga_result_buy['methode'][0] is not 'no_trade':
+	if ga_result_buy['methode'][0] != 'no_trade':
 		if ga_result_buy['methode'][0] == 'pr':
 			name_stp_pr = True
 			name_stp_minmax = False
@@ -3808,7 +3865,7 @@ def golden_cross_tester_for_permit(
 	#///////////////////////////////////////////////////////////////////////////////////////////////
 
 	#********************************************** Sell Test:
-	if ga_result_sell['methode'][0] is not 'no_trade':
+	if ga_result_sell['methode'][0] != 'no_trade':
 		if ga_result_sell['methode'][0] == 'pr':
 			name_stp_pr = True
 			name_stp_minmax = False

@@ -10,6 +10,8 @@ import threading
 import logging
 import sys
 import os
+import warnings
+warnings.filterwarnings("ignore")
 
 
 #ga_runner()
@@ -191,7 +193,7 @@ def ga_optimizer_buy():
 			print('=================== my_sym optimizer buy => ',my_sym)
 
 			print('======================== AI Buy ==========> ',learn_counter)
-			print()
+			
 
 			dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
 																								sym=sym.name,
@@ -204,9 +206,13 @@ def ga_optimizer_buy():
 														symbol=sym.name,
 														dataset_5M=dataset_5M,
 														dataset_1H=dataset_1H,
-														spliter_5M_end=high_distance,
-														spliter_5M_first=low_distance
+														spliter_5M_end=90000,
+														spliter_5M_first=6000
 														)
+
+			print('======================== len 5M ==========> ',len(symbol_data_5M[sym.name]['open']))
+			print('======================== len 1H ==========> ',len(symbol_data_1H[sym.name]['open']))
+			print()
 
 			buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
 			
@@ -219,9 +225,9 @@ def ga_optimizer_buy():
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=8000,
-						max_score_ga_buy=70,
-						max_score_ga_sell=70,
+						num_turn=400,
+						max_score_ga_buy=600,
+						max_score_ga_sell=600,
 						flag_trade='buy'
 						)
 			else:
@@ -512,7 +518,6 @@ def learning_buy():
 														spliter_5M_first=6000
 														)
 
-
 		max_learning_turn = 50
 		learn_out = pd.DataFrame(np.zeros(max_learning_turn))
 		learn_out['score'] = np.nan
@@ -540,8 +545,8 @@ def learning_buy():
 									symbol=sym.name,
 									flag_trade='buy',
 									alfa=0.1,
-									max_st=ga_result_buy['max_st'][0],
-									max_tp=ga_result_buy['max_tp'][0],
+									max_st=ga_result_buy['max_st_pr'][0],
+									max_tp=ga_result_buy['max_tp_pr'][0],
 									permit_flag=False
 									)
 		learn_out['score'][0] = out_buy['score_pr'][0]
@@ -550,6 +555,8 @@ def learning_buy():
 		learn_out['power_pr_low'][0] = out_buy['power_pr_low'][0]
 		learn_out['max_st'][0] = out_buy['max_st'][0]
 		learn_out['max_tp'][0] = out_buy['max_tp'][0]
+		#learn_out['max_st_pr'][0] = out_buy['max_st_pr'][0]
+		#learn_out['max_tp_pr'][0] = out_buy['max_tp_pr'][0]
 
 		learning_turn = 1
 		alfa = 0.1
@@ -784,9 +791,8 @@ my_sym = 'AUDUSD_i'
 
 #learning_buy()
 #ga_tester_buy()
-
-#ga_optimizer_buy()
-learning_buy()
+ga_optimizer_buy()
+#learning_buy()
 #ga_tester_buy()
 
 #ga_optimizer_sell()

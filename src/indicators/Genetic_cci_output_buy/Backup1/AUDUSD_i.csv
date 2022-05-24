@@ -1,2 +1,2 @@
-score_min_max,score_pr,mean_tp_pr,mean_st_pr,max_tp_pr,max_st_pr,sum_st_pr,sum_tp_pr,num_tp_pr,num_st_pr,num_trade_pr,methode,high_period,low_period,distance_lines,cross_line,signal,score_buy,score_sell
-0,8230.388581011362,0.08847076333116641,0.10507337123439721,1.0086000000000033,1.0101010101010126,2.0202020202020172,7.665187329537657,20,2,22,pr,100,28,6,33,"buy,sell",4115.194290505681,0
+score_min_max,score_pr,mean_tp_pr,mean_st_pr,max_tp_pr,max_st_pr,sum_st_pr,sum_tp_pr,num_tp_pr,num_st_pr,num_trade_pr,max_st,max_tp,methode,high_period,low_period,distance_lines,cross_line,signal,score_buy,score_sell
+0,11803.868314821437,0.1430771916948053,0.060080109097969694,0.7924110299316623,0.453678403876884,0.0,7.869245543214291,15,0,15,0.22722274356520522,0.5374942325508539,pr,230,151,3,109,"buy,sell",5901.934157410718,0

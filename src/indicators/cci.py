@@ -1127,7 +1127,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 	if (name_stp == 'flag_pr'):
 		signal_good = signals.drop(
 								np.where(
-										#(signals[name_stp]=='st')|
+										(signals[name_stp]=='st')|
 										(signals[name_stp]=='no_flag')
 										#(signals['st_pr']>max_st)|
 										#(signals['tp_pr']<min_tp)

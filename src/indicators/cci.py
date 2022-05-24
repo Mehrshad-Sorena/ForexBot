@@ -2677,13 +2677,9 @@ def genetic_algo_cci_golden_cross(
 							np.isnan(output_buy['score_min_max'][0]) == False
 						)
 						):
-						
-						Chromosome[chrom_counter]['signal'] = ('buy' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
-						result_buy = result_buy.append(output_buy, ignore_index=True)
-						score = (output_buy['score_pr'][0]+output_buy['score_min_max'][0])/2
-						Chromosome[chrom_counter].update({'score_buy': score })
-						chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
-						chorm_reset_counter = 0
+
+						max_st_last_buy = max_st_buy
+						max_tp_last_buy = max_tp_buy
 
 						if output_buy['max_st_pr'][0] != 0:
 							max_st_buy = output_buy['max_st_pr'][0]
@@ -2694,6 +2690,16 @@ def genetic_algo_cci_golden_cross(
 							max_tp_buy = output_buy['max_tp_pr'][0]
 						else:
 							max_tp_buy = randint(10, 80)/100
+
+						output_buy['max_tp_pr'][0] = max_tp_last_buy
+						output_buy['max_st_pr'][0] = max_st_last_buy
+						
+						Chromosome[chrom_counter]['signal'] = ('buy' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
+						result_buy = result_buy.append(output_buy, ignore_index=True)
+						score = (output_buy['score_pr'][0]+output_buy['score_min_max'][0])/2
+						Chromosome[chrom_counter].update({'score_buy': score })
+						chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
+						chorm_reset_counter = 0
 
 						if output_buy['value_min_upper_cci_pr'][0] != 0:
 							cross_line_upper_out_tester = abs(int(output_buy['value_min_upper_cci_pr'][0]))

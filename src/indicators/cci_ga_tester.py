@@ -1,5 +1,5 @@
 from cci import genetic_algo_cci_golden_cross,one_year_golden_cross_tester, read_ga_result, golden_cross_tester_for_permit
-from log_get_data import read_dataset_csv, get_symbols
+from log_get_data import read_dataset_csv, get_symbols, log_get_data_Genetic
 from datetime import datetime
 from random import randint
 import MetaTrader5 as mt5
@@ -225,7 +225,7 @@ def ga_optimizer_buy():
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=400,
+						num_turn=800,
 						max_score_ga_buy=600,
 						max_score_ga_sell=600,
 						flag_trade='buy'
@@ -514,11 +514,27 @@ def learning_buy():
 														symbol=sym.name,
 														dataset_5M=dataset_5M,
 														dataset_1H=dataset_1H,
-														spliter_5M_end=90000,
+														spliter_5M_end=99000,
 														spliter_5M_first=6000
 														)
 
-		max_learning_turn = 50
+
+		#print('getting....')
+		#symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,99000)
+		#print('get 5M')
+		#mem_data = pd.DataFrame()
+		#mem_data = mem_data.append(symbol_data_5M,ignore_index=True)
+		#print(mem_data)
+		#print(mem_data.info(memory_usage='deep'))
+
+		#symbol_data_1H,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,8250)
+		#print('get 1H')
+		#mem_data = pd.DataFrame()
+		#mem_data = mem_data.append(symbol_data_1H,ignore_index=True)
+		#print(mem_data)
+		#print(mem_data.info(memory_usage='deep'))
+
+		max_learning_turn = 100
 		learn_out = pd.DataFrame(np.zeros(max_learning_turn))
 		learn_out['score'] = np.nan
 		learn_out['value_min_upper_cci_pr'] = np.nan
@@ -526,6 +542,8 @@ def learning_buy():
 		learn_out['power_pr_low'] = np.nan
 		learn_out['max_st'] = np.nan
 		learn_out['max_tp'] = np.nan
+		learn_out['max_st_now'] = np.nan
+		learn_out['max_tp_now'] = np.nan
 
 		print('5M = ',len(symbol_data_5M[sym.name]['open']))
 		print('1H = ',len(symbol_data_1H[sym.name]['open']))
@@ -544,27 +562,33 @@ def learning_buy():
 									symbol_data_4H=symbol_data_4H,
 									symbol=sym.name,
 									flag_trade='buy',
-									alfa=0.1,
-									max_st=ga_result_buy['max_st_pr'][0],
-									max_tp=ga_result_buy['max_tp_pr'][0],
+									alfa=0.99,
+									max_st=ga_result_buy['max_st'][0],
+									max_tp=ga_result_buy['max_tp'][0],
 									permit_flag=False
 									)
+
 		learn_out['score'][0] = out_buy['score_pr'][0]
 		learn_out['value_min_upper_cci_pr'][0] = out_buy['value_min_upper_cci_pr'][0]
 		learn_out['power_pr_high'][0] = out_buy['power_pr_high'][0]
 		learn_out['power_pr_low'][0] = out_buy['power_pr_low'][0]
 		learn_out['max_st'][0] = out_buy['max_st'][0]
 		learn_out['max_tp'][0] = out_buy['max_tp'][0]
+		learn_out['max_st_now'][0] = out_buy['max_st'][0]
+		learn_out['max_tp_now'][0] = out_buy['max_tp'][0]
 		#learn_out['max_st_pr'][0] = out_buy['max_st_pr'][0]
 		#learn_out['max_tp_pr'][0] = out_buy['max_tp_pr'][0]
 
 		learning_turn = 1
-		alfa = 0.1
+		alfa = 0.99
 		max_learn_turn = 0
 		while learning_turn < max_learning_turn:
 			print('============================= Leraning Turn ======> ',learning_turn)
 			print('5M = ',len(symbol_data_5M[sym.name]['open']))
 			print('1H = ',len(symbol_data_1H[sym.name]['open']))
+
+			if learn_out['max_st'][learning_turn-1] == 0: learn_out['max_st'][learning_turn-1] = randint(30,120)/100
+			if learn_out['max_tp'][learning_turn-1] == 0: learn_out['max_tp'][learning_turn-1] = randint(30,120)/100
 
 			print('max_st = ',learn_out['max_st'][learning_turn-1])
 			print('max_tp = ',learn_out['max_tp'][learning_turn-1])
@@ -588,14 +612,25 @@ def learning_buy():
 			learn_out['power_pr_low'][learning_turn] = out_buy['power_pr_low'][0]
 			learn_out['max_st'][learning_turn] = out_buy['max_st'][0]
 			learn_out['max_tp'][learning_turn] = out_buy['max_tp'][0]
+			learn_out['max_st_now'][learning_turn] = learn_out['max_st'][learning_turn-1]
+			learn_out['max_tp_now'][learning_turn] = learn_out['max_tp'][learning_turn-1]
 			learning_turn += 1
 
-			if out_buy['score_pr'][0] <= learn_out['score'][learning_turn-1]:
-				alfa = randint(1, 50)/100
+			buy_path = "Genetic_cci_output_buy/" + 'AUDUSD_i' + '.csv'
+
+			if os.path.exists(buy_path):
+				ga_result_buy, _ = read_ga_result(symbol=sym.name)
+
+			if out_buy['score_pr'][0] <= ga_result_buy['score_pr'][0]:
+				alfa = randint(40, 99)/100
 				print('alfa = ',alfa)
+
+				if out_buy['score_pr'][0] < ga_result_buy['score_pr'][0] * 0.5:
+					learn_out['max_st'][learning_turn-1] = randint(30,120)/100
+					learn_out['max_tp'][learning_turn-1] = randint(30,120)/100
 				#max_learn_turn += 1
 				continue
-			if max_learn_turn >= 50: break
+			if max_learn_turn >= max_learning_turn: break
 
 			max_learn_turn += 1
 
@@ -603,9 +638,9 @@ def learning_buy():
 		max_score_learn_index = np.where((learn_out['score']==max_score_learn))[0]
 
 		print()
+		print('=========================== learn_out => ',learn_out)
 		print('===================== max_score_learn => ',max_score_learn)
 		print('=============== max_score_learn_index => ',max_score_learn_index)
-		print('=========================== learn_out => ',learn_out)
 		print()
 
 		buy_path = "Genetic_cci_output_buy/" + 'AUDUSD_i' + '.csv'
@@ -617,8 +652,9 @@ def learning_buy():
 		ga_result_buy['value_min_upper_cci_pr'] = learn_out['value_min_upper_cci_pr'][max_score_learn_index]
 		ga_result_buy['power_pr_high'] = learn_out['power_pr_high'][max_score_learn_index]
 		ga_result_buy['power_pr_low'] = learn_out['power_pr_low'][max_score_learn_index]
-		ga_result_buy['max_st'] = learn_out['max_st'][max_score_learn_index]
-		ga_result_buy['max_tp'] = learn_out['max_tp'][max_score_learn_index]
+		ga_result_buy['max_st'][0] = learn_out['max_st_now'][max_score_learn_index]
+		ga_result_buy['max_tp'][0] = learn_out['max_tp_now'][max_score_learn_index]
+		ga_result_buy['score_pr'][0] = learn_out['score'][max_score_learn_index]
 
 		if os.path.exists(buy_path):
 			os.remove(buy_path)
@@ -787,7 +823,7 @@ def Task_tester():
 	job_thread_sell.join()
 
 
-my_sym = 'AUDUSD_i'
+my_sym = 'GBPUSD_i'
 
 #learning_buy()
 #ga_tester_buy()

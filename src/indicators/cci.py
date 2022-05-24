@@ -1981,7 +1981,7 @@ def initilize_values_genetic(
 
 	Chromosome[0] = {
 	'high_period': high_period_upper,
-	'low_period': low_period_upper,
+	'low_period': low_period_upper/2,
 	'distance_lines': 2,
 	'cross_line': 70,
 	#'max_st': 0.4,
@@ -1993,7 +1993,7 @@ def initilize_values_genetic(
 
 	Chromosome[1] = {
 	'high_period': high_period_lower,
-	'low_period': low_period_lower,
+	'low_period': low_period_lower/2,
 	'distance_lines': 4,
 	'cross_line': 100,
 	#'max_st': 0.5,
@@ -2023,7 +2023,7 @@ def initilize_values_genetic(
 			'score_sell': 0
 			}
 
-		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period'] + 10): continue
+		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period'] * 2): continue
 		res = list(Chromosome[i].keys()) 
 		#print(res[1])
 		#print(Chromosome[i][res[1]])
@@ -2139,7 +2139,7 @@ def gen_creator(
 			'score_sell': 0
 			}
 
-		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period'] + 10): continue
+		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period'] * 2): continue
 		i += 1
 
 	re_counter = 0
@@ -2157,7 +2157,7 @@ def gen_creator(
 		if (Chromosome[re_counter]['high_period'] <= Chromosome[re_counter]['low_period']):
 			high_period = randint(high_period_lower, high_period_upper) 
 			low_period = randint(low_period_lower, low_period_upper)
-			while high_period <= low_period + 10:
+			while high_period <= low_period * 2:
 				high_period = randint(high_period_lower, high_period_upper) 
 				low_period = randint(low_period_lower, low_period_upper)
 
@@ -2198,7 +2198,7 @@ def gen_creator(
 
 				high_period = randint(high_period_lower, high_period_upper) 
 				low_period = randint(low_period_lower, low_period_upper)
-				while high_period <= low_period + 10:
+				while high_period <= low_period * 2:
 					high_period = randint(high_period_lower, high_period_upper) 
 					low_period = randint(low_period_lower, low_period_upper)
 
@@ -2238,11 +2238,11 @@ def genetic_algo_cci_golden_cross(
 
 	#*************************** Algorithm *************************************************//
 
-	high_period_upper = 800
-	high_period_lower = 500
+	high_period_upper = 1000
+	high_period_lower = 550
 
-	low_period_upper = 750
-	low_period_lower = 450
+	low_period_upper = 950
+	low_period_lower = 500
 
 	Chromosome = initilize_values_genetic(
 										high_period_upper=high_period_upper,
@@ -2397,7 +2397,7 @@ def genetic_algo_cci_golden_cross(
 				Chromosome.pop(chrom_counter)
 				high_period = randint(high_period_lower, high_period_upper) 
 				low_period = randint(low_period_lower, low_period_upper)
-				while high_period <= low_period + 10:
+				while high_period <= low_period * 2:
 					high_period = randint(high_period_lower, high_period_upper) 
 					low_period = randint(low_period_lower, low_period_upper)
 

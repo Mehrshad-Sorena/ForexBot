@@ -2023,7 +2023,7 @@ def initilize_values_genetic(
 			'score_sell': 0
 			}
 
-		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period'] * 2): continue
+		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period'] * 1.3): continue
 		res = list(Chromosome[i].keys()) 
 		#print(res[1])
 		#print(Chromosome[i][res[1]])
@@ -2057,7 +2057,7 @@ def gen_creator(
 
 	baby_counter_create = 0
 
-	while (baby_counter_create < (len(Chromosome) * 2)):
+	while (baby_counter_create < (len(Chromosome) * 1.3)):
 		
 		#max_tp = randint(10, 80)/100
 		#max_st = randint(10, 70)/100
@@ -2139,7 +2139,7 @@ def gen_creator(
 			'score_sell': 0
 			}
 
-		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period'] * 2): continue
+		if (Chromosome[i]['high_period'] <= Chromosome[i]['low_period'] * 1.3): continue
 		i += 1
 
 	re_counter = 0
@@ -2157,7 +2157,7 @@ def gen_creator(
 		if (Chromosome[re_counter]['high_period'] <= Chromosome[re_counter]['low_period']):
 			high_period = randint(high_period_lower, high_period_upper) 
 			low_period = randint(low_period_lower, low_period_upper)
-			while high_period <= low_period * 2:
+			while high_period <= low_period * 1.3:
 				high_period = randint(high_period_lower, high_period_upper) 
 				low_period = randint(low_period_lower, low_period_upper)
 
@@ -2198,7 +2198,7 @@ def gen_creator(
 
 				high_period = randint(high_period_lower, high_period_upper) 
 				low_period = randint(low_period_lower, low_period_upper)
-				while high_period <= low_period * 2:
+				while high_period <= low_period * 1.3:
 					high_period = randint(high_period_lower, high_period_upper) 
 					low_period = randint(low_period_lower, low_period_upper)
 
@@ -2397,7 +2397,7 @@ def genetic_algo_cci_golden_cross(
 				Chromosome.pop(chrom_counter)
 				high_period = randint(high_period_lower, high_period_upper) 
 				low_period = randint(low_period_lower, low_period_upper)
-				while high_period <= low_period * 2:
+				while high_period <= low_period * 1.3:
 					high_period = randint(high_period_lower, high_period_upper) 
 					low_period = randint(low_period_lower, low_period_upper)
 

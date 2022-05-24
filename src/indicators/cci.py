@@ -2238,10 +2238,10 @@ def genetic_algo_cci_golden_cross(
 
 	#*************************** Algorithm *************************************************//
 
-	high_period_upper = 1000
+	high_period_upper = 1200
 	high_period_lower = 550
 
-	low_period_upper = 950
+	low_period_upper = 1150
 	low_period_lower = 500
 
 	Chromosome = initilize_values_genetic(

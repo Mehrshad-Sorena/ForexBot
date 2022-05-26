@@ -2057,7 +2057,7 @@ def gen_creator(
 
 	baby_counter_create = 0
 
-	while (baby_counter_create < (len(Chromosome) * 1.3)):
+	while (baby_counter_create < (len(Chromosome) * 2)):
 		
 		#max_tp = randint(10, 80)/100
 		#max_st = randint(10, 70)/100
@@ -2154,7 +2154,7 @@ def gen_creator(
 		Chromosome[re_counter]['score_buy'] = baby[re_counter]['score_buy']
 		Chromosome[re_counter]['score_sell'] = baby[re_counter]['score_sell']
 
-		if (Chromosome[re_counter]['high_period'] <= Chromosome[re_counter]['low_period']):
+		if (Chromosome[re_counter]['high_period'] <= Chromosome[re_counter]['low_period'] * 1.3):
 			high_period = randint(high_period_lower, high_period_upper) 
 			low_period = randint(low_period_lower, low_period_upper)
 			while high_period <= low_period * 1.3:

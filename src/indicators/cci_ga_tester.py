@@ -156,26 +156,26 @@ def ga_optimizer_buy():
 	for sym in symbols:
 
 		if not (
-			#sym.name == 'AUDCAD_i' or
-			#sym.name == 'AUDCHF_i' or
-			sym.name == my_sym or
-			#sym.name == 'CADJPY_i' or
-			#sym.name == 'EURAUD_i' or
-			#sym.name == 'EURCAD_i' or
-			#sym.name == 'EURCHF_i' or
+			sym.name == 'AUDCAD_i' or
+			sym.name == 'AUDCHF_i' or
+			#sym.name == my_sym or
+			sym.name == 'CADJPY_i' or
+			sym.name == 'EURAUD_i' or
+			sym.name == 'EURCAD_i' or
+			sym.name == 'EURCHF_i' or
 			#sym.name == 'EURGBP_i' or
 			#sym.name == 'EURUSD_i' or
-			#sym.name == 'EURJPY_i' or
-			#sym.name == 'GBPAUD_i' or
-			#sym.name == 'GBPCAD_i' or
-			#sym.name == 'GBPJPY_i' or
+			sym.name == 'EURJPY_i' or
+			sym.name == 'GBPAUD_i' or
+			sym.name == 'GBPCAD_i' or
+			sym.name == 'GBPJPY_i' or
 			#sym.name == 'GBPUSD_i' or
-			#sym.name == 'USDJPY_i' or
-			#sym.name == 'USDCAD_i' or
-			sym.name == 'XAUUSD_i'
+			sym.name == 'USDJPY_i' or
+			sym.name == 'USDCAD_i'
+			#sym.name == 'XAUUSD_i'
 			): continue
 
-		if sym.name != my_sym: continue
+		#if sym.name != my_sym: continue
 
 
 
@@ -190,7 +190,7 @@ def ga_optimizer_buy():
 			print('===================== high_distance buy ==> ',high_distance)
 			print('===================== low_distance buy ===> ',low_distance)
 
-			print('=================== my_sym optimizer buy => ',my_sym)
+			print('=================== my_sym optimizer buy => ',sym.name)
 
 			print('======================== AI Buy ==========> ',learn_counter)
 			

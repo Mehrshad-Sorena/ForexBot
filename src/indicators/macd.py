@@ -554,7 +554,7 @@ def divergence_macd(
 					
 						try:
 							res_pro = protect_resist(
-													T_5M=False,
+													T_5M=True,
 													T_15M=False,
 													T_1H=True,
 													T_4H=False,
@@ -595,7 +595,7 @@ def divergence_macd(
 							if (
 								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
 								dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
-								signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
+								#signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
 								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
 								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
 								True#trend_sma_5M == 'buy'
@@ -603,9 +603,13 @@ def divergence_macd(
 
 								mehrshad += 1
 
-								#if signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
-								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
-								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+								if signal_buy_primary['diff_pr_down'][primary_counter] < st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
+									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
+									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+
+								if signal_buy_primary['diff_pr_down'][primary_counter] > tp_percent_minmax_buy_max:
+									signal_buy_primary['diff_pr_down'][primary_counter] = tp_percent_minmax_buy_max
+									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(tp_percent_minmax_buy_max/100))
 								
 								if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_minmax_buy_max:
 									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_minmax_buy_max
@@ -614,14 +618,14 @@ def divergence_macd(
 
 								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0]) - 1) > 1):
 									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0])
-									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]]*0.9996 - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+									signal_buy_primary['tp_pr'][primary_counter] = signal_buy_primary['diff_pr_top'][primary_counter]#((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]]*0.9996 - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 								else:
 									signal_buy_primary['tp_pr_index'][primary_counter] = -1
 									signal_buy_primary['tp_pr'][primary_counter] = 0
 
 								if ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm]:-1]).values) <= (res_pro['low'][2])))[0])-1) > 1):
 									signal_buy_primary['st_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where((((dataset[symbol]['low'][extreme_min['index'][elm]:-1]).values) <= (res_pro['low'][2])))[0])
-									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
+									signal_buy_primary['st_pr'][primary_counter] = signal_buy_primary['diff_pr_down'][primary_counter]#((dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 								else:
 									signal_buy_primary['st_pr_index'][primary_counter] = -1
 									signal_buy_primary['st_pr'][primary_counter] = 0
@@ -629,7 +633,7 @@ def divergence_macd(
 								if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 									signal_buy_primary['flag_pr'][primary_counter] = 'st'
 									signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
-									signal_buy_primary['st_pr'][primary_counter] = st_percent_minmax_buy
+
 								else:
 								
 									if (signal_buy_primary['tp_pr_index'][primary_counter] != -1):
@@ -639,7 +643,7 @@ def divergence_macd(
 									if (signal_buy_primary['tp_pr_index'][primary_counter] == -1) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 										signal_buy_primary['flag_pr'][primary_counter] = 'st'
 										signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
-										signal_buy_primary['st_pr'][primary_counter] = st_percent_minmax_buy
+
 
 							else:
 								signal_buy_primary['tp_pr_index'][primary_counter] = -1
@@ -795,7 +799,7 @@ def divergence_macd(
 					
 						try:
 							res_pro = protect_resist(
-													T_5M=False,
+													T_5M=True,
 													T_15M=False,
 													T_1H=True,
 													T_4H=False,
@@ -834,7 +838,7 @@ def divergence_macd(
 							if (
 								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
 								dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
-								signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
+								#signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
 								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
 								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
 								True#trend_sma_5M == 'buy'
@@ -842,9 +846,13 @@ def divergence_macd(
 
 								mehrshad += 1
 
-								#if signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
-								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
-								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+								if signal_buy_primary['diff_pr_down'][primary_counter] < st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
+									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
+									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+
+								if signal_buy_primary['diff_pr_down'][primary_counter] > tp_percent_minmax_buy_max:
+									signal_buy_primary['diff_pr_down'][primary_counter] = tp_percent_minmax_buy_max
+									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(tp_percent_minmax_buy_max/100))
 								
 								if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_minmax_buy_max:
 									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_minmax_buy_max
@@ -853,14 +861,14 @@ def divergence_macd(
 
 								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0]) - 1) > 1):
 									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0])
-									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]]*0.9996 - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+									signal_buy_primary['tp_pr'][primary_counter] = signal_buy_primary['diff_pr_top'][primary_counter]#((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]]*0.9996 - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 								else:
 									signal_buy_primary['tp_pr_index'][primary_counter] = -1
 									signal_buy_primary['tp_pr'][primary_counter] = 0
 
 								if ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm]:-1]).values) <= (res_pro['low'][2])))[0])-1) > 1):
 									signal_buy_primary['st_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where((((dataset[symbol]['low'][extreme_min['index'][elm]:-1]).values) <= (res_pro['low'][2])))[0])
-									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
+									signal_buy_primary['st_pr'][primary_counter] = signal_buy_primary['diff_pr_down'][primary_counter]#((dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 								else:
 									signal_buy_primary['st_pr_index'][primary_counter] = -1
 									signal_buy_primary['st_pr'][primary_counter] = 0
@@ -868,19 +876,15 @@ def divergence_macd(
 								if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 									signal_buy_primary['flag_pr'][primary_counter] = 'st'
 									signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
-									signal_buy_primary['st_pr'][primary_counter] = st_percent_minmax_buy
 								else:
 								
 									if (signal_buy_primary['tp_pr_index'][primary_counter] != -1):
 										signal_buy_primary['flag_pr'][primary_counter] = 'tp'
 										signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - np.min(dataset[symbol]['low'][extreme_min['index'][elm]:int(signal_buy_primary['tp_pr_index'][primary_counter])]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
-										if signal_buy_primary['tp_pr'][primary_counter] > tp_percent_minmax_buy_max:
-											signal_buy_primary['tp_pr'][primary_counter] = tp_percent_minmax_buy_max
-											
+
 									if (signal_buy_primary['tp_pr_index'][primary_counter] == -1) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 										signal_buy_primary['flag_pr'][primary_counter] = 'st'
 										signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
-										signal_buy_primary['st_pr'][primary_counter] = st_percent_minmax_buy
 
 							else:
 								signal_buy_primary['tp_pr_index'][primary_counter] = -1
@@ -1037,7 +1041,7 @@ def divergence_macd(
 					
 						try:
 							res_pro = protect_resist(
-													T_5M=False,
+													T_5M=True,
 													T_15M=False,
 													T_1H=True,
 													T_4H=False,
@@ -1077,7 +1081,7 @@ def divergence_macd(
 							if (
 								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
 								dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
-								signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
+								#signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
 								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
 								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
 								True#trend_sma_5M == 'buy'
@@ -1085,9 +1089,13 @@ def divergence_macd(
 
 								mehrshad += 1
 
-								#if signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
-								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
-								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+								if signal_buy_primary['diff_pr_down'][primary_counter] < st_percent_minmax_buy:
+									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
+									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+
+								if signal_buy_primary['diff_pr_down'][primary_counter] > tp_percent_minmax_buy_max:
+									signal_buy_primary['diff_pr_down'][primary_counter] = tp_percent_minmax_buy_max
+									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(tp_percent_minmax_buy_max/100))
 								
 								if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_minmax_buy_max:
 									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_minmax_buy_max
@@ -1096,14 +1104,14 @@ def divergence_macd(
 
 								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0]) - 1) > 1):
 									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0])
-									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]]*0.9996 - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+									signal_buy_primary['tp_pr'][primary_counter] = signal_buy_primary['diff_pr_top'][primary_counter]#((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]]*0.9996 - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 								else:
 									signal_buy_primary['tp_pr_index'][primary_counter] = -1
 									signal_buy_primary['tp_pr'][primary_counter] = 0
 
 								if ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm]:-1]).values) <= (res_pro['low'][2])))[0])-1) > 1):
 									signal_buy_primary['st_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where((((dataset[symbol]['low'][extreme_min['index'][elm]:-1]).values) <= (res_pro['low'][2])))[0])
-									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
+									signal_buy_primary['st_pr'][primary_counter] = signal_buy_primary['diff_pr_down'][primary_counter]#((dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 								else:
 									signal_buy_primary['st_pr_index'][primary_counter] = -1
 									signal_buy_primary['st_pr'][primary_counter] = 0
@@ -1111,18 +1119,17 @@ def divergence_macd(
 								if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 									signal_buy_primary['flag_pr'][primary_counter] = 'st'
 									signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
-									signal_buy_primary['st_pr'][primary_counter] = st_percent_minmax_buy
+
 								else:
 								
 									if (signal_buy_primary['tp_pr_index'][primary_counter] != -1):
 										signal_buy_primary['flag_pr'][primary_counter] = 'tp'
 										signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - np.min(dataset[symbol]['low'][extreme_min['index'][elm]:int(signal_buy_primary['tp_pr_index'][primary_counter])]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
-										if signal_buy_primary['tp_pr'][primary_counter] > tp_percent_minmax_buy_max:
-											signal_buy_primary['tp_pr'][primary_counter] = tp_percent_minmax_buy_max
+
 									if (signal_buy_primary['tp_pr_index'][primary_counter] == -1) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 										signal_buy_primary['flag_pr'][primary_counter] = 'st'
 										signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm]:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
-										signal_buy_primary['st_pr'][primary_counter] = st_percent_minmax_buy
+
 							else:
 								signal_buy_primary['tp_pr_index'][primary_counter] = -1
 								signal_buy_primary['tp_pr'][primary_counter] = 0

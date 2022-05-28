@@ -579,7 +579,7 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 #***************************** Protect Resist Finder **************************************************************
 
 #@stTime
-def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,dataset_4H,dataset_1D,plot=False):
+def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,dataset_4H,dataset_1D,plot=False,alpha=0.05):
 
 	short_length_1 = 25
 	short_length_2 = 50
@@ -884,8 +884,8 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 									low=dataset_5M['low'],
 									n_clusters_low=2,
 									n_clusters_high=2,
-									alpha_low=0.01,
-									alpha_high=0.01,
+									alpha_low=alpha,
+									alpha_high=alpha,
 									timeout_break=1
 									)
 

@@ -214,7 +214,8 @@ def divergence_macd(
 				st_percent_minmax_buy = 0.1,
 				st_percent_minmax_sell = 0.1,
 				tp_percent_minmax_sell_max = 0.5,
-				tp_percent_minmax_buy_max = 0.5
+				tp_percent_minmax_buy_max = 0.5,
+				alpha=0.05
 				):
 
 	#*************** OutPuts:
@@ -418,6 +419,10 @@ def divergence_macd(
 		primary_counter = 0
 		secondry_counter = 0
 
+		print('exterme finded ======> ',len(extreme_min['index']))
+
+		mehrshad = 0
+
 		#***************************** Buy Find Section ***********************************************
 		for elm in extreme_min.index:
 			#print(int((elm/extreme_min.index[-1])*100),'%')
@@ -549,7 +554,7 @@ def divergence_macd(
 					
 						try:
 							res_pro = protect_resist(
-													T_5M=True,
+													T_5M=False,
 													T_15M=False,
 													T_1H=True,
 													T_4H=False,
@@ -559,17 +564,18 @@ def divergence_macd(
 													dataset_1H=dataset_pr_1H,
 													dataset_4H=dataset_pr_1H,
 													dataset_1D=dataset_pr_1H,
-													plot=False
+													plot=False,
+													alpha=alpha
 													)
 						except:
 							res_pro['high'] = 'nan'
 							res_pro['low'] = 'nan'
 
 						if (res_pro.empty == False):
-							signal_buy_primary['diff_pr_top'][primary_counter] = (((res_pro['high'][0]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+							signal_buy_primary['diff_pr_top'][primary_counter] = (((res_pro['high'][2]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 							signal_buy_primary['diff_pr_down'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - (res_pro['low'][2]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 
-							signal_buy_primary['power_pr_high'][primary_counter] = res_pro['power_high'][0]
+							signal_buy_primary['power_pr_high'][primary_counter] = res_pro['power_high'][2]
 							signal_buy_primary['power_pr_low'][primary_counter] = res_pro['power_low'][2]
 
 							#if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_minmax_buy_max:
@@ -577,29 +583,37 @@ def divergence_macd(
 								#res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
 							
 
-							signal_buy_primary['tp_line'][primary_counter] = res_pro['high'][0]
+							signal_buy_primary['tp_line'][primary_counter] = res_pro['high'][2]
 							signal_buy_primary['st_line'][primary_counter] = res_pro['low'][2]
 
 
+							#if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_minmax_buy:
+							#signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
+							#res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+
+
 							if (
-								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][0]) and
+								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
 								dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
 								signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
-								signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
+								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
+								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
 								True#trend_sma_5M == 'buy'
 								):
 
-								if signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
-									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
-									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+								mehrshad += 1
+
+								#if signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
+								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
+								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
 								
 								if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_minmax_buy_max:
 									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_minmax_buy_max
-									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
+									res_pro['high'][2] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
 
 
-								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][0])))[0]) - 1) > 1):
-									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][0])))[0])
+								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0]) - 1) > 1):
+									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0])
 									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]]*0.9996 - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 								else:
 									signal_buy_primary['tp_pr_index'][primary_counter] = -1
@@ -779,7 +793,7 @@ def divergence_macd(
 					
 						try:
 							res_pro = protect_resist(
-													T_5M=True,
+													T_5M=False,
 													T_15M=False,
 													T_1H=True,
 													T_4H=False,
@@ -789,17 +803,18 @@ def divergence_macd(
 													dataset_1H=dataset_pr_1H,
 													dataset_4H=dataset_pr_1H,
 													dataset_1D=dataset_pr_1H,
-													plot=False
+													plot=False,
+													alpha=alpha
 													)
 						except:
 							res_pro['high'] = 'nan'
 							res_pro['low'] = 'nan'
 
 						if (res_pro.empty == False):
-							signal_buy_primary['diff_pr_top'][primary_counter] = (((res_pro['high'][0]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+							signal_buy_primary['diff_pr_top'][primary_counter] = (((res_pro['high'][2]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 							signal_buy_primary['diff_pr_down'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - (res_pro['low'][2]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 
-							signal_buy_primary['power_pr_high'][primary_counter] = res_pro['power_high'][0]
+							signal_buy_primary['power_pr_high'][primary_counter] = res_pro['power_high'][2]
 							signal_buy_primary['power_pr_low'][primary_counter] = res_pro['power_low'][2]
 
 							#if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_minmax_buy_max:
@@ -807,29 +822,35 @@ def divergence_macd(
 								#res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
 							
 
-							signal_buy_primary['tp_line'][primary_counter] = res_pro['high'][0]
+							signal_buy_primary['tp_line'][primary_counter] = res_pro['high'][2]
 							signal_buy_primary['st_line'][primary_counter] = res_pro['low'][2]
 
+							#if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_minmax_buy:
+							#signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
+							#res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
 
 							if (
-								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][0]) and
+								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
 								dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
 								signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
-								signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
+								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
+								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
 								True#trend_sma_5M == 'buy'
 								):
 
-								if signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
-									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
-									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+								mehrshad += 1
+
+								#if signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
+								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
+								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
 								
 								if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_minmax_buy_max:
 									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_minmax_buy_max
-									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
+									res_pro['high'][2] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
 
 
-								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][0])))[0]) - 1) > 1):
-									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][0])))[0])
+								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0]) - 1) > 1):
+									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0])
 									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]]*0.9996 - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 								else:
 									signal_buy_primary['tp_pr_index'][primary_counter] = -1
@@ -1008,7 +1029,7 @@ def divergence_macd(
 					
 						try:
 							res_pro = protect_resist(
-													T_5M=True,
+													T_5M=False,
 													T_15M=False,
 													T_1H=True,
 													T_4H=False,
@@ -1018,17 +1039,18 @@ def divergence_macd(
 													dataset_1H=dataset_pr_1H,
 													dataset_4H=dataset_pr_1H,
 													dataset_1D=dataset_pr_1H,
-													plot=False
+													plot=False,
+													alpha=alpha
 													)
 						except:
 							res_pro['high'] = 'nan'
 							res_pro['low'] = 'nan'
 
 						if (res_pro.empty == False):
-							signal_buy_primary['diff_pr_top'][primary_counter] = (((res_pro['high'][0]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
+							signal_buy_primary['diff_pr_top'][primary_counter] = (((res_pro['high'][2]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 							signal_buy_primary['diff_pr_down'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm]] - (res_pro['low'][2]))/dataset[symbol]['low'][extreme_min['index'][elm]]) * 100
 
-							signal_buy_primary['power_pr_high'][primary_counter] = res_pro['power_high'][0]
+							signal_buy_primary['power_pr_high'][primary_counter] = res_pro['power_high'][2]
 							signal_buy_primary['power_pr_low'][primary_counter] = res_pro['power_low'][2]
 
 							#if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_minmax_buy_max:
@@ -1036,29 +1058,36 @@ def divergence_macd(
 								#res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
 							
 
-							signal_buy_primary['tp_line'][primary_counter] = res_pro['high'][0]
+							signal_buy_primary['tp_line'][primary_counter] = res_pro['high'][2]
 							signal_buy_primary['st_line'][primary_counter] = res_pro['low'][2]
+
+							#if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_minmax_buy:
+							#signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
+							#res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
 
 
 							if (
-								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][0]) and
+								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
 								dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
 								signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
-								signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
+								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
+								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
 								True#trend_sma_5M == 'buy'
 								):
 
-								if signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
-									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
-									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+								mehrshad += 1
+
+								#if signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy:#signal_buy['diff_pr_top'][buy_counter]:
+								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
+								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
 								
 								if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_minmax_buy_max:
 									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_minmax_buy_max
-									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
+									res_pro['high'][2] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
 
 
-								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][0])))[0]) - 1) > 1):
-									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][0])))[0])
+								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0]) - 1) > 1):
+									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm]:-1].values*0.9996) >= (res_pro['high'][2])))[0])
 									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]]*0.9996 - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
 								else:
 									signal_buy_primary['tp_pr_index'][primary_counter] = -1
@@ -2228,6 +2257,8 @@ def divergence_macd(
 	#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 		#print('=======> signal_buy_primary before = ',signal_buy_primary)
 
+	print('mehrshad =====> ',mehrshad)
+
 	signal_buy_primary = signal_buy_primary.drop(columns=0)
 	signal_buy_primary = signal_buy_primary.dropna()
 	signal_buy_primary = signal_buy_primary.sort_values(by = ['index'])
@@ -2906,12 +2937,28 @@ def tester_div_macd(
 	#*********** Methode 2 Profits With PR Buy:
 	if flag_trade == 'buy':
 		if name_stp_pr == True:
-			
-			#ramp_macd_intervals_minmax = Find_Best_intervals(signals=signal_buy,apply_to='ramp_macd',
-				#min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.5)
 
-			#ramp_candle_intervals_minmax = Find_Best_intervals(signals=signal_buy,apply_to='ramp_candle',
-				#min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.5)
+			#alpha = 0.2
+
+			"""
+			
+			ramp_macd_intervals_pr = Find_Best_intervals(
+															signals=signal_buy,
+															apply_to='ramp_macd',
+															min_tp=0.0, 
+															max_st=0.0, 
+															name_stp='flag_pr',
+															alpha=alpha
+															)
+
+			ramp_candle_intervals_pr = Find_Best_intervals(
+															signals=signal_buy,
+															apply_to='ramp_candle',
+															min_tp=0.0, 
+															max_st=0.0, 
+															name_stp='flag_pr',
+															alpha=alpha
+															)
 
 			#diff_ramps_intervals_minmax = Find_Best_intervals(signals=signal_buy,apply_to='diff_ramps',
  			#min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.5)
@@ -2958,23 +3005,7 @@ def tester_div_macd(
  															alpha=alpha
  															)
 
-			diff_top_pr_buy = Find_Best_intervals(
-													signals=signal_buy,
-													apply_to='tp_pr',
-													min_tp=0.0, 
-													max_st=0, 
-													name_stp='flag_pr',
-													alpha=alpha
-													)
-
-			diff_down_pr_buy = Find_Best_intervals(
-													signals=signal_buy,
-													apply_to='st_pr',
-													min_tp=0.0, 
-													max_st=0, 
-													name_stp='flag_pr',
-													alpha=alpha
-													)
+			
 
 			power_high_pr_buy = Find_Best_intervals(
 													signals=signal_buy,
@@ -2993,32 +3024,45 @@ def tester_div_macd(
 													name_stp='flag_pr',
 													alpha=alpha
 													)
+			"""
+
+			diff_top_pr_buy = Find_Best_intervals(
+													signals=signal_buy,
+													apply_to='tp_pr',
+													min_tp=0.0, 
+													max_st=0, 
+													name_stp='flag_pr',
+													alpha=alpha
+													)
+
+			diff_down_pr_buy = Find_Best_intervals(
+													signals=signal_buy,
+													apply_to='st_pr',
+													min_tp=0.0, 
+													max_st=0, 
+													name_stp='flag_pr',
+													alpha=alpha
+													)
 
 			list_index_ok = np.where(
 				#((signal_buy['ramp_low'].to_numpy()>=ramp_low_intervals_pr_buy['interval'][lower]))&
 				#((signal_buy['ramp_high'].to_numpy()>=ramp_high_intervals_pr_buy['interval'][lower]))&
-				#(signal_buy['diff_pr_top'].to_numpy()<=diff_top_intervals_pr_buy['interval'][upper])&
-				(signal_buy['value_front'].to_numpy() <= value_front_intervals_pr['interval'][upper]) &
-				(signal_buy['value_back'].to_numpy() <= value_back_intervals_pr['interval'][upper]) &
-				(signal_buy['ramp_vol'].to_numpy() >= ramp_volume_intervals_pr['interval'][lower]) &
-				(signal_buy['power_pr_high'].to_numpy() >= power_high_pr_buy['interval'][lower]) &
-				(signal_buy['power_pr_low'].to_numpy() >= power_low_pr_buy['interval'][lower])
-				#(signal_buy['trend_short1'].to_numpy()=='buy')&
-				#(signal_buy['trend_short2'].to_numpy()=='buy')))
-				#((signal_buy['diff_pr_down'].to_numpy()<=diff_down_intervals_pr_buy['interval'][upper]))&
-				#((signal_buy['diff_min_max_cci'].to_numpy()<=diff_min_max_cci_intervals_pr_buy['interval'][upper]))&
-				#((signal_buy['diff_min_max_candle'].to_numpy()<=diff_min_max_candle_intervals_pr_buy['interval'][upper]))&
-				#((signal_buy['value_min_cci'].to_numpy()<=value_min_cci_pr_buy['interval'][upper]))
-				#((signal_buy['value_max_cci'].to_numpy()>=value_max_cci_pr_buy['interval'][lower]))
-				)[0]
+				#(signal_buy['value_front'].to_numpy() <= value_front_intervals_pr['interval'][upper]) &
+				#(signal_buy['value_back'].to_numpy() <= value_back_intervals_pr['interval'][upper]) 
+				#(signal_buy['ramp_vol'].to_numpy() >= ramp_volume_intervals_pr['interval'][lower]) &
+				#(signal_buy['power_pr_high'].to_numpy() >= power_high_pr_buy['interval'][lower]) &
+				#(signal_buy['power_pr_low'].to_numpy() >= power_low_pr_buy['interval'][lower])
+				#(signal_buy['ramp_candle'].to_numpy() <= ramp_candle_intervals_pr['interval'][upper]) &
+				#(signal_buy['ramp_macd'].to_numpy() >= ramp_macd_intervals_pr['interval'][lower])
+				True)[0]
 
-			output_buy['mean_tp_pr'] = [np.mean(signal_buy['tp_pr'][list_index_ok])]
-			output_buy['mean_st_pr'] = [np.mean(signal_buy['st_pr'][list_index_ok])]
-			output_buy['max_tp_pr'] = [np.max(signal_buy['tp_pr'][list_index_ok])]
-			output_buy['max_st_pr'] = [np.max(signal_buy['st_pr'][list_index_ok])]
+			output_buy['mean_tp_pr'] = [np.mean(signal_buy['tp_pr'])]
+			output_buy['mean_st_pr'] = [np.mean(signal_buy['st_pr'])]
+			output_buy['max_tp_pr'] = [np.max(signal_buy['tp_pr'])]
+			output_buy['max_st_pr'] = [np.max(signal_buy['st_pr'])]
 			try:
-				output_buy['sum_st_pr'] = [np.sum(signal_buy['st_pr'][list_index_ok[np.where(signal_buy['flag_pr'][list_index_ok] == 'st')[0]]].to_numpy())]
-				output_buy['sum_tp_pr'] = [np.sum(signal_buy['tp_pr'][list_index_ok[np.where(signal_buy['flag_pr'][list_index_ok] == 'tp')[0]]].to_numpy())]
+				output_buy['sum_st_pr'] = [np.sum(signal_buy['st_pr'][np.where(signal_buy['flag_pr'] == 'st')[0]].to_numpy())]
+				output_buy['sum_tp_pr'] = [np.sum(signal_buy['tp_pr'][np.where(signal_buy['flag_pr'] == 'tp')[0]].to_numpy())]
 			except Exception as ex:
 				print('error tester pr buy: ',ex)
 				output_buy['sum_st_pr'] = 0
@@ -3026,7 +3070,7 @@ def tester_div_macd(
 
 			tp_counter = 0
 			st_counter = 0
-			for elm in signal_buy['flag_pr'][list_index_ok]:
+			for elm in signal_buy['flag_pr']:
 				if (elm == 'tp'):
 					tp_counter += 1
 				if (elm == 'st'):
@@ -3038,12 +3082,15 @@ def tester_div_macd(
 			output_buy['max_st'] = [diff_down_pr_buy['interval'][upper]]
 			output_buy['max_tp'] = [diff_top_pr_buy['interval'][upper]]
 
-			output_buy['ramp_vol'] = [ramp_volume_intervals_pr['interval'][lower]]
-			output_buy['value_back'] = [value_back_intervals_pr['interval'][upper]]
-			output_buy['value_front'] = [value_front_intervals_pr['interval'][upper]]
+			#output_buy['ramp_vol'] = [ramp_volume_intervals_pr['interval'][lower]]
+			#output_buy['value_back'] = [value_back_intervals_pr['interval'][upper]]
+			#output_buy['value_front'] = [value_front_intervals_pr['interval'][upper]]
 
-			output_buy['power_pr_high'] = [power_high_pr_buy['interval'][lower]]
-			output_buy['power_pr_low'] = [power_low_pr_buy['interval'][lower]]
+			#output_buy['power_pr_high'] = [power_high_pr_buy['interval'][lower]]
+			#output_buy['power_pr_low'] = [power_low_pr_buy['interval'][lower]]
+
+			#output_buy['ramp_macd'] = [ramp_macd_intervals_pr['interval'][lower]]
+			#output_buy['ramp_candle'] = [ramp_candle_intervals_pr['interval'][upper]]
 
 
 			if output_buy['num_trade_pr'][0] != 0:
@@ -3358,7 +3405,7 @@ def initilize_values_genetic(
 			'slow_period': randint(slow_period_lower, slow_period_upper),
 			'signal_period': randint(signal_period_lower, signal_period_upper),
 			'apply_to': np.random.choice(apply_to_list_ga),
-			'alpha': randint(1, 99)/100,
+			'alpha': randint(1, 50)/100,
 			#'max_st': max_st,
 			#'max_tp': max_tp,
 			'signal': None,
@@ -3415,7 +3462,7 @@ def gen_creator(
 			'slow_period': randint(slow_period_lower, slow_period_upper),
 			'signal_period': randint(signal_period_lower, signal_period_upper),
 			'apply_to': np.random.choice(apply_to_list_ga),
-			'alpha': randint(1, 99)/100,
+			'alpha': randint(1, 50)/100,
 			#'max_st': max_st,
 			#'max_tp': max_tp,
 			'signal': None,
@@ -3478,7 +3525,7 @@ def gen_creator(
 			'slow_period': randint(slow_period_lower, slow_period_upper),
 			'signal_period': randint(signal_period_lower, signal_period_upper),
 			'apply_to': np.random.choice(apply_to_list_ga),
-			'alpha': randint(1, 99)/100,
+			'alpha': randint(1, 50)/100,
 			#'max_st': max_st,
 			#'max_tp': max_tp,
 			'signal': None,
@@ -3513,7 +3560,7 @@ def gen_creator(
 						'slow_period': slow_period,
 						'signal_period': randint(signal_period_lower, signal_period_upper),
 						'apply_to': np.random.choice(apply_to_list_ga),
-						'alpha': randint(1, 99)/100,
+						'alpha': randint(1, 50)/100,
 						#'max_st': max_st,
 						#'max_tp': max_tp,
 						'signal': None,
@@ -3555,7 +3602,7 @@ def gen_creator(
 							'slow_period': slow_period,
 							'signal_period': randint(signal_period_lower, signal_period_upper),
 							'apply_to': np.random.choice(apply_to_list_ga),
-							'alpha': randint(1, 99)/100,
+							'alpha': randint(1, 50)/100,
 							#'max_st': max_st,
 							#'max_tp': max_tp,
 							'signal': None,
@@ -3697,6 +3744,10 @@ def genetic_algo_div_macd(
 			max_st_buy = randint(50, 100)/100
 			max_tp_buy = randint(50, 100)/100
 
+			while max_tp_buy < max_st_buy:
+				max_st_buy = randint(50, 100)/100
+				max_tp_buy = randint(50, 100)/100
+
 	if flag_trade == 'sell':
 		if os.path.exists(sell_path):
 			if primary_doing == True:
@@ -3833,7 +3884,7 @@ def genetic_algo_div_macd(
 					'slow_period': slow_period,
 					'signal_period': randint(signal_period_lower, signal_period_upper),
 					'apply_to': np.random.choice(apply_to_list_ga),
-					'alpha': randint(1, 99)/100,
+					'alpha': randint(1, 50)/100,
 					#'max_st': max_st,
 					#'max_tp': max_tp,
 					'signal': None,
@@ -4032,7 +4083,7 @@ def genetic_algo_div_macd(
 					'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
 					'signal_period': randint(signal_period_lower, signal_period_upper),
 					'apply_to': np.random.choice(apply_to_list_ga),
-					'alpha': randint(1, 99)/100,
+					'alpha': randint(1, 50)/100,
 					#'max_st': max_st,
 					#'max_tp': max_tp,
 					'signal': None,
@@ -4092,7 +4143,7 @@ def genetic_algo_div_macd(
 					'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
 					'signal_period': randint(signal_period_lower, signal_period_upper),
 					'apply_to': np.random.choice(apply_to_list_ga),
-					'alpha': randint(1, 99)/100,
+					'alpha': randint(1, 50)/100,
 					#'max_st': max_st,
 					#'max_tp': max_tp,
 					'signal': None,
@@ -4116,15 +4167,21 @@ def genetic_algo_div_macd(
 						max_st_last_buy = max_st_buy
 						max_tp_last_buy = max_tp_buy
 
-						if output_buy['max_st'][0] >= 0.15:
-							max_st_buy = output_buy['max_st'][0]
-						else:
-							max_st_buy = randint(50, 100)/100
-
-						if output_buy['max_tp'][0] != 0:
+						if output_buy['max_tp'][0] >= 0.15:
 							max_tp_buy = output_buy['max_tp'][0]
 						else:
 							max_tp_buy = randint(50, 100)/100
+
+						if output_buy['max_st'][0] >= 0.1:
+							max_st_buy = output_buy['max_st'][0]
+
+							if max_st_buy > max_tp_buy:
+								max_st_buy = max_tp_buy
+						else:
+							max_st_buy = randint(50, 100)/100
+
+							while max_tp_buy < max_st_buy:
+								max_st_buy = randint(15, 100)/100
 
 						output_buy['max_tp'][0] = max_tp_last_buy
 						output_buy['max_st'][0] = max_st_last_buy
@@ -4142,15 +4199,21 @@ def genetic_algo_div_macd(
 					else:
 						bad_buy = True
 
-						if output_buy['max_st'][0] >= 0.15:
-							max_st_buy = output_buy['max_st'][0]
-						else:
-							max_st_buy = randint(50, 100)/100
-
-						if output_buy['max_tp'][0] != 0:
+						if output_buy['max_tp'][0] >= 0.15:
 							max_tp_buy = output_buy['max_tp'][0]
 						else:
 							max_tp_buy = randint(50, 100)/100
+
+						if output_buy['max_st'][0] >= 0.1:
+							max_st_buy = output_buy['max_st'][0]
+
+							if max_st_buy > max_tp_buy:
+								max_st_buy = max_tp_buy
+						else:
+							max_st_buy = randint(50, 100)/100
+
+							while max_tp_buy < max_st_buy:
+								max_st_buy = randint(15, 100)/100
 
 			print('== Max Score Buy Must Be ====> ',max_score_ga_buy)
 
@@ -4208,7 +4271,7 @@ def genetic_algo_div_macd(
 						'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
 						'signal_period': randint(signal_period_lower, signal_period_upper),
 						'apply_to': np.random.choice(apply_to_list_ga),
-						'alpha': randint(1, 99)/100,
+						'alpha': randint(1, 50)/100,
 						#'max_st': max_st,
 						#'max_tp': max_tp,
 						'signal': None,
@@ -4225,7 +4288,7 @@ def genetic_algo_div_macd(
 						'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
 						'signal_period': randint(signal_period_lower, signal_period_upper),
 						'apply_to': np.random.choice(apply_to_list_ga),
-						'alpha': randint(1, 99)/100,
+						'alpha': randint(1, 50)/100,
 						#'max_st': max_st,
 						#'max_tp': max_tp,
 						'signal': None,

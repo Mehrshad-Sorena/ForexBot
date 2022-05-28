@@ -595,7 +595,7 @@ def divergence_macd(
 							if (
 								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
 								dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
-								#signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
+								signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
 								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
 								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
 								True#trend_sma_5M == 'buy'
@@ -838,7 +838,7 @@ def divergence_macd(
 							if (
 								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
 								dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
-								#signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
+								signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
 								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
 								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
 								True#trend_sma_5M == 'buy'
@@ -1081,7 +1081,7 @@ def divergence_macd(
 							if (
 								dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
 								dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
-								#signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
+								signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
 								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
 								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
 								True#trend_sma_5M == 'buy'

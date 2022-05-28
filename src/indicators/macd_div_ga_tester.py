@@ -218,7 +218,7 @@ def ga_optimizer_buy():
 			print('======================== len 1H ==========> ',len(symbol_data_1H[sym.name]['open']))
 			print()
 
-			buy_path_primary = 'GA/MACD/primary/buy'+sym.name+'.csv'
+			buy_path_primary = 'GA/MACD/primary/buy/'+sym.name+'.csv'
 			
 			#print('*************> ',sym.name)
 

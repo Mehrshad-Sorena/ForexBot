@@ -52,6 +52,7 @@ warnings.filterwarnings("ignore")
 #initilize_values_genetic()
 #gen_creator()
 #last_signal()
+#golden_cross_tester_for_permit()
 
 #**************************************** Logger *****************
 """
@@ -3804,16 +3805,16 @@ def golden_cross_tester_for_permit(
 					)[0]
 
 				output_buy = pd.DataFrame()
-				output_buy['mean_tp_pr'] = [np.mean(buy_data['tp_pr'][list_index_ok])]
-				output_buy['mean_st_pr'] = [np.mean(buy_data['st_pr'][list_index_ok])]
-				output_buy['max_tp_pr'] = [np.max(buy_data['tp_pr'][list_index_ok])]
-				output_buy['max_st_pr'] = [np.max(buy_data['st_pr'][list_index_ok])]
-				output_buy['sum_st_pr'] = [np.sum(buy_data['st_pr'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'st')[0]]].to_numpy())]
-				output_buy['sum_tp_pr'] = [np.sum(buy_data['tp_pr'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'tp')[0]]].to_numpy())]
+				output_buy['mean_tp_pr'] = [np.mean(buy_data['tp_pr'])]
+				output_buy['mean_st_pr'] = [np.mean(buy_data['st_pr'])]
+				output_buy['max_tp_pr'] = [np.max(buy_data['tp_pr'])]
+				output_buy['max_st_pr'] = [np.max(buy_data['st_pr'])]
+				output_buy['sum_st_pr'] = [np.sum(buy_data['st_pr'][np.where(buy_data['flag_pr'] == 'st')[0]].to_numpy())]
+				output_buy['sum_tp_pr'] = [np.sum(buy_data['tp_pr'][np.where(buy_data['flag_pr'] == 'tp')[0]].to_numpy())]
 
 				tp_counter = 0
 				st_counter = 0
-				for elm in buy_data['flag_pr'][list_index_ok]:
+				for elm in buy_data['flag_pr']:
 					if (elm == 'tp'):
 						tp_counter += 1
 					if (elm == 'st'):
@@ -3909,7 +3910,7 @@ def golden_cross_tester_for_permit(
 				for idx in buy_data['index'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'st')[0]]]:
 					print('time st = ',dataset[symbol]['time'][idx])
 
-				if output_buy['score_pr'][0] >= ga_result_buy['score_pr'][0]*0.99: 
+				if output_buy['score_pr'][0] * 88.4 >= ga_result_buy['score_pr'][0]*0.99: 
 					ga_result_buy['permit'] = True
 					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 
@@ -4247,14 +4248,18 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 				res_pro = pd.DataFrame()
 				try:
 					res_pro = protect_resist(
-						T_5M=True,T_15M=True,T_1H=False,T_4H=False,T_1D=False,
-						dataset_5M=dataset[symbol],
-						dataset_15M=dataset_15M[symbol],
-						dataset_1H=dataset_1H[symbol],
-						dataset_4H=dataset_4H[symbol],
-						dataset_1D=dataset_1D[symbol],
-						plot=False
-						)
+											T_5M=True,
+											T_15M=False,
+											T_1H=True,
+											T_4H=False,
+											T_1D=False,
+											dataset_5M=dataset[symbol],
+											dataset_15M=dataset_15M[symbol],
+											dataset_1H=dataset_1H[symbol],
+											dataset_4H=dataset_4H[symbol],
+											dataset_1D=dataset_1D[symbol],
+											plot=False
+											)
 				except:
 					res_pro['high'] = 'nan'
 					res_pro['low'] = 'nan'
@@ -4262,23 +4267,27 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 					res_pro['power_low'] = 0
 
 				if (res_pro.empty == False):
-					diff_pr_top_buy = (((res_pro['high'][0] * 0.9995) - dataset[symbol]['high'][lst_idx_buy])/dataset[symbol]['high'][lst_idx_buy]) * 100
-					diff_pr_down_buy = ((dataset[symbol]['low'][lst_idx_buy] - (res_pro['low'][2] * 0.9995))/dataset[symbol]['low'][lst_idx_buy]) * 100
+					diff_pr_top_buy = (((res_pro['high'][0]) - dataset[symbol]['high'][lst_idx_buy])/dataset[symbol]['high'][lst_idx_buy]) * 100
+					diff_pr_down_buy = ((dataset[symbol]['low'][lst_idx_buy] - (res_pro['low'][2]))/dataset[symbol]['low'][lst_idx_buy]) * 100
 					diff_pr_top_buy_power = np.mean(res_pro['power_high'])
 					diff_pr_down_buy_power = np.mean(res_pro['power_low'])
 
-					trend_long_buy = res_pro['trend_long'][0].values[0]
-					trend_mid_buy = res_pro['trend_mid'][0].values[0]
-					trend_short_1_buy = res_pro['trend_short1'][0].values[0]
-					trend_short_2_buy = res_pro['trend_short2'][0].values[0]
+					if diff_pr_top_buy > ga_result_buy['max_tp'][0]:
+						diff_pr_top_buy = ga_result_buy['max_tp'][0]
+						res_pro['high'][0] = dataset[symbol]['high'][lst_idx_buy]*(1+(ga_result_buy['max_tp'][0]/100))
 
-					if trend_long_buy is np.nan: trend_long_buy = 'parcham'
-					if trend_mid_buy is np.nan: trend_mid_buy = 'parcham'
-					if trend_short_1_buy is np.nan: trend_short_1_buy = 'parcham'
-					if trend_short_2_buy is np.nan: trend_short_2_buy = 'parcham'
+					#trend_long_buy = res_pro['trend_long'][0].values[0]
+					#trend_mid_buy = res_pro['trend_mid'][0].values[0]
+					#trend_short_1_buy = res_pro['trend_short1'][0].values[0]
+					#trend_short_2_buy = res_pro['trend_short2'][0].values[0]
+
+					#if trend_long_buy is np.nan: trend_long_buy = 'parcham'
+					#if trend_mid_buy is np.nan: trend_mid_buy = 'parcham'
+					#if trend_short_1_buy is np.nan: trend_short_1_buy = 'parcham'
+					#if trend_short_2_buy is np.nan: trend_short_2_buy = 'parcham'
 
 					resist_buy = (res_pro['high'][0] * 0.9995)
-					protect_buy = (res_pro['low'][2] * 0.9995)
+					protect_buy = (res_pro['low'][2])
 
 				else:
 					diff_pr_top_buy = 0
@@ -4294,28 +4303,43 @@ def last_signal(dataset,dataset_15M,dataset_1H, dataset_4H,dataset_1D,symbol):
 					trend_short_1_buy = 'no_flag'
 					trend_short_2_buy = 'no_flag'
 
-			print('trend_long_buy: ',trend_long_buy)
-			print('trend_mid_buy: ',trend_mid_buy)
-			print('trend_short_1_buy: ',trend_short_1_buy)
-			print('trend_short_2_buy: ',trend_short_2_buy)
+			cross_cut_len = 200
+			cut_first = 0
+			if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
+				cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
+
+			dataset_5M_sma = {
+								symbol: dataset[symbol].copy()
+								}
+
+			dataset_5M_sma[symbol]['low'] = dataset_5M_sma[symbol]['low'].iloc[cut_first:int(len(dataset_5M_sma[symbol]['low'])-1)].reset_index(drop=True)
+			dataset_5M_sma[symbol]['high'] = dataset_5M_sma[symbol]['high'].iloc[cut_first:int(len(dataset_5M_sma[symbol]['high'])-1)].reset_index(drop=True)
+			dataset_5M_sma[symbol]['close'] = dataset_5M_sma[symbol]['close'].iloc[cut_first:int(len(dataset_5M_sma[symbol]['close'])-1)].reset_index(drop=True)
+			dataset_5M_sma[symbol]['open'] = dataset_5M_sma[symbol]['open'].iloc[cut_first:int(len(dataset_5M_sma[symbol]['open'])-1)].reset_index(drop=True)
+			dataset_5M_sma[symbol]['HLC/3'] = dataset_5M_sma[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_sma[symbol]['HLC/3'])-1)].reset_index(drop=True)
+			dataset_5M_sma[symbol]['HL/2'] = dataset_5M_sma[symbol]['HL/2'].iloc[cut_first:int(len(dataset_5M_sma[symbol]['HL/2'])-1)].reset_index(drop=True)
+			dataset_5M_sma[symbol]['HLCC/4'] = dataset_5M_sma[symbol]['HLCC/4'].iloc[cut_first:int(len(dataset_5M_sma[symbol]['HLCC/4'])-1)].reset_index(drop=True)
+			dataset_5M_sma[symbol]['OHLC/4'] = dataset_5M_sma[symbol]['OHLC/4'].iloc[cut_first:int(len(dataset_5M_sma[symbol]['OHLC/4'])-1)].reset_index(drop=True)
+
+			try:
+				trend_sma_5M = last_signal_sma(dataset_5M_sma, symbol, time_frame = '5M')['signal'][0]
+			except Exception as ex:
+				print('sma trend buy: ',ex)
+				trend_sma_5M = 'no_flag'
 
 			if (
-				#buy_data['ramp_low'].iloc[-1]>=ga_result_buy['ramp_low_lower_pr'][0] and
-				#buy_data['ramp_high'].iloc[-1]>=ga_result_buy['ramp_high_lower_pr'][0] and
-				#diff_pr_top_buy <= ga_result_buy['diff_top_upper_pr'][0] and
-				dataset[symbol]['high'].iloc[-1] < resist_buy and
+				dataset[symbol]['high'].iloc[-1] * 1.0004 < resist_buy and
 				dataset[symbol]['low'].iloc[-1] > protect_buy and
 				diff_pr_top_buy >= diff_pr_down_buy and
-				diff_pr_down_buy <= 0.4 and
-				((trend_long_buy != 'sell') and
-				((trend_mid_buy != 'sell') and
-				(trend_short_1_buy == 'buy') and
-				(trend_short_2_buy == 'buy'))) 
-				#diff_pr_down_buy<=ga_result_buy['diff_down_upper_pr'][0] and
-				#buy_data['diff_min_max_cci'].iloc[-1]<=ga_result_buy['diff_min_max_cci_upper_pr'][0] and
-				#buy_data['diff_min_max_candle'].iloc[-1]<=ga_result_buy['diff_min_max_candle_upper_pr'][0]
+				diff_pr_down_buy <= ga_result_buy['max_st'][0] and
+				trend_sma_5M == 'buy'
 				):
-				
+
+				if diff_pr_down_buy <= ga_result_buy['max_st'][0]:#signal_buy['diff_pr_top'][buy_counter]:
+					diff_pr_down_buy = ga_result_buy['max_st'][0]
+					res_pro['low'][2] = dataset[symbol]['low'][lst_idx_buy] * (1-(ga_result_buy['max_st'][0]/100))
+					protect_buy = (res_pro['low'][2])
+
 				signal = 'buy'
 
 			else:

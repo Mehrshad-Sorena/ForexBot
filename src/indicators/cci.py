@@ -2491,6 +2491,23 @@ def genetic_algo_cci_golden_cross(
 			chorm_reset_counter += 1
 			all_chorms += 1
 
+			if flag_trade == 'buy':
+				print('======== max st tp ================> ')
+				print()
+				print('........................................................')
+				print('======== max tp ===================> ',max_tp_buy)
+				print('======== max st ===================> ',max_st_buy)
+				print('........................................................')
+				print()
+
+			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				print('======== Chorme ================> ')
+				print()
+				print('........................................................')
+				print(Chromosome[chrom_counter])
+				print('........................................................')
+				print()
+
 			try:
 				if flag_trade == 'buy':
 					buy_data, _ = golden_cross_zero(
@@ -2563,13 +2580,7 @@ def genetic_algo_cci_golden_cross(
 				print('getting error GA Golden Cross: ', ex)
 				flag_golden_cross = True
 
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				print('======== Chorme ================> ')
-				print()
-				print('........................................................')
-				print(Chromosome[chrom_counter])
-				print('........................................................')
-				print()
+			
 
 			if flag_golden_cross:
 				#Chromosome.pop(chrom_counter)

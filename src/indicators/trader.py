@@ -26,9 +26,9 @@ symbol_black_list = np.array(
 	])
 
 def get_all_deta_online():
-	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,300)
-	symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,100)
-	symbol_data_H1,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,1)
+	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,1100)
+	symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,1)
+	symbol_data_H1,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,510)
 	symbol_data_H4,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,1)
 	symbol_data_D1,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,1)
 

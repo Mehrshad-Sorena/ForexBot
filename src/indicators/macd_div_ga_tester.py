@@ -1,4 +1,4 @@
-from cci import genetic_algo_cci_golden_cross,one_year_golden_cross_tester, read_ga_result, golden_cross_tester_for_permit
+from macd import genetic_algo_div_macd, read_ga_result
 from log_get_data import read_dataset_csv, get_symbols, log_get_data_Genetic
 from datetime import datetime
 from random import randint
@@ -127,21 +127,25 @@ def ga_runner(
 				num_turn,
 				max_score_ga_buy,
 				max_score_ga_sell,
+				primary_doing,
+				secondry_doing,
 				flag_trade='buy'
 				):
 
 	try:
-		genetic_algo_cci_golden_cross(
-									symbol_data_5M=symbol_data_5M,
-									symbol_data_15M=symbol_data_15M,
-									dataset_1H=symbol_data_1H,
-									dataset_4H=symbol_data_4H,
-									symbol=symbol,
-									num_turn=num_turn,
-									max_score_ga_buy=max_score_ga_buy,
-									max_score_ga_sell=max_score_ga_sell,
-									flag_trade=flag_trade
-									)
+		genetic_algo_div_macd(
+								symbol_data_5M=symbol_data_5M,
+								symbol_data_15M=symbol_data_15M,
+								dataset_1H=symbol_data_1H,
+								dataset_4H=symbol_data_4H,
+								symbol=symbol,
+								num_turn=num_turn,
+								max_score_ga_buy=max_score_ga_buy,
+								max_score_ga_sell=max_score_ga_sell,
+								flag_trade=flag_trade,
+								primary_doing=primary_doing,
+								secondry_doing=secondry_doing
+								)
 		pass
 	except Exception as ex:
 		print('getting error GA Runner: ', ex)
@@ -214,25 +218,28 @@ def ga_optimizer_buy():
 			print('======================== len 1H ==========> ',len(symbol_data_1H[sym.name]['open']))
 			print()
 
-			buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
+			buy_path_primary = 'GA/MACD/primary/buy/'+sym.name+'.csv'
 			
 			#print('*************> ',sym.name)
 
-			if not os.path.exists(buy_path):
+			if not os.path.exists(buy_path_primary):
 				ga_runner(
 						symbol_data_5M=symbol_data_5M,
 						symbol_data_15M=symbol_data_15M,
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=800,
+						num_turn=400,
 						max_score_ga_buy=600,
 						max_score_ga_sell=600,
-						flag_trade='buy'
+						flag_trade='buy',
+						primary_doing=True,
+						secondry_doing=False
 						)
 			else:
+				learn_counter = 2
 				if learn_counter > 1: 
-					num_turn = 40
+					num_turn = 120
 				else:
 					num_turn = 200
 				ga_runner(
@@ -244,7 +251,9 @@ def ga_optimizer_buy():
 						num_turn=num_turn,
 						max_score_ga_buy=10,
 						max_score_ga_sell=10,
-						flag_trade='buy'
+						flag_trade='buy',
+						primary_doing=True,
+						secondry_doing=False
 						)
 
 			#print('======= learn_counter buy ====> ',learn_counter)
@@ -534,7 +543,7 @@ def learning_buy():
 		#print(mem_data)
 		#print(mem_data.info(memory_usage='deep'))
 
-		max_learning_turn = 50
+		max_learning_turn = 100
 		learn_out = pd.DataFrame(np.zeros(max_learning_turn))
 		learn_out['score'] = np.nan
 		learn_out['value_min_upper_cci_pr'] = np.nan
@@ -827,9 +836,9 @@ my_sym = 'GBPUSD_i'
 
 #learning_buy()
 #ga_tester_buy()
-#ga_optimizer_buy()
-learning_buy()
-ga_tester_buy()
+ga_optimizer_buy()
+#learning_buy()
+#ga_tester_buy()
 
 #ga_optimizer_sell()
 #learning_sell()

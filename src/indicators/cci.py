@@ -2757,15 +2757,19 @@ def genetic_algo_cci_golden_cross(
 					else:
 						bad_buy = True
 
-						if output_buy['max_st_pr'][0] != 0:
-							max_st_buy = output_buy['max_st_pr'][0]
+						if output_buy['max_tp'][0] >= 0.15:
+							max_tp_buy = output_buy['max_tp'][0]
 						else:
-							max_st_buy = randint(10, 80)/100
+							max_tp_buy = randint(50, 100)/100
 
-						if output_buy['max_tp_pr'][0] != 0:
-							max_tp_buy = output_buy['max_tp_pr'][0]
+						if output_buy['max_st'][0] >= 0.1:
+							max_st_buy = output_buy['max_st'][0]
+
 						else:
-							max_tp_buy = randint(10, 80)/100
+							max_st_buy = randint(50, 100)/100
+
+							while max_tp_buy < max_st_buy:
+								max_st_buy = randint(15, 100)/100
 
 						if output_buy['value_min_upper_cci_pr'][0] != 0:
 							cross_line_upper_out_tester = abs(int(output_buy['value_min_upper_cci_pr'][0]))

@@ -534,7 +534,7 @@ def learning_buy():
 		#print(mem_data)
 		#print(mem_data.info(memory_usage='deep'))
 
-		max_learning_turn = 100
+		max_learning_turn = 50
 		learn_out = pd.DataFrame(np.zeros(max_learning_turn))
 		learn_out['score'] = np.nan
 		learn_out['value_min_upper_cci_pr'] = np.nan
@@ -827,9 +827,9 @@ my_sym = 'GBPUSD_i'
 
 #learning_buy()
 #ga_tester_buy()
-ga_optimizer_buy()
-#learning_buy()
-#ga_tester_buy()
+#ga_optimizer_buy()
+learning_buy()
+ga_tester_buy()
 
 #ga_optimizer_sell()
 #learning_sell()

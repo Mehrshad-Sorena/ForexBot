@@ -607,10 +607,10 @@ def golden_cross_zero(
 
 						if (res_pro.empty == False):
 
-							signal_buy['diff_pr_top'][buy_counter] = (((res_pro['high'][0]) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
+							signal_buy['diff_pr_top'][buy_counter] = (((res_pro['high'][2]) - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
 							signal_buy['diff_pr_down'][buy_counter] = ((dataset[symbol]['low'][int(finding_points['index'][elm])] - (res_pro['low'][2]))/dataset[symbol]['low'][int(finding_points['index'][elm])]) * 100
 
-							signal_buy['power_pr_high'][buy_counter] = res_pro['power_high'][0]
+							signal_buy['power_pr_high'][buy_counter] = res_pro['power_high'][2]
 							signal_buy['power_pr_low'][buy_counter] = res_pro['power_low'][2]
 							
 							
@@ -634,7 +634,7 @@ def golden_cross_zero(
 							if signal_buy['trend_short1'][buy_counter] is np.nan: signal_buy['trend_short1'][buy_counter] = 'parcham'
 							if signal_buy['trend_short2'][buy_counter] is np.nan: signal_buy['trend_short2'][buy_counter] = 'parcham'
 							"""
-							signal_buy['tp_line'][buy_counter] = res_pro['high'][0]
+							signal_buy['tp_line'][buy_counter] = res_pro['high'][2]
 							signal_buy['st_line'][buy_counter] = res_pro['low'][2]
 
 
@@ -679,7 +679,7 @@ def golden_cross_zero(
 
 							
 							if (
-								dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004 < (res_pro['high'][0]) and
+								dataset[symbol]['high'][int(finding_points['index'][elm])]*1.0004 < (res_pro['high'][2]) and
 								dataset[symbol]['low'][int(finding_points['index'][elm])] >= (res_pro['low'][2]) and
 								signal_buy['diff_pr_top'][buy_counter] >= signal_buy['diff_pr_down'][buy_counter] and
 								#signal_buy['diff_pr_down'][buy_counter] <= st_percent_minmax_buy and
@@ -696,12 +696,12 @@ def golden_cross_zero(
 								
 								if signal_buy['diff_pr_top'][buy_counter] > tp_percent_minmax_buy_max:
 									signal_buy['diff_pr_top'][buy_counter] = tp_percent_minmax_buy_max
-									res_pro['high'][0] = dataset[symbol]['high'][int(finding_points['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
+									res_pro['high'][2] = dataset[symbol]['high'][int(finding_points['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
 
 								#signal_buy['time'][buy_counter] = dataset[symbol]['time'][int(finding_points['index'][elm])]
 
-								if ((len(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9996) >= (res_pro['high'][0])))[0]) - 1) > 1):
-									signal_buy['tp_pr_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9996) >= (res_pro['high'][0])))[0])
+								if ((len(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9996) >= (res_pro['high'][2])))[0]) - 1) > 1):
+									signal_buy['tp_pr_index'][buy_counter] = int(finding_points['index'][elm]) + np.min(np.where(((dataset[symbol]['high'][int(finding_points['index'][elm]):-1].values*0.9996) >= (res_pro['high'][2])))[0])
 									signal_buy['tp_pr'][buy_counter] = signal_buy['diff_pr_top'][buy_counter]#((dataset[symbol]['high'][signal_buy['tp_pr_index'][buy_counter]]*0.9996 - dataset[symbol]['high'][int(finding_points['index'][elm])])/dataset[symbol]['high'][int(finding_points['index'][elm])]) * 100
 								else:
 									signal_buy['tp_pr_index'][buy_counter] = -1

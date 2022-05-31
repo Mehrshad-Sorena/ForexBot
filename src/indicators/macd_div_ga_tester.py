@@ -160,11 +160,11 @@ def ga_optimizer_buy():
 	for sym in symbols:
 
 		if not (
-			sym.name == 'AUDCAD_i' or
-			sym.name == 'AUDCHF_i' or
+			#sym.name == 'AUDCAD_i' or
+			#sym.name == 'AUDCHF_i' or
 			#sym.name == my_sym or
-			sym.name == 'CADJPY_i' or
-			sym.name == 'EURAUD_i' or
+			#sym.name == 'CADJPY_i' or
+			#sym.name == 'EURAUD_i' or
 			sym.name == 'EURCAD_i' or
 			sym.name == 'EURCHF_i' or
 			#sym.name == 'EURGBP_i' or

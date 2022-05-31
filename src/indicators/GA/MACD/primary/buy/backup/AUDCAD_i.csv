@@ -1,0 +1,2 @@
+score_min_max,score_pr,mean_tp_pr,mean_st_pr,max_tp_pr,max_st_pr,sum_st_pr,sum_tp_pr,num_tp_pr,num_st_pr,num_trade_pr,max_st,max_tp,methode,fast_period,slow_period,signal_period,apply_to,alpha,signal,score_buy,score_sell
+0,110848.0509937657,0.1774156895591254,0.17713177833176558,0.4428716293123137,0.42400830683861684,41.976822377023055,53.574233027134554,217,99,316,0.4735515071205656,0.42400830683861684,pr,50.0,150,2,open,0.1,"buy,sell",55424.02549688285,0

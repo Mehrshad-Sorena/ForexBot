@@ -24,4 +24,7 @@ def kernel_invocation():
 
     print(data)
 
-kernel_invocation()
+i = 0
+while i < 10000:
+    kernel_invocation()
+    i += 1

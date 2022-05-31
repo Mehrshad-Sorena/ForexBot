@@ -130,7 +130,7 @@ def ga_runner(
 				flag_trade='buy'
 				):
 
-	try:
+	if True:
 		genetic_algo_cci_golden_cross(
 									symbol_data_5M=symbol_data_5M,
 									symbol_data_15M=symbol_data_15M,
@@ -143,7 +143,7 @@ def ga_runner(
 									flag_trade=flag_trade
 									)
 		pass
-	except Exception as ex:
+	else:#except Exception as ex:
 		print('getting error GA Runner: ', ex)
 
 
@@ -169,13 +169,13 @@ def ga_optimizer_buy():
 			sym.name == 'GBPAUD_i' or
 			sym.name == 'GBPCAD_i' or
 			sym.name == 'GBPJPY_i' or
-			#sym.name == 'GBPUSD_i' or
+			sym.name == 'GBPUSD_i' or
 			sym.name == 'USDJPY_i' or
 			sym.name == 'USDCAD_i'
 			#sym.name == 'XAUUSD_i'
 			): continue
 
-		#if sym.name != my_sym: continue
+		if sym.name != 'GBPUSD_i': continue
 
 
 
@@ -226,11 +226,12 @@ def ga_optimizer_buy():
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
 						num_turn=400,
-						max_score_ga_buy=600,
+						max_score_ga_buy=10,
 						max_score_ga_sell=600,
 						flag_trade='buy'
 						)
 			else:
+				learn_counter = 2
 				if learn_counter > 1: 
 					num_turn = 40
 				else:
@@ -312,8 +313,8 @@ def ga_tester_buy():
 			if 'permit' in ga_result_buy.columns:
 				while ga_result_buy['permit'][0] != True:
 					ga_optimizer_buy()
+					learning_buy()
 					ga_tester_buy()
-
 
 def ga_optimizer_sell():
 
@@ -326,7 +327,7 @@ def ga_optimizer_sell():
 		if not (
 			#sym.name == 'AUDCAD_i' or
 			#sym.name == 'AUDCHF_i' or
-			sym.name == my_sym or
+			#sym.name == my_sym or
 			#sym.name == 'CADJPY_i' or
 			#sym.name == 'EURAUD_i' or
 			#sym.name == 'EURCAD_i' or
@@ -337,13 +338,13 @@ def ga_optimizer_sell():
 			#sym.name == 'GBPAUD_i' or
 			#sym.name == 'GBPCAD_i' or
 			#sym.name == 'GBPJPY_i' or
-			#sym.name == 'GBPUSD_i' or
+			sym.name == 'GBPUSD_i' or
 			#sym.name == 'USDJPY_i' or
 			#sym.name == 'USDCAD_i' or
 			sym.name == 'XAUUSD_i'
 			): continue
 
-		if sym.name != my_sym: continue
+		if sym.name != 'GBPUSD_i': continue
 
 		learn_counter = 0
 		while learn_counter < 1:
@@ -501,7 +502,7 @@ def learning_buy():
 			sym.name == 'XAUUSD_i'
 			): continue
 
-		#if sym.name != my_sym: continue
+		if sym.name != 'GBPUSD_i': continue
 		dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
 																									sym=sym.name,
 																									num_5M=99000,
@@ -534,7 +535,7 @@ def learning_buy():
 		#print(mem_data)
 		#print(mem_data.info(memory_usage='deep'))
 
-		max_learning_turn = 50
+		max_learning_turn = 10
 		learn_out = pd.DataFrame(np.zeros(max_learning_turn))
 		learn_out['score'] = np.nan
 		learn_out['value_min_upper_cci_pr'] = np.nan
@@ -544,6 +545,7 @@ def learning_buy():
 		learn_out['max_tp'] = np.nan
 		learn_out['max_st_now'] = np.nan
 		learn_out['max_tp_now'] = np.nan
+		learn_out['alfa'] = np.nan
 
 		print('5M = ',len(symbol_data_5M[sym.name]['open']))
 		print('1H = ',len(symbol_data_1H[sym.name]['open']))
@@ -577,8 +579,13 @@ def learning_buy():
 		learn_out['power_pr_low'][0] = out_buy['power_pr_low'][0]
 		learn_out['max_st'][0] = out_buy['max_st'][0]
 		learn_out['max_tp'][0] = out_buy['max_tp'][0]
+
+		learn_out['max_st'][0] = ga_result_buy['max_st'][0]
+		learn_out['max_tp'][0] = ga_result_buy['max_tp'][0]
+
 		learn_out['max_st_now'][0] = out_buy['max_st'][0]
 		learn_out['max_tp_now'][0] = out_buy['max_tp'][0]
+		learn_out['alfa'][0] = ga_result_buy['alpha'][0]
 		#learn_out['max_st_pr'][0] = out_buy['max_st_pr'][0]
 		#learn_out['max_tp_pr'][0] = out_buy['max_tp_pr'][0]
 
@@ -590,11 +597,11 @@ def learning_buy():
 			print('5M = ',len(symbol_data_5M[sym.name]['open']))
 			print('1H = ',len(symbol_data_1H[sym.name]['open']))
 
-			if learn_out['max_st'][learning_turn-1] <= 0.14: learn_out['max_st'][learning_turn-1] = randint(30,120)/100
-			if learn_out['max_tp'][learning_turn-1] <= 0.14: learn_out['max_tp'][learning_turn-1] = randint(30,120)/100
+			if learn_out['max_st'][learning_turn-1] <= 0.14: learn_out['max_st_now'][learning_turn-1] = randint(30,120)/100
+			if learn_out['max_tp'][learning_turn-1] <= 0.14: learn_out['max_tp_now'][learning_turn-1] = randint(30,120)/100
 
-			print('max_st = ',learn_out['max_st'][learning_turn-1])
-			print('max_tp = ',learn_out['max_tp'][learning_turn-1])
+			print('max_st = ',learn_out['max_st_now'][learning_turn-1])
+			print('max_tp = ',learn_out['max_st_now'][learning_turn-1])
 
 			out_buy,_ = one_year_golden_cross_tester(
 									dataset=symbol_data_5M,
@@ -604,8 +611,8 @@ def learning_buy():
 									symbol=sym.name,
 									flag_trade='buy',
 									alfa=alfa,
-									max_st=learn_out['max_st'][learning_turn-1],
-									max_tp=learn_out['max_tp'][learning_turn-1],
+									max_st=learn_out['max_st_now'][learning_turn-1],
+									max_tp=learn_out['max_tp_now'][learning_turn-1],
 									permit_flag=False
 									)
 			
@@ -613,10 +620,14 @@ def learning_buy():
 			learn_out['value_min_upper_cci_pr'][learning_turn] = out_buy['value_min_upper_cci_pr'][0]
 			learn_out['power_pr_high'][learning_turn] = out_buy['power_pr_high'][0]
 			learn_out['power_pr_low'][learning_turn] = out_buy['power_pr_low'][0]
-			learn_out['max_st'][learning_turn] = out_buy['max_st'][0]
-			learn_out['max_tp'][learning_turn] = out_buy['max_tp'][0]
-			learn_out['max_st_now'][learning_turn] = learn_out['max_st'][learning_turn-1]
-			learn_out['max_tp_now'][learning_turn] = learn_out['max_tp'][learning_turn-1]
+
+			learn_out['max_st_now'][learning_turn] = out_buy['max_st'][0]
+			learn_out['max_tp_now'][learning_turn] = out_buy['max_tp'][0]
+
+			learn_out['max_st'][learning_turn] = learn_out['max_st_now'][learning_turn-1]
+			learn_out['max_tp'][learning_turn] = learn_out['max_tp_now'][learning_turn-1]
+
+			learn_out['alfa'][learning_turn] = alfa
 			learning_turn += 1
 
 			buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
@@ -658,6 +669,7 @@ def learning_buy():
 		ga_result_buy['max_st'][0] = learn_out['max_st_now'][max_score_learn_index]
 		ga_result_buy['max_tp'][0] = learn_out['max_tp_now'][max_score_learn_index]
 		ga_result_buy['score_pr'][0] = learn_out['score'][max_score_learn_index]
+		ga_result_buy['alpha'][0] = learn_out['alfa'][max_score_learn_index]
 
 		if os.path.exists(buy_path):
 			os.remove(buy_path)
@@ -832,7 +844,7 @@ my_sym = 'GBPUSD_i'
 #ga_tester_buy()
 ga_optimizer_buy()
 #learning_buy()
-#ga_tester_buy()
+ga_tester_buy()
 
 #ga_optimizer_sell()
 #learning_sell()

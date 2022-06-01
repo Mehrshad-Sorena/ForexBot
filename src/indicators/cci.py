@@ -1769,13 +1769,13 @@ def tester_golden_cross_zero(
 				score_sum_tp = (output_buy['sum_tp_pr'][0]-output_buy['sum_st_pr'][0])
 
 				if (score_sum_tp > 0):
-					score_sum_tp = score_sum_tp * 18
+					score_sum_tp = score_sum_tp * 81
 				else:
 					score_sum_tp = 0.01
 			else:
 				score_sum_tp = output_buy['sum_tp_pr'][0]
 				if (output_buy['sum_tp_pr'][0] != 0):
-					score_sum_tp = output_buy['sum_tp_pr'][0] * 20
+					score_sum_tp = output_buy['sum_tp_pr'][0] * 90
 
 			output_buy['score_pr'] = [(score_num_tp*score_sum_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
 
@@ -2731,12 +2731,19 @@ def genetic_algo_cci_golden_cross(
 							Chromosome[chrom_counter]['signal'] = ('buy' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
 							result_buy = result_buy.append(output_buy, ignore_index=True)
 							score_buy = (output_buy['score_pr'][0])
+
+							max_score_ga_buy_before = max_score_ga_buy
 							max_score_ga_buy = (output_buy['score_pr'][0])
+
 							if (max_score_ga_buy >= 1000):
-								if os.path.exists(buy_path):
+								if (
+									os.path.exists(buy_path) and
+									max_score_ga_buy > max_score_ga_buy_before
+									):
 									max_score_ga_buy = max_score_ga_buy * 0.7
 								else:
-									max_score_ga_buy = 1000
+									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0] * 0.7
+									if not os.path.exists(buy_path): max_score_ga_buy = 1000
 							Chromosome[chrom_counter].update({'score_buy': score_buy })
 							chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
 							chorm_reset_counter = 0
@@ -3434,14 +3441,14 @@ def one_year_golden_cross_tester(
 					score_sum_tp = (output_buy['sum_tp_pr'][0]-output_buy['sum_st_pr'][0])
 
 					if score_sum_tp > 0:
-						score_sum_tp = score_sum_tp * 18
+						score_sum_tp = score_sum_tp * 81
 					else:
 						score_sum_tp = 0.01
 
 				else:
 					score_sum_tp = output_buy['sum_tp_pr'][0]
 					if (output_buy['sum_tp_pr'][0] != 0):
-						score_sum_tp = output_buy['sum_tp_pr'][0] * 20
+						score_sum_tp = output_buy['sum_tp_pr'][0] * 90
 
 				output_buy['score_pr'] = [(score_num_tp*score_sum_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
 
@@ -3991,14 +3998,14 @@ def golden_cross_tester_for_permit(
 					score_sum_tp = (output_buy['sum_tp_pr'][0]-output_buy['sum_st_pr'][0])
 
 					if score_sum_tp > 0:
-						score_sum_tp = score_sum_tp * 18
+						score_sum_tp = score_sum_tp * 81
 					else:
 						score_sum_tp = 0.01
 
 				else:
 					score_sum_tp = output_buy['sum_tp_pr'][0]
 					if (output_buy['sum_tp_pr'][0] != 0):
-						score_sum_tp = output_buy['sum_tp_pr'][0] * 20
+						score_sum_tp = output_buy['sum_tp_pr'][0] * 90
 
 				output_buy['score_pr'] = [(score_num_tp*score_sum_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
 

@@ -233,7 +233,7 @@ def ga_optimizer_buy():
 			else:
 				learn_counter = 2
 				if learn_counter > 1: 
-					num_turn = 40
+					num_turn = 120
 				else:
 					num_turn = 200
 				ga_runner(
@@ -542,8 +542,10 @@ def learning_buy():
 		learn_out['power_pr_high'] = np.nan
 		learn_out['power_pr_low'] = np.nan
 		learn_out['max_st'] = np.nan
+		learn_out['min_st'] = np.nan
 		learn_out['max_tp'] = np.nan
 		learn_out['max_st_now'] = np.nan
+		learn_out['min_st_now'] = np.nan
 		learn_out['max_tp_now'] = np.nan
 		learn_out['alfa'] = np.nan
 
@@ -569,6 +571,7 @@ def learning_buy():
 									flag_trade='buy',
 									alfa=ga_result_buy['alpha'][0],
 									max_st=ga_result_buy['max_st'][0],
+									min_st=ga_result_buy['min_st'][0],
 									max_tp=ga_result_buy['max_tp'][0],
 									permit_flag=False
 									)
@@ -578,12 +581,15 @@ def learning_buy():
 		learn_out['power_pr_high'][0] = out_buy['power_pr_high'][0]
 		learn_out['power_pr_low'][0] = out_buy['power_pr_low'][0]
 		learn_out['max_st'][0] = out_buy['max_st'][0]
+		learn_out['min_st'][0] = out_buy['min_st'][0]
 		learn_out['max_tp'][0] = out_buy['max_tp'][0]
 
 		learn_out['max_st'][0] = ga_result_buy['max_st'][0]
+		learn_out['min_st'][0] = ga_result_buy['min_st'][0]
 		learn_out['max_tp'][0] = ga_result_buy['max_tp'][0]
 
 		learn_out['max_st_now'][0] = out_buy['max_st'][0]
+		learn_out['min_st_now'][0] = out_buy['min_st'][0]
 		learn_out['max_tp_now'][0] = out_buy['max_tp'][0]
 		learn_out['alfa'][0] = ga_result_buy['alpha'][0]
 		#learn_out['max_st_pr'][0] = out_buy['max_st_pr'][0]
@@ -601,6 +607,7 @@ def learning_buy():
 			if learn_out['max_tp'][learning_turn-1] <= 0.14: learn_out['max_tp_now'][learning_turn-1] = randint(30,120)/100
 
 			print('max_st = ',learn_out['max_st_now'][learning_turn-1])
+			print('min_st = ',learn_out['min_st_now'][learning_turn-1])
 			print('max_tp = ',learn_out['max_st_now'][learning_turn-1])
 
 			out_buy,_ = one_year_golden_cross_tester(
@@ -612,6 +619,7 @@ def learning_buy():
 									flag_trade='buy',
 									alfa=alfa,
 									max_st=learn_out['max_st_now'][learning_turn-1],
+									min_st=learn_out['min_st_now'][learning_turn-1],
 									max_tp=learn_out['max_tp_now'][learning_turn-1],
 									permit_flag=False
 									)
@@ -622,9 +630,11 @@ def learning_buy():
 			learn_out['power_pr_low'][learning_turn] = out_buy['power_pr_low'][0]
 
 			learn_out['max_st_now'][learning_turn] = out_buy['max_st'][0]
+			learn_out['min_st_now'][learning_turn] = out_buy['min_st'][0]
 			learn_out['max_tp_now'][learning_turn] = out_buy['max_tp'][0]
 
 			learn_out['max_st'][learning_turn] = learn_out['max_st_now'][learning_turn-1]
+			learn_out['min_st'][learning_turn] = learn_out['min_st_now'][learning_turn-1]
 			learn_out['max_tp'][learning_turn] = learn_out['max_tp_now'][learning_turn-1]
 
 			learn_out['alfa'][learning_turn] = alfa
@@ -667,6 +677,7 @@ def learning_buy():
 		ga_result_buy['power_pr_high'] = learn_out['power_pr_high'][max_score_learn_index]
 		ga_result_buy['power_pr_low'] = learn_out['power_pr_low'][max_score_learn_index]
 		ga_result_buy['max_st'][0] = learn_out['max_st_now'][max_score_learn_index]
+		ga_result_buy['min_st'][0] = learn_out['min_st_now'][max_score_learn_index]
 		ga_result_buy['max_tp'][0] = learn_out['max_tp_now'][max_score_learn_index]
 		ga_result_buy['score_pr'][0] = learn_out['score'][max_score_learn_index]
 		ga_result_buy['alpha'][0] = learn_out['alfa'][max_score_learn_index]
@@ -842,7 +853,7 @@ my_sym = 'GBPUSD_i'
 
 #learning_buy()
 #ga_tester_buy()
-ga_optimizer_buy()
+#ga_optimizer_buy()
 #learning_buy()
 ga_tester_buy()
 

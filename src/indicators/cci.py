@@ -315,15 +315,18 @@ def golden_cross_zero(
 	finding_points['index'] = np.nan
 	finding_points['distance'] = np.nan
 
-	mmm = 0
 	for elm in cross_low['index']:
-		points_low = cross_high['index'][np.where(
-												((cross_high['index'] - elm) <= distance_lines) &
-		 										((cross_high['index'] - elm) >= 0))[0]]
-		for mle in points_low:
-			finding_points['index'][i] = mle
-			finding_points['distance'][i] = mle - elm
+		try:
+			points_high = cross_high['index'][np.min(np.where(
+															((cross_high['index'] - elm) <= distance_lines) &
+		 													((cross_high['index'] - elm) >= 0))[0])]
+			#for mle in points_high:
+			finding_points['index'][i] = points_high
+			finding_points['distance'][i] = points_high - elm
 			i += 1
+		except Exception as ex:
+			finding_points['index'][i] = np.nan
+			finding_points['distance'][i] = np.nan
 
 	finding_points = finding_points.dropna(inplace = False)
 	finding_points = finding_points.drop(columns = 0)

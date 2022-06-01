@@ -2855,7 +2855,11 @@ def genetic_algo_cci_golden_cross(
 							result_buy = result_buy.append(output_buy, ignore_index=True)
 							score_buy = (output_buy['score_pr'][0])
 
-							max_score_ga_buy_before = ga_result_buy['score_pr'][0] * 0.7
+							if os.path.exists(buy_path):
+								max_score_ga_buy_before = ga_result_buy['score_pr'][0] * 0.7
+							else:
+								max_score_ga_buy_before = max_score_ga_buy * 0.7
+
 							max_score_ga_buy = (output_buy['score_pr'][0])
 
 							if (max_score_ga_buy >= 1000):
@@ -2867,6 +2871,7 @@ def genetic_algo_cci_golden_cross(
 								else:
 									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0] * 0.7
 									if not os.path.exists(buy_path): max_score_ga_buy = 1000
+									
 							Chromosome[chrom_counter].update({'score_buy': score_buy })
 							chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
 							chorm_reset_counter = 0

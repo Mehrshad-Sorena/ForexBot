@@ -316,13 +316,13 @@ def golden_cross_zero(
 	finding_points['distance'] = np.nan
 
 	mmm = 0
-	for elm in cross_high['index']:
-		points_low = cross_low['index'][np.where(
-												((elm - cross_low['index']) <= distance_lines) &
-		 										((elm - cross_low['index']) >= 0))[0]]
+	for elm in cross_low['index']:
+		points_low = cross_high['index'][np.where(
+												((cross_high['index'] - elm) <= distance_lines) &
+		 										((cross_high['index'] - elm) >= 0))[0]]
 		for mle in points_low:
 			finding_points['index'][i] = mle
-			finding_points['distance'][i] = elm - mle
+			finding_points['distance'][i] = mle - elm
 			i += 1
 
 	finding_points = finding_points.dropna(inplace = False)
@@ -2871,7 +2871,7 @@ def genetic_algo_cci_golden_cross(
 								else:
 									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0] * 0.7
 									if not os.path.exists(buy_path): max_score_ga_buy = 1000
-									
+
 							Chromosome[chrom_counter].update({'score_buy': score_buy })
 							chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
 							chorm_reset_counter = 0

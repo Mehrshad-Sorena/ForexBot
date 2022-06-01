@@ -2732,7 +2732,7 @@ def genetic_algo_cci_golden_cross(
 							result_buy = result_buy.append(output_buy, ignore_index=True)
 							score_buy = (output_buy['score_pr'][0])
 
-							max_score_ga_buy_before = max_score_ga_buy
+							max_score_ga_buy_before = ga_result_buy['score_pr'][0] * 0.7
 							max_score_ga_buy = (output_buy['score_pr'][0])
 
 							if (max_score_ga_buy >= 1000):

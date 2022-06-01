@@ -1769,13 +1769,13 @@ def tester_golden_cross_zero(
 				score_sum_tp = (output_buy['sum_tp_pr'][0]-output_buy['sum_st_pr'][0])
 
 				if (score_sum_tp > 0):
-					score_sum_tp = score_sum_tp * 9
+					score_sum_tp = score_sum_tp * 18
 				else:
-					score_sum_tp = 0.1
+					score_sum_tp = 0.01
 			else:
 				score_sum_tp = output_buy['sum_tp_pr'][0]
 				if (output_buy['sum_tp_pr'][0] != 0):
-					score_sum_tp = output_buy['sum_tp_pr'][0] * 10
+					score_sum_tp = output_buy['sum_tp_pr'][0] * 20
 
 			output_buy['score_pr'] = [(score_num_tp*score_sum_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
 
@@ -2271,11 +2271,11 @@ def genetic_algo_cci_golden_cross(
 				Chromosome[0]['low_period'] = int(float(chrom_get['low_period']))
 
 				if flag_trade == 'buy':
-					high_period_upper = int(Chromosome[0]['high_period']) + 100
-					high_period_lower = int(Chromosome[0]['high_period']) - 100
+					high_period_upper = int(Chromosome[0]['high_period']) + int(Chromosome[0]['high_period']/2)
+					high_period_lower = int(Chromosome[0]['high_period']) - int(Chromosome[0]['high_period']/2)
 
-					low_period_upper = int(Chromosome[0]['low_period']) + 100
-					low_period_lower = int(Chromosome[0]['low_period']) - 100
+					low_period_upper = int(Chromosome[0]['low_period']) + int(Chromosome[0]['low_period']/2)
+					low_period_lower = int(Chromosome[0]['low_period']) - int(Chromosome[0]['low_period']/2)
 
 	Chromosome = initilize_values_genetic(
 										high_period_upper=int(high_period_upper),
@@ -2294,16 +2294,20 @@ def genetic_algo_cci_golden_cross(
 		if os.path.exists(buy_path):
 			ga_result_buy, _ = read_ga_result(symbol=symbol)
 			max_st_buy = ga_result_buy['max_st'][0]
+			min_st_buy = ga_result_buy['min_st'][0]
 			max_tp_buy = ga_result_buy['max_tp'][0]
+			flag_learning = True
 		else:
-			max_st_buy = randint(50, 100)/100
-			min_st_buy = randint(20, 60)/100
-			max_tp_buy = randint(50, 100)/100
+			max_st_buy = randint(80, 100)/100
+			min_st_buy = randint(80, 100)/100
+			max_tp_buy = randint(80, 100)/100
+
+			flag_learning = False
 
 			while max_tp_buy < max_st_buy:
-				max_st_buy = randint(50, 100)/100
-				min_st_buy = randint(20, 60)/100
-				max_tp_buy = randint(50, 100)/100
+				max_st_buy = randint(80, 100)/100
+				min_st_buy = randint(80, 100)/100
+				max_tp_buy = randint(80, 100)/100
 
 	#print('===============> ',symbol)
 
@@ -2415,14 +2419,16 @@ def genetic_algo_cci_golden_cross(
 					high_period = randint(high_period_lower, high_period_upper) 
 					low_period = randint(low_period_lower, low_period_upper)
 
-				max_st_buy = randint(50, 100)/100
-				min_st_buy = randint(20, 60)/100
-				max_tp_buy = randint(50, 100)/100
+				max_st_buy = randint(80, 100)/100
+				min_st_buy = randint(80, 100)/100
+				max_tp_buy = randint(80, 100)/100
+
+				flag_learning = False
 
 				while max_tp_buy < max_st_buy:
-					max_st_buy = randint(50, 100)/100
-					min_st_buy = randint(20, 60)/100
-					max_tp_buy = randint(50, 100)/100
+					max_st_buy = randint(80, 100)/100
+					min_st_buy = randint(80, 100)/100
+					max_tp_buy = randint(80, 100)/100
 
 				bad_score_counter_buy = 0
 
@@ -2716,7 +2722,7 @@ def genetic_algo_cci_golden_cross(
 						else:
 							min_st_buy = 0#randint(50, 100)/100
 
-						if bad_score_counter_buy >= 1:
+						if flag_learning == True:
 
 							output_buy['max_tp'][0] = max_tp_last_buy
 							output_buy['max_st'][0] = max_st_last_buy
@@ -2726,21 +2732,27 @@ def genetic_algo_cci_golden_cross(
 							result_buy = result_buy.append(output_buy, ignore_index=True)
 							score_buy = (output_buy['score_pr'][0])
 							max_score_ga_buy = (output_buy['score_pr'][0])
-							if max_score_ga_buy >= 1000: max_score_ga_buy = 1000
+							if (max_score_ga_buy >= 1000):
+								if os.path.exists(buy_path):
+									max_score_ga_buy = max_score_ga_buy * 0.7
+								else:
+									max_score_ga_buy = 1000
 							Chromosome[chrom_counter].update({'score_buy': score_buy })
 							chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
 							chorm_reset_counter = 0
 							bad_score_counter_buy = 0
 
-							score_for_reset = score_buy
+							score_for_reset = 0
 
-							max_st_buy = randint(50, 100)/100
-							min_st_buy = randint(20, 60)/100
-							max_tp_buy = randint(50, 100)/100
+							max_st_buy = randint(80, 100)/100
+							min_st_buy = randint(80, 100)/100
+							max_tp_buy = randint(80, 100)/100
+
+							flag_learning = False
 
 							while max_tp_buy < max_st_buy:
-								max_st_buy = randint(50, 100)/100
-								max_tp_buy = randint(50, 100)/100
+								max_st_buy = randint(80, 100)/100
+								max_tp_buy = randint(80, 100)/100
 
 							if output_buy['value_min_upper_cci_pr'][0] != 0:
 								cross_line_upper_out_tester = abs(int(output_buy['value_min_upper_cci_pr'][0]))
@@ -2757,6 +2769,8 @@ def genetic_algo_cci_golden_cross(
 						else:
 							bad_score_counter_buy += 1
 							bad_buy = True
+							flag_learning = True
+							score_for_reset = (output_buy['score_pr'][0])
 
 						
 					else:
@@ -2766,11 +2780,22 @@ def genetic_algo_cci_golden_cross(
 
 						if (
 							output_buy['max_tp'][0] >= 0.1 and
-							output_buy['score_pr'][0] >= score_for_reset
+							output_buy['score_pr'][0] >= score_for_reset and
+							output_buy['max_tp'][0] > output_buy['min_st'][0]*1.6
 							):
 							max_tp_buy = output_buy['max_tp'][0]
+							flag_learning = True
 						else:
-							max_tp_buy = randint(50, 100)/100
+							if (
+								output_buy['score_pr'][0] >= score_for_reset and
+								output_buy['min_st'][0] >= 0.1 and
+								output_buy['max_st'][0] >= 0.1
+								):
+								max_tp_buy = randint(int(output_buy['max_st'][0]*100), int(output_buy['max_st'][0]*100)*3)/100
+								flag_learning = True
+							else:
+								max_tp_buy = randint(80, 100)/100
+								flag_learning = False
 
 
 						if (
@@ -2778,24 +2803,28 @@ def genetic_algo_cci_golden_cross(
 							output_buy['max_st'][0] >= 0.1
 							):
 							max_st_buy = output_buy['max_st'][0]
+							flag_learning = True
 
 						else:
-							max_st_buy = randint(50, 100)/100
+							max_st_buy = randint(80, 100)/100
+							flag_learning = False
 
 							while max_tp_buy < max_st_buy:
-								max_st_buy = randint(10, 100)/100
+								max_st_buy = randint(int((max_tp_buy/2)*100), 100)/100
 
 						if (
 							output_buy['score_pr'][0] >= score_for_reset and
 							output_buy['min_st'][0] >= 0.1
 							):
 							min_st_buy = output_buy['min_st'][0]
+							flag_learning = True
 
 						else:
-							min_st_buy = randint(10, 60)/100
+							min_st_buy = randint(80, 100)/100
+							flag_learning = False
 
 							while max_tp_buy < min_st_buy:
-								min_st_buy = randint(10, 60)/100
+								min_st_buy = randint(int((max_tp_buy/2)*100), 100)/100
 
 						score_for_reset = output_buy['score_pr'][0]
 
@@ -2872,13 +2901,17 @@ def genetic_algo_cci_golden_cross(
 					else:
 						bad_score_counter_buy = 0
 
-						max_st_buy = randint(50, 100)/100
-						min_st_buy = randint(20, 60)/100
-						max_tp_buy = randint(50, 100)/100
+						score_for_reset = 0
+
+						max_st_buy = randint(80, 100)/100
+						min_st_buy = randint(80, 100)/100
+						max_tp_buy = randint(80, 100)/100
+
+						flag_learning = False
 
 						while max_tp_buy < max_st_buy:
-							max_st_buy = randint(50, 100)/100
-							max_tp_buy = randint(50, 100)/100
+							max_st_buy = randint(70, 100)/100
+							max_tp_buy = randint(80, 100)/100
 
 						Chromosome[chrom_counter] = {
 							'high_period': Chromosome[chrom_counter]['high_period'],#high_period,
@@ -3083,6 +3116,7 @@ def one_year_golden_cross_tester(
 								flag_trade,
 								alfa = 0.1,
 								max_st = 1,
+								min_st=0.1,
 								max_tp = 1,
 								permit_flag=False
 								):
@@ -3129,15 +3163,15 @@ def one_year_golden_cross_tester(
 										pbar_flag=False,
 										buy_flag=True,
 										sell_flag=False,
-										st_percent_minmax_buy= max_st,
-										st_percent_minmax_sell=0,
+										st_percent_max_buy= max_st,
+										st_percent_max_sell=0,
+										st_percent_min_buy = min_st,
 										tp_percent_minmax_sell_min = 0,
-										tp_percent_minmax_sell_max = 0,
+										tp_percent_sell_max = 0,
 										tp_percent_minmax_buy_min = 0,
-										tp_percent_minmax_buy_max = max_tp,
-										alpha=ga_result_buy['alpha'][0]
+										tp_percent_buy_max = max_tp,
+										alpha=alfa
 										)
-
 		#*********************** Min Max Methode:
 
 			if ga_result_buy['methode'][0] == 'min_max':
@@ -3400,14 +3434,14 @@ def one_year_golden_cross_tester(
 					score_sum_tp = (output_buy['sum_tp_pr'][0]-output_buy['sum_st_pr'][0])
 
 					if score_sum_tp > 0:
-						score_sum_tp = score_sum_tp * 9
+						score_sum_tp = score_sum_tp * 18
 					else:
-						score_sum_tp = 0.1
+						score_sum_tp = 0.01
 
 				else:
 					score_sum_tp = output_buy['sum_tp_pr'][0]
 					if (output_buy['sum_tp_pr'][0] != 0):
-						score_sum_tp = output_buy['sum_tp_pr'][0] * 10
+						score_sum_tp = output_buy['sum_tp_pr'][0] * 20
 
 				output_buy['score_pr'] = [(score_num_tp*score_sum_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
 
@@ -3863,12 +3897,13 @@ def golden_cross_tester_for_permit(
 										pbar_flag=True,
 										buy_flag=True,
 										sell_flag=False,
-										st_percent_minmax_buy= ga_result_buy['max_st'][0],
-										st_percent_minmax_sell=0,
+										st_percent_max_buy= ga_result_buy['max_st'][0],
+										st_percent_max_sell=0,
+										st_percent_min_buy= ga_result_buy['min_st'][0],
 										tp_percent_minmax_sell_min = 0,
-										tp_percent_minmax_sell_max = 0,
+										tp_percent_sell_max = 0,
 										tp_percent_minmax_buy_min = 0,
-										tp_percent_minmax_buy_max = ga_result_buy['max_tp'][0],
+										tp_percent_buy_max = ga_result_buy['max_tp'][0],
 										alpha=ga_result_buy['alpha'][0]
 										)
 
@@ -3956,14 +3991,14 @@ def golden_cross_tester_for_permit(
 					score_sum_tp = (output_buy['sum_tp_pr'][0]-output_buy['sum_st_pr'][0])
 
 					if score_sum_tp > 0:
-						score_sum_tp = score_sum_tp * 9
+						score_sum_tp = score_sum_tp * 18
 					else:
-						score_sum_tp = 1
+						score_sum_tp = 0.01
 
 				else:
 					score_sum_tp = output_buy['sum_tp_pr'][0]
 					if (output_buy['sum_tp_pr'][0] != 0):
-						score_sum_tp = output_buy['sum_tp_pr'][0] * 10
+						score_sum_tp = output_buy['sum_tp_pr'][0] * 20
 
 				output_buy['score_pr'] = [(score_num_tp*score_sum_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
 
@@ -3989,7 +4024,7 @@ def golden_cross_tester_for_permit(
 				for idx in buy_data['index'][list_index_ok[np.where(buy_data['flag_pr'][list_index_ok] == 'st')[0]]]:
 					print('time st = ',dataset[symbol]['time'][idx])
 
-				if output_buy['score_pr'][0] * 88.4 >= ga_result_buy['score_pr'][0]*0.99: 
+				if output_buy['score_pr'][0] * 105 >= ga_result_buy['score_pr'][0]*0.99: 
 					ga_result_buy['permit'] = True
 					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 

@@ -2985,7 +2985,6 @@ def genetic_algo_cci_golden_cross(
 							):
 							max_tp_buy = output_buy['max_tp'][0]
 							flag_learning = True
-							score_for_reset = output_buy['score_pr'][0]
 						else:
 							if (
 								output_buy['score_pr'][0] > score_for_reset and
@@ -2998,7 +2997,6 @@ def genetic_algo_cci_golden_cross(
 									max_tp_buy = randint(int((output_buy['max_st'][0]/2)*100), int(output_buy['max_st'][0]*100)*2)/100
 
 								flag_learning = True
-								score_for_reset = 0.01
 							else:
 								if (
 									output_buy['max_tp'][0] == 0 and
@@ -3008,11 +3006,9 @@ def genetic_algo_cci_golden_cross(
 									):
 									max_tp_buy = output_buy['max_tp_pr'][0]
 									flag_learning = True
-									score_for_reset = output_buy['score_pr'][0]
 								else:
 									max_tp_buy = randint(80, 100)/100
 									flag_learning = False
-									score_for_reset = 0.01
 
 						if (
 							output_buy['score_pr'][0] > score_for_reset and
@@ -3020,7 +3016,6 @@ def genetic_algo_cci_golden_cross(
 							):
 							min_tp_buy = output_buy['min_tp'][0]
 							flag_learning = True
-							score_for_reset = output_buy['score_pr'][0]
 						else:
 							if (
 								output_buy['max_tp'][0] == 0 and
@@ -3030,11 +3025,9 @@ def genetic_algo_cci_golden_cross(
 								):
 								min_tp_buy = output_buy['mean_tp_pr'][0]
 								flag_learning = True
-								score_for_reset = output_buy['score_pr'][0]
 							else:
 								min_tp_buy = randint(80, 100)/100
 								flag_learning = False
-								score_for_reset = 0.01
 
 						if (
 							output_buy['score_pr'][0] > score_for_reset and
@@ -3042,7 +3035,6 @@ def genetic_algo_cci_golden_cross(
 							):
 							max_st_buy = output_buy['max_st'][0]
 							flag_learning = True
-							score_for_reset = output_buy['score_pr'][0]
 
 						else:
 							if (
@@ -3053,11 +3045,9 @@ def genetic_algo_cci_golden_cross(
 								):
 								max_st_buy = output_buy['max_st_pr'][0]
 								flag_learning = True
-								score_for_reset = output_buy['score_pr'][0]
 							else:
 								max_st_buy = randint(80, 100)/100
 								flag_learning = False
-								score_for_reset = 0.01
 
 							#while max_tp_buy < max_st_buy:
 								#max_st_buy = randint(int((max_tp_buy/2)*100), 100)/100
@@ -3068,7 +3058,6 @@ def genetic_algo_cci_golden_cross(
 							):
 							min_st_buy = output_buy['min_st'][0]
 							flag_learning = True
-							score_for_reset = output_buy['score_pr'][0]
 
 						else:
 							if (
@@ -3079,14 +3068,14 @@ def genetic_algo_cci_golden_cross(
 								):
 								min_st_buy = output_buy['mean_st_pr'][0]
 								flag_learning = True
-								score_for_reset = output_buy['score_pr'][0]
 							else:
 								min_st_buy = randint(80, 100)/100
 								flag_learning = True
-								score_for_reset = 0.01
 
 							while max_tp_buy < min_st_buy:
 								min_st_buy = randint(int((max_tp_buy/2)*100), 100)/100
+
+						score_for_reset = output_buy['score_pr'][0]
 
 						if output_buy['distance'][0] != 0:
 							distance_lines_upper_buy = round(output_buy['distance'][0])

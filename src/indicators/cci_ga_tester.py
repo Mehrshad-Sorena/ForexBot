@@ -225,7 +225,7 @@ def ga_optimizer_buy():
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=400,
+						num_turn=800,
 						max_score_ga_buy=10,
 						max_score_ga_sell=600,
 						flag_trade='buy'
@@ -293,13 +293,22 @@ def ga_tester_buy():
 			if 'permit' not in ga_result_buy.columns:
 
 
-				symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
+				dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
 																										sym=sym.name,
-																										num_5M=9000,
+																										num_5M=99000,
 																										num_15M=1,
 																										num_1H=8000,
 																										num_4H=1
 																										)
+
+				symbol_data_5M,symbol_data_1H = dataset_spliter(
+																symbol=sym.name,
+																dataset_5M=dataset_5M,
+																dataset_1H=dataset_1H,
+																spliter_5M_end=99000,
+																spliter_5M_first=90000
+																)
+
 				golden_cross_tester_for_permit(
 												dataset=symbol_data_5M,
 												dataset_15M=symbol_data_15M,
@@ -313,7 +322,7 @@ def ga_tester_buy():
 			if 'permit' in ga_result_buy.columns:
 				while ga_result_buy['permit'][0] != True:
 					ga_optimizer_buy()
-					learning_buy()
+					#learning_buy()
 					ga_tester_buy()
 
 def ga_optimizer_sell():
@@ -535,18 +544,22 @@ def learning_buy():
 		#print(mem_data)
 		#print(mem_data.info(memory_usage='deep'))
 
-		max_learning_turn = 10
+		max_learning_turn = 100
 		learn_out = pd.DataFrame(np.zeros(max_learning_turn))
 		learn_out['score'] = np.nan
 		learn_out['value_min_upper_cci_pr'] = np.nan
-		learn_out['power_pr_high'] = np.nan
-		learn_out['power_pr_low'] = np.nan
 		learn_out['max_st'] = np.nan
 		learn_out['min_st'] = np.nan
 		learn_out['max_tp'] = np.nan
+		learn_out['min_tp'] = np.nan
 		learn_out['max_st_now'] = np.nan
 		learn_out['min_st_now'] = np.nan
 		learn_out['max_tp_now'] = np.nan
+		learn_out['min_tp_now'] = np.nan
+		learn_out['distance'] = np.nan
+		learn_out['cross_line'] = np.nan
+		learn_out['distance_now'] = np.nan
+		learn_out['cross_line_now'] = np.nan
 		learn_out['alfa'] = np.nan
 
 		print('5M = ',len(symbol_data_5M[sym.name]['open']))
@@ -560,7 +573,12 @@ def learning_buy():
 			ga_result_buy, _ = read_ga_result(symbol=sym.name)
 
 		print('max_st = ',ga_result_buy['max_st'][0])
+		print('min_st = ',ga_result_buy['min_st'][0])
 		print('max_tp = ',ga_result_buy['max_tp'][0])
+		print('min_tp = ',ga_result_buy['min_tp'][0])
+
+		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			print(ga_result_buy)
 
 		out_buy,_ = one_year_golden_cross_tester(
 									dataset=symbol_data_5M,
@@ -573,27 +591,39 @@ def learning_buy():
 									max_st=ga_result_buy['max_st'][0],
 									min_st=ga_result_buy['min_st'][0],
 									max_tp=ga_result_buy['max_tp'][0],
+									min_tp=ga_result_buy['min_tp'][0],
+									cross_line=-ga_result_buy['cross_line'][0],
+									distance_lines=ga_result_buy['distance_lines'][0],
 									permit_flag=False
 									)
 
 		learn_out['score'][0] = out_buy['score_pr'][0]
 		learn_out['value_min_upper_cci_pr'][0] = out_buy['value_min_upper_cci_pr'][0]
-		learn_out['power_pr_high'][0] = out_buy['power_pr_high'][0]
-		learn_out['power_pr_low'][0] = out_buy['power_pr_low'][0]
+		learn_out['cross_line'][0] = ga_result_buy['cross_line'][0]
+		learn_out['distance'][0] = ga_result_buy['distance_lines'][0]
+
 		learn_out['max_st'][0] = out_buy['max_st'][0]
 		learn_out['min_st'][0] = out_buy['min_st'][0]
 		learn_out['max_tp'][0] = out_buy['max_tp'][0]
+		learn_out['min_tp'][0] = out_buy['min_tp'][0]
 
 		learn_out['max_st'][0] = ga_result_buy['max_st'][0]
 		learn_out['min_st'][0] = ga_result_buy['min_st'][0]
 		learn_out['max_tp'][0] = ga_result_buy['max_tp'][0]
+		learn_out['min_tp'][0] = ga_result_buy['min_tp'][0]
 
 		learn_out['max_st_now'][0] = out_buy['max_st'][0]
 		learn_out['min_st_now'][0] = out_buy['min_st'][0]
 		learn_out['max_tp_now'][0] = out_buy['max_tp'][0]
+		learn_out['min_tp_now'][0] = out_buy['min_tp'][0]
+		learn_out['cross_line_now'][0] = randint(0,int(abs(out_buy['value_min_upper_cci_pr'][0])))
+		learn_out['distance_now'][0] = out_buy['distance'][0]
 		learn_out['alfa'][0] = ga_result_buy['alpha'][0]
 		#learn_out['max_st_pr'][0] = out_buy['max_st_pr'][0]
 		#learn_out['max_tp_pr'][0] = out_buy['max_tp_pr'][0]
+
+		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			print(out_buy)
 
 		learning_turn = 1
 		alfa = 0.5
@@ -603,12 +633,13 @@ def learning_buy():
 			print('5M = ',len(symbol_data_5M[sym.name]['open']))
 			print('1H = ',len(symbol_data_1H[sym.name]['open']))
 
-			if learn_out['max_st'][learning_turn-1] <= 0.14: learn_out['max_st_now'][learning_turn-1] = randint(30,120)/100
-			if learn_out['max_tp'][learning_turn-1] <= 0.14: learn_out['max_tp_now'][learning_turn-1] = randint(30,120)/100
 
 			print('max_st = ',learn_out['max_st_now'][learning_turn-1])
 			print('min_st = ',learn_out['min_st_now'][learning_turn-1])
 			print('max_tp = ',learn_out['max_st_now'][learning_turn-1])
+			print('min_tp = ',learn_out['min_st_now'][learning_turn-1])
+			print('distance_now = ',learn_out['distance_now'][learning_turn-1])
+			print('cross_line_now = ',learn_out['cross_line_now'][learning_turn-1])
 
 			out_buy,_ = one_year_golden_cross_tester(
 									dataset=symbol_data_5M,
@@ -621,23 +652,57 @@ def learning_buy():
 									max_st=learn_out['max_st_now'][learning_turn-1],
 									min_st=learn_out['min_st_now'][learning_turn-1],
 									max_tp=learn_out['max_tp_now'][learning_turn-1],
+									min_tp=learn_out['min_tp_now'][learning_turn-1],
+									cross_line=-learn_out['cross_line_now'][learning_turn-1],
+									distance_lines=learn_out['distance_now'][learning_turn-1],
 									permit_flag=False
 									)
 			
 			learn_out['score'][learning_turn] = out_buy['score_pr'][0]
 			learn_out['value_min_upper_cci_pr'][learning_turn] = out_buy['value_min_upper_cci_pr'][0]
-			learn_out['power_pr_high'][learning_turn] = out_buy['power_pr_high'][0]
-			learn_out['power_pr_low'][learning_turn] = out_buy['power_pr_low'][0]
 
-			learn_out['max_st_now'][learning_turn] = out_buy['max_st'][0]
-			learn_out['min_st_now'][learning_turn] = out_buy['min_st'][0]
-			learn_out['max_tp_now'][learning_turn] = out_buy['max_tp'][0]
+			if (out_buy['max_st'][0] >= 0.1):
+				learn_out['max_st_now'][learning_turn] = out_buy['max_st'][0]
+			else:
+				learn_out['max_st_now'][learning_turn] = randint(80,100)/100
+
+			if out_buy['min_st'][0] >= 0.1:
+				learn_out['min_st_now'][learning_turn] = out_buy['min_st'][0]
+			else:
+				learn_out['min_st_now'][learning_turn] = randint(80,100)/100
+
+			if out_buy['max_tp'][0] >= 0.1 and out_buy['max_tp'][0] > learn_out['min_st_now'][learning_turn]:
+				learn_out['max_tp_now'][learning_turn] = out_buy['max_tp'][0]
+			else:
+				learn_out['max_tp_now'][learning_turn] = randint(80,100)/100
+
+			if out_buy['min_tp'][0] >= 0.1:
+				learn_out['min_tp_now'][learning_turn] = out_buy['min_tp'][0]
+			else:
+				learn_out['min_tp_now'][learning_turn] = randint(80,100)/100
+
+			if int(abs(out_buy['value_min_upper_cci_pr'][0])) != 0:
+				learn_out['cross_line_now'][learning_turn] = randint(0,int(abs(out_buy['value_min_upper_cci_pr'][0])))
+			else:
+				learn_out['cross_line_now'][learning_turn] = randint(0,100)
+
+			if (out_buy['distance'][0] != 0):
+				learn_out['distance_now'][learning_turn] = out_buy['distance'][0]
+			else:
+				learn_out['distance_now'][learning_turn] = randint(1,(ga_result_buy['high_period'][0] - ga_result_buy['low_period'][0]))
 
 			learn_out['max_st'][learning_turn] = learn_out['max_st_now'][learning_turn-1]
 			learn_out['min_st'][learning_turn] = learn_out['min_st_now'][learning_turn-1]
 			learn_out['max_tp'][learning_turn] = learn_out['max_tp_now'][learning_turn-1]
+			learn_out['min_tp'][learning_turn] = learn_out['min_tp_now'][learning_turn-1]
+			learn_out['cross_line'][learning_turn] = learn_out['cross_line_now'][learning_turn-1]
+			learn_out['distance'][learning_turn] = learn_out['distance_now'][learning_turn-1]
 
 			learn_out['alfa'][learning_turn] = alfa
+
+			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				print(out_buy)
+
 			learning_turn += 1
 
 			buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
@@ -674,11 +739,12 @@ def learning_buy():
 
 		ga_result_buy['score_learn'] = learn_out['score'][max_score_learn_index]
 		ga_result_buy['value_min_upper_cci_pr'] = learn_out['value_min_upper_cci_pr'][max_score_learn_index]
-		ga_result_buy['power_pr_high'] = learn_out['power_pr_high'][max_score_learn_index]
-		ga_result_buy['power_pr_low'] = learn_out['power_pr_low'][max_score_learn_index]
-		ga_result_buy['max_st'][0] = learn_out['max_st_now'][max_score_learn_index]
-		ga_result_buy['min_st'][0] = learn_out['min_st_now'][max_score_learn_index]
-		ga_result_buy['max_tp'][0] = learn_out['max_tp_now'][max_score_learn_index]
+		ga_result_buy['max_st'][0] = learn_out['max_st'][max_score_learn_index]
+		ga_result_buy['min_st'][0] = learn_out['min_st'][max_score_learn_index]
+		ga_result_buy['max_tp'][0] = learn_out['max_tp'][max_score_learn_index]
+		ga_result_buy['min_tp'][0] = learn_out['min_tp'][max_score_learn_index]
+		ga_result_buy['distance_lines'][0] = learn_out['distance'][max_score_learn_index]
+		ga_result_buy['cross_line'][0] = learn_out['cross_line'][max_score_learn_index]
 		ga_result_buy['score_pr'][0] = learn_out['score'][max_score_learn_index]
 		ga_result_buy['alpha'][0] = learn_out['alfa'][max_score_learn_index]
 

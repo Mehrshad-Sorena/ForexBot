@@ -3444,7 +3444,7 @@ def initilize_values_genetic(
 	Chromosome[0] = {
 	'fast_period': fast_period_upper,
 	'slow_period': slow_period_upper,
-	'signal_period': signal_period_upper,
+	'signal_period': signal_period_lower,
 	'apply_to': 'HLCC/4',
 	'alpha': 0.5,
 	#'max_tp': 0.6,
@@ -3456,7 +3456,7 @@ def initilize_values_genetic(
 	Chromosome[1] = {
 	'fast_period': fast_period_lower,
 	'slow_period': slow_period_lower,
-	'signal_period': signal_period_lower,
+	'signal_period': signal_period_upper,
 	'apply_to': 'open',
 	'alpha': 0.1,
 	#'max_st': 0.5,

@@ -35,6 +35,7 @@ warnings.filterwarnings("ignore")
 #initilize_values_genetic()
 #gen_creator()
 #genetic_algo_div_macd()
+#macd_div_tester_for_permit()
 
 #/////////////////////////////////////////
 
@@ -5499,6 +5500,434 @@ def one_year_div_macd_tester(
 							os.remove(sell_path)
 
 						ga_result_sell.to_csv(sell_path)
+		#////////////////////////////////////////
+	print('//////////////////////////////////////////')
+
+	if flag_trade == 'buy':
+		output_sell = pd.DataFrame()
+
+	if flag_trade == 'sell':
+		output_buy = pd.DataFrame()
+
+	return output_buy, output_sell
+
+#///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#*********************** Tester For Permit ***********************************
+
+
+def macd_div_tester_for_permit(
+								dataset,
+								dataset_15M,
+								symbol_data_1H,
+								symbol_data_4H,
+								symbol,
+								flag_trade,
+								primary_doing,
+								secondry_doing
+								):
+
+	upper = 0
+	mid = 1
+	lower = 2
+
+	print('=================> ',symbol)
+
+	if flag_trade == 'buy':
+		if primary_doing == True:
+			buy_path = 'GA/MACD/primary/buy/'+symbol+'.csv'
+		if secondry_doing == True:
+			buy_path = 'GA/MACD/secondry/buy/'+symbol+'.csv'
+
+	if flag_trade == 'sell':
+		if primary_doing == True:
+			sell_path = 'GA/MACD/primary/sell/'+symbol+'.csv'
+		if secondry_doing == True:
+			sell_path = 'GA/MACD/secondry/sell/'+symbol+'.csv'
+
+	if flag_trade == 'buy':
+		if os.path.exists(buy_path):
+			if primary_doing == True:
+				ga_result_buy, _, _, _ = read_ga_result(symbol=symbol)
+
+			if secondry_doing == True:
+				_, ga_result_buy, _, _ = read_ga_result(symbol=symbol)
+
+	if flag_trade == 'sell':
+		if os.path.exists(sell_path):
+			if primary_doing == True:
+				_, _, ga_result_sell, _ = read_ga_result(symbol=symbol)
+
+			if secondry_doing == True:
+				_, _, _, ga_result_sell = read_ga_result(symbol=symbol)
+
+	#********************************************** Buy Test:
+
+	if flag_trade == 'buy':
+		if ga_result_buy['methode'][0] != 'no_trade':
+			if ga_result_buy['methode'][0] == 'pr':
+				name_stp_pr = True
+				name_stp_minmax = False
+			elif ga_result_buy['methode'][0] == 'min_max':
+				name_stp_pr = False
+				name_stp_minmax = True
+
+			print('******************* BUY *************************')
+			if primary_doing == True:
+				buy_data, _, _, _ = divergence_macd(
+													dataset=dataset,
+													dataset_15M=dataset_15M,
+													dataset_1H=symbol_data_1H,
+													Apply_to=ga_result_buy['apply_to'][0],
+													symbol=symbol,
+													macd_fast=ga_result_buy['fast_period'][0],
+													macd_slow=ga_result_buy['slow_period'][0],
+													macd_signal=ga_result_buy['signal_period'][0],
+													mode='optimize',
+													plot=False,
+													buy_doing=True,
+													sell_doing=False,
+													primary_doing=True,
+													secondry_doing=False,
+													name_stp_pr=True,
+													name_stp_minmax=False,
+													st_percent_buy_max = ga_result_buy['max_st'][0],
+													st_percent_buy_min = ga_result_buy['min_st'][0],
+													st_percent_minmax_sell = 0.9,
+													tp_percent_minmax_sell_max = 0.9,
+													tp_percent_buy_max = ga_result_buy['max_tp'][0],
+													tp_percent_buy_min = ga_result_buy['min_tp'][0],
+													alpha=ga_result_buy['alpha'][0]
+													)
+			if secondry_doing == True:
+				_, buy_data, _, _ = divergence_macd(
+													dataset=symbol_data_5M,
+													dataset_15M=symbol_data_15M,
+													dataset_1H=dataset_1H,
+													Apply_to=Chromosome[chrom_counter]['apply_to'],
+													symbol=symbol,
+													macd_fast=Chromosome[chrom_counter]['fast_period'],
+													macd_slow=Chromosome[chrom_counter]['slow_period'],
+													macd_signal=Chromosome[chrom_counter]['signal_period'],
+													mode='optimize',
+													plot=False,
+													buy_doing=True,
+													sell_doing=False,
+													primary_doing=False,
+													secondry_doing=True,
+													name_stp_pr=True,
+													name_stp_minmax=False,
+													st_percent_minmax_buy = max_st_buy,
+													st_percent_minmax_sell = 0.9,
+													tp_percent_minmax_sell_max = 0.9,
+													tp_percent_minmax_buy_max = max_tp_buy
+													)
+					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						#print('=======> buy_data = ',buy_data))
+
+			#*********************** PR Methode BUY:
+			if ga_result_buy['methode'][0] == 'pr':
+
+				list_index_ok = np.where(
+					#(buy_data['value_min_cci'].to_numpy()<=ga_result_buy['value_min_upper_cci_pr'][0]) &
+					#(buy_data['power_pr_high'].to_numpy()>=ga_result_buy['power_pr_high'][0]) &
+					#(buy_data['power_pr_low'].to_numpy()>=ga_result_buy['power_pr_low'][0])
+					True)[0]
+
+				output_buy = pd.DataFrame()
+				output_buy['mean_tp_pr'] = [np.mean(buy_data['tp_pr'])]
+				output_buy['mean_st_pr'] = [np.mean(buy_data['st_pr'])]
+				output_buy['max_tp_pr'] = [np.max(buy_data['tp_pr'])]
+				output_buy['max_st_pr'] = [np.max(buy_data['st_pr'])]
+				output_buy['sum_st_pr'] = [np.sum(buy_data['st_pr'][np.where(buy_data['flag_pr'] == 'st')[0]].to_numpy())]
+				output_buy['sum_tp_pr'] = [np.sum(buy_data['tp_pr'][np.where(buy_data['flag_pr'] == 'tp')[0]].to_numpy())]
+
+				tp_counter = 0
+				st_counter = 0
+				for elm in buy_data['flag_pr']:
+					if (elm == 'tp'):
+						tp_counter += 1
+					if (elm == 'st'):
+						st_counter += 1
+				output_buy['num_tp_pr'] = [tp_counter]
+				output_buy['num_st_pr'] = [st_counter]
+				output_buy['num_trade_pr'] = [st_counter + tp_counter]
+			
+
+				if output_buy['num_trade_pr'][0] != 0:
+
+					if output_buy['num_st_pr'][0] != 0:
+						score_num_tp = (tp_counter-output_buy['num_st_pr'][0])
+
+						if (tp_counter-output_buy['num_st_pr'][0]) == 0:
+							score_num_tp = 8
+
+						elif (score_num_tp > 0):
+							score_num_tp = score_num_tp * 9
+						else:
+							score_num_tp = 1
+					else:
+						if tp_counter != 0:
+							score_num_tp = tp_counter * 10
+						else:
+							score_num_tp = 1
+				else:
+					score_num_tp = 1
+
+				if output_buy['max_st_pr'][0] != 0:
+
+					score_max_tp = (output_buy['max_tp_pr'][0]-output_buy['max_st_pr'][0])
+
+					if score_max_tp > 0:
+						score_max_tp = score_max_tp * 9
+					else:
+						score_max_tp = 1
+
+				else:
+					score_max_tp = output_buy['max_tp_pr'][0]
+					if (output_buy['max_tp_pr'][0] != 0):
+						score_max_tp = output_buy['max_tp_pr'][0] * 10
+
+				if (output_buy['mean_st_pr'][0] != 0):
+
+					score_mean_tp = (output_buy['mean_tp_pr'][0]-output_buy['mean_st_pr'][0])
+
+					if score_mean_tp > 0:
+						score_mean_tp = score_mean_tp * 9
+					else:
+						score_mean_tp = 1
+
+				else:
+					score_mean_tp = output_buy['mean_tp_pr'][0]
+					if (output_buy['mean_tp_pr'][0] != 0):
+						score_mean_tp = output_buy['mean_tp_pr'][0] * 10
+
+				if (output_buy['sum_st_pr'][0] != 0):
+
+					score_sum_tp = (output_buy['sum_tp_pr'][0]-output_buy['sum_st_pr'][0])
+
+					if score_sum_tp > 0:
+						score_sum_tp = score_sum_tp * 81
+					else:
+						score_sum_tp = 0.01
+
+				else:
+					score_sum_tp = output_buy['sum_tp_pr'][0]
+					if (output_buy['sum_tp_pr'][0] != 0):
+						score_sum_tp = output_buy['sum_tp_pr'][0] * 90
+
+				output_buy['score_pr'] = [(score_num_tp*score_sum_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
+
+				if np.isnan(output_buy['score_pr'][0]) : output_buy['score_pr'][0] = 0
+
+				print('=========> one year Buy: ',symbol)
+
+				print('mean_tp_pr= ',output_buy['mean_tp_pr'][0])
+				print('mean_st_pr= ',output_buy['mean_st_pr'][0])
+				print('max_tp_pr= ',output_buy['max_tp_pr'][0])
+				print('max_st_pr= ',output_buy['max_st_pr'][0])
+				print('sum_st_pr= ',output_buy['sum_st_pr'][0])
+				print('sum_tp_pr= ',output_buy['sum_tp_pr'][0])
+				print('num_tp_pr= ',output_buy['num_tp_pr'][0])
+				print('num_st_pr= ',output_buy['num_st_pr'][0])
+				print('num_trade_pr= ',output_buy['num_trade_pr'][0])
+				print('score_pr= ',output_buy['score_pr'][0])
+				print('score_pr ga= ',ga_result_buy['score_pr'][0])
+
+				for idx in buy_data['index'][np.where(buy_data['flag_pr'] == 'tp')[0]]:
+					print('time tp = ',dataset[symbol]['time'][idx])
+
+				for idx in buy_data['index'][np.where(buy_data['flag_pr'] == 'st')[0]]:
+					print('time st = ',dataset[symbol]['time'][idx])
+
+				if output_buy['score_pr'][0] * 105 >= ga_result_buy['score_pr'][0]*0.99: 
+					ga_result_buy['permit'] = True
+					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
+
+					if os.path.exists(buy_path):
+						os.remove(buy_path)
+
+					ga_result_buy.to_csv(buy_path)
+				else:
+					ga_result_buy['permit'] = False
+					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
+
+					if os.path.exists(buy_path):
+						os.remove(buy_path)
+
+					ga_result_buy.to_csv(buy_path)
+
+	#///////////////////////////////////////////////////////////////////////////////////////////////
+
+	#********************************************** Sell Test:
+	if flag_trade == 'sell':
+		if ga_result_sell['methode'][0] != 'no_trade':
+			if ga_result_sell['methode'][0] == 'pr':
+				name_stp_pr = True
+				name_stp_minmax = False
+			elif ga_result_sell['methode'][0] == 'min_max':
+				name_stp_pr = False
+				name_stp_minmax = True
+
+			print('******************* SELL *************************')
+
+			_,sell_data = golden_cross_zero(
+										dataset=dataset,
+										dataset_15M=dataset_15M,
+										dataset_1H=symbol_data_1H,
+										dataset_4H=symbol_data_4H,
+										symbol=symbol,
+										Low_Period=ga_result_sell['low_period'][0],
+										High_Period=ga_result_sell['high_period'][0],
+										distance_lines=ga_result_sell['distance_lines'][0],
+										cross_line=ga_result_sell['cross_line'][0],
+										mode='optimize',
+										name_stp_minmax=name_stp_minmax,
+										name_stp_pr=name_stp_pr,
+										plot=False,
+										pbar_flag=True,
+										sell_flag=True,
+										buy_flag=False,
+										st_percent_minmax_buy= 0,
+										st_percent_minmax_sell= ga_result_sell['max_st'][0],
+										tp_percent_minmax_sell_min = 0,
+										tp_percent_minmax_sell_max = ga_result_sell['max_tp'][0],
+										tp_percent_minmax_buy_min = 0,
+										tp_percent_minmax_buy_max = 0
+										)
+
+		#*********************** PR Methode:
+			if ga_result_sell['methode'][0] == 'pr':
+
+				output_sell = pd.DataFrame()
+
+				list_index_ok = np.where(
+					(sell_data['value_max_cci'].to_numpy()>=ga_result_sell['value_max_lower_cci_pr'][0]) &
+					(sell_data['power_pr_high'].to_numpy()>=ga_result_sell['power_pr_high'][0]) &
+					(sell_data['power_pr_low'].to_numpy()>=ga_result_sell['power_pr_low'][0])
+					)[0]
+
+				output_sell = pd.DataFrame()
+				output_sell['mean_tp_pr'] = [np.mean(sell_data['tp_pr'][list_index_ok])]
+				output_sell['mean_st_pr'] = [np.mean(sell_data['st_pr'][list_index_ok])]
+				output_sell['max_tp_pr'] = [np.max(sell_data['tp_pr'][list_index_ok])]
+				output_sell['max_st_pr'] = [np.max(sell_data['st_pr'][list_index_ok])]
+				output_sell['sum_st_pr'] = [np.sum(sell_data['st_pr'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'st')[0]]].to_numpy())]
+				output_sell['sum_tp_pr'] = [np.sum(sell_data['tp_pr'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'tp')[0]]].to_numpy())]
+
+				tp_counter = 0
+				st_counter = 0
+				for elm in sell_data['flag_pr'][list_index_ok]:
+					if (elm == 'tp'):
+						tp_counter += 1
+					if (elm == 'st'):
+						st_counter += 1
+				output_sell['num_tp_pr'] = [tp_counter]
+				output_sell['num_st_pr'] = [st_counter]
+				output_sell['num_trade_pr'] = [st_counter + tp_counter]
+
+				if output_sell['num_trade_pr'][0] != 0:
+
+					if output_sell['num_st_pr'][0] != 0:
+						score_num_tp = (tp_counter-output_sell['num_st_pr'][0])
+
+						if (tp_counter-output_sell['num_st_pr'][0]) == 0:
+							score_num_tp = 8
+
+						elif (score_num_tp > 0):
+							score_num_tp = score_num_tp * 9
+						else:
+							score_num_tp = 1
+					else:
+						if tp_counter != 0:
+							score_num_tp = tp_counter * 10
+						else:
+							score_num_tp = 1
+				else:
+					score_num_tp = 1
+
+				if output_sell['max_st_pr'][0] != 0:
+
+					score_max_tp = (output_sell['max_tp_pr'][0]-output_sell['max_st_pr'][0])
+
+					if score_max_tp > 0:
+						score_max_tp = score_max_tp * 9
+					else:
+						score_max_tp = 1
+
+				else:
+					score_max_tp = output_sell['max_tp_pr'][0]
+					if (output_sell['max_tp_pr'][0] != 0):
+						score_max_tp = output_sell['max_tp_pr'][0] * 10
+
+				if (output_sell['mean_st_pr'][0] != 0):
+
+					score_mean_tp = (output_sell['mean_tp_pr'][0]-output_sell['mean_st_pr'][0])
+
+					if score_mean_tp > 0:
+						score_mean_tp = score_mean_tp * 9
+					else:
+						score_mean_tp = 1
+
+				else:
+					score_mean_tp = output_sell['mean_tp_pr'][0]
+					if (output_sell['mean_tp_pr'][0] != 0):
+						score_mean_tp = output_sell['mean_tp_pr'][0] * 10
+
+				if (output_sell['sum_st_pr'][0] != 0):
+
+					score_sum_tp = (output_sell['sum_tp_pr'][0]-output_sell['sum_st_pr'][0])
+
+					if score_sum_tp > 0:
+						score_sum_tp = score_sum_tp * 9
+					else:
+						score_sum_tp = 1
+
+				else:
+					score_sum_tp = output_sell['sum_tp_pr'][0]
+					if (output_sell['sum_tp_pr'][0] != 0):
+						score_sum_tp = output_sell['sum_tp_pr'][0] * 10
+
+				output_sell['score_pr'] = [(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
+
+				if np.isnan(output_sell['score_pr'][0]) : output_sell['score_pr'][0] = 0
+
+				print('=========> one year Sell: ',symbol)
+
+				print('mean_tp_pr= ',output_sell['mean_tp_pr'][0])
+				print('mean_st_pr= ',output_sell['mean_st_pr'][0])
+				print('max_tp_pr= ',output_sell['max_tp_pr'][0])
+				print('max_st_pr= ',output_sell['max_st_pr'][0])
+				print('sum_st_pr= ',output_sell['sum_st_pr'][0])
+				print('sum_tp_pr= ',output_sell['sum_tp_pr'][0])
+				print('num_tp_pr= ',output_sell['num_tp_pr'][0])
+				print('num_st_pr= ',output_sell['num_st_pr'][0])
+				print('num_trade_pr= ',output_sell['num_trade_pr'][0])
+				print('score_pr= ',output_sell['score_pr'][0])
+				print('score_pr ga= ',ga_result_sell['score_pr'][0])
+
+				for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'tp')[0]]]:
+					print('time tp = ',dataset[symbol]['time'][idx])
+
+				for idx in sell_data['index'][list_index_ok[np.where(sell_data['flag_pr'][list_index_ok] == 'st')[0]]]:
+					print('time st = ',dataset[symbol]['time'][idx])
+
+				if output_sell['score_pr'][0] >= ga_result_sell['score_pr'][0]*0.99:
+					ga_result_sell['permit'] = True
+					#ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
+
+					if os.path.exists(sell_path):
+						os.remove(sell_path)
+
+					ga_result_sell.to_csv(sell_path)
+				else:
+					ga_result_sell['permit'] = False
+					#ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
+					
+					if os.path.exists(sell_path):
+						os.remove(sell_path)
+
+					ga_result_sell.to_csv(sell_path)
 		#////////////////////////////////////////
 	print('//////////////////////////////////////////')
 

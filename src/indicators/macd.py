@@ -3712,7 +3712,7 @@ def genetic_algo_div_macd(
 	#*************************** Algorithm *************************************************//
 
 	fast_period_upper = 800
-	fast_period_lower = 10
+	fast_period_lower = 4
 
 	slow_period_upper = 1400
 	slow_period_lower = 12

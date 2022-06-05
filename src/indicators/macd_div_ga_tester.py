@@ -1,4 +1,4 @@
-from macd import genetic_algo_div_macd, read_ga_result
+from macd import genetic_algo_div_macd, read_ga_result, macd_div_tester_for_permit
 from log_get_data import read_dataset_csv, get_symbols, log_get_data_Genetic
 from datetime import datetime
 from random import randint
@@ -282,33 +282,41 @@ def ga_tester_buy():
 			#sym.name == 'GBPAUD_i' or
 			#sym.name == 'GBPCAD_i' or
 			#sym.name == 'GBPJPY_i' or
-			#sym.name == 'GBPUSD_i' or
+			sym.name == 'GBPUSD_i' or
 			#sym.name == 'USDJPY_i' or
 			#sym.name == 'USDCAD_i' or
 			sym.name == 'XAUUSD_i'
 			): continue
 
-		if sym.name != my_sym: continue
-		print('======================== my_sym tester buy ====> ',my_sym)
+		if sym.name != 'GBPUSD_i': continue
 
-		buy_path = "Genetic_cci_output_buy/" + sym.name + '.csv'
+		buy_path = 'GA/MACD/primary/buy/'+sym.name+'.csv'
 
 		if os.path.exists(buy_path):
 			print('*********** Tester Buy *')
 
-			ga_result_buy, _ = read_ga_result(symbol=sym.name)
+			ga_result_buy, _, _, _ = read_ga_result(symbol=sym.name)
 
 			if 'permit' not in ga_result_buy.columns:
 
 
-				symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
+				dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
 																										sym=sym.name,
-																										num_5M=9000,
+																										num_5M=99000,
 																										num_15M=1,
-																										num_1H=8000,
+																										num_1H=8250,
 																										num_4H=1
 																										)
-				golden_cross_tester_for_permit(
+
+				symbol_data_5M,symbol_data_1H = dataset_spliter(
+														symbol=sym.name,
+														dataset_5M=dataset_5M,
+														dataset_1H=dataset_1H,
+														spliter_5M_end=99000,
+														spliter_5M_first=90000
+														)
+
+				macd_div_tester_for_permit(
 												dataset=symbol_data_5M,
 												dataset_15M=symbol_data_15M,
 												symbol_data_1H=symbol_data_1H,
@@ -838,9 +846,9 @@ my_sym = 'GBPUSD_i'
 
 #learning_buy()
 #ga_tester_buy()
-ga_optimizer_buy()
+#ga_optimizer_buy()
 #learning_buy()
-#ga_tester_buy()
+ga_tester_buy()
 
 #ga_optimizer_sell()
 #learning_sell()

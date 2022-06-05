@@ -132,7 +132,7 @@ def ga_runner(
 				flag_trade='buy'
 				):
 
-	try:
+	if True:
 		genetic_algo_div_macd(
 								symbol_data_5M=symbol_data_5M,
 								symbol_data_15M=symbol_data_15M,
@@ -147,7 +147,7 @@ def ga_runner(
 								secondry_doing=secondry_doing
 								)
 		pass
-	except Exception as ex:
+	else:#except Exception as ex:
 		print('getting error GA Runner: ', ex)
 
 
@@ -173,13 +173,13 @@ def ga_optimizer_buy():
 			sym.name == 'GBPAUD_i' or
 			sym.name == 'GBPCAD_i' or
 			sym.name == 'GBPJPY_i' or
-			#sym.name == 'GBPUSD_i' or
+			sym.name == 'GBPUSD_i' or
 			sym.name == 'USDJPY_i' or
 			sym.name == 'USDCAD_i'
 			#sym.name == 'XAUUSD_i'
 			): continue
 
-		#if sym.name != my_sym: continue
+		if sym.name != 'GBPUSD_i': continue
 
 
 

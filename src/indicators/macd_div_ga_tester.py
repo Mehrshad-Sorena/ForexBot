@@ -179,7 +179,7 @@ def ga_optimizer_buy():
 			#sym.name == 'XAUUSD_i'
 			): continue
 
-		if sym.name != 'GBPUSD_i': continue
+		if sym.name != 'GBPJPY_i': continue
 
 
 
@@ -229,7 +229,7 @@ def ga_optimizer_buy():
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=400,
+						num_turn=1000,
 						max_score_ga_buy=600,
 						max_score_ga_sell=600,
 						flag_trade='buy',

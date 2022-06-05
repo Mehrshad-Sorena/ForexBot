@@ -3712,11 +3712,11 @@ def genetic_algo_div_macd(
 
 	#*************************** Algorithm *************************************************//
 
-	fast_period_upper = 800
-	fast_period_lower = 4
+	fast_period_upper = 900
+	fast_period_lower = 48
 
 	slow_period_upper = 1400
-	slow_period_lower = 12
+	slow_period_lower = 144
 
 	signal_period_upper = 50
 	signal_period_lower = 2
@@ -3958,7 +3958,7 @@ def genetic_algo_div_macd(
 			print()
 			
 
-			if (chorm_reset_counter >= 400):
+			if (chorm_reset_counter >= 100):
 				chorm_reset_counter = 0
 				Chromosome.pop(chrom_counter)
 

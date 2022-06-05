@@ -314,10 +314,12 @@ def ga_tester_buy():
 												symbol_data_1H=symbol_data_1H,
 												symbol_data_4H=symbol_data_4H,
 												symbol=sym.name,
-												flag_trade='buy'
+												flag_trade='buy',
+												primary_doing=True,
+												secondry_doing=False
 												)
 
-			ga_result_buy, _ = read_ga_result(symbol=sym.name)
+			ga_result_buy, _, _, _ = read_ga_result(symbol=sym.name)
 			if 'permit' in ga_result_buy.columns:
 				while ga_result_buy['permit'][0] != True:
 					ga_optimizer_buy()

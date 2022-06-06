@@ -168,18 +168,18 @@ def ga_optimizer_buy():
 			sym.name == 'EURCAD_i' or
 			sym.name == 'EURCHF_i' or
 			#sym.name == 'EURGBP_i' or
-			#sym.name == 'EURUSD_i' or
+			sym.name == 'EURUSD_i' or
 			sym.name == 'EURJPY_i' or
 			sym.name == 'GBPAUD_i' or
 			sym.name == 'GBPCAD_i' or
 			sym.name == 'GBPJPY_i' or
 			sym.name == 'GBPUSD_i' or
 			sym.name == 'USDJPY_i' or
-			sym.name == 'USDCAD_i'
-			#sym.name == 'XAUUSD_i'
+			sym.name == 'USDCAD_i' or
+			sym.name == 'XAUUSD_i'
 			): continue
 
-		if sym.name != 'GBPJPY_i': continue
+		if sym.name != 'EURUSD_i': continue
 
 
 
@@ -210,7 +210,7 @@ def ga_optimizer_buy():
 														symbol=sym.name,
 														dataset_5M=dataset_5M,
 														dataset_1H=dataset_1H,
-														spliter_5M_end=90000,
+														spliter_5M_end=99000,
 														spliter_5M_first=6000
 														)
 
@@ -229,8 +229,8 @@ def ga_optimizer_buy():
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=1000,
-						max_score_ga_buy=600,
+						num_turn=400,
+						max_score_ga_buy=9,
 						max_score_ga_sell=600,
 						flag_trade='buy',
 						primary_doing=True,
@@ -277,7 +277,7 @@ def ga_tester_buy():
 			#sym.name == 'EURCAD_i' or
 			#sym.name == 'EURCHF_i' or
 			#sym.name == 'EURGBP_i' or
-			#sym.name == 'EURUSD_i' or
+			sym.name == 'EURUSD_i' or
 			#sym.name == 'EURJPY_i' or
 			#sym.name == 'GBPAUD_i' or
 			#sym.name == 'GBPCAD_i' or
@@ -288,7 +288,7 @@ def ga_tester_buy():
 			sym.name == 'XAUUSD_i'
 			): continue
 
-		if sym.name != 'GBPUSD_i': continue
+		if sym.name != 'EURUSD_i': continue
 
 		buy_path = 'GA/MACD/primary/buy/'+sym.name+'.csv'
 
@@ -315,6 +315,9 @@ def ga_tester_buy():
 														spliter_5M_end=99000,
 														spliter_5M_first=90000
 														)
+
+				symbol_data_5M,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,9000)
+				symbol_data_1H,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,3000)
 
 				macd_div_tester_for_permit(
 												dataset=symbol_data_5M,
@@ -405,7 +408,7 @@ def ga_optimizer_sell():
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
-						num_turn=8000,
+						num_turn=400,
 						max_score_ga_buy=70,
 						max_score_ga_sell=70,
 						flag_trade='sell'

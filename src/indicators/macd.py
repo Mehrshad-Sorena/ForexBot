@@ -218,7 +218,8 @@ def divergence_macd(
 				tp_percent_minmax_sell_max = 0.5,
 				tp_percent_buy_max = 0.5,
 				tp_percent_buy_min = 0.5,
-				alpha=0.05
+				alpha=0.05,
+				num_exteremes=5
 				):
 
 	#*************** OutPuts:
@@ -259,7 +260,7 @@ def divergence_macd(
 	macd['macds'] = pd.DataFrame(macd_read, columns=[column])
 	macd = macd.dropna(inplace=False)
 
-	n = 5
+	n = num_exteremes
 	
 	min_ex = macd.iloc[argrelextrema(macd.macds.values, comparator = np.less,
                     order=n)[0]]['macds']
@@ -2579,6 +2580,14 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 	#************************************ Finding Sell's ****************************
 
 	while True:
+
+		if (len(signal_final['Y'])-1 <= 0): 
+			best_signals_interval = pd.DataFrame()
+			best_signals_interval['interval'] = [0,0,0]
+			best_signals_interval['power'] = [0,0,0]
+			best_signals_interval['alpha'] = [alpha,alpha,alpha]
+			best_signals_interval[name_stp] = [name_stp,name_stp,name_stp]
+			return best_signals_interval
 		
 		f = Fitter(
 				data = data_X,
@@ -3052,6 +3061,8 @@ def tester_div_macd(
 			#danger_line_intervals_minmax = Find_Best_intervals(signals=signal_buy,apply_to='danger_line',
  			#min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.5)
 
+ 			"""
+
 			value_front_intervals_pr = Find_Best_intervals(
 															signals=signal_buy,
 															apply_to='value_front',
@@ -3070,35 +3081,6 @@ def tester_div_macd(
 														alpha=alpha
 														)
 
-			ramp_volume_intervals_pr = Find_Best_intervals(
- 															signals=signal_buy,
- 															apply_to='ramp_vol',
- 															min_tp=0.0, 
- 															max_st=0.0, 
- 															name_stp='flag_pr',
- 															alpha=alpha
- 															)
-
-			
-
-			power_high_pr_buy = Find_Best_intervals(
-													signals=signal_buy,
-													apply_to='power_pr_high',
-													min_tp=0.0, 
-													max_st=0, 
-													name_stp='flag_pr',
-													alpha=alpha
-													)
-
-			power_low_pr_buy = Find_Best_intervals(
-													signals=signal_buy,
-													apply_to='power_pr_low',
-													min_tp=0.0, 
-													max_st=0, 
-													name_stp='flag_pr',
-													alpha=alpha
-													)
-			"""
 
 			diff_top_pr_buy = Find_Best_intervals(
 													signals=signal_buy,
@@ -3130,8 +3112,8 @@ def tester_div_macd(
 				#(signal_buy['ramp_macd'].to_numpy() >= ramp_macd_intervals_pr['interval'][lower])
 				True)[0]
 
-			output_buy['mean_tp_pr'] = [np.mean(signal_buy['tp_pr'])]
-			output_buy['mean_st_pr'] = [np.mean(signal_buy['st_pr'])]
+			output_buy['mean_tp_pr'] = [np.mean(signal_buy['tp_pr'][np.where(signal_buy['flag_pr'] != 'no_flag')[0]])]
+			output_buy['mean_st_pr'] = [np.mean(signal_buy['st_pr'][np.where(signal_buy['flag_pr'] != 'no_flag')[0]])]
 			output_buy['max_tp_pr'] = [np.max(signal_buy['tp_pr'])]
 			output_buy['max_st_pr'] = [np.max(signal_buy['st_pr'])]
 			try:
@@ -3158,6 +3140,11 @@ def tester_div_macd(
 			output_buy['max_tp'] = [round(diff_top_pr_buy['interval'][upper],2)]
 			output_buy['min_tp'] = [round(diff_top_pr_buy['interval'][lower],2)]
 
+			output_buy['value_front_intervals_pr_upper'] = [value_front_intervals_pr['interval'][upper]]
+			output_buy['value_front_intervals_pr_lower'] = [value_front_intervals_pr['interval'][lower]]
+			output_buy['value_back_intervals_pr_upper'] = [value_back_intervals_pr['interval'][upper]]
+			output_buy['value_back_intervals_pr_lower'] = [value_back_intervals_pr['interval'][lower]]
+
 			#output_buy['ramp_vol'] = [ramp_volume_intervals_pr['interval'][lower]]
 			#output_buy['value_back'] = [value_back_intervals_pr['interval'][upper]]
 			#output_buy['value_front'] = [value_front_intervals_pr['interval'][upper]]
@@ -3175,15 +3162,15 @@ def tester_div_macd(
 					score_num_tp = (tp_counter-output_buy['num_st_pr'][0])
 
 					if (tp_counter-output_buy['num_st_pr'][0]) == 0:
-						score_num_tp = 8
+						score_num_tp = 1.5
 
 					elif (score_num_tp > 0):
-						score_num_tp = score_num_tp * 9
+						score_num_tp = 2#score_num_tp * 0.9
 					else:
 						score_num_tp = 1
 				else:
 					if tp_counter != 0:
-						score_num_tp = tp_counter * 10
+						score_num_tp = 2.5#tp_counter * 1
 					else:
 						score_num_tp = 1
 			else:
@@ -3205,13 +3192,15 @@ def tester_div_macd(
 				score_mean_tp = (output_buy['mean_tp_pr'][0]-output_buy['mean_st_pr'][0])
 
 				if (score_mean_tp > 0):
-					score_mean_tp = score_mean_tp * 9
+					score_mean_tp = score_mean_tp * 100
+				elif (score_mean_tp == 0):
+					score_mean_tp = 8
 				else:
-					score_mean_tp = 1
+					score_mean_tp = 0.1
 			else:
 				score_mean_tp = output_buy['mean_tp_pr'][0]
 				if (output_buy['mean_tp_pr'][0] != 0):
-					score_mean_tp = output_buy['mean_tp_pr'][0] * 10
+					score_mean_tp = output_buy['mean_tp_pr'][0] * 200
 
 			if (output_buy['sum_st_pr'][0] != 0):
 				score_sum_tp = (output_buy['sum_tp_pr'][0]-output_buy['sum_st_pr'][0])
@@ -3225,7 +3214,7 @@ def tester_div_macd(
 				if (output_buy['sum_tp_pr'][0] != 0):
 					score_sum_tp = output_buy['sum_tp_pr'][0] * 10
 
-			output_buy['score_pr'] = [(score_num_tp*score_sum_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
+			output_buy['score_pr'] = [(score_sum_tp*score_mean_tp*score_num_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
 
 			if name_stp_minmax != True:
 				output_buy['score_min_max'] = [0]
@@ -3448,7 +3437,7 @@ def initilize_values_genetic(
 	'signal_period': signal_period_lower,
 	'apply_to': 'HLCC/4',
 	'alpha': 0.5,
-	#'max_tp': 0.6,
+	'num_extreme': slow_period_upper - fast_period_upper,
 	'signal': None,
 	'score_buy': 0,
 	'score_sell': 0
@@ -3460,7 +3449,7 @@ def initilize_values_genetic(
 	'signal_period': signal_period_upper,
 	'apply_to': 'open',
 	'alpha': 0.1,
-	#'max_st': 0.5,
+	'num_extreme': slow_period_lower - fast_period_lower,
 	#'max_tp': 0.5,
 	'signal': None,
 	'score_buy': 0,
@@ -3482,7 +3471,7 @@ def initilize_values_genetic(
 			'signal_period': randint(signal_period_lower, signal_period_upper),
 			'apply_to': np.random.choice(apply_to_list_ga),
 			'alpha': randint(1, 50)/100,
-			#'max_st': max_st,
+			'num_extreme': randint(int(fast_period_lower*0.25),(slow_period_upper-fast_period_lower)),
 			#'max_tp': max_tp,
 			'signal': None,
 			'score_buy': 0,
@@ -3513,7 +3502,7 @@ def gen_creator(
 				signal_period_lower
 				):
 
-	Chromosome_Cutter = randint(0, 4)
+	Chromosome_Cutter = randint(0, 5)
 
 	Chromosome_selector = randint(0, 4)
 
@@ -3539,7 +3528,7 @@ def gen_creator(
 			'signal_period': randint(signal_period_lower, signal_period_upper),
 			'apply_to': np.random.choice(apply_to_list_ga),
 			'alpha': randint(1, 50)/100,
-			#'max_st': max_st,
+			'num_extreme': randint(int(fast_period_lower*0.25),(slow_period_upper-fast_period_lower)),
 			#'max_tp': max_tp,
 			'signal': None,
 			'score_buy': 0,
@@ -3565,7 +3554,7 @@ def gen_creator(
 		res_1 = list(Chromosome[Chromosome_selector_1].keys())
 		res_2 = list(Chromosome[Chromosome_selector_2].keys())
 
-		Chromosome_Cutter = randint(0, 3)
+		Chromosome_Cutter = randint(0, 5)
 		change_chrom_counter = 0
 
 		while change_chrom_counter < Chromosome_Cutter:
@@ -3577,7 +3566,7 @@ def gen_creator(
 
 		change_chrom_counter = Chromosome_Cutter
 
-		while change_chrom_counter < 5:
+		while change_chrom_counter < 6:
 			baby[baby_counter].update({res_2[change_chrom_counter]: Chromosome[Chromosome_selector_2][res_2[change_chrom_counter]]})
 			baby[baby_counter + 1].update({res_1[change_chrom_counter]: Chromosome[Chromosome_selector_1][res_1[change_chrom_counter]]})
 			change_chrom_counter += 1
@@ -3602,7 +3591,7 @@ def gen_creator(
 			'signal_period': randint(signal_period_lower, signal_period_upper),
 			'apply_to': np.random.choice(apply_to_list_ga),
 			'alpha': randint(1, 50)/100,
-			#'max_st': max_st,
+			'num_extreme': randint(int(fast_period_lower*0.25),(slow_period_upper-fast_period_lower)),
 			#'max_tp': max_tp,
 			'signal': None,
 			'score_buy': 0,
@@ -3619,7 +3608,7 @@ def gen_creator(
 		Chromosome[re_counter]['signal_period'] = baby[re_counter]['signal_period']
 		Chromosome[re_counter]['apply_to'] = baby[re_counter]['apply_to']
 		Chromosome[re_counter]['alpha'] = baby[re_counter]['alpha']
-		#Chromosome[re_counter]['max_tp'] = baby[re_counter]['max_tp']
+		Chromosome[re_counter]['num_extreme'] = baby[re_counter]['num_extreme']
 		Chromosome[re_counter]['signal'] = baby[re_counter]['signal']
 		Chromosome[re_counter]['score_buy'] = baby[re_counter]['score_buy']
 		Chromosome[re_counter]['score_sell'] = baby[re_counter]['score_sell']
@@ -3637,7 +3626,7 @@ def gen_creator(
 						'signal_period': randint(signal_period_lower, signal_period_upper),
 						'apply_to': np.random.choice(apply_to_list_ga),
 						'alpha': randint(1, 50)/100,
-						#'max_st': max_st,
+						'num_extreme': randint(int(fast_period*0.25),(slow_period-fast_period)),
 						#'max_tp': max_tp,
 						'signal': None,
 						'score_buy': 0,
@@ -3656,8 +3645,8 @@ def gen_creator(
 				Chromosome[key]['slow_period'] == Chromosome[i]['slow_period'] and
 				Chromosome[key]['signal_period'] == Chromosome[i]['signal_period'] and
 				Chromosome[key]['apply_to'] == Chromosome[i]['apply_to'] and
-				Chromosome[key]['alpha'] == Chromosome[i]['alpha']
-				#Chromosome[key]['max_tp'] == Chromosome[i]['max_tp']
+				Chromosome[key]['alpha'] == Chromosome[i]['alpha'] and
+				Chromosome[key]['num_extreme'] == Chromosome[i]['num_extreme']
 				):
 
 				#max_tp = randint(10, 80)/100
@@ -3679,7 +3668,7 @@ def gen_creator(
 							'signal_period': randint(signal_period_lower, signal_period_upper),
 							'apply_to': np.random.choice(apply_to_list_ga),
 							'alpha': randint(1, 50)/100,
-							#'max_st': max_st,
+							'num_extreme': randint(int(fast_period*0.25),(slow_period-fast_period)),
 							#'max_tp': max_tp,
 							'signal': None,
 							'score_buy': 0,
@@ -3855,12 +3844,12 @@ def genetic_algo_div_macd(
 				for line in csv.DictReader(myfile):
 					chrom_get = line
 
-					Chromosome[0]['fast_period'] = float(chrom_get['fast_period'])
-					Chromosome[0]['slow_period'] = float(chrom_get['slow_period'])
-					Chromosome[0]['signal_period'] = float(chrom_get['signal_period'])
+					Chromosome[0]['fast_period'] = int(float(chrom_get['fast_period']))
+					Chromosome[0]['slow_period'] = int(float(chrom_get['slow_period']))
+					Chromosome[0]['signal_period'] = int(float(chrom_get['signal_period']))
 					Chromosome[0]['apply_to'] = chrom_get['apply_to']
 					Chromosome[0]['alpha'] = float(chrom_get['alpha'])
-					#Chromosome[0]['max_tp'] = float(chrom_get['max_tp'])
+					Chromosome[0]['num_extreme'] = int(float(chrom_get['num_extreme']))
 					Chromosome[0]['signal'] = chrom_get['signal']
 					Chromosome[0]['score_buy'] = float(chrom_get['score_buy'])
 					Chromosome[0]['score_sell'] = float(chrom_get['score_sell'])
@@ -3950,6 +3939,8 @@ def genetic_algo_div_macd(
 			print('================== All Chorms ======> ',all_chorms)
 			print('================== Chorm Reseter ===> ',chorm_reset_counter)
 			print('================== AI Turn =========> ',learn_counter-1)
+			print('===== bad score counter buy ========> ',bad_score_counter_buy)
+			print('===== bad score counter buy 2 ======> ',bad_score_counter_buy_2)
 
 			print()
 			pbar_numbers = int((len(chromosome_buy) + len(chromosome_sell))/2)
@@ -3986,7 +3977,7 @@ def genetic_algo_div_macd(
 					'signal_period': randint(signal_period_lower, signal_period_upper),
 					'apply_to': np.random.choice(apply_to_list_ga),
 					'alpha': randint(1, 50)/100,
-					#'max_st': max_st,
+					'num_extreme': randint(int(fast_period*0.25),(slow_period-fast_period)),
 					#'max_tp': max_tp,
 					'signal': None,
 					'score_buy': 0,
@@ -4016,7 +4007,7 @@ def genetic_algo_div_macd(
 
 				print('==== AI Turn ===================> ',learn_counter)
 				print('==== Length Dataset ============> ',high_distance - low_distance)
-				print('= bad score counter buy ========> ',bad_score_counter_buy)
+				
 
 				dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, _ = read_dataset_csv(
 																									sym=symbol,
@@ -4091,7 +4082,8 @@ def genetic_algo_div_macd(
 															tp_percent_minmax_sell_max = 0.9,
 															tp_percent_buy_max = max_tp_buy,
 															tp_percent_buy_min = min_tp_buy,
-															alpha=Chromosome[chrom_counter]['alpha']
+															alpha=Chromosome[chrom_counter]['alpha'],
+															num_exteremes=Chromosome[chrom_counter]['num_extreme']
 															)
 					if secondry_doing == True:
 						_, buy_data, _, _ = divergence_macd(
@@ -4191,7 +4183,7 @@ def genetic_algo_div_macd(
 					'signal_period': randint(signal_period_lower, signal_period_upper),
 					'apply_to': np.random.choice(apply_to_list_ga),
 					'alpha': randint(1, 50)/100,
-					#'max_st': max_st,
+					'num_extreme': randint(int(Chromosome[chrom_counter]['fast_period']*0.25),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
 					#'max_tp': max_tp,
 					'signal': None,
 					'score_buy': 0,
@@ -4251,7 +4243,7 @@ def genetic_algo_div_macd(
 					'signal_period': randint(signal_period_lower, signal_period_upper),
 					'apply_to': np.random.choice(apply_to_list_ga),
 					'alpha': randint(1, 50)/100,
-					#'max_st': max_st,
+					'num_extreme': randint(int(Chromosome[chrom_counter]['fast_period']*0.25),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
 					#'max_tp': max_tp,
 					'signal': None,
 					'score_buy': 0,
@@ -4318,9 +4310,9 @@ def genetic_algo_div_macd(
 
 
 							if os.path.exists(buy_path):
-								max_score_ga_buy_before = ga_result_buy['score_pr'][0] * 0.9
+								max_score_ga_buy_before = ga_result_buy['score_pr'][0] #* 0.9
 							else:
-								max_score_ga_buy_before = max_score_ga_buy * 0.9
+								max_score_ga_buy_before = max_score_ga_buy #* 0.9
 
 							max_score_ga_buy = (output_buy['score_pr'][0])
 
@@ -4329,9 +4321,9 @@ def genetic_algo_div_macd(
 									os.path.exists(buy_path) and
 									max_score_ga_buy > max_score_ga_buy_before
 									):
-									max_score_ga_buy = max_score_ga_buy_before * 0.9
+									max_score_ga_buy = max_score_ga_buy_before #* 0.9
 								else:
-									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0] * 0.9
+									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0] #* 0.9
 									if not os.path.exists(buy_path): max_score_ga_buy = 1000
 
 							Chromosome[chrom_counter].update({'score_buy': score_buy })
@@ -4524,7 +4516,7 @@ def genetic_algo_div_macd(
 										'signal_period': Chromosome[chrom_counter]['signal_period'],#randint(signal_period_lower, signal_period_upper),
 										'apply_to': np.random.choice(apply_to_list_ga),
 										'alpha': randint(1, 50)/100,
-										#'max_st': max_st,
+										'num_extreme': Chromosome[chrom_counter]['num_extreme'],#randint(int(Chromosome[chrom_counter]['fast_period']*0.5),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
 										#'max_tp': max_tp,
 										'signal': None,
 										'score_buy': 0,
@@ -4563,7 +4555,7 @@ def genetic_algo_div_macd(
 										'signal_period': randint(signal_period_lower, signal_period_upper),
 										'apply_to': np.random.choice(apply_to_list_ga),
 										'alpha': randint(1, 50)/100,
-										#'max_st': max_st,
+										'num_extreme': randint(int(fast_period*0.25),(Chromosome[chrom_counter]['slow_period']-fast_period)),
 										#'max_tp': max_tp,
 										'signal': None,
 										'score_buy': 0,
@@ -4592,7 +4584,7 @@ def genetic_algo_div_macd(
 										'signal_period': randint(signal_period_lower, signal_period_upper),
 										'apply_to': np.random.choice(apply_to_list_ga),
 										'alpha': randint(1, 50)/100,
-										#'max_st': max_st,
+										'num_extreme': randint(int(Chromosome[chrom_counter]['fast_period']*0.25),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
 										#'max_tp': max_tp,
 										'signal': None,
 										'score_buy': 0,
@@ -5597,7 +5589,8 @@ def macd_div_tester_for_permit(
 													tp_percent_minmax_sell_max = 0.9,
 													tp_percent_buy_max = ga_result_buy['max_tp'][0],
 													tp_percent_buy_min = ga_result_buy['min_tp'][0],
-													alpha=ga_result_buy['alpha'][0]
+													alpha=ga_result_buy['alpha'][0],
+													num_exteremes = ga_result_buy['num_extreme'][0]
 													)
 			if secondry_doing == True:
 				_, buy_data, _, _ = divergence_macd(
@@ -5628,11 +5621,84 @@ def macd_div_tester_for_permit(
 			#*********************** PR Methode BUY:
 			if ga_result_buy['methode'][0] == 'pr':
 
+				"""
+				ramp_macd_intervals_pr = Find_Best_intervals(
+															signals=buy_data,
+															apply_to='ramp_macd',
+															min_tp=0.0, 
+															max_st=0.0, 
+															name_stp='flag_pr',
+															alpha=ga_result_buy['alpha'][0]
+															)
+
+				ramp_candle_intervals_pr = Find_Best_intervals(
+																signals=buy_data,
+																apply_to='ramp_candle',
+																min_tp=0.0, 
+																max_st=0.0, 
+																name_stp='flag_pr',
+																alpha=ga_result_buy['alpha'][0]
+																)
+
+			#diff_ramps_intervals_minmax = Find_Best_intervals(signals=signal_buy,apply_to='diff_ramps',
+ 			#min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.5)
+
+			#coef_ramps_intervals_minmax = Find_Best_intervals(signals=signal_buy,apply_to='coef_ramps',
+ 			#min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.5)
+
+			#diff_min_max_macd_intervals_minmax = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_macd',
+				#min_tp=0.0, max_st=0.0, name_stp='flag_pr',alpha=0.5)
+
+			#diff_min_max_candle_intervals_minmax = Find_Best_intervals(signals=signal_buy,apply_to='diff_min_max_candle',
+				#min_tp=0.0, max_st=0.0, name_stp='flag_pr',alpha=0.5)
+
+			#beta_intervals_minmax = Find_Best_intervals(signals=signal_buy,apply_to='beta',
+ 			#min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.5)
+
+			#danger_line_intervals_minmax = Find_Best_intervals(signals=signal_buy,apply_to='danger_line',
+ 			#min_tp=0.1, max_st=0.2, name_stp='flag_pr',alpha=0.5)
+
+				value_front_intervals_pr = Find_Best_intervals(
+																signals=buy_data,
+																apply_to='value_front',
+																min_tp=0.0,
+																max_st=0.0,
+																name_stp='flag_pr',
+																alpha=ga_result_buy['alpha'][0]
+																)
+
+				value_back_intervals_pr = Find_Best_intervals(
+															signals=buy_data,
+															apply_to='value_back',
+															min_tp=0.0, 
+															max_st=0.0, 
+															name_stp='flag_pr',
+															alpha=ga_result_buy['alpha'][0]
+															)
+
+				ramp_volume_intervals_pr = Find_Best_intervals(
+ 																signals=buy_data,
+ 																apply_to='ramp_vol',
+ 																min_tp=0.0, 
+ 																max_st=0.0, 
+ 																name_stp='flag_pr',
+ 																alpha=ga_result_buy['alpha'][0]
+ 																)
+
+				print('value_front_intervals_pr = ',value_front_intervals_pr)
+				print('value_back_intervals_pr = ',value_back_intervals_pr)
+				print('ramp_macd_intervals_pr = ',ramp_macd_intervals_pr)
+				print('ramp_candle_intervals_pr = ',ramp_candle_intervals_pr)
+
 				list_index_ok = np.where(
-					#(buy_data['value_min_cci'].to_numpy()<=ga_result_buy['value_min_upper_cci_pr'][0]) &
-					#(buy_data['power_pr_high'].to_numpy()>=ga_result_buy['power_pr_high'][0]) &
+					(buy_data['value_front'].to_numpy()<= -1.361925)&#value_front_intervals_pr['interval'][upper]) &
+					(buy_data['value_front'].to_numpy()>= -1.979887)&#value_front_intervals_pr['interval'][lower]) &
+					(buy_data['value_back'].to_numpy()<= -2.540192)&#value_back_intervals_pr['interval'][upper]) &
+					(buy_data['value_back'].to_numpy()>= -3.493296)#value_back_intervals_pr['interval'][lower])
 					#(buy_data['power_pr_low'].to_numpy()>=ga_result_buy['power_pr_low'][0])
-					True)[0]
+					)[0]
+
+				"""
 
 				output_buy = pd.DataFrame()
 				output_buy['mean_tp_pr'] = [np.mean(buy_data['tp_pr'])]
@@ -5660,63 +5726,59 @@ def macd_div_tester_for_permit(
 						score_num_tp = (tp_counter-output_buy['num_st_pr'][0])
 
 						if (tp_counter-output_buy['num_st_pr'][0]) == 0:
-							score_num_tp = 8
+							score_num_tp = 1.5
 
 						elif (score_num_tp > 0):
-							score_num_tp = score_num_tp * 9
+							score_num_tp = 2#score_num_tp * 0.9
 						else:
 							score_num_tp = 1
 					else:
 						if tp_counter != 0:
-							score_num_tp = tp_counter * 10
+							score_num_tp = 2.5#tp_counter * 1
 						else:
 							score_num_tp = 1
 				else:
 					score_num_tp = 1
 
 				if output_buy['max_st_pr'][0] != 0:
-
 					score_max_tp = (output_buy['max_tp_pr'][0]-output_buy['max_st_pr'][0])
 
-					if score_max_tp > 0:
+					if (score_max_tp > 0):
 						score_max_tp = score_max_tp * 9
 					else:
 						score_max_tp = 1
-
 				else:
 					score_max_tp = output_buy['max_tp_pr'][0]
 					if (output_buy['max_tp_pr'][0] != 0):
 						score_max_tp = output_buy['max_tp_pr'][0] * 10
 
 				if (output_buy['mean_st_pr'][0] != 0):
-
 					score_mean_tp = (output_buy['mean_tp_pr'][0]-output_buy['mean_st_pr'][0])
 
-					if score_mean_tp > 0:
-						score_mean_tp = score_mean_tp * 9
+					if (score_mean_tp > 0):
+						score_mean_tp = score_mean_tp * 100
+					elif (score_mean_tp == 0):
+						score_mean_tp = 8
 					else:
-						score_mean_tp = 1
-
+						score_mean_tp = 0.1
 				else:
 					score_mean_tp = output_buy['mean_tp_pr'][0]
 					if (output_buy['mean_tp_pr'][0] != 0):
-						score_mean_tp = output_buy['mean_tp_pr'][0] * 10
+						score_mean_tp = output_buy['mean_tp_pr'][0] * 200
 
 				if (output_buy['sum_st_pr'][0] != 0):
-
 					score_sum_tp = (output_buy['sum_tp_pr'][0]-output_buy['sum_st_pr'][0])
 
-					if score_sum_tp > 0:
-						score_sum_tp = score_sum_tp * 81
+					if (score_sum_tp > 0):
+						score_sum_tp = score_sum_tp * 9
 					else:
-						score_sum_tp = 0.01
-
+						score_sum_tp = 0.1
 				else:
 					score_sum_tp = output_buy['sum_tp_pr'][0]
 					if (output_buy['sum_tp_pr'][0] != 0):
-						score_sum_tp = output_buy['sum_tp_pr'][0] * 90
+						score_sum_tp = output_buy['sum_tp_pr'][0] * 10
 
-				output_buy['score_pr'] = [(score_num_tp*score_sum_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
+				output_buy['score_pr'] = [(score_sum_tp*score_mean_tp*score_num_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
 
 				if np.isnan(output_buy['score_pr'][0]) : output_buy['score_pr'][0] = 0
 
@@ -5740,7 +5802,7 @@ def macd_div_tester_for_permit(
 				for idx in buy_data['index'][np.where(buy_data['flag_pr'] == 'st')[0]]:
 					print('time st = ',dataset[symbol]['time'][idx])
 
-				if output_buy['score_pr'][0] * 105 >= ga_result_buy['score_pr'][0]*0.99: 
+				if output_buy['score_pr'][0] * 10 >= ga_result_buy['score_pr'][0]*0.99: 
 					ga_result_buy['permit'] = True
 					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 

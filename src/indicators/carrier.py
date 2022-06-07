@@ -1,6 +1,6 @@
 from log_get_data import *
 import MetaTrader5 as mt5
-from logger import logs
+#from logger import logs
 
 def carrier_buy(symbol,lot,st,tp,comment,magic):
 
@@ -11,24 +11,24 @@ def carrier_buy(symbol,lot,st,tp,comment,magic):
 	spred = ((abs(price_ask-price_bid)/price_ask) * 100)
 	deviation = 5
 
-	logs('==== BUY =======> {}'.format(symbol))
-	logs('spred: {}'.format(spred))
+	print('==== BUY =======> ',symbol)
+	print('spred: ',spred)
 
 	if (spred > 0.045): 
-		logs('spred return: {}'.format(spred))
+		print('spred return: ',spred)
 		return
 
 	tp = tp - abs(price_ask-price_bid)
 	st = st - abs(price_ask-price_bid)
 
 	if (tp <= (price)): 
-		logs('tp return: {}'.format(price))
-		logs('tp: {}'.format(tp))
+		print('tp return: ',price)
+		print('tp: ',tp)
 		return
 
 	if (st >= price_bid): 
-		logs('st return: {}'.format(price_bid))
-		logs('st: {}'.format(st))
+		print('st return: ',price_bid)
+		print('st: ',st)
 		return
 
 	print(symbol,': ','buy')
@@ -57,7 +57,7 @@ def carrier_buy(symbol,lot,st,tp,comment,magic):
 			# request the result as a dictionary and display it element by element
 			result_dict=result._asdict()
 			for field in result_dict.keys():
-				print("   {}={}".format(field,result_dict[field]))
+				print("field   {}={}".format(field,result_dict[field]))
         		# if this is a trading request structure, display it element by element as well
 				if field=="request":
 					traderequest_dict=result_dict[field]._asdict()
@@ -78,28 +78,28 @@ def carrier_sell(symbol,lot,st,tp,comment,magic):
 	spred = ((abs(price_ask-price_bid)/price_ask) * 100)
 	deviation = 5
 
-	logs('==== SELL =======> {}'.format(symbol))
-	logs('spred: {}'.format(spred))
+	print('==== SELL =======> ',symbol)
+	print('spred: ',spred)
 	
 
 	if (spred > 0.045): 
-		logs('spred return: {}'.format(spred))
+		print('spred return: ',spred)
 		return
 
 	tp = tp + abs(price_ask-price_bid)
 	st = st + abs(price_ask-price_bid)
 
 	if (st <= price_ask): 
-		logs('st return: {}'.format(price_ask))
-		logs('st: {}'.format(st))
+		print('st return: ',price_ask)
+		print('st: ',st)
 		return
 
 	if (tp >= (price_bid)): 
-		logs('tp return: {}'.format(price_bid))
-		logs('tp: {}'.format(tp))
+		print('tp return: ',price_bid)
+		print('tp: ',tp)
 		return
 
-	logs('================================')
+	print('================================')
 
 	print(symbol,': ','sell')
 	request = {

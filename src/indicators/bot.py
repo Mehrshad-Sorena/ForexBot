@@ -1,5 +1,6 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from trader import trader_task
+from trader_macd_div import trader_task_macd_div
 from forex_news import news_task
 import threading
 import schedule
@@ -10,11 +11,16 @@ try:
 except ImportError:
     import trollius as asyncio
 
-scheduler_trader = AsyncIOScheduler()
+scheduler_trader_macd_div = AsyncIOScheduler()
 scheduler_news = AsyncIOScheduler()
 
 def trader_threaded():
     job_thread = threading.Thread(target=trader_task)
+    job_thread.start()
+    job_thread.join()
+
+def trader_macd_div_threaded():
+    job_thread = threading.Thread(target=trader_task_macd_div)
     job_thread.start()
     job_thread.join()
 
@@ -34,10 +40,11 @@ hour_news = '00,12'
 
 news_task()
 
-scheduler_trader.add_job(func=trader_threaded, trigger='cron', day_of_week='mon-fri', hour='00-23', minute=minute_trader, timezone='UTC')
+#scheduler_trader.add_job(func=trader_threaded, trigger='cron', day_of_week='mon-fri', hour='00-23', minute=minute_trader, timezone='UTC')
+scheduler_trader_macd_div.add_job(func=trader_macd_div_threaded, trigger='cron', day_of_week='mon-fri', hour='00-23', minute=minute_trader, timezone='UTC')
 scheduler_news.add_job(func=news_threaded, trigger='cron', day_of_week='mon-fri', hour=hour_news, minute=minute_news, timezone='UTC')
 # Start the scheduler
-scheduler_trader.start()
+scheduler_trader_macd_div.start()
 scheduler_news.start()
 
 try:

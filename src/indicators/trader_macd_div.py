@@ -121,12 +121,12 @@ def trader_macd_div(
 				signal == 'buy_primary' or
 				signal == 'buy_secondry'
 				):
-				carrier_buy(symbol=sym.name,lot=lot,st=st,tp=tp,comment='cci golden cross',magic=time.time_ns())
+				carrier_buy(symbol=sym.name,lot=lot,st=st,tp=tp,comment='macd div'+signal,magic=time.time_ns())
 			elif (
 				signal == 'sell_primary' or
 				signal == 'sell_secondry'
 				):
-				carrier_sell(symbol=sym.name,lot=lot,st=st,tp=tp,comment='cci golden cross',magic=time.time_ns())
+				carrier_sell(symbol=sym.name,lot=lot,st=st,tp=tp,comment='macd div'+signal,magic=time.time_ns())
 			elif signal == 'no_trade':
 				continue
 		else:

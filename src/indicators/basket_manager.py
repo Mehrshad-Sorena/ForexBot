@@ -82,9 +82,13 @@ def lot_checker(my_money,symbol,signal,risk_lot=0.02,levrage=100):
 #*************************************** Position Checker **********************************
 def position_checker(signal,symbol):
 	if signal == 'buy':
+		if not mt5.initialize():
+			print("initialize() failed, error code =",mt5.last_error())
+			quit()
 		positions = mt5.positions_get(symbol=symbol)
 		if positions == None:
-			print("No positions on ",symbol,", error code={}".format(mt5.last_error()))
+			#print("No positions on ",symbol,", error code={}".format(mt5.last_error()))
+			pass
 		elif len(positions)>0:
 			for position in positions:
 				type_position = position[5]
@@ -101,7 +105,9 @@ def position_checker(signal,symbol):
 			return 'buy'
 
 	if signal == 'sell':
-		
+		if not mt5.initialize():
+			print("initialize() failed, error code =",mt5.last_error())
+			quit()
 		positions = mt5.positions_get(symbol=symbol)
 		if positions == None:
 			print("No positions on ",symbol,", error code={}".format(mt5.last_error()))
@@ -130,6 +136,9 @@ def basket_manager(symbols,symbol,my_money,signal):
 	vol_traded = 0
 
 	for sym in symbols:
+		if not mt5.initialize():
+			print("initialize() failed, error code =",mt5.last_error())
+			quit()
 		positions = mt5.positions_get(symbol=sym.name)
 		#print(positions)
 		if positions == None:

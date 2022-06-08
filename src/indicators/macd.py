@@ -4138,8 +4138,8 @@ def genetic_algo_div_macd(
 					print(Chromosome[0])
 
 	if flag_trade == 'sell':
-		if os.path.exists("Genetic_cci_output_sell/"+symbol+'.csv'):
-			with open("Genetic_cci_output_sell/"+symbol+'.csv', 'r', newline='') as myfile:
+		if os.path.exists(sell_path):
+			with open(sell_path, 'r', newline='') as myfile:
 				for line in csv.DictReader(myfile):
 					chrom_get = line
 					Chromosome[0]['fast_period'] = float(chrom_get['fast_period'])

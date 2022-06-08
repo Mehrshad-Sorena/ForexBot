@@ -5339,7 +5339,7 @@ def last_signal_macd_div(
 		ga_result_buy_primary = pd.read_csv(buy_path_primary)
 
 		if ga_result_buy_primary['permit'][0]:
-			cross_cut_len = cross_cut_len_cutter + 200
+			cross_cut_len = 2 * cross_cut_len_cutter + 200
 			cut_first = 0
 			if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
 				cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
@@ -5402,7 +5402,7 @@ def last_signal_macd_div(
 
 		if ga_result_buy_secondry['permit'][0]:
 
-			cross_cut_len = cross_cut_len_cutter + 200
+			cross_cut_len = 2 * cross_cut_len_cutter + 200
 			cut_first = 0
 			if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
 				cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
@@ -5466,7 +5466,7 @@ def last_signal_macd_div(
 
 		if ga_result_sell_primary['permit'][0]:
 
-			cross_cut_len = cross_cut_len_cutter + 200
+			cross_cut_len = 2 * cross_cut_len_cutter + 200
 			cut_first = 0
 			if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
 				cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
@@ -5531,7 +5531,7 @@ def last_signal_macd_div(
 
 		if ga_result_sell_secondry['permit'][0]:
 
-			cross_cut_len = cross_cut_len_cutter + 200
+			cross_cut_len = 2 * cross_cut_len_cutter + 200
 			cut_first = 0
 			if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
 				cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
@@ -5613,17 +5613,17 @@ def last_signal_macd_div(
 				dataset_pr_5M = pd.DataFrame()
 
 				cut_first = 0
-				if (len(dataset[symbol]['open']) > 600):
-					cut_first = len(dataset[symbol]['open']) - 600
+				if (lst_idx_buy_primary > 600):
+					cut_first = lst_idx_buy_primary - 600
 
 				dataset_pr_5M = {
 								symbol: dataset[symbol].copy()
 								}
 
-				dataset_pr_5M[symbol]['low'] = dataset_pr_5M[symbol]['low'][cut_first:int(len(dataset_pr_5M[symbol]['low']))].reset_index(drop=True)
-				dataset_pr_5M[symbol]['high'] = dataset_pr_5M[symbol]['high'][cut_first:int(len(dataset_pr_5M[symbol]['high']))].reset_index(drop=True)
-				dataset_pr_5M[symbol]['close'] = dataset_pr_5M[symbol]['close'][cut_first:int(len(dataset_pr_5M[symbol]['close']))].reset_index(drop=True)
-				dataset_pr_5M[symbol]['open'] = dataset_pr_5M[symbol]['open'][cut_first:int(len(dataset_pr_5M[symbol]['open']))].reset_index(drop=True)
+				dataset_pr_5M[symbol]['low'] = dataset_pr_5M[symbol]['low'][cut_first:int(lst_idx_buy_primary)].reset_index(drop=True)
+				dataset_pr_5M[symbol]['high'] = dataset_pr_5M[symbol]['high'][cut_first:int(lst_idx_buy_primary)].reset_index(drop=True)
+				dataset_pr_5M[symbol]['close'] = dataset_pr_5M[symbol]['close'][cut_first:int(lst_idx_buy_primary)].reset_index(drop=True)
+				dataset_pr_5M[symbol]['open'] = dataset_pr_5M[symbol]['open'][cut_first:int(lst_idx_buy_primary)].reset_index(drop=True)
 
 
 				res_pro_buy_primary = pd.DataFrame()
@@ -5655,20 +5655,20 @@ def last_signal_macd_div(
 
 					if diff_pr_down_buy_primary < ga_result_buy_primary['min_st'][0]:
 						diff_pr_down_buy_primary = ga_result_buy_primary['min_st'][0]
-						res_pro_buy_primary['low'][2] = dataset[symbol]['low'].iloc[-1] * (1-(ga_result_buy_primary['min_st'][0]/100))
+						res_pro_buy_primary['low'][2] = dataset[symbol]['low'][lst_idx_buy_primary] * (1-(ga_result_buy_primary['min_st'][0]/100))
 
 
 					if diff_pr_down_buy_primary < ga_result_buy_primary['max_st'][0]:
 						diff_pr_down_buy_primary = ga_result_buy_primary['max_st'][0]
-						res_pro_buy_primary['low'][2] = dataset[symbol]['low'].iloc[-1] * (1-(ga_result_buy_primary['max_st'][0]/100))
+						res_pro_buy_primary['low'][2] = dataset[symbol]['low'][lst_idx_buy_primary] * (1-(ga_result_buy_primary['max_st'][0]/100))
 
 					if diff_pr_top_buy_primary < ga_result_buy_primary['min_tp'][0]:
 						diff_pr_top_buy_primary = ga_result_buy_primary['min_tp'][0]
-						res_pro_buy_primary['high'][0] = dataset[symbol]['high'].iloc[-1]*(1+(ga_result_buy_primary['min_tp'][0]/100))
+						res_pro_buy_primary['high'][0] = dataset[symbol]['high'][lst_idx_buy_primary] * (1+(ga_result_buy_primary['min_tp'][0]/100))
 					
 					if diff_pr_top_buy_primary > ga_result_buy_primary['max_tp'][0]:
 						diff_pr_top_buy_primary = ga_result_buy_primary['max_tp'][0]
-						res_pro_buy_primary['high'][0] = dataset[symbol]['high'].iloc[-1]*(1+(ga_result_buy_primary['max_tp'][0]/100))
+						res_pro_buy_primary['high'][0] = dataset[symbol]['high'][lst_idx_buy_primary] * (1+(ga_result_buy_primary['max_tp'][0]/100))
 					#trend_long_buy = res_pro['trend_long'][0].values[0]
 					#trend_mid_buy = res_pro['trend_mid'][0].values[0]
 					#trend_short_1_buy = res_pro['trend_short1'][0].values[0]

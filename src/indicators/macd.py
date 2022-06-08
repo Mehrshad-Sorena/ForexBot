@@ -2571,7 +2571,7 @@ def divergence_macd(
 	signal_buy_primary = signal_buy_primary.reset_index(drop=True)
 
 	#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-		#print('=======> signal_buy_primary after = ',signal_buy_primary)
+		#print('=======> signal_sell_primary after = ',signal_sell_primary)
 
 	signal_buy_secondry = signal_buy_secondry.drop(columns=0)
 	signal_buy_secondry = signal_buy_secondry.dropna()
@@ -5930,30 +5930,31 @@ def last_signal_macd_div(
 		ga_result_buy_primary = pd.read_csv(buy_path_primary)
 
 		if ga_result_buy_primary['permit'][0]:
-			cross_cut_len = 2 * cross_cut_len_cutter + 200
-			cut_first = 0
-			if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
-				cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
+			#cross_cut_len = 2 * cross_cut_len_cutter + 200
+			#cut_first = 0
+			#if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
+				#cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
 
-			dataset_5M_cross = {
-								symbol: dataset[symbol].copy()
-								}
+			#print(cut_first)
+			#dataset_5M_cross = {
+								#symbol: dataset[symbol].copy()
+								#}
 
-			dataset_5M_cross[symbol]['low'] = dataset_5M_cross[symbol]['low'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['low'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['high'] = dataset_5M_cross[symbol]['high'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['high'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['close'] = dataset_5M_cross[symbol]['close'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['close'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['open'] = dataset_5M_cross[symbol]['open'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['open'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HLC/3'] = dataset_5M_cross[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLC/3'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HL/2'] = dataset_5M_cross[symbol]['HL/2'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HL/2'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HLCC/4'] = dataset_5M_cross[symbol]['HLCC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLCC/4'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['OHLC/4'] = dataset_5M_cross[symbol]['OHLC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['OHLC/4'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['volume'] = dataset_5M_cross[symbol]['volume'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['volume'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['time'] = dataset_5M_cross[symbol]['time'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['time'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['low'] = dataset_5M_cross[symbol]['low'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['low'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['high'] = dataset_5M_cross[symbol]['high'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['high'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['close'] = dataset_5M_cross[symbol]['close'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['close'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['open'] = dataset_5M_cross[symbol]['open'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['open'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HLC/3'] = dataset_5M_cross[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLC/3'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HL/2'] = dataset_5M_cross[symbol]['HL/2'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HL/2'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HLCC/4'] = dataset_5M_cross[symbol]['HLCC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLCC/4'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['OHLC/4'] = dataset_5M_cross[symbol]['OHLC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['OHLC/4'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['volume'] = dataset_5M_cross[symbol]['volume'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['volume'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['time'] = dataset_5M_cross[symbol]['time'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['time'])-1)].reset_index(drop=True)
 
 
 			buy_data_primary, _, _, _ = divergence_macd(
-														dataset=dataset_5M_cross,
-														dataset_15M=dataset_5M_cross,
+														dataset=dataset,
+														dataset_15M=dataset,
 														dataset_1H=dataset_1H,
 														Apply_to=ga_result_buy_primary['apply_to'][0],
 														symbol=symbol,
@@ -5980,7 +5981,7 @@ def last_signal_macd_div(
 														num_exteremes= int(ga_result_buy_primary['num_extreme'])
 														)
 			if (buy_data_primary.empty == False):
-				lst_idx_buy_primary = buy_data_primary['index'].iloc[-1] + cut_first + 1
+				lst_idx_buy_primary = buy_data_primary['index'].iloc[-1] + 1#cut_first + 1
 			else:
 				lst_idx_buy_primary = 0
 		else:
@@ -5995,30 +5996,30 @@ def last_signal_macd_div(
 
 		if ga_result_buy_secondry['permit'][0]:
 
-			cross_cut_len = 2 * cross_cut_len_cutter + 200
-			cut_first = 0
-			if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
-				cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
+			#cross_cut_len = 2 * cross_cut_len_cutter + 200
+			#cut_first = 0
+			#if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
+				#cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
 
-			dataset_5M_cross = {
-								symbol: dataset[symbol].copy()
-								}
+			#dataset_5M_cross = {
+								#symbol: dataset[symbol].copy()
+								#}
 
-			dataset_5M_cross[symbol]['low'] = dataset_5M_cross[symbol]['low'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['low'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['high'] = dataset_5M_cross[symbol]['high'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['high'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['close'] = dataset_5M_cross[symbol]['close'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['close'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['open'] = dataset_5M_cross[symbol]['open'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['open'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HLC/3'] = dataset_5M_cross[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLC/3'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HL/2'] = dataset_5M_cross[symbol]['HL/2'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HL/2'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HLCC/4'] = dataset_5M_cross[symbol]['HLCC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLCC/4'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['OHLC/4'] = dataset_5M_cross[symbol]['OHLC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['OHLC/4'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['volume'] = dataset_5M_cross[symbol]['volume'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['volume'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['time'] = dataset_5M_cross[symbol]['time'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['time'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['low'] = dataset_5M_cross[symbol]['low'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['low'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['high'] = dataset_5M_cross[symbol]['high'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['high'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['close'] = dataset_5M_cross[symbol]['close'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['close'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['open'] = dataset_5M_cross[symbol]['open'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['open'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HLC/3'] = dataset_5M_cross[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLC/3'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HL/2'] = dataset_5M_cross[symbol]['HL/2'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HL/2'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HLCC/4'] = dataset_5M_cross[symbol]['HLCC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLCC/4'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['OHLC/4'] = dataset_5M_cross[symbol]['OHLC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['OHLC/4'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['volume'] = dataset_5M_cross[symbol]['volume'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['volume'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['time'] = dataset_5M_cross[symbol]['time'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['time'])-1)].reset_index(drop=True)
 
 
 			_, buy_data_secondry, _, _ = divergence_macd(
-														dataset=dataset_5M_cross,
-														dataset_15M=dataset_5M_cross,
+														dataset=dataset,
+														dataset_15M=dataset,
 														dataset_1H=dataset_1H,
 														Apply_to=ga_result_buy_secondry['apply_to'][0],
 														symbol=symbol,
@@ -6033,6 +6034,7 @@ def last_signal_macd_div(
 														secondry_doing=True,
 														name_stp_pr=True,
 														name_stp_minmax=False,
+														#***************** Not Doing Yet *****************************
 														st_percent_buy_max = ga_result_buy_secondry['max_st'][0],
 														st_percent_buy_min = ga_result_buy_secondry['min_st'][0],
 														st_percent_minmax_sell = 0.9,
@@ -6044,7 +6046,7 @@ def last_signal_macd_div(
 														)
 
 			if (buy_data_secondry.empty == False):
-				lst_idx_buy_secondry = buy_data_secondry['index'].iloc[-1] + cut_first + 1
+				lst_idx_buy_secondry = buy_data_secondry['index'].iloc[-1] + 1#cut_first + 1
 			else:
 				lst_idx_buy_secondry = 0
 		else:
@@ -6057,32 +6059,37 @@ def last_signal_macd_div(
 	if os.path.exists(sell_path_primary):
 		ga_result_sell_primary = pd.read_csv(sell_path_primary)
 
-		if ga_result_sell_primary['permit'][0]:
+		if ga_result_sell_primary['permit'][0] == True:
 
-			cross_cut_len = 2 * cross_cut_len_cutter + 200
-			cut_first = 0
-			if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
-				cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
+			#print(cross_cut_len_cutter)
 
-			dataset_5M_cross = {
-								symbol: dataset[symbol].copy()
-								}
+			#cross_cut_len = 2 * cross_cut_len_cutter + 400
+			#cut_first = 0
+			#if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
+				#cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
 
-			dataset_5M_cross[symbol]['low'] = dataset_5M_cross[symbol]['low'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['low'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['high'] = dataset_5M_cross[symbol]['high'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['high'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['close'] = dataset_5M_cross[symbol]['close'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['close'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['open'] = dataset_5M_cross[symbol]['open'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['open'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HLC/3'] = dataset_5M_cross[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLC/3'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HL/2'] = dataset_5M_cross[symbol]['HL/2'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HL/2'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HLCC/4'] = dataset_5M_cross[symbol]['HLCC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLCC/4'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['OHLC/4'] = dataset_5M_cross[symbol]['OHLC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['OHLC/4'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['volume'] = dataset_5M_cross[symbol]['volume'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['volume'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['time'] = dataset_5M_cross[symbol]['time'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['time'])-1)].reset_index(drop=True)
+			#dataset_5M_cross = {
+								#symbol: dataset[symbol].copy()
+								#}
 
+			#print('cut first = ',int(len(dataset_5M_cross[symbol]['low'])) - cut_first)
+
+			#dataset_5M_cross[symbol]['low'] = dataset_5M_cross[symbol]['low'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['low']))].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['high'] = dataset_5M_cross[symbol]['high'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['high']))].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['close'] = dataset_5M_cross[symbol]['close'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['close']))].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['open'] = dataset_5M_cross[symbol]['open'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['open']))].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HLC/3'] = dataset_5M_cross[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLC/3']))].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HL/2'] = dataset_5M_cross[symbol]['HL/2'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HL/2']))].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HLCC/4'] = dataset_5M_cross[symbol]['HLCC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLCC/4']))].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['OHLC/4'] = dataset_5M_cross[symbol]['OHLC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['OHLC/4']))].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['volume'] = dataset_5M_cross[symbol]['volume'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['volume']))].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['time'] = dataset_5M_cross[symbol]['time'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['time']))].reset_index(drop=True)
+
+			#print(dataset_5M_cross[symbol]['low'])
 
 			_, _, sell_data_primary, _ = divergence_macd(
-														dataset=dataset_5M_cross,
-														dataset_15M=dataset_5M_cross,
+														dataset=dataset,
+														dataset_15M=dataset,
 														dataset_1H=dataset_1H,
 														Apply_to=ga_result_sell_primary['apply_to'][0],
 														symbol=symbol,
@@ -6097,7 +6104,6 @@ def last_signal_macd_div(
 														secondry_doing=False,
 														name_stp_pr=True,
 														name_stp_minmax=False,
-														#******** Dont Doing Not Yet ********************************
 														st_percent_buy_max = 0,
 														st_percent_buy_min = 0,
 														st_percent_sell_max = ga_result_sell_primary['max_st'][0],
@@ -6111,7 +6117,7 @@ def last_signal_macd_div(
 														)
 
 			if (sell_data_primary.empty == False):
-				lst_idx_sell_primary = sell_data_primary['index'].iloc[-1] + cut_first + 1
+				lst_idx_sell_primary = sell_data_primary['index'].iloc[-1] + 1
 			else:
 				lst_idx_sell_primary = 0
 		else:
@@ -6126,30 +6132,30 @@ def last_signal_macd_div(
 
 		if ga_result_sell_secondry['permit'][0]:
 
-			cross_cut_len = 2 * cross_cut_len_cutter + 200
-			cut_first = 0
-			if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
-				cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
+			#cross_cut_len = 2 * cross_cut_len_cutter + 200
+			#cut_first = 0
+			#if (int(len(dataset[symbol]['low'])-1) > cross_cut_len):
+				#cut_first = int(len(dataset[symbol]['low'])-1) - cross_cut_len
 
-			dataset_5M_cross = {
-								symbol: dataset[symbol].copy()
-								}
+			#dataset_5M_cross = {
+			#					#symbol: dataset[symbol].copy()
+								#}
 
-			dataset_5M_cross[symbol]['low'] = dataset_5M_cross[symbol]['low'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['low'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['high'] = dataset_5M_cross[symbol]['high'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['high'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['close'] = dataset_5M_cross[symbol]['close'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['close'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['open'] = dataset_5M_cross[symbol]['open'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['open'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HLC/3'] = dataset_5M_cross[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLC/3'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HL/2'] = dataset_5M_cross[symbol]['HL/2'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HL/2'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['HLCC/4'] = dataset_5M_cross[symbol]['HLCC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLCC/4'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['OHLC/4'] = dataset_5M_cross[symbol]['OHLC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['OHLC/4'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['volume'] = dataset_5M_cross[symbol]['volume'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['volume'])-1)].reset_index(drop=True)
-			dataset_5M_cross[symbol]['time'] = dataset_5M_cross[symbol]['time'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['time'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['low'] = dataset_5M_cross[symbol]['low'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['low'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['high'] = dataset_5M_cross[symbol]['high'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['high'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['close'] = dataset_5M_cross[symbol]['close'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['close'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['open'] = dataset_5M_cross[symbol]['open'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['open'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HLC/3'] = dataset_5M_cross[symbol]['HLC/3'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLC/3'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HL/2'] = dataset_5M_cross[symbol]['HL/2'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HL/2'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['HLCC/4'] = dataset_5M_cross[symbol]['HLCC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['HLCC/4'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['OHLC/4'] = dataset_5M_cross[symbol]['OHLC/4'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['OHLC/4'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['volume'] = dataset_5M_cross[symbol]['volume'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['volume'])-1)].reset_index(drop=True)
+			#dataset_5M_cross[symbol]['time'] = dataset_5M_cross[symbol]['time'].iloc[cut_first:int(len(dataset_5M_cross[symbol]['time'])-1)].reset_index(drop=True)
 
 
 			_, _, _, sell_data_secondry = divergence_macd(
-														dataset=dataset_5M_cross,
-														dataset_15M=dataset_5M_cross,
+														dataset=dataset,
+														dataset_15M=dataset,
 														dataset_1H=dataset_1H,
 														Apply_to=ga_result_sell_secondry['apply_to'][0],
 														symbol=symbol,
@@ -6176,7 +6182,7 @@ def last_signal_macd_div(
 														)
 
 			if (sell_data_secondry.empty == False):
-				lst_idx_sell_secondry = sell_data_secondry['index'].iloc[-1] + cut_first + 1
+				lst_idx_sell_secondry = sell_data_secondry['index'].iloc[-1] + 1#cut_first + 1
 			else:
 				lst_idx_sell_secondry = 0
 		else:
@@ -6185,6 +6191,10 @@ def last_signal_macd_div(
 		signal = 'no_trade'	
 		lst_idx_sell_secondry = 0
 		#return signal, resist, protect
+
+
+	print('lst_idx_buy_primary =====> ',lst_idx_buy_primary)
+	#print(buy_data_primary)
 
 	#***** Last Signal:
 
@@ -6203,7 +6213,7 @@ def last_signal_macd_div(
 
 		if ga_result_buy_primary['methode'][0] == 'pr':
 
-			if ga_result_buy_primary['methode'][0] == 'pr' and lst_idx_buy_primary != 0:
+			if lst_idx_buy_primary != 0:
 
 				dataset_pr_5M = pd.DataFrame()
 
@@ -6293,7 +6303,7 @@ def last_signal_macd_div(
 
 		print('================================')
 
-
+	print('lst_idx_sell_primary =======> ',lst_idx_sell_primary)
 	if (
 		lst_idx_sell_primary > lst_idx_buy_primary and
 		lst_idx_sell_primary > lst_idx_sell_secondry and
@@ -6309,13 +6319,13 @@ def last_signal_macd_div(
 
 		if ga_result_sell_primary['methode'][0] == 'pr':
 
-			if ga_result_sell_primary != 0:
+			if lst_idx_sell_primary != 0:
 
 				dataset_pr_5M = pd.DataFrame()
 
 				cut_first = 0
-				if (lst_idx_sell_primary > 600):
-					cut_first = lst_idx_sell_primary - 600
+				if (int(lst_idx_sell_primary) > 600):
+					cut_first = int(lst_idx_sell_primary) - 600
 
 				dataset_pr_5M = {
 								symbol: dataset[symbol].copy()
@@ -6514,9 +6524,9 @@ def last_signal_macd_div(
 
 #*********************************** How To Use Funcs ************************************************************
 """
-symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,2000)
+symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
 #symbol_data_15M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,4000)
-symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,500)
+symbol_data_1H,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,510)
 
 print(last_signal_macd_div(
 						dataset=symbol_data_5M,

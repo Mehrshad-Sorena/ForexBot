@@ -76,16 +76,16 @@ def dataset_spliter(
 						symbol: dataset_5M[symbol].copy()
 						}
 
-	symbol_data_5M[symbol]['low'] = dataset_5M[symbol]['low'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
-	symbol_data_5M[symbol]['high'] = dataset_5M[symbol]['high'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
-	symbol_data_5M[symbol]['close'] = dataset_5M[symbol]['close'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
-	symbol_data_5M[symbol]['open'] = dataset_5M[symbol]['open'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
-	symbol_data_5M[symbol]['HL/2'] = dataset_5M[symbol]['HL/2'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
-	symbol_data_5M[symbol]['HLC/3'] = dataset_5M[symbol]['HLC/3'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
-	symbol_data_5M[symbol]['HLCC/4'] = dataset_5M[symbol]['HLCC/4'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
-	symbol_data_5M[symbol]['OHLC/4'] = dataset_5M[symbol]['OHLC/4'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
-	symbol_data_5M[symbol]['volume'] = dataset_5M[symbol]['volume'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
-	symbol_data_5M[symbol]['time'] = dataset_5M[symbol]['time'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
+	symbol_data_5M[symbol]['low'] = symbol_data_5M[symbol]['low'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
+	symbol_data_5M[symbol]['high'] = symbol_data_5M[symbol]['high'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
+	symbol_data_5M[symbol]['close'] = symbol_data_5M[symbol]['close'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
+	symbol_data_5M[symbol]['open'] = symbol_data_5M[symbol]['open'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
+	symbol_data_5M[symbol]['HL/2'] = symbol_data_5M[symbol]['HL/2'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
+	symbol_data_5M[symbol]['HLC/3'] = symbol_data_5M[symbol]['HLC/3'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
+	symbol_data_5M[symbol]['HLCC/4'] = symbol_data_5M[symbol]['HLCC/4'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
+	symbol_data_5M[symbol]['OHLC/4'] = symbol_data_5M[symbol]['OHLC/4'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
+	symbol_data_5M[symbol]['volume'] = symbol_data_5M[symbol]['volume'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
+	symbol_data_5M[symbol]['time'] = symbol_data_5M[symbol]['time'][spliter_5M_first:spliter_5M_end].reset_index(drop=True)
 
 	loc_1H = 0
 	location_1H = -1
@@ -101,20 +101,22 @@ def dataset_spliter(
 
 		loc_1H += 1
 
+	location_1H += 1
+
 	symbol_data_1H = {
 						symbol: dataset_1H[symbol].copy()
 						}
 
-	symbol_data_1H[symbol]['low'] = dataset_1H[symbol]['low'][0:location_1H].reset_index(drop=True)
-	symbol_data_1H[symbol]['high'] = dataset_1H[symbol]['high'][0:location_1H].reset_index(drop=True)
-	symbol_data_1H[symbol]['close'] = dataset_1H[symbol]['close'][0:location_1H].reset_index(drop=True)
-	symbol_data_1H[symbol]['open'] = dataset_1H[symbol]['open'][0:location_1H].reset_index(drop=True)
-	symbol_data_1H[symbol]['HL/2'] = dataset_1H[symbol]['HL/2'][0:location_1H].reset_index(drop=True)
-	symbol_data_1H[symbol]['HLC/3'] = dataset_1H[symbol]['HLC/3'][0:location_1H].reset_index(drop=True)
-	symbol_data_1H[symbol]['HLCC/4'] = dataset_1H[symbol]['HLCC/4'][0:location_1H].reset_index(drop=True)
-	symbol_data_1H[symbol]['OHLC/4'] = dataset_1H[symbol]['OHLC/4'][0:location_1H].reset_index(drop=True)
-	symbol_data_1H[symbol]['volume'] = dataset_1H[symbol]['volume'][0:location_1H].reset_index(drop=True)
-	symbol_data_1H[symbol]['time'] = dataset_1H[symbol]['time'][0:location_1H].reset_index(drop=True)
+	symbol_data_1H[symbol]['low'] = symbol_data_1H[symbol]['low'][0:location_1H].reset_index(drop=True)
+	symbol_data_1H[symbol]['high'] = symbol_data_1H[symbol]['high'][0:location_1H].reset_index(drop=True)
+	symbol_data_1H[symbol]['close'] = symbol_data_1H[symbol]['close'][0:location_1H].reset_index(drop=True)
+	symbol_data_1H[symbol]['open'] = symbol_data_1H[symbol]['open'][0:location_1H].reset_index(drop=True)
+	symbol_data_1H[symbol]['HL/2'] = symbol_data_1H[symbol]['HL/2'][0:location_1H].reset_index(drop=True)
+	symbol_data_1H[symbol]['HLC/3'] = symbol_data_1H[symbol]['HLC/3'][0:location_1H].reset_index(drop=True)
+	symbol_data_1H[symbol]['HLCC/4'] = symbol_data_1H[symbol]['HLCC/4'][0:location_1H].reset_index(drop=True)
+	symbol_data_1H[symbol]['OHLC/4'] = symbol_data_1H[symbol]['OHLC/4'][0:location_1H].reset_index(drop=True)
+	symbol_data_1H[symbol]['volume'] = symbol_data_1H[symbol]['volume'][0:location_1H].reset_index(drop=True)
+	symbol_data_1H[symbol]['time'] = symbol_data_1H[symbol]['time'][0:location_1H].reset_index(drop=True)
 
 	return symbol_data_5M, symbol_data_1H
 
@@ -359,9 +361,9 @@ def ga_optimizer_sell():
 	for sym in symbols:
 
 		if not (
-			sym.name == 'AUDCAD_i' or
-			sym.name == 'AUDCHF_i' or
-			sym.name == 'AUDUSD_i' or
+			#sym.name == 'AUDCAD_i' or
+			#sym.name == 'AUDCHF_i' or
+			#sym.name == 'AUDUSD_i' or
 			sym.name == 'CADJPY_i' or
 			sym.name == 'EURAUD_i' or
 			sym.name == 'EURCAD_i' or
@@ -372,7 +374,7 @@ def ga_optimizer_sell():
 			sym.name == 'GBPAUD_i' or
 			sym.name == 'GBPCAD_i' or
 			sym.name == 'GBPJPY_i' or
-			sym.name == 'GBPUSD_i' or
+			#sym.name == 'GBPUSD_i' or
 			sym.name == 'USDJPY_i' or
 			sym.name == 'USDCAD_i' or
 			sym.name == 'CAC40_i' or
@@ -380,8 +382,8 @@ def ga_optimizer_sell():
 			sym.name == 'GER40_i' or
 			sym.name == 'SPX500_i' or
 			sym.name == 'WSt30_m_i' or
-			sym.name == 'STOXX50_i' or
-			sym.name == 'XAUUSD_i'
+			sym.name == 'STOXX50_i'
+			#sym.name == 'XAUUSD_i'
 			): continue
 
 		#if sym.name != my_sym: continue
@@ -396,7 +398,7 @@ def ga_optimizer_sell():
 			print('====================== high_distance sell ==> ',high_distance)
 			print('====================== low_distance sell ===> ',low_distance)
 
-			print('================= my_sym optimizer sell ====> ',my_sym)
+			print('================= my_sym optimizer sell ====> ',sym.name)
 
 			print('========================= AI Sell ==========> ',learn_counter)
 			print()
@@ -405,7 +407,7 @@ def ga_optimizer_sell():
 																								sym=sym.name,
 																								num_5M=99000,
 																								num_15M=1,
-																								num_1H=8250,
+																								num_1H=8323,
 																								num_4H=1
 																								)
 			symbol_data_5M,symbol_data_1H = dataset_spliter(
@@ -435,6 +437,7 @@ def ga_optimizer_sell():
 						secondry_doing=False
 						)
 			else:
+				learn_counter = 2
 				if learn_counter > 1: 
 					num_turn = 120
 				else:
@@ -452,6 +455,7 @@ def ga_optimizer_sell():
 						primary_doing=True,
 						secondry_doing=False
 						)
+				#ga_tester_sell()
 
 
 			learn_counter += 1
@@ -897,9 +901,9 @@ my_sym = 'GBPUSD_i'
 #learning_buy()
 #ga_tester_buy()
 
-#ga_optimizer_sell()
+ga_optimizer_sell()
 #learning_sell()
-ga_tester_sell()
+#ga_tester_sell()
 
 
 #Task_optimizer()

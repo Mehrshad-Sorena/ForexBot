@@ -3996,7 +3996,7 @@ def genetic_algo_div_macd(
 		if secondry_doing == True:
 			sell_path = 'GA/MACD/secondry/sell/'+symbol+'.csv'
 
-	if flag_trade == 'buy':
+	if False:#flag_trade == 'buy':
 		if os.path.exists(buy_path):
 			with open(buy_path, 'r', newline='') as myfile:
 				for line in csv.DictReader(myfile):

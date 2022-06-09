@@ -565,7 +565,7 @@ def divergence_macd(
 											(dataset_1H[symbol]['time'].dt.hour.to_numpy() == dataset[symbol]['time'][int(extreme_min['index'][elm])].hour)
 											)[0]
 
-						location_1H = list_time[0]
+						location_1H = list_time[0] + 1
 
 						if location_1H < 500: continue
 
@@ -823,7 +823,7 @@ def divergence_macd(
 											(dataset_1H[symbol]['time'].dt.hour.to_numpy() == dataset[symbol]['time'][int(extreme_min['index'][elm])].hour)
 											)[0]
 
-						location_1H = list_time[0]
+						location_1H = list_time[0] + 1
 
 						if location_1H < 500: continue
 
@@ -1080,7 +1080,7 @@ def divergence_macd(
 											(dataset_1H[symbol]['time'].dt.hour.to_numpy() == dataset[symbol]['time'][int(extreme_min['index'][elm])].hour)
 											)[0]
 
-						location_1H = list_time[0]
+						location_1H = list_time[0] + 1
 
 						if location_1H < 500: continue
 
@@ -1671,6 +1671,7 @@ def divergence_macd(
 						dataset_pr_5M['high'] = dataset[symbol]['high'][cut_first:int(extreme_max['index'][elm])].reset_index(drop=True)
 						dataset_pr_5M['close'] = dataset[symbol]['close'][cut_first:int(extreme_max['index'][elm])].reset_index(drop=True)
 						dataset_pr_5M['open'] = dataset[symbol]['open'][cut_first:int(extreme_max['index'][elm])].reset_index(drop=True)
+						dataset_pr_5M['time'] = dataset[symbol]['time'][cut_first:int(extreme_max['index'][elm])].reset_index(drop=True)
 
 						#loc_1H = 0
 						location_1H = -1
@@ -1693,7 +1694,7 @@ def divergence_macd(
 											(dataset_1H[symbol]['time'].dt.hour.to_numpy() == dataset[symbol]['time'][int(extreme_max['index'][elm])].hour)
 											)[0]
 
-						location_1H = list_time[0]
+						location_1H = list_time[0] + 1
 
 						if location_1H < 500: continue
 
@@ -1705,6 +1706,10 @@ def divergence_macd(
 						dataset_pr_1H['high'] = dataset_1H[symbol]['high'][cut_first_1H:location_1H].reset_index(drop=True)
 						dataset_pr_1H['close'] = dataset_1H[symbol]['close'][cut_first_1H:location_1H].reset_index(drop=True)
 						dataset_pr_1H['open'] = dataset_1H[symbol]['open'][cut_first_1H:location_1H].reset_index(drop=True)
+						dataset_pr_1H['time'] = dataset_1H[symbol]['time'][cut_first_1H:location_1H].reset_index(drop=True)
+
+						#print(dataset_pr_5M['time'].iloc[-1])
+						#print(dataset_pr_1H['time'].iloc[-1])
 
 						res_pro = pd.DataFrame()
 					
@@ -1885,7 +1890,7 @@ def divergence_macd(
 											(dataset_1H[symbol]['time'].dt.hour.to_numpy() == dataset[symbol]['time'][int(extreme_max['index'][elm])].hour)
 											)[0]
 
-						location_1H = list_time[0]
+						location_1H = list_time[0] + 1
 
 						if location_1H < 500: continue
 
@@ -2078,7 +2083,7 @@ def divergence_macd(
 											(dataset_1H[symbol]['time'].dt.hour.to_numpy() == dataset[symbol]['time'][int(extreme_max['index'][elm])].hour)
 											)[0]
 
-						location_1H = list_time[0]
+						location_1H = list_time[0] + 1
 
 						if location_1H < 500: continue
 
@@ -4355,7 +4360,7 @@ def genetic_algo_div_macd(
 				print('........................................................')
 				print()
 
-			try:
+			if True:
 				if flag_trade == 'buy':
 					if primary_doing == True:
 						buy_data, _, _, _ = divergence_macd(
@@ -4478,7 +4483,7 @@ def genetic_algo_div_macd(
 				if flag_trade == 'sell' and sell_data.empty==True:
 					flag_golden_cross = True
 
-			except Exception as ex:
+			else:#except Exception as ex:
 				print('getting error GA Golden Cross: ', ex)
 				flag_golden_cross = True
 

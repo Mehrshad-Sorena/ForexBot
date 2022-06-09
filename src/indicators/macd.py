@@ -4360,7 +4360,7 @@ def genetic_algo_div_macd(
 				print('........................................................')
 				print()
 
-			if True:
+			try:
 				if flag_trade == 'buy':
 					if primary_doing == True:
 						buy_data, _, _, _ = divergence_macd(
@@ -4483,7 +4483,7 @@ def genetic_algo_div_macd(
 				if flag_trade == 'sell' and sell_data.empty==True:
 					flag_golden_cross = True
 
-			else:#except Exception as ex:
+			except Exception as ex:
 				print('getting error GA Golden Cross: ', ex)
 				flag_golden_cross = True
 

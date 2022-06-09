@@ -3972,14 +3972,14 @@ def genetic_algo_div_macd(
 
 	#*************************** Algorithm *************************************************//
 
-	fast_period_upper = 2880
-	fast_period_lower = 40
+	fast_period_upper = 600
+	fast_period_lower = 10
 
-	slow_period_upper = 6240
-	slow_period_lower = 100
+	slow_period_upper = 1440
+	slow_period_lower = 20
 
 	signal_period_upper = 50
-	signal_period_lower = 4
+	signal_period_lower = 5
 
 	Chromosome = initilize_values_genetic(
 										fast_period_upper=fast_period_upper,

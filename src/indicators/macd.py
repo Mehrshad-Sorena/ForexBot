@@ -621,14 +621,7 @@ def divergence_macd(
 							#res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
 
 
-							if (
-								#dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
-								#dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
-								#signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
-								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
-								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
-								True#trend_sma_5M == 'buy'
-								):
+							if True:
 
 								#mehrshad += 1
 
@@ -694,7 +687,7 @@ def divergence_macd(
 
 						if np.isnan(signal_buy_primary['tp_pr'][primary_counter]): 
 							signal_buy_primary['tp_pr'][primary_counter] = 0
-							signal_buy_primary['flag_pr'][primary_counter] = 'no_my_flag'
+							signal_buy_primary['flag_pr'][primary_counter] = 'no_flag'
 						if np.isnan(signal_buy_primary['st_pr'][primary_counter]): signal_buy_primary['st_pr'][primary_counter] = 0
 						if np.isnan(signal_buy_primary['tp_pr_index'][primary_counter]): signal_buy_primary['tp_pr_index'][primary_counter] = -1
 						if np.isnan(signal_buy_primary['st_pr_index'][primary_counter]): signal_buy_primary['st_pr_index'][primary_counter] = -1
@@ -879,14 +872,7 @@ def divergence_macd(
 							#res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
 
 
-							if (
-								#dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
-								#dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
-								#signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
-								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
-								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
-								True#trend_sma_5M == 'buy'
-								):
+							if True:
 
 								#mehrshad += 1
 
@@ -950,7 +936,7 @@ def divergence_macd(
 
 						if np.isnan(signal_buy_primary['tp_pr'][primary_counter]): 
 							signal_buy_primary['tp_pr'][primary_counter] = 0
-							signal_buy_primary['flag_pr'][primary_counter] = 'no_my_flag'
+							signal_buy_primary['flag_pr'][primary_counter] = 'no_flag'
 						if np.isnan(signal_buy_primary['st_pr'][primary_counter]): signal_buy_primary['st_pr'][primary_counter] = 0
 						if np.isnan(signal_buy_primary['tp_pr_index'][primary_counter]): signal_buy_primary['tp_pr_index'][primary_counter] = -1
 						if np.isnan(signal_buy_primary['st_pr_index'][primary_counter]): signal_buy_primary['st_pr_index'][primary_counter] = -1
@@ -1136,14 +1122,7 @@ def divergence_macd(
 							#res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
 
 
-							if (
-								#dataset[symbol]['high'][int(extreme_min['index'][elm])]*1.0004 < (res_pro['high'][2]) and
-								#dataset[symbol]['low'][int(extreme_min['index'][elm])] >= (res_pro['low'][2]) and
-								#signal_buy_primary['diff_pr_top'][primary_counter] >= signal_buy_primary['diff_pr_down'][primary_counter] and
-								#signal_buy_primary['diff_pr_down'][primary_counter] <= st_percent_minmax_buy and
-								#signal_buy_primary['diff_pr_top'][primary_counter] <= tp_percent_minmax_buy_max and
-								True#trend_sma_5M == 'buy'
-								):
+							if True:
 
 								#mehrshad += 1
 
@@ -1208,7 +1187,7 @@ def divergence_macd(
 
 						if np.isnan(signal_buy_primary['tp_pr'][primary_counter]): 
 							signal_buy_primary['tp_pr'][primary_counter] = 0
-							signal_buy_primary['flag_pr'][primary_counter] = 'no_my_flag'
+							signal_buy_primary['flag_pr'][primary_counter] = 'no_flag'
 						if np.isnan(signal_buy_primary['st_pr'][primary_counter]): signal_buy_primary['st_pr'][primary_counter] = 0
 						if np.isnan(signal_buy_primary['tp_pr_index'][primary_counter]): signal_buy_primary['tp_pr_index'][primary_counter] = -1
 						if np.isnan(signal_buy_primary['st_pr_index'][primary_counter]): signal_buy_primary['st_pr_index'][primary_counter] = -1

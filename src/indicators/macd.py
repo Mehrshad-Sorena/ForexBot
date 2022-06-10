@@ -436,6 +436,7 @@ def divergence_macd(
 		secondry_counter = 0
 
 		print('exterme finded ======> ',len(extreme_min['index']))
+		print('len dataset =========> ',len(dataset[symbol]['low']))
 
 		print('last max finded ======> ',extreme_max['index'].iloc[-1])
 		print('last min finded ======> ',extreme_min['index'].iloc[-1])
@@ -643,6 +644,8 @@ def divergence_macd(
 								signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_max
 								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_max/100))
 
+							if int(extreme_min['index'][elm] + num_exteremes) >= len(dataset[symbol]['low']): break
+
 							if (
 								dataset[symbol]['low'][int(extreme_min['index'][elm] + num_exteremes)] > res_pro['low'][2] and
 								dataset[symbol]['high'][int(extreme_min['index'][elm] + num_exteremes)] < res_pro['high'][0] and
@@ -650,16 +653,26 @@ def divergence_macd(
 								):
 
 
-								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0]) - 1) > 1):
+								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0])) > 1):
 									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0])
 									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_top'][primary_counter]
+								
+								elif ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0])) == 1):
+									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0]
+									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_top'][primary_counter]
+
 								else:
 									signal_buy_primary['tp_pr_index'][primary_counter] = -1
 									signal_buy_primary['tp_pr'][primary_counter] = 0
 
-								if ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])-1) > 1):
+								if ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])) > 1):
 									signal_buy_primary['st_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.min(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])
 									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_down'][primary_counter]
+
+								elif ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])) == 1):
+									signal_buy_primary['st_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0]
+									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_down'][primary_counter]
+
 								else:
 									signal_buy_primary['st_pr_index'][primary_counter] = -1
 									signal_buy_primary['st_pr'][primary_counter] = 0
@@ -907,6 +920,8 @@ def divergence_macd(
 								signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_max
 								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_max/100))
 
+							if int(extreme_min['index'][elm] + num_exteremes) >= len(dataset[symbol]['low']): break
+
 							if (
 								dataset[symbol]['low'][int(extreme_min['index'][elm] + num_exteremes)] > res_pro['low'][2] and
 								dataset[symbol]['high'][int(extreme_min['index'][elm] + num_exteremes)] < res_pro['high'][0] and
@@ -914,16 +929,26 @@ def divergence_macd(
 								):
 
 
-								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0]) - 1) > 1):
+								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0])) > 1):
 									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0])
 									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_top'][primary_counter]
+								
+								elif ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0])) == 1):
+									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0]
+									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_top'][primary_counter]
+
 								else:
 									signal_buy_primary['tp_pr_index'][primary_counter] = -1
 									signal_buy_primary['tp_pr'][primary_counter] = 0
 
-								if ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])-1) > 1):
+								if ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])) > 1):
 									signal_buy_primary['st_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.min(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])
 									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_down'][primary_counter]
+
+								elif ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])) == 1):
+									signal_buy_primary['st_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0]
+									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_down'][primary_counter]
+
 								else:
 									signal_buy_primary['st_pr_index'][primary_counter] = -1
 									signal_buy_primary['st_pr'][primary_counter] = 0
@@ -1172,6 +1197,8 @@ def divergence_macd(
 								signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_max
 								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_max/100))
 
+							if int(extreme_min['index'][elm] + num_exteremes) >= len(dataset[symbol]['low']): break
+
 							if (
 								dataset[symbol]['low'][int(extreme_min['index'][elm] + num_exteremes)] > res_pro['low'][2] and
 								dataset[symbol]['high'][int(extreme_min['index'][elm] + num_exteremes)] < res_pro['high'][0] and
@@ -1179,16 +1206,26 @@ def divergence_macd(
 								):
 
 
-								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0]) - 1) > 1):
+								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0])) > 1):
 									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0])
 									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_top'][primary_counter]
+								
+								elif ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0])) == 1):
+									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes:-1].values*0.9996) >= (res_pro['high'][0])))[0]
+									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_top'][primary_counter]
+
 								else:
 									signal_buy_primary['tp_pr_index'][primary_counter] = -1
 									signal_buy_primary['tp_pr'][primary_counter] = 0
 
-								if ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])-1) > 1):
+								if ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])) > 1):
 									signal_buy_primary['st_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.min(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])
 									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_down'][primary_counter]
+
+								elif ((len(np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0])) == 1):
+									signal_buy_primary['st_pr_index'][primary_counter] = extreme_min['index'][elm] + num_exteremes + np.where((((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes:-1]).values) <= (res_pro['low'][2])))[0]
+									signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_buy_primary['st_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_min['index'][elm] + num_exteremes]) * 100#signal_buy_primary['diff_pr_down'][primary_counter]
+
 								else:
 									signal_buy_primary['st_pr_index'][primary_counter] = -1
 									signal_buy_primary['st_pr'][primary_counter] = 0
@@ -1781,22 +1818,34 @@ def divergence_macd(
 								signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_max
 								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_max/100))
 
+							if int(extreme_max['index'][elm] + num_exteremes) >= len(dataset[symbol]['low']): break
+
 							if (
 								dataset[symbol]['low'][int(extreme_max['index'][elm]) + num_exteremes] > res_pro['low'][2] and
 								dataset[symbol]['high'][int(extreme_max['index'][elm]) + num_exteremes] < res_pro['high'][0] and
 								dataset[symbol]['HL/2'][int(extreme_max['index'][elm]) + num_exteremes] - dataset[symbol]['HL/2'][int(extreme_max['index'][elm])] < 0
 								):
 
-								if ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0]) - 1) > 1):
+								if ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0])) > 1):
 									signal_sell_primary['tp_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.min(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0])
 									signal_sell_primary['tp_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_sell_primary['tp_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_down'][primary_counter]
+								
+								elif ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0])) == 1):
+									signal_sell_primary['tp_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0]
+									signal_sell_primary['tp_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_sell_primary['tp_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_down'][primary_counter]
+
 								else:
 									signal_sell_primary['tp_pr_index'][primary_counter] = -1
 									signal_sell_primary['tp_pr'][primary_counter] = 0
 
-								if ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])-1) > 1):
+								if ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])) > 1):
 									signal_sell_primary['st_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.min(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])
 									signal_sell_primary['st_pr'][primary_counter] = ((dataset[symbol]['high'][signal_sell_primary['st_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_top'][primary_counter]
+								
+								elif ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])) == 1):
+									signal_sell_primary['st_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0]
+									signal_sell_primary['st_pr'][primary_counter] = ((dataset[symbol]['high'][signal_sell_primary['st_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_top'][primary_counter]
+								
 								else:
 									signal_sell_primary['st_pr_index'][primary_counter] = -1
 									signal_sell_primary['st_pr'][primary_counter] = 0
@@ -1993,22 +2042,34 @@ def divergence_macd(
 								signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_max
 								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_max/100))
 
+							if int(extreme_max['index'][elm] + num_exteremes) >= len(dataset[symbol]['low']): break
+
 							if (
 								dataset[symbol]['low'][int(extreme_max['index'][elm]) + num_exteremes] > res_pro['low'][2] and
 								dataset[symbol]['high'][int(extreme_max['index'][elm]) + num_exteremes] < res_pro['high'][0] and
 								dataset[symbol]['HL/2'][int(extreme_max['index'][elm]) + num_exteremes] - dataset[symbol]['HL/2'][int(extreme_max['index'][elm])] < 0
 								):
 
-								if ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0]) - 1) > 1):
+								if ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0])) > 1):
 									signal_sell_primary['tp_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.min(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0])
 									signal_sell_primary['tp_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_sell_primary['tp_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_down'][primary_counter]
+								
+								elif ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0])) == 1):
+									signal_sell_primary['tp_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0]
+									signal_sell_primary['tp_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_sell_primary['tp_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_down'][primary_counter]
+
 								else:
 									signal_sell_primary['tp_pr_index'][primary_counter] = -1
 									signal_sell_primary['tp_pr'][primary_counter] = 0
 
-								if ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])-1) > 1):
+								if ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])) > 1):
 									signal_sell_primary['st_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.min(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])
 									signal_sell_primary['st_pr'][primary_counter] = ((dataset[symbol]['high'][signal_sell_primary['st_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_top'][primary_counter]
+								
+								elif ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])) == 1):
+									signal_sell_primary['st_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0]
+									signal_sell_primary['st_pr'][primary_counter] = ((dataset[symbol]['high'][signal_sell_primary['st_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_top'][primary_counter]
+								
 								else:
 									signal_sell_primary['st_pr_index'][primary_counter] = -1
 									signal_sell_primary['st_pr'][primary_counter] = 0
@@ -2206,22 +2267,34 @@ def divergence_macd(
 								signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_max
 								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_max/100))
 
+							if int(extreme_max['index'][elm] + num_exteremes) >= len(dataset[symbol]['low']): break
+
 							if (
 								dataset[symbol]['low'][int(extreme_max['index'][elm]) + num_exteremes] > res_pro['low'][2] and
 								dataset[symbol]['high'][int(extreme_max['index'][elm]) + num_exteremes] < res_pro['high'][0] and
 								dataset[symbol]['HL/2'][int(extreme_max['index'][elm]) + num_exteremes] - dataset[symbol]['HL/2'][int(extreme_max['index'][elm])] < 0
 								):
 
-								if ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0]) - 1) > 1):
+								if ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0])) > 1):
 									signal_sell_primary['tp_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.min(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0])
 									signal_sell_primary['tp_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_sell_primary['tp_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_down'][primary_counter]
+								
+								elif ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0])) == 1):
+									signal_sell_primary['tp_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes:-1].values * 1.0004) <= (res_pro['low'][2])))[0]
+									signal_sell_primary['tp_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes] - dataset[symbol]['low'][signal_sell_primary['tp_pr_index'][primary_counter]])/dataset[symbol]['low'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_down'][primary_counter]
+
 								else:
 									signal_sell_primary['tp_pr_index'][primary_counter] = -1
 									signal_sell_primary['tp_pr'][primary_counter] = 0
 
-								if ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])-1) > 1):
+								if ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])) > 1):
 									signal_sell_primary['st_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.min(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])
 									signal_sell_primary['st_pr'][primary_counter] = ((dataset[symbol]['high'][signal_sell_primary['st_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_top'][primary_counter]
+								
+								elif ((len(np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0])) == 1):
+									signal_sell_primary['st_pr_index'][primary_counter] = extreme_max['index'][elm] + num_exteremes + np.where((((dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes:-1]).values) >= (res_pro['high'][0])))[0]
+									signal_sell_primary['st_pr'][primary_counter] = ((dataset[symbol]['high'][signal_sell_primary['st_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes])/dataset[symbol]['high'][extreme_max['index'][elm] + num_exteremes]) * 100#signal_sell_primary['diff_pr_top'][primary_counter]
+								
 								else:
 									signal_sell_primary['st_pr_index'][primary_counter] = -1
 									signal_sell_primary['st_pr'][primary_counter] = 0
@@ -4052,11 +4125,11 @@ def genetic_algo_div_macd(
 
 	#*************************** Algorithm *************************************************//
 
-	fast_period_upper = 40
+	fast_period_upper = 140
 	fast_period_lower = 5
 
-	slow_period_upper = 5000
-	slow_period_lower = 250
+	slow_period_upper = 2500
+	slow_period_lower = 140
 
 	signal_period_upper = 50
 	signal_period_lower = 5
@@ -4849,10 +4922,10 @@ def genetic_algo_div_macd(
 								flag_learning = True
 							else:
 								min_st_buy = randint(80, 100)/100
-								flag_learning = True
+								flag_learning = False
 
-							while max_tp_buy < min_st_buy:
-								min_st_buy = randint(int((max_tp_buy/2)*100), 100)/100
+								while max_tp_buy < min_st_buy:
+									min_st_buy = randint(int((max_tp_buy/2)*100), 100)/100
 
 						score_for_reset = output_buy['score_pr'][0]
 
@@ -5057,10 +5130,10 @@ def genetic_algo_div_macd(
 								flag_learning = True
 							else:
 								min_st_sell = randint(80, 100)/100
-								flag_learning = True
+								flag_learning = False
 
-							while max_tp_sell < min_st_sell:
-								min_st_sell = randint(int((max_tp_sell/2)*100), 100)/100
+								while max_tp_sell < min_st_sell:
+									min_st_sell = randint(int((max_tp_sell/2)*100), 100)/100
 
 						score_for_reset_sell = output_sell['score_pr'][0]
 

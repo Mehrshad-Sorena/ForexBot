@@ -162,32 +162,38 @@ def ga_optimizer_buy():
 	for sym in symbols:
 
 		if not (
-			#sym.name == 'AUDCAD_i' or
+			sym.name == 'AUDCAD_i' or
 			sym.name == 'AUDCHF_i' or
-			#sym.name == my_sym or
-			#sym.name == 'CADJPY_i' or
-			#sym.name == 'EURAUD_i' or
+			sym.name == 'AUDUSD_i' or
+			sym.name == 'CADJPY_i' or
+			sym.name == 'EURAUD_i' or
 			sym.name == 'EURCAD_i' or
 			sym.name == 'EURCHF_i' or
-			#sym.name == 'EURGBP_i' or
+			sym.name == 'EURGBP_i' or
 			sym.name == 'EURUSD_i' or
 			sym.name == 'EURJPY_i' or
 			sym.name == 'GBPAUD_i' or
 			sym.name == 'GBPCAD_i' or
 			sym.name == 'GBPJPY_i' or
-			sym.name == 'GBPUSD_i' or
+			#sym.name == 'GBPUSD_i' or
 			sym.name == 'USDJPY_i' or
-			sym.name == 'USDCAD_i' or
-			sym.name == 'CAC40_i' or
-			sym.name == 'FTSE100_i' or
-			sym.name == 'GER40_i' or
-			sym.name == 'SPX500_i' or
-			sym.name == 'WSt30_m_i' or
-			sym.name == 'STOXX50_i' or
-			sym.name == 'XAUUSD_i'
+			#sym.name == 'USDCAD_i' or
+			sym.name == 'CAC40_i'
+			#sym.name == 'FTSE100_i' or
+			#sym.name == 'GER40_i' or
+			#sym.name == 'SPX500_i' or
+			#sym.name == 'WSt30_m_i' or
+			#sym.name == 'STOXX50_i' or
+			#sym.name == 'XAUUSD_i'
 			): continue
 
-		if sym.name != 'AUDCHF_i': continue
+		#if sym.name != 'XAUUSD_i': continue
+		#if sym.name != 'WSt30_m_i': continue
+		#if sym.name != 'FTSE100_i': continue
+		#if sym.name != 'STOXX50_i': continue
+		#if sym.name != 'SPX500_i': continue
+		#if sym.name != 'GBPUSD_i': continue
+		#if sym.name != 'GER40_i': continue
 
 
 
@@ -209,9 +215,9 @@ def ga_optimizer_buy():
 
 			dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
 																								sym=sym.name,
-																								num_5M=99000,
+																								num_5M=99800,
 																								num_15M=1,
-																								num_1H=8250,
+																								num_1H=8323,
 																								num_4H=1
 																								)
 			symbol_data_5M,symbol_data_1H = dataset_spliter(
@@ -219,7 +225,7 @@ def ga_optimizer_buy():
 														dataset_5M=dataset_5M,
 														dataset_1H=dataset_1H,
 														spliter_5M_end=99000,
-														spliter_5M_first=6000
+														spliter_5M_first=100
 														)
 
 			print('======================== len 5M ==========> ',len(symbol_data_5M[sym.name]['open']))
@@ -238,16 +244,17 @@ def ga_optimizer_buy():
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym.name,
 						num_turn=400,
-						max_score_ga_buy=9,
+						max_score_ga_buy=100,
 						max_score_ga_sell=600,
 						flag_trade='buy',
 						primary_doing=True,
 						secondry_doing=False
 						)
+				ga_tester_buy()
 			else:
 				learn_counter = 2
 				if learn_counter > 1: 
-					num_turn = 120
+					num_turn = 40
 				else:
 					num_turn = 200
 				ga_runner(
@@ -302,6 +309,8 @@ def ga_tester_buy():
 			sym.name == 'XAUUSD_i'
 			): continue
 
+		#if sym.name != 'SPX500_i': continue
+
 		#if sym.name != 'AUDCHF_i': continue
 
 		buy_path = 'GA/MACD/primary/buy/'+sym.name+'.csv'
@@ -330,7 +339,7 @@ def ga_tester_buy():
 														spliter_5M_first=90000
 														)
 
-				symbol_data_5M,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,9000)
+				symbol_data_5M,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,20000)
 				symbol_data_1H,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,3000)
 
 				macd_div_tester_for_permit(
@@ -348,8 +357,8 @@ def ga_tester_buy():
 			if 'permit' in ga_result_buy.columns:
 				while ga_result_buy['permit'][0] != True:
 					break
-					#ga_optimizer_buy()
-					#ga_tester_buy()
+					ga_optimizer_buy()
+					ga_tester_buy()
 
 
 def ga_optimizer_sell():
@@ -361,10 +370,10 @@ def ga_optimizer_sell():
 	for sym in symbols:
 
 		if not (
-			#sym.name == 'AUDCAD_i' or
-			#sym.name == 'AUDCHF_i' or
+			sym.name == 'AUDCAD_i' or
+			sym.name == 'AUDCHF_i' or
 			#sym.name == 'AUDUSD_i' or
-			sym.name == 'CADJPY_i' or
+			#sym.name == 'CADJPY_i' or
 			sym.name == 'EURAUD_i' or
 			sym.name == 'EURCAD_i' or
 			sym.name == 'EURCHF_i' or
@@ -374,7 +383,7 @@ def ga_optimizer_sell():
 			sym.name == 'GBPAUD_i' or
 			sym.name == 'GBPCAD_i' or
 			sym.name == 'GBPJPY_i' or
-			#sym.name == 'GBPUSD_i' or
+			sym.name == 'GBPUSD_i' or
 			sym.name == 'USDJPY_i' or
 			sym.name == 'USDCAD_i' or
 			sym.name == 'CAC40_i' or
@@ -382,8 +391,8 @@ def ga_optimizer_sell():
 			sym.name == 'GER40_i' or
 			sym.name == 'SPX500_i' or
 			sym.name == 'WSt30_m_i' or
-			sym.name == 'STOXX50_i'
-			#sym.name == 'XAUUSD_i'
+			sym.name == 'STOXX50_i' or
+			sym.name == 'XAUUSD_i'
 			): continue
 
 		#if sym.name != my_sym: continue
@@ -415,7 +424,7 @@ def ga_optimizer_sell():
 														dataset_5M=dataset_5M,
 														dataset_1H=dataset_1H,
 														spliter_5M_end=90000,
-														spliter_5M_first=6000
+														spliter_5M_first=0
 														)
 
 			sell_path = 'GA/MACD/primary/sell/'+sym.name+'.csv'
@@ -431,11 +440,12 @@ def ga_optimizer_sell():
 						symbol=sym.name,
 						num_turn=400,
 						max_score_ga_buy=70,
-						max_score_ga_sell=70,
+						max_score_ga_sell=100,
 						flag_trade='sell',
 						primary_doing=True,
 						secondry_doing=False
 						)
+				ga_tester_sell()
 			else:
 				learn_counter = 2
 				if learn_counter > 1: 
@@ -524,7 +534,7 @@ def ga_tester_sell():
 														spliter_5M_first=90000
 														)
 
-				symbol_data_5M,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,9000)
+				symbol_data_5M,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,10000)
 				symbol_data_1H,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,3000)
 
 				macd_div_tester_for_permit(
@@ -899,9 +909,9 @@ my_sym = 'GBPUSD_i'
 #ga_tester_buy()
 #ga_optimizer_buy()
 #learning_buy()
-#ga_tester_buy()
+ga_tester_buy()
 
-ga_optimizer_sell()
+#ga_optimizer_sell()
 #learning_sell()
 #ga_tester_sell()
 

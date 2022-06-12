@@ -592,8 +592,10 @@ def divergence_macd(
 											(dataset_1H[symbol]['time'].dt.day.to_numpy() == dataset[symbol]['time'][int(extreme_min['index'][elm])].day) &
 											(dataset_1H[symbol]['time'].dt.hour.to_numpy() == dataset[symbol]['time'][int(extreme_min['index'][elm])].hour)
 											)[0]
-
-						location_1H = list_time[0] + 1
+						try:
+							location_1H = list_time[0] + 1
+						except:
+							location_1H = 0
 
 						if location_1H < 500: continue
 
@@ -1042,7 +1044,10 @@ def divergence_macd(
 											(dataset_1H[symbol]['time'].dt.hour.to_numpy() == dataset[symbol]['time'][int(extreme_max['index'][elm])].hour)
 											)[0]
 
-						location_1H = list_time[0] + 1
+						try:
+							location_1H = list_time[0] + 1
+						except:
+							location_1H = 0
 
 						if location_1H < 500: continue
 
@@ -4852,10 +4857,11 @@ def last_signal_macd_div(
 														tp_percent_sell_max = 0,
 														tp_percent_sell_min = 0,
 														alpha= ga_result_buy_primary['alpha'][0],
-														num_exteremes= int(ga_result_buy_primary['num_extreme'])
+														num_exteremes= int(ga_result_buy_primary['num_extreme'][0]),
+														diff_extereme = int(ga_result_buy_primary['diff_extereme'][0])
 														)
 			if (buy_data_primary.empty == False):
-				lst_idx_buy_primary = buy_data_primary['index'].iloc[-1] + 1#cut_first + 1
+				lst_idx_buy_primary = int(buy_data_primary['index'].iloc[-1]) + 1#cut_first + 1
 			else:
 				lst_idx_buy_primary = 0
 		else:
@@ -4916,11 +4922,11 @@ def last_signal_macd_div(
 														tp_percent_buy_max = ga_result_buy_secondry['max_tp'][0],
 														tp_percent_buy_min = ga_result_buy_secondry['min_tp'][0],
 														alpha= ga_result_buy_secondry['alpha'][0],
-														num_exteremes= int(ga_result_buy_secondry['num_extreme'])
+														num_exteremes= int(ga_result_buy_secondry['num_extreme'][0])
 														)
 
 			if (buy_data_secondry.empty == False):
-				lst_idx_buy_secondry = buy_data_secondry['index'].iloc[-1] + 1#cut_first + 1
+				lst_idx_buy_secondry = int(buy_data_secondry['index'].iloc[-1]) + 1#cut_first + 1
 			else:
 				lst_idx_buy_secondry = 0
 		else:
@@ -4987,11 +4993,12 @@ def last_signal_macd_div(
 														tp_percent_sell_max = ga_result_sell_primary['max_tp'][0],
 														tp_percent_sell_min = ga_result_sell_primary['min_tp'][0],
 														alpha= ga_result_sell_primary['alpha'][0],
-														num_exteremes= int(ga_result_sell_primary['num_extreme'])
+														num_exteremes= int(ga_result_sell_primary['num_extreme'][0]),
+														diff_extereme = int(ga_result_sell_primary['diff_extereme'][0])
 														)
 
 			if (sell_data_primary.empty == False):
-				lst_idx_sell_primary = sell_data_primary['index'].iloc[-1] + 1
+				lst_idx_sell_primary = int(sell_data_primary['index'].iloc[-1]) + 1
 			else:
 				lst_idx_sell_primary = 0
 		else:
@@ -5052,11 +5059,11 @@ def last_signal_macd_div(
 														tp_percent_buy_max = ga_result_sell_secondry['max_tp'][0],
 														tp_percent_buy_min = ga_result_sell_secondry['min_tp'][0],
 														alpha= ga_result_sell_secondry['alpha'][0],
-														num_exteremes= int(ga_result_sell_secondry['num_extreme'])
+														num_exteremes= int(ga_result_sell_secondry['num_extreme'][0])
 														)
 
 			if (sell_data_secondry.empty == False):
-				lst_idx_sell_secondry = sell_data_secondry['index'].iloc[-1] + 1#cut_first + 1
+				lst_idx_sell_secondry = int(sell_data_secondry['index'].iloc[-1]) + 1#cut_first + 1
 			else:
 				lst_idx_sell_secondry = 0
 		else:

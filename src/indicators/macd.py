@@ -223,7 +223,8 @@ def divergence_macd(
 				tp_percent_sell_min = 0,
 				alpha=0.05,
 				num_exteremes=5,
-				diff_extereme=100
+				diff_extereme=100,
+				real_test=False
 				):
 
 	#*************** OutPuts:
@@ -348,6 +349,7 @@ def divergence_macd(
 				signal_buy_primary['flag_pr'] = np.nan
 				signal_buy_primary['diff_pr_top'] = np.nan
 				signal_buy_primary['diff_pr_down'] = np.nan
+				signal_buy_primary['flag_pr_index'] = np.nan
 				#signal_buy_primary['st_line'] = np.nan
 				#signal_buy_primary['tp_line'] = np.nan
 				#signal_buy_primary['power_pr_high'] = np.nan
@@ -416,6 +418,7 @@ def divergence_macd(
 				signal_sell_primary['flag_pr'] = np.nan
 				signal_sell_primary['diff_pr_top'] = np.nan
 				signal_sell_primary['diff_pr_down'] = np.nan
+				signal_sell_primary['flag_pr_index'] = np.nan
 
 		signal_sell_secondry = pd.DataFrame(np.zeros(len(extreme_max)))
 		signal_sell_secondry['signal'] = np.nan
@@ -627,8 +630,8 @@ def divergence_macd(
 													alpha=alpha
 													)
 						except:
-							res_pro['high'] = 'nan'
-							res_pro['low'] = 'nan'
+							res_pro['high'] = [dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_min/100)),0,0]#res_pro['high'] = 'nan'
+							res_pro['low'] = [0,0,dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_min/100))]#res_pro['low'] = 'nan'
 
 						if (res_pro.empty == False):
 							signal_buy_primary['diff_pr_top'][primary_counter] = (((res_pro['high'][0]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
@@ -676,6 +679,14 @@ def divergence_macd(
 								):
 
 
+								if primary_counter >= 1:
+									if (
+										real_test == True and
+										int(extreme_min['index'][elm] + 1) <= signal_buy_primary['flag_pr_index'][primary_counter-1]
+										):
+										continue
+
+
 								if ((len(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + 1:-1].values*0.9996) >= (res_pro['high'][0])))[0])) > 1):
 									signal_buy_primary['tp_pr_index'][primary_counter] = extreme_min['index'][elm] + 1 + np.min(np.where(((dataset[symbol]['high'][extreme_min['index'][elm] + 1:-1].values*0.9996) >= (res_pro['high'][0])))[0])
 									signal_buy_primary['tp_pr'][primary_counter] = ((dataset[symbol]['high'][signal_buy_primary['tp_pr_index'][primary_counter]] - dataset[symbol]['high'][extreme_min['index'][elm] + 1])/dataset[symbol]['high'][extreme_min['index'][elm] + 1]) * 100#signal_buy_primary['diff_pr_top'][primary_counter]
@@ -716,6 +727,7 @@ def divergence_macd(
 
 								if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 									signal_buy_primary['flag_pr'][primary_counter] = 'st'
+									signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['st_pr_index'][primary_counter]
 
 									#print('st front 3 ===> ',signal_buy_primary['value_front'][primary_counter])
 									#print('st back 3 ===> ',signal_buy_primary['value_back'][primary_counter])
@@ -728,6 +740,7 @@ def divergence_macd(
 								
 									if (signal_buy_primary['tp_pr_index'][primary_counter] != -1):
 										signal_buy_primary['flag_pr'][primary_counter] = 'tp'
+										signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['tp_pr_index'][primary_counter]
 
 										#print('tp front 3 ===> ',signal_buy_primary['value_front'][primary_counter])
 										#print('tp back 3 ===> ',signal_buy_primary['value_back'][primary_counter])
@@ -738,6 +751,7 @@ def divergence_macd(
 
 									if (signal_buy_primary['tp_pr_index'][primary_counter] == -1) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 										signal_buy_primary['flag_pr'][primary_counter] = 'st'
+										signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['st_pr_index'][primary_counter]
 										#print('st front 3 ===> ',signal_buy_primary['value_front'][primary_counter])
 										#print('st back 3 ===> ',signal_buy_primary['value_back'][primary_counter])
 										signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm] + 1:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm] + 1])/dataset[symbol]['high'][extreme_min['index'][elm] + 1]) * 100
@@ -751,6 +765,7 @@ def divergence_macd(
 								signal_buy_primary['st_pr_index'][primary_counter] = -1
 								signal_buy_primary['st_pr'][primary_counter] = 0
 								signal_buy_primary['flag_pr'][primary_counter] = 'no_flag'
+								signal_buy_primary['flag_pr_index'][primary_counter] = -1
 
 						else:
 							signal_buy_primary['tp_pr_index'][primary_counter] = -1
@@ -758,6 +773,7 @@ def divergence_macd(
 							signal_buy_primary['st_pr_index'][primary_counter] = -1
 							signal_buy_primary['st_pr'][primary_counter] = 0
 							signal_buy_primary['flag_pr'][primary_counter] = 'no_flag'
+							signal_buy_primary['flag_pr_index'][primary_counter] = -1
 
 						if np.isnan(signal_buy_primary['tp_pr'][primary_counter]): 
 							signal_buy_primary['tp_pr'][primary_counter] = 0
@@ -765,6 +781,7 @@ def divergence_macd(
 						if np.isnan(signal_buy_primary['st_pr'][primary_counter]): signal_buy_primary['st_pr'][primary_counter] = 0
 						if np.isnan(signal_buy_primary['tp_pr_index'][primary_counter]): signal_buy_primary['tp_pr_index'][primary_counter] = -1
 						if np.isnan(signal_buy_primary['st_pr_index'][primary_counter]): signal_buy_primary['st_pr_index'][primary_counter] = -1
+						if np.isnan(signal_buy_primary['flag_pr_index'][primary_counter]): signal_buy_primary['flag_pr_index'][primary_counter] = -1
 						#///////////////////////////////////////////////////
 				if (plot == True):
 					ax0.plot([extreme_min['index'][elm-diff_extereme_buy],extreme_min['index'][elm]],[extreme_min['value'][elm-diff_extereme_buy],extreme_min['value'][elm]],c='r',linestyle="-")
@@ -998,10 +1015,14 @@ def divergence_macd(
 
 						if (signal_sell_primary['st_min_max_index'][primary_counter] < signal_sell_primary['tp_min_max_index'][primary_counter]):
 							signal_sell_primary['flag_min_max'][primary_counter] = 'st'
+							signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['st_pr_index'][primary_counter]
+
 							if (signal_sell_primary['st_min_max_index'][primary_counter] != -1):
 								signal_sell_primary['tp_min_max'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm]] - np.min(dataset[symbol]['low'][extreme_max['index'][elm]:int(signal_sell_primary['st_min_max_index'][primary_counter])]))/dataset[symbol]['low'][extreme_max['index'][elm]]) * 100
 						else:
 							signal_sell_primary['flag_min_max'][primary_counter] = 'tp'
+							signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['st_pr_index'][primary_counter]
+
 							if (signal_sell_primary['tp_min_max_index'][primary_counter] != -1):
 								signal_sell_primary['st_min_max'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_max['index'][elm]:int(signal_sell_primary['tp_min_max_index'][primary_counter])]) - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
 
@@ -1082,8 +1103,8 @@ def divergence_macd(
 													alpha=alpha
 													)
 						except:
-							res_pro['high'] = 'nan'
-							res_pro['low'] = 'nan'
+							res_pro['high'] = [dataset[symbol]['high'][int(extreme_max['index'][elm])] * (1+(st_percent_sell_min/100)),0,0]#res_pro['high'] = 'nan'
+							res_pro['low'] = [0,0,dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_min/100))]#res_pro['low'] = 'nan'
 
 						if (res_pro.empty == False):
 							signal_sell_primary['diff_pr_top'][primary_counter] = (((res_pro['high'][0]) - dataset[symbol]['high'][extreme_max['index'][elm]])/dataset[symbol]['high'][extreme_max['index'][elm]]) * 100
@@ -1116,6 +1137,14 @@ def divergence_macd(
 								dataset[symbol]['high'][int(extreme_max['index'][elm]) + 1] < res_pro['high'][0] and
 								True#dataset[symbol]['HL/2'][int(extreme_max['index'][elm]) + 1] - dataset[symbol]['HL/2'][int(extreme_max['index'][elm])] < 0
 								):
+
+								if primary_counter >= 1:
+									if (
+										real_test == True and
+										int(extreme_max['index'][elm]) + 1 <= signal_sell_primary['flag_pr_index'][primary_counter-1]
+										):
+										continue
+
 
 								if ((len(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + 1:-1].values * 1.0004) <= (res_pro['low'][2])))[0])) > 1):
 									signal_sell_primary['tp_pr_index'][primary_counter] = extreme_max['index'][elm] + 1 + np.min(np.where(((dataset[symbol]['low'][extreme_max['index'][elm] + 1:-1].values * 1.0004) <= (res_pro['low'][2])))[0])
@@ -1155,6 +1184,7 @@ def divergence_macd(
 
 								if (signal_sell_primary['st_pr_index'][primary_counter] < signal_sell_primary['tp_pr_index'][primary_counter]) & (signal_sell_primary['st_pr_index'][primary_counter] != -1):
 									signal_sell_primary['flag_pr'][primary_counter] = 'st'
+									signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['st_pr_index'][primary_counter]
 									#print('flag ====> st')
 									#print()
 									signal_sell_primary['tp_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm] + 1] - np.min(dataset[symbol]['low'][extreme_max['index'][elm] + 1:int(signal_sell_primary['st_pr_index'][primary_counter])]))/dataset[symbol]['low'][extreme_max['index'][elm] + 1]) * 100
@@ -1166,6 +1196,7 @@ def divergence_macd(
 								
 									if (signal_sell_primary['tp_pr_index'][primary_counter] != -1):
 										signal_sell_primary['flag_pr'][primary_counter] = 'tp'
+										signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['tp_pr_index'][primary_counter]
 										#print('flag ====> tp')
 										#print()
 										signal_sell_primary['st_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_max['index'][elm] + 1:int(signal_sell_primary['tp_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_max['index'][elm] + 1])/dataset[symbol]['high'][extreme_max['index'][elm] + 1]) * 100
@@ -1175,6 +1206,7 @@ def divergence_macd(
 
 									if (signal_sell_primary['tp_pr_index'][primary_counter] == -1) & (signal_sell_primary['st_pr_index'][primary_counter] != -1):
 										signal_sell_primary['flag_pr'][primary_counter] = 'st'
+										signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['st_pr_index'][primary_counter]
 										#print('flag ====> st')
 										#print()
 										signal_sell_primary['tp_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm] + 1] - np.min(dataset[symbol]['low'][extreme_max['index'][elm] + 1:int(signal_sell_primary['st_pr_index'][primary_counter])]))/dataset[symbol]['low'][extreme_max['index'][elm] + 1]) * 100
@@ -1187,12 +1219,14 @@ def divergence_macd(
 								signal_sell_primary['st_pr_index'][primary_counter] = -1
 								signal_sell_primary['st_pr'][primary_counter] = 0
 								signal_sell_primary['flag_pr'][primary_counter] = 'no_flag'
+								signal_sell_primary['flag_pr_index'][primary_counter] = -1
 						else:
 							signal_sell_primary['tp_pr_index'][primary_counter] = -1
 							signal_sell_primary['tp_pr'][primary_counter] = 0
 							signal_sell_primary['st_pr_index'][primary_counter] = -1
 							signal_sell_primary['st_pr'][primary_counter] = 0
 							signal_sell_primary['flag_pr'][primary_counter] = 'no_flag'
+							signal_sell_primary['flag_pr_index'][primary_counter] = -1
 
 						if np.isnan(signal_sell_primary['tp_pr'][primary_counter]): 
 							signal_sell_primary['tp_pr'][primary_counter] = 0
@@ -1200,6 +1234,7 @@ def divergence_macd(
 						if np.isnan(signal_sell_primary['st_pr'][primary_counter]): signal_sell_primary['st_pr'][primary_counter] = 0
 						if np.isnan(signal_sell_primary['tp_pr_index'][primary_counter]): signal_sell_primary['tp_pr_index'][primary_counter] = -1
 						if np.isnan(signal_sell_primary['st_pr_index'][primary_counter]): signal_sell_primary['st_pr_index'][primary_counter] = -1
+						if np.isnan(signal_sell_primary['flag_pr_index'][primary_counter]): signal_sell_primary['flag_pr_index'][primary_counter] = -1
 						
 					#///////////////////////////////////////////////////
 				if (plot == True):
@@ -3223,7 +3258,8 @@ def genetic_algo_div_macd(
 															tp_percent_sell_min = 0,
 															alpha=Chromosome[chrom_counter]['alpha'],
 															num_exteremes=Chromosome[chrom_counter]['num_extreme'],
-															diff_extereme=Chromosome[chrom_counter]['diff_extereme']
+															diff_extereme=Chromosome[chrom_counter]['diff_extereme'],
+															real_test = True
 															)
 					if secondry_doing == True:
 						_, buy_data, _, _ = divergence_macd(
@@ -3280,7 +3316,8 @@ def genetic_algo_div_macd(
 															tp_percent_sell_min=min_tp_sell,
 															alpha=Chromosome[chrom_counter]['alpha'],
 															num_exteremes=Chromosome[chrom_counter]['num_extreme'],
-															diff_extereme=Chromosome[chrom_counter]['diff_extereme']
+															diff_extereme=Chromosome[chrom_counter]['diff_extereme'],
+															real_test = True
 															)
 
 					if secondry_doing == True:
@@ -4285,7 +4322,8 @@ def macd_div_tester_for_permit(
 													tp_percent_sell_min=0,
 													alpha=ga_result_buy['alpha'][0],
 													num_exteremes = ga_result_buy['num_extreme'][0],
-													diff_extereme = ga_result_buy['diff_extereme'][0]
+													diff_extereme = ga_result_buy['diff_extereme'][0],
+													real_test = True
 													)
 			if secondry_doing == True:
 				_, buy_data, _, _ = divergence_macd(
@@ -4555,7 +4593,8 @@ def macd_div_tester_for_permit(
 												tp_percent_sell_min=ga_result_sell['min_tp'][0],
 												alpha=ga_result_sell['alpha'][0],
 												num_exteremes = ga_result_sell['num_extreme'][0],
-												diff_extereme = ga_result_sell['diff_extereme'][0]
+												diff_extereme = ga_result_sell['diff_extereme'][0],
+												real_test = True
 												)
 			if secondry_doing == True:
 				_, _, _, sell_data = divergence_macd(
@@ -5184,7 +5223,7 @@ def last_signal_macd_div(
 
 		print('================================')\
 
-	lst_idx_sell_primary = 5999
+	#lst_idx_sell_primary = 5999
 
 	print('lst_idx_sell_primary =======> ',lst_idx_sell_primary)
 	if (

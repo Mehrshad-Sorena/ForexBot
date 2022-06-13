@@ -4066,7 +4066,7 @@ def genetic_algo_div_macd(
 										'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
 										'signal_period': randint(signal_period_lower, signal_period_upper),
 										'apply_to': np.random.choice(apply_to_list_ga),
-										'alpha':  randint(int(Chromosome[chrom_counter]['fast_period']/4),Chromosome[chrom_counter]['fast_period']*2),#randint(1, 50)/100,
+										'alpha':  randint(1, 50)/100,
 										'num_extreme': int(sell_data['num_extreme'][0]),#randint(int(Chromosome[chrom_counter]['fast_period']/2),Chromosome[chrom_counter]['fast_period']*2),#randint(int(Chromosome[chrom_counter]['fast_period']*0.25),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
 										'diff_extereme': 25,#Chromosome[chrom_counter]['slow_period'],
 										'signal': None,

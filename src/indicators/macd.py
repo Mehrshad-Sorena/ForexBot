@@ -2481,10 +2481,10 @@ def tester_div_macd(
 			output_sell['max_tp'] = [round(diff_top_pr_sell['interval'][upper],2)]
 			output_sell['min_tp'] = [round(diff_top_pr_sell['interval'][lower],2)]
 
-			output_sell['value_front_intervals_pr_upper'] = [value_front_intervals_pr['interval'][upper]]
-			output_sell['value_front_intervals_pr_lower'] = [value_front_intervals_pr['interval'][lower]]
-			output_sell['value_back_intervals_pr_upper'] = [value_back_intervals_pr['interval'][upper]]
-			output_sell['value_back_intervals_pr_lower'] = [value_back_intervals_pr['interval'][lower]]
+			#output_sell['value_front_intervals_pr_upper'] = [value_front_intervals_pr['interval'][upper]]
+			#output_sell['value_front_intervals_pr_lower'] = [value_front_intervals_pr['interval'][lower]]
+			#output_sell['value_back_intervals_pr_upper'] = [value_back_intervals_pr['interval'][upper]]
+			#output_sell['value_back_intervals_pr_lower'] = [value_back_intervals_pr['interval'][lower]]
 
 			output_sell['diff_extereme_pr'] = [round(diff_extereme_pr_sell['interval'][upper])]
 

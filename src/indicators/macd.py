@@ -224,7 +224,8 @@ def divergence_macd(
 				alpha=0.05,
 				num_exteremes=5,
 				diff_extereme=100,
-				real_test=False
+				real_test=False,
+				flag_learning=False
 				):
 
 	#*************** OutPuts:
@@ -311,6 +312,9 @@ def divergence_macd(
 	#//////////////////////////////////////////////////////////////////////
 
 	#******************************* Optimize Mode **************************
+
+	my_money = 100
+
 	if ((mode == 'optimize') | (mode == 'online')):
 		signal_buy_primary = pd.DataFrame(np.zeros(len(extreme_min)))
 		signal_buy_primary['signal'] = np.nan
@@ -350,6 +354,7 @@ def divergence_macd(
 				signal_buy_primary['diff_pr_top'] = np.nan
 				signal_buy_primary['diff_pr_down'] = np.nan
 				signal_buy_primary['flag_pr_index'] = np.nan
+				signal_buy_primary['money'] = np.nan
 				#signal_buy_primary['st_line'] = np.nan
 				#signal_buy_primary['tp_line'] = np.nan
 				#signal_buy_primary['power_pr_high'] = np.nan
@@ -419,6 +424,7 @@ def divergence_macd(
 				signal_sell_primary['diff_pr_top'] = np.nan
 				signal_sell_primary['diff_pr_down'] = np.nan
 				signal_sell_primary['flag_pr_index'] = np.nan
+				signal_sell_primary['money'] = np.nan
 
 		signal_sell_secondry = pd.DataFrame(np.zeros(len(extreme_max)))
 		signal_sell_secondry['signal'] = np.nan
@@ -460,6 +466,9 @@ def divergence_macd(
 		print('last min finded ======> ',extreme_min['index'].iloc[-1])
 
 		mehrshad = 0
+
+		signal_buy_primary['money'][0] = my_money
+		signal_sell_primary['money'][0] = my_money
 
 		#***************************** Buy Find Section ***********************************************
 		for elm in extreme_min.index:
@@ -678,6 +687,11 @@ def divergence_macd(
 								True#dataset[symbol]['HL/2'][int(extreme_min['index'][elm] + 1)] - dataset[symbol]['HL/2'][int(extreme_min['index'][elm])] > 0
 								):
 
+								if (
+									flag_learning == True and
+									my_money <= 0.1
+									):
+									break
 
 								if primary_counter >= 1:
 									if (
@@ -729,6 +743,8 @@ def divergence_macd(
 									signal_buy_primary['flag_pr'][primary_counter] = 'st'
 									signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['st_pr_index'][primary_counter]
 
+									my_money = my_money - ((my_money/10) * signal_buy_primary['st_pr'][primary_counter])
+									signal_buy_primary['money'][primary_counter] = my_money
 									#print('st front 3 ===> ',signal_buy_primary['value_front'][primary_counter])
 									#print('st back 3 ===> ',signal_buy_primary['value_back'][primary_counter])
 									signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm] + 1:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm] + 1])/dataset[symbol]['high'][extreme_min['index'][elm] + 1]) * 100
@@ -742,6 +758,9 @@ def divergence_macd(
 										signal_buy_primary['flag_pr'][primary_counter] = 'tp'
 										signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['tp_pr_index'][primary_counter]
 
+										my_money = my_money + ((my_money/10) * signal_buy_primary['tp_pr'][primary_counter])
+										signal_buy_primary['money'][primary_counter] = my_money
+
 										#print('tp front 3 ===> ',signal_buy_primary['value_front'][primary_counter])
 										#print('tp back 3 ===> ',signal_buy_primary['value_back'][primary_counter])
 										signal_buy_primary['st_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_min['index'][elm] + 1] - np.min(dataset[symbol]['low'][extreme_min['index'][elm] + 1:int(signal_buy_primary['tp_pr_index'][primary_counter])]))/dataset[symbol]['low'][extreme_min['index'][elm] + 1]) * 100
@@ -752,6 +771,10 @@ def divergence_macd(
 									if (signal_buy_primary['tp_pr_index'][primary_counter] == -1) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
 										signal_buy_primary['flag_pr'][primary_counter] = 'st'
 										signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['st_pr_index'][primary_counter]
+
+										my_money = my_money - ((my_money/10) * signal_buy_primary['st_pr'][primary_counter])
+										signal_buy_primary['money'][primary_counter] = my_money
+
 										#print('st front 3 ===> ',signal_buy_primary['value_front'][primary_counter])
 										#print('st back 3 ===> ',signal_buy_primary['value_back'][primary_counter])
 										signal_buy_primary['tp_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_min['index'][elm] + 1:int(signal_buy_primary['st_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_min['index'][elm] + 1])/dataset[symbol]['high'][extreme_min['index'][elm] + 1]) * 100
@@ -1138,6 +1161,12 @@ def divergence_macd(
 								True#dataset[symbol]['HL/2'][int(extreme_max['index'][elm]) + 1] - dataset[symbol]['HL/2'][int(extreme_max['index'][elm])] < 0
 								):
 
+								if (
+									flag_learning == True and
+									my_money <= 0.1
+									):
+									break
+
 								if primary_counter >= 1:
 									if (
 										real_test == True and
@@ -1185,6 +1214,10 @@ def divergence_macd(
 								if (signal_sell_primary['st_pr_index'][primary_counter] < signal_sell_primary['tp_pr_index'][primary_counter]) & (signal_sell_primary['st_pr_index'][primary_counter] != -1):
 									signal_sell_primary['flag_pr'][primary_counter] = 'st'
 									signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['st_pr_index'][primary_counter]
+
+									my_money = my_money - ((my_money/10) * signal_sell_primary['st_pr'][primary_counter])
+									signal_sell_primary['money'][primary_counter] = my_money
+
 									#print('flag ====> st')
 									#print()
 									signal_sell_primary['tp_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm] + 1] - np.min(dataset[symbol]['low'][extreme_max['index'][elm] + 1:int(signal_sell_primary['st_pr_index'][primary_counter])]))/dataset[symbol]['low'][extreme_max['index'][elm] + 1]) * 100
@@ -1197,6 +1230,10 @@ def divergence_macd(
 									if (signal_sell_primary['tp_pr_index'][primary_counter] != -1):
 										signal_sell_primary['flag_pr'][primary_counter] = 'tp'
 										signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['tp_pr_index'][primary_counter]
+
+										my_money = my_money + ((my_money/10) * signal_sell_primary['tp_pr'][primary_counter])
+										signal_sell_primary['money'][primary_counter] = my_money
+
 										#print('flag ====> tp')
 										#print()
 										signal_sell_primary['st_pr'][primary_counter] = ((np.max(dataset[symbol]['high'][extreme_max['index'][elm] + 1:int(signal_sell_primary['tp_pr_index'][primary_counter])]) - dataset[symbol]['high'][extreme_max['index'][elm] + 1])/dataset[symbol]['high'][extreme_max['index'][elm] + 1]) * 100
@@ -1207,6 +1244,10 @@ def divergence_macd(
 									if (signal_sell_primary['tp_pr_index'][primary_counter] == -1) & (signal_sell_primary['st_pr_index'][primary_counter] != -1):
 										signal_sell_primary['flag_pr'][primary_counter] = 'st'
 										signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['st_pr_index'][primary_counter]
+
+										my_money = my_money - ((my_money/10) * signal_sell_primary['st_pr'][primary_counter])
+										signal_sell_primary['money'][primary_counter] = my_money
+
 										#print('flag ====> st')
 										#print()
 										signal_sell_primary['tp_pr'][primary_counter] = ((dataset[symbol]['low'][extreme_max['index'][elm] + 1] - np.min(dataset[symbol]['low'][extreme_max['index'][elm] + 1:int(signal_sell_primary['st_pr_index'][primary_counter])]))/dataset[symbol]['low'][extreme_max['index'][elm] + 1]) * 100
@@ -2320,7 +2361,13 @@ def tester_div_macd(
 				if (output_buy['sum_tp_pr'][0] != 0):
 					score_sum_tp = output_buy['sum_tp_pr'][0] * 10
 
-			output_buy['score_pr'] = [(score_sum_tp*score_mean_tp*score_num_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
+			score_money = round(((signal_buy['money'].iloc[-1] - signal_buy['money'][0])/signal_buy['money'][0]),2) * 100
+
+			output_buy['money'] = [score_money]
+
+			if score_money <= 0 : score_money = 1
+
+			output_buy['score_pr'] = [(score_sum_tp*score_mean_tp*score_num_tp*score_money)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
 
 			if name_stp_minmax != True:
 				output_buy['score_min_max'] = [0]
@@ -2505,7 +2552,13 @@ def tester_div_macd(
 				if (output_sell['sum_tp_pr'][0] != 0):
 					score_sum_tp = output_sell['sum_tp_pr'][0] * 10
 
-			output_sell['score_pr'] = [(score_num_tp*score_sum_tp*score_mean_tp)]
+			score_money = round(((signal_sell['money'].iloc[-1] - signal_sell['money'][0])/signal_sell['money'][0]),2) * 100
+
+			output_sell['money'] = [score_money]
+
+			if score_money <= 0 : score_money = 1
+
+			output_sell['score_pr'] = [(score_num_tp*score_sum_tp*score_mean_tp*score_money)]
 
 			if name_stp_minmax != True:
 				output_sell['score_min_max'] = [0]
@@ -3259,7 +3312,8 @@ def genetic_algo_div_macd(
 															alpha=Chromosome[chrom_counter]['alpha'],
 															num_exteremes=Chromosome[chrom_counter]['num_extreme'],
 															diff_extereme=Chromosome[chrom_counter]['diff_extereme'],
-															real_test = True
+															real_test = True,
+															flag_learning=flag_learning
 															)
 					if secondry_doing == True:
 						_, buy_data, _, _ = divergence_macd(
@@ -3317,7 +3371,8 @@ def genetic_algo_div_macd(
 															alpha=Chromosome[chrom_counter]['alpha'],
 															num_exteremes=Chromosome[chrom_counter]['num_extreme'],
 															diff_extereme=Chromosome[chrom_counter]['diff_extereme'],
-															real_test = True
+															real_test = True,
+															flag_learning=flag_learning
 															)
 
 					if secondry_doing == True:
@@ -4323,7 +4378,8 @@ def macd_div_tester_for_permit(
 													alpha=ga_result_buy['alpha'][0],
 													num_exteremes = ga_result_buy['num_extreme'][0],
 													diff_extereme = ga_result_buy['diff_extereme'][0],
-													real_test = True
+													real_test = True,
+													flag_learning=True
 													)
 			if secondry_doing == True:
 				_, buy_data, _, _ = divergence_macd(
@@ -4511,7 +4567,14 @@ def macd_div_tester_for_permit(
 					if (output_buy['sum_tp_pr'][0] != 0):
 						score_sum_tp = output_buy['sum_tp_pr'][0] * 10
 
-				output_buy['score_pr'] = [(score_sum_tp*score_mean_tp*score_num_tp)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
+				score_money = round(((buy_data['money'].iloc[-1] - buy_data['money'][0])/buy_data['money'][0]),2) * 100
+
+				output_buy['money'] = [score_money]
+			
+				if score_money <= 0 : score_money = 1
+
+
+				output_buy['score_pr'] = [(score_sum_tp*score_mean_tp*score_num_tp*score_money)]#[(score_num_tp*score_max_tp*score_mean_tp*score_sum_tp)]
 
 				if np.isnan(output_buy['score_pr'][0]) : output_buy['score_pr'][0] = 0
 
@@ -4594,7 +4657,8 @@ def macd_div_tester_for_permit(
 												alpha=ga_result_sell['alpha'][0],
 												num_exteremes = ga_result_sell['num_extreme'][0],
 												diff_extereme = ga_result_sell['diff_extereme'][0],
-												real_test = True
+												real_test = True,
+												flag_learning=True
 												)
 			if secondry_doing == True:
 				_, _, _, sell_data = divergence_macd(
@@ -4723,7 +4787,14 @@ def macd_div_tester_for_permit(
 					if (output_sell['sum_tp_pr'][0] != 0):
 						score_sum_tp = output_sell['sum_tp_pr'][0] * 10
 
-				output_sell['score_pr'] = [(score_num_tp*score_mean_tp*score_sum_tp)]
+				score_money = round(((sell_data['money'].iloc[-1] - sell_data['money'][0])/sell_data['money'][0]),2) * 100
+
+				output_sell['money'] = [score_money]
+			
+				if score_money <= 0 : score_money = 1
+
+
+				output_sell['score_pr'] = [(score_num_tp*score_mean_tp*score_sum_tp*score_money)]
 
 				if np.isnan(output_sell['score_pr'][0]) : output_sell['score_pr'][0] = 0
 

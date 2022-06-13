@@ -3555,7 +3555,7 @@ def genetic_algo_div_macd(
 
 							max_score_ga_buy = (output_buy['score_pr'][0])
 
-							if (max_score_ga_buy >= 300):
+							if (max_score_ga_buy >= 90000):
 								if (
 									os.path.exists(buy_path) and
 									max_score_ga_buy > max_score_ga_buy_before
@@ -3563,7 +3563,7 @@ def genetic_algo_div_macd(
 									max_score_ga_buy = max_score_ga_buy_before #* 0.9
 								else:
 									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0] #* 0.9
-									if not os.path.exists(buy_path): max_score_ga_buy = 300
+									if not os.path.exists(buy_path): max_score_ga_buy = 90000
 
 							Chromosome[chrom_counter].update({'score_buy': score_buy })
 							chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
@@ -3779,7 +3779,7 @@ def genetic_algo_div_macd(
 
 							max_score_ga_sell = (output_sell['score_pr'][0])
 
-							if (max_score_ga_sell >= 300):
+							if (max_score_ga_sell >= 90000):
 								if (
 									os.path.exists(sell_path) and
 									max_score_ga_sell > max_score_ga_sell_before
@@ -3787,7 +3787,7 @@ def genetic_algo_div_macd(
 									max_score_ga_sell = max_score_ga_sell_before #* 0.9
 								else:
 									if os.path.exists(sell_path): max_score_ga_sell = ga_result_sell['score_pr'][0] #* 0.9
-									if not os.path.exists(sell_path): max_score_ga_sell = 300
+									if not os.path.exists(sell_path): max_score_ga_sell = 90000
 
 							Chromosome[chrom_counter].update({'score_sell': score_sell })
 							chromosome_sell = chromosome_sell.append(Chromosome[chrom_counter], ignore_index=True)
@@ -4971,7 +4971,7 @@ def last_signal_macd_div(
 														diff_extereme = int(ga_result_buy_primary['diff_extereme'][0])
 														)
 			if (buy_data_primary.empty == False):
-				lst_idx_buy_primary = int(buy_data_primary['index'].iloc[-1]) + 1#cut_first + 1
+				lst_idx_buy_primary = int(buy_data_primary['index'].iloc[-1])#cut_first + 1
 			else:
 				lst_idx_buy_primary = 0
 		else:
@@ -5036,7 +5036,7 @@ def last_signal_macd_div(
 														)
 
 			if (buy_data_secondry.empty == False):
-				lst_idx_buy_secondry = int(buy_data_secondry['index'].iloc[-1]) + 1#cut_first + 1
+				lst_idx_buy_secondry = int(buy_data_secondry['index'].iloc[-1])#cut_first + 1
 			else:
 				lst_idx_buy_secondry = 0
 		else:
@@ -5108,7 +5108,7 @@ def last_signal_macd_div(
 														)
 
 			if (sell_data_primary.empty == False):
-				lst_idx_sell_primary = int(sell_data_primary['index'].iloc[-1]) + 1
+				lst_idx_sell_primary = int(sell_data_primary['index'].iloc[-1])
 			else:
 				lst_idx_sell_primary = 0
 		else:
@@ -5173,7 +5173,7 @@ def last_signal_macd_div(
 														)
 
 			if (sell_data_secondry.empty == False):
-				lst_idx_sell_secondry = int(sell_data_secondry['index'].iloc[-1]) + 1#cut_first + 1
+				lst_idx_sell_secondry = int(sell_data_secondry['index'].iloc[-1])#cut_first + 1
 			else:
 				lst_idx_sell_secondry = 0
 		else:

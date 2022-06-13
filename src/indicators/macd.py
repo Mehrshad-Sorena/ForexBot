@@ -3092,7 +3092,7 @@ def genetic_algo_div_macd(
 							max_score_ga_buy = float(chrom_get['score_min_max'])
 
 						if ga_result_buy['methode'][0] == 'pr':
-							max_score_ga_buy = float(chrom_get['score_pr'])
+							max_score_ga_buy = 90000#float(chrom_get['score_pr'])
 					print(Chromosome[0])
 
 	if flag_trade == 'sell':
@@ -3122,7 +3122,7 @@ def genetic_algo_div_macd(
 							max_score_ga_sell = float(chrom_get['score_min_max'])
 
 						if ga_result_sell['methode'][0] == 'pr':
-							max_score_ga_sell = float(chrom_get['score_pr'])
+							max_score_ga_sell = 90000#float(chrom_get['score_pr'])
 					print(Chromosome[0])
 
 				
@@ -3576,7 +3576,7 @@ def genetic_algo_div_macd(
 
 
 							if os.path.exists(buy_path):
-								max_score_ga_buy_before = ga_result_buy['score_pr'][0] #* 0.9
+								max_score_ga_buy_before = 90000#ga_result_buy['score_pr'][0] #* 0.9
 							else:
 								max_score_ga_buy_before = max_score_ga_buy #* 0.9
 
@@ -3589,7 +3589,7 @@ def genetic_algo_div_macd(
 									):
 									max_score_ga_buy = max_score_ga_buy_before #* 0.9
 								else:
-									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0] #* 0.9
+									if os.path.exists(buy_path): max_score_ga_buy = 90000#ga_result_buy['score_pr'][0] #* 0.9
 									if not os.path.exists(buy_path): max_score_ga_buy = 90000
 
 							Chromosome[chrom_counter].update({'score_buy': score_buy })
@@ -3800,7 +3800,7 @@ def genetic_algo_div_macd(
 
 
 							if os.path.exists(sell_path):
-								max_score_ga_sell_before = ga_result_sell['score_pr'][0] #* 0.9
+								max_score_ga_sell_before = 90000#ga_result_sell['score_pr'][0] #* 0.9
 							else:
 								max_score_ga_sell_before = max_score_ga_sell #* 0.9
 
@@ -3813,7 +3813,7 @@ def genetic_algo_div_macd(
 									):
 									max_score_ga_sell = max_score_ga_sell_before #* 0.9
 								else:
-									if os.path.exists(sell_path): max_score_ga_sell = ga_result_sell['score_pr'][0] #* 0.9
+									if os.path.exists(sell_path): max_score_ga_sell = 90000#ga_result_sell['score_pr'][0] #* 0.9
 									if not os.path.exists(sell_path): max_score_ga_sell = 90000
 
 							Chromosome[chrom_counter].update({'score_sell': score_sell })

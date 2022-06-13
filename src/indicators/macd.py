@@ -5168,11 +5168,9 @@ def last_signal_macd_div(
 														alpha = ga_result_buy_primary['alpha'][0]
 														)
 				except Exception as ex:
-					print('ERROR PR Last Signal: ',ex)
-					res_pro_buy_primary['high'] = 'nan'
-					res_pro_buy_primary['low'] = 'nan'
-					res_pro_buy_primary['power_high'] = 0
-					res_pro_buy_primary['power_low'] = 0
+					#print('ERROR PR Last Signal: ',ex)
+					res_pro_buy_primary['high'] = [dataset[symbol]['high'][int(lst_idx_buy_primary)] * (1+(ga_result_buy_primary['min_tp'][0]/100)),0,0]#res_pro_buy_primary['high'] = 'nan'
+					res_pro_buy_primary['low'] = [0,0,dataset[symbol]['low'][int(lst_idx_buy_primary)] * (1-(ga_result_buy_primary['min_st'][0]/100))]
 
 
 				if (res_pro_buy_primary.empty == False):
@@ -5276,11 +5274,9 @@ def last_signal_macd_div(
 														alpha = ga_result_sell_primary['alpha'][0]
 														)
 				except Exception as ex:
-					print('ERROR PR Last Signal: ',ex)
-					res_pro_sell_primary['high'] = 'nan'
-					res_pro_sell_primary['low'] = 'nan'
-					res_pro_sell_primary['power_high'] = 0
-					res_pro_sell_primary['power_low'] = 0
+					#print('ERROR PR Last Signal: ',ex)
+					res_pro_sell_primary['high'] = [dataset[symbol]['high'][int(lst_idx_sell_primary)] * (1+(ga_result_sell_primary['min_st'][0]/100)),0,0]#res_pro_sell_primary['high'] = 'nan'
+					res_pro_sell_primary['low'] = [0,0,dataset[symbol]['low'][int(lst_idx_sell_primary)] * (1-(ga_result_sell_primary['min_tp'][0]/100))]#res_pro_sell_primary['low'] = 'nan'
 
 
 				if (res_pro_sell_primary.empty == False):
@@ -5367,18 +5363,6 @@ def last_signal_macd_div(
 				if (res_pro.empty == False):
 					diff_pr_top_sell = (((res_pro['high'][0] * 1.0005) - dataset[symbol]['high'][lst_idx_sell])/dataset[symbol]['high'][lst_idx_sell]) * 100
 					diff_pr_down_sell = ((dataset[symbol]['low'][lst_idx_sell] - (res_pro['low'][0] * 1.0005))/dataset[symbol]['low'][lst_idx_sell]) * 100
-					diff_pr_top_sell_power = np.mean(res_pro['power_high'])
-					diff_pr_down_sell_power = np.mean(res_pro['power_low'])
-
-					trend_long_sell = res_pro['trend_long'][0].values[0]
-					trend_mid_sell = res_pro['trend_mid'][0].values[0]
-					trend_short_1_sell = res_pro['trend_short1'][0].values[0]
-					trend_short_2_sell = res_pro['trend_short2'][0].values[0]
-
-					if trend_long_sell is np.nan: trend_long_sell = 'parcham'
-					if trend_mid_sell is np.nan: trend_mid_sell = 'parcham'
-					if trend_short_1_sell is np.nan: trend_short_1_sell = 'parcham'
-					if trend_short_2_sell is np.nan: trend_short_2_sell = 'parcham'
 
 
 					resist_sell = (res_pro['high'][0] * 1.0005)

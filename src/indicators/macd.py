@@ -1185,7 +1185,7 @@ def divergence_macd(
 
 							if (
 								dataset[symbol]['low'][int(extreme_max['index'][elm]) + 1] > res_pro['low'][2] and
-								dataset[symbol]['high'][int(extreme_max['index'][elm]) + 1] < res_pro['high'][0] and
+								dataset[symbol]['high'][int(extreme_max['index'][elm]) + 1] * 1.0004 < res_pro['high'][0] and
 								True#dataset[symbol]['HL/2'][int(extreme_max['index'][elm]) + 1] - dataset[symbol]['HL/2'][int(extreme_max['index'][elm])] < 0
 								):
 

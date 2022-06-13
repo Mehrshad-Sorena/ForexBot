@@ -698,6 +698,7 @@ def divergence_macd(
 										real_test == True and
 										int(extreme_min['index'][elm] + 1) <= signal_buy_primary['flag_pr_index'][primary_counter-1]
 										):
+										if int(extreme_min['index'][elm]) + 1 >= int(extreme_min['index'].iloc[-1]): break
 										continue
 
 
@@ -1172,6 +1173,7 @@ def divergence_macd(
 										real_test == True and
 										int(extreme_max['index'][elm]) + 1 <= signal_sell_primary['flag_pr_index'][primary_counter-1]
 										):
+										if int(extreme_max['index'][elm]) + 1 >= int(extreme_max['index'].iloc[-1]): break
 										continue
 
 

@@ -5212,6 +5212,7 @@ def last_signal_macd_div(
 
 
 	print('lst_idx_buy_primary =====> ',lst_idx_buy_primary)
+	print('lst_idx_sell_primary =======> ',lst_idx_sell_primary)
 	#print(buy_data_primary)
 
 	#***** Last Signal:
@@ -5220,7 +5221,7 @@ def last_signal_macd_div(
 		lst_idx_buy_primary > lst_idx_sell_primary and
 		lst_idx_buy_primary > lst_idx_sell_secondry and
 		lst_idx_buy_primary > lst_idx_buy_secondry and
-		(len(dataset[symbol]['close']) - 1 - lst_idx_buy_primary) <= ga_result_buy_primary['num_extreme'][0]
+		(len(dataset[symbol]['close']) - 1 - lst_idx_buy_primary) <= 1#ga_result_buy_primary['num_extreme'][0]
 		):
 
 		print('======> last signal buy ',symbol)
@@ -5321,12 +5322,12 @@ def last_signal_macd_div(
 
 	#lst_idx_sell_primary = 5999
 
-	print('lst_idx_sell_primary =======> ',lst_idx_sell_primary)
-	if (
+	
+	elif (
 		lst_idx_sell_primary > lst_idx_buy_primary and
 		lst_idx_sell_primary > lst_idx_sell_secondry and
 		lst_idx_sell_primary > lst_idx_buy_secondry and
-		(len(dataset[symbol]['close']) - 1 - lst_idx_sell_primary) <= ga_result_sell_primary['num_extreme'][0]
+		(len(dataset[symbol]['close']) - 1 - lst_idx_sell_primary) <= 1#ga_result_sell_primary['num_extreme'][0]
 		):
 
 		print('======> last signal buy ',symbol)

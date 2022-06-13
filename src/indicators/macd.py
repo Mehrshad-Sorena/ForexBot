@@ -789,7 +789,7 @@ def divergence_macd(
 								signal_buy_primary['st_pr_index'][primary_counter] = -1
 								signal_buy_primary['st_pr'][primary_counter] = 0
 								signal_buy_primary['flag_pr'][primary_counter] = 'no_flag'
-								signal_buy_primary['flag_pr_index'][primary_counter] = -1
+								signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['flag_pr_index'][primary_counter-1]
 
 						else:
 							signal_buy_primary['tp_pr_index'][primary_counter] = -1
@@ -797,7 +797,7 @@ def divergence_macd(
 							signal_buy_primary['st_pr_index'][primary_counter] = -1
 							signal_buy_primary['st_pr'][primary_counter] = 0
 							signal_buy_primary['flag_pr'][primary_counter] = 'no_flag'
-							signal_buy_primary['flag_pr_index'][primary_counter] = -1
+							signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['flag_pr_index'][primary_counter-1]
 
 						if np.isnan(signal_buy_primary['tp_pr'][primary_counter]): 
 							signal_buy_primary['tp_pr'][primary_counter] = 0
@@ -805,7 +805,7 @@ def divergence_macd(
 						if np.isnan(signal_buy_primary['st_pr'][primary_counter]): signal_buy_primary['st_pr'][primary_counter] = 0
 						if np.isnan(signal_buy_primary['tp_pr_index'][primary_counter]): signal_buy_primary['tp_pr_index'][primary_counter] = -1
 						if np.isnan(signal_buy_primary['st_pr_index'][primary_counter]): signal_buy_primary['st_pr_index'][primary_counter] = -1
-						if np.isnan(signal_buy_primary['flag_pr_index'][primary_counter]): signal_buy_primary['flag_pr_index'][primary_counter] = -1
+						if np.isnan(signal_buy_primary['flag_pr_index'][primary_counter]): signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['flag_pr_index'][primary_counter-1]
 						#///////////////////////////////////////////////////
 				if (plot == True):
 					ax0.plot([extreme_min['index'][elm-diff_extereme_buy],extreme_min['index'][elm]],[extreme_min['value'][elm-diff_extereme_buy],extreme_min['value'][elm]],c='r',linestyle="-")
@@ -1262,14 +1262,14 @@ def divergence_macd(
 								signal_sell_primary['st_pr_index'][primary_counter] = -1
 								signal_sell_primary['st_pr'][primary_counter] = 0
 								signal_sell_primary['flag_pr'][primary_counter] = 'no_flag'
-								signal_sell_primary['flag_pr_index'][primary_counter] = -1
+								signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['flag_pr_index'][primary_counter-1]
 						else:
 							signal_sell_primary['tp_pr_index'][primary_counter] = -1
 							signal_sell_primary['tp_pr'][primary_counter] = 0
 							signal_sell_primary['st_pr_index'][primary_counter] = -1
 							signal_sell_primary['st_pr'][primary_counter] = 0
 							signal_sell_primary['flag_pr'][primary_counter] = 'no_flag'
-							signal_sell_primary['flag_pr_index'][primary_counter] = -1
+							signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['flag_pr_index'][primary_counter-1]
 
 						if np.isnan(signal_sell_primary['tp_pr'][primary_counter]): 
 							signal_sell_primary['tp_pr'][primary_counter] = 0
@@ -1277,7 +1277,7 @@ def divergence_macd(
 						if np.isnan(signal_sell_primary['st_pr'][primary_counter]): signal_sell_primary['st_pr'][primary_counter] = 0
 						if np.isnan(signal_sell_primary['tp_pr_index'][primary_counter]): signal_sell_primary['tp_pr_index'][primary_counter] = -1
 						if np.isnan(signal_sell_primary['st_pr_index'][primary_counter]): signal_sell_primary['st_pr_index'][primary_counter] = -1
-						if np.isnan(signal_sell_primary['flag_pr_index'][primary_counter]): signal_sell_primary['flag_pr_index'][primary_counter] = -1
+						if np.isnan(signal_sell_primary['flag_pr_index'][primary_counter]): signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['flag_pr_index'][primary_counter-1]
 						
 					#///////////////////////////////////////////////////
 				if (plot == True):

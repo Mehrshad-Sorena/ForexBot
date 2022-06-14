@@ -70,7 +70,6 @@ def trader_macd_div(
 			sym.name == 'CAC40_i' or
 			sym.name == 'FTSE100_i' or
 			sym.name == 'GER40_i' or
-			sym.name == 'SPX500_i' or
 			sym.name == 'WSt30_m_i' or
 			sym.name == 'STOXX50_i' or
 			sym.name == 'CHNA50_m_i' or
@@ -114,7 +113,6 @@ def trader_macd_div(
 
 		if (
 			sym.name == 'CAC40_i' or
-			sym.name == 'SPX500_i' or
 			sym.name == 'CHNA50_m_i' or
 			sym.name == 'FTSE100_i' or
 			sym.name == 'GER40_i' or

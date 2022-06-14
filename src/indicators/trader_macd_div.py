@@ -26,7 +26,7 @@ symbol_black_list = np.array(
 	])
 
 def get_all_deta_online():
-	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,6000)
+	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,10000)
 	#symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,1)
 	symbol_data_1H,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,510)
 	#symbol_data_H4,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,1)
@@ -109,6 +109,21 @@ def trader_macd_div(
 			lot < 0.01
 			): lot = 0.01
 
+		if (
+			sym.name == 'CAC40_i' or
+			sym.name == 'SPX500_i' or
+			sym.name == 'CHNA50_m_i' or
+			sym.name == 'FTSE100_i' or
+			sym.name == 'GER40_i' or
+			sym.name == 'HSI50_i' or
+			sym.name == 'NQ100_i' or
+			sym.name == 'STOXX50_i' or
+			sym.name == 'WSt30_m_i'
+			):
+			
+			lot = lot * 10 
+			lot = float("{:.1f}".format((lot)))
+
 		print('================> ',sym.name)
 		print('signal =  ',signal)
 		print('tp: ',tp)
@@ -147,5 +162,5 @@ def trader_task_macd_div():
 						)
 		print('****************** Finish *************************')
 	except Exception as ex:
-		print('===== Trader ===> ',ex)
+		print('===== Trader Error ===> ',ex)
 	return

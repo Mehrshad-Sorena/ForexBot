@@ -468,6 +468,33 @@ def divergence_macd(
 		print('last min finded ======> ',extreme_min['index'].iloc[-1])
 
 		mehrshad = 0
+
+		if symbol == 'AUDCAD_i': coef_money = 10
+		if symbol == 'AUDCHF_i': coef_money = 10
+		if symbol == 'AUDUSD_i': coef_money = 10
+		if symbol == 'CADJPY_i': coef_money = 10
+		if symbol == 'EURAUD_i': coef_money = 15
+		if symbol == 'EURCAD_i': coef_money = 15
+		if symbol == 'EURCHF_i': coef_money = 15
+		if symbol == 'EURGBP_i': coef_money = 15
+		if symbol == 'EURUSD_i': coef_money = 15
+		if symbol == 'EURJPY_i': coef_money = 15
+		if symbol == 'GBPAUD_i': coef_money = 15
+		if symbol == 'GBPCAD_i': coef_money = 15
+		if symbol == 'GBPJPY_i': coef_money = 15
+		if symbol == 'GBPUSD_i': coef_money = 15
+		if symbol == 'USDJPY_i': coef_money = 15
+		if symbol == 'USDCAD_i': coef_money = 15
+		if symbol == 'CAC40_i': coef_money = 10
+		if symbol == 'FTSE100_i': coef_money = 12
+		if symbol == 'GER40_i': coef_money = 15
+		if symbol == 'WSt30_m_i': coef_money = 6
+		if symbol == 'STOXX50_i': coef_money = 7
+		if symbol == 'CHNA50_m_i': coef_money = 4
+		if symbol == 'HSI50_i': coef_money = 0 ###################################
+		if symbol == 'NQ100_i': coef_money = 15
+		if symbol == 'XAUUSD_i': coef_money = 20
+		if symbol == 'ASX200_i': coef_money = 8
 		
 
 		#***************************** Buy Find Section ***********************************************
@@ -745,7 +772,12 @@ def divergence_macd(
 									signal_buy_primary['flag_pr'][primary_counter] = 'st'
 									signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['st_pr_index'][primary_counter]
 
-									my_money = my_money - ((my_money/10) * signal_buy_primary['st_pr'][primary_counter])
+									if my_money >=100:
+										lot = int(my_money/100) * coef_money
+									else:
+										lot = coef_money
+
+									my_money = my_money - (lot * signal_buy_primary['st_pr'][primary_counter])
 									signal_buy_primary['money'][primary_counter] = my_money
 									#print('st front 3 ===> ',signal_buy_primary['value_front'][primary_counter])
 									#print('st back 3 ===> ',signal_buy_primary['value_back'][primary_counter])
@@ -760,7 +792,12 @@ def divergence_macd(
 										signal_buy_primary['flag_pr'][primary_counter] = 'tp'
 										signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['tp_pr_index'][primary_counter]
 
-										my_money = my_money + ((my_money/10) * signal_buy_primary['tp_pr'][primary_counter])
+										if my_money >=100:
+											lot = int(my_money/100) * coef_money
+										else:
+											lot = coef_money
+
+										my_money = my_money + (lot * signal_buy_primary['tp_pr'][primary_counter])
 										signal_buy_primary['money'][primary_counter] = my_money
 
 										#print('tp front 3 ===> ',signal_buy_primary['value_front'][primary_counter])
@@ -774,7 +811,12 @@ def divergence_macd(
 										signal_buy_primary['flag_pr'][primary_counter] = 'st'
 										signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['st_pr_index'][primary_counter]
 
-										my_money = my_money - ((my_money/10) * signal_buy_primary['st_pr'][primary_counter])
+										if my_money >=100:
+											lot = int(my_money/100) * coef_money
+										else:
+											lot = coef_money
+
+										my_money = my_money - (lot * signal_buy_primary['st_pr'][primary_counter])
 										signal_buy_primary['money'][primary_counter] = my_money
 
 										#print('st front 3 ===> ',signal_buy_primary['value_front'][primary_counter])
@@ -1230,7 +1272,12 @@ def divergence_macd(
 									signal_sell_primary['flag_pr'][primary_counter] = 'st'
 									signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['st_pr_index'][primary_counter]
 
-									my_money = my_money - ((my_money/10) * signal_sell_primary['st_pr'][primary_counter])
+									if my_money >=100:
+										lot = int(my_money/100) * coef_money
+									else:
+										lot = coef_money
+
+									my_money = my_money - (lot * signal_sell_primary['st_pr'][primary_counter])
 									signal_sell_primary['money'][primary_counter] = my_money
 
 									#print('flag ====> st')
@@ -1246,7 +1293,12 @@ def divergence_macd(
 										signal_sell_primary['flag_pr'][primary_counter] = 'tp'
 										signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['tp_pr_index'][primary_counter]
 
-										my_money = my_money + ((my_money/10) * signal_sell_primary['tp_pr'][primary_counter])
+										if my_money >=100:
+											lot = int(my_money/100) * coef_money
+										else:
+											lot = coef_money
+
+										my_money = my_money + (lot * signal_sell_primary['tp_pr'][primary_counter])
 										signal_sell_primary['money'][primary_counter] = my_money
 
 										#print('flag ====> tp')
@@ -1260,7 +1312,12 @@ def divergence_macd(
 										signal_sell_primary['flag_pr'][primary_counter] = 'st'
 										signal_sell_primary['flag_pr_index'][primary_counter] = signal_sell_primary['st_pr_index'][primary_counter]
 
-										my_money = my_money - ((my_money/10) * signal_sell_primary['st_pr'][primary_counter])
+										if my_money >=100:
+											lot = int(my_money/100) * coef_money
+										else:
+											lot = coef_money
+
+										my_money = my_money - (lot * signal_sell_primary['st_pr'][primary_counter])
 										signal_sell_primary['money'][primary_counter] = my_money
 
 										#print('flag ====> st')

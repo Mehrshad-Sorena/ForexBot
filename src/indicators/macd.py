@@ -4627,7 +4627,7 @@ def macd_div_tester_for_permit(
 				for idx in buy_data['index'][np.where(buy_data['flag_pr'] == 'st')[0]]:
 					print('time st = ',dataset[symbol]['time'][idx])
 
-				if output_buy['score_pr'][0] * 100 >= ga_result_buy['score_pr'][0]*0.99: 
+				if output_buy['score_pr'][0] * 50 >= ga_result_buy['score_pr'][0]*0.99: 
 					ga_result_buy['permit'] = True
 					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 
@@ -4847,7 +4847,7 @@ def macd_div_tester_for_permit(
 				for idx in sell_data['index'][np.where(sell_data['flag_pr'] == 'st')[0]]:
 					print('time st = ',dataset[symbol]['time'][idx])
 
-				if output_sell['score_pr'][0] * 10 >= ga_result_sell['score_pr'][0]*0.99:
+				if output_sell['score_pr'][0] * 50 >= ga_result_sell['score_pr'][0]*0.99:
 					ga_result_sell['permit'] = True
 					#ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
 

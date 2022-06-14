@@ -73,6 +73,9 @@ def trader_macd_div(
 			sym.name == 'SPX500_i' or
 			sym.name == 'WSt30_m_i' or
 			sym.name == 'STOXX50_i' or
+			sym.name == 'CHNA50_m_i' or
+			sym.name == 'HSI50_i' or
+			sym.name == 'NQ100_i' or
 			sym.name == 'XAUUSD_i'
 			): continue
 

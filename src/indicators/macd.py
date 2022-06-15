@@ -491,7 +491,7 @@ def divergence_macd(
 		if symbol == 'WSt30_m_i': coef_money = 6
 		if symbol == 'STOXX50_i': coef_money = 7
 		if symbol == 'CHNA50_m_i': coef_money = 4
-		if symbol == 'HSI50_i': coef_money = 0 ###################################
+		if symbol == 'HSI50_i': coef_money = 4
 		if symbol == 'NQ100_i': coef_money = 15
 		if symbol == 'XAUUSD_i': coef_money = 20
 		if symbol == 'ASX200_i': coef_money = 8
@@ -3333,6 +3333,8 @@ def genetic_algo_div_macd(
 				learn_counter += 1
 
 			chorm_reset_counter += 1
+
+			if all_chorms >= int(num_turn / 2): break
 			all_chorms += 1
 
 			with pd.option_context('display.max_rows', None, 'display.max_columns', None):

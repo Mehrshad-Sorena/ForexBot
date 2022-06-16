@@ -1,2 +1,2 @@
-,score_min_max,score_pr,mean_tp_pr,mean_st_pr,max_tp_pr,max_st_pr,sum_st_pr,sum_tp_pr,num_tp_pr,num_st_pr,num_trade_pr,max_st,min_st,max_tp,min_tp,diff_extereme_pr,money,methode,fast_period,slow_period,signal_period,apply_to,alpha,num_extreme,diff_extereme,signal,score_buy,score_sell,permit
-0,0,1422189.893,0.338620566,0.117276263,0.81,0.660917743,19.27778168,52.75682813,101,112,213,0.75,0.14,0.81,0.55,23,2360,pr,60,140,4,HLCC/4,0.11,75,23,buy,1422189.893,0,TRUE
+,Unnamed: 0,score_min_max,score_pr,mean_tp_pr,mean_st_pr,max_tp_pr,max_st_pr,sum_st_pr,sum_tp_pr,num_tp_pr,num_st_pr,num_trade_pr,max_st,min_st,max_tp,min_tp,diff_extereme_pr,money,methode,fast_period,slow_period,signal_period,apply_to,alpha,num_extreme,diff_extereme,signal,score_buy,score_sell,permit
+0,0,0,1422189.893,0.338620566,0.117276263,0.81,0.660917743,19.27778168,52.75682813,101,112,213,0.75,0.14,0.81,0.55,23,2360,pr,60,140,4,HLCC/4,0.11,75,23,buy,1422189.893,0,TRUE

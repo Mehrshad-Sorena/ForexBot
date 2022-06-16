@@ -595,7 +595,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 																	high=dataset_5M['high'],
 																	low=dataset_5M['low'],
 																	number_min=10,number_max=10))
-		local_extreme_5M['power'] = np.ones(len(local_extreme_5M))*1#5
+		local_extreme_5M['power'] = np.ones(len(local_extreme_5M))*400#5
 
 	local_extreme_15M = pd.DataFrame()
 	local_extreme_15M['extreme'] = np.nan
@@ -615,7 +615,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 																	high=dataset_1H['high'],
 																	low=dataset_1H['low'],
 																	number_min=5,number_max=5))
-		local_extreme_1H['power'] = np.ones(len(local_extreme_1H))*12#30
+		local_extreme_1H['power'] = np.ones(len(local_extreme_1H))*4800#30
 
 	local_extreme_4H = pd.DataFrame()
 	local_extreme_4H['extreme'] = np.nan
@@ -643,7 +643,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	trend_local_extreme_5M_long['max'] = np.nan
 	trend_local_extreme_5M_long['power'] = np.nan
 
-	if False:#(T_5M == True):
+	if (T_5M == True):
 		dataset_ramp_5M = pd.DataFrame()
 		cut_first = 0
 		if (int(len(dataset_5M['low'])-1) > long_length):
@@ -671,7 +671,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	trend_local_extreme_5M_mid['max'] = np.nan
 	trend_local_extreme_5M_mid['power'] = np.nan
 
-	if False:#(T_5M == True):
+	if (T_5M == True):
 		dataset_ramp_5M = pd.DataFrame()
 		cut_first = 0
 		if (int(len(dataset_5M['low'])-1) > mid_length):
@@ -699,7 +699,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	trend_local_extreme_5M_short_1['max'] = np.nan
 	trend_local_extreme_5M_short_1['power'] = np.nan
 
-	if False:#(T_5M == True):
+	if (T_5M == True):
 
 		dataset_ramp_5M = pd.DataFrame()
 		cut_first = 0
@@ -728,7 +728,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 	trend_local_extreme_5M_short_2['max'] = np.nan
 	trend_local_extreme_5M_short_2['power'] = np.nan
 
-	if False:#(T_5M == True):
+	if (T_5M == True):
 
 		dataset_ramp_5M = pd.DataFrame()
 		cut_first = 0
@@ -765,7 +765,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 														kijun=26,
 														senkou=52,
 														n_clusters=10,
-														weight=1#5
+														weight=400#5
 														)
 
 	ichi_local_extreme_15M = pd.DataFrame()
@@ -795,7 +795,7 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 														kijun=26,
 														senkou=52,
 														n_clusters=10,
-														weight=12
+														weight=4800
 														)
 
 	ichi_local_extreme_4H = pd.DataFrame()

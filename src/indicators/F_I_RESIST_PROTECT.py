@@ -581,10 +581,10 @@ def Best_Extreme_Finder(exterm_point,high,low,n_clusters_low,n_clusters_high,alp
 #@stTime
 def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,dataset_4H,dataset_1D,plot=False,alpha=0.05):
 
-	short_length_1 = 25
-	short_length_2 = 50
-	mid_length = 100
-	long_length = 200
+	short_length_1 = 50
+	short_length_2 = 100
+	mid_length = 200
+	long_length = 400
 	#Extreme Points Finder Function
 
 	local_extreme_5M = pd.DataFrame()
@@ -889,11 +889,11 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 									timeout_break=1
 									)
 
-	if False:#T_5M == True:
-		extereme['trend_long'] = [trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend'],trend_local_extreme_5M_long['trend']]
-		extereme['trend_mid'] = [trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend'],trend_local_extreme_5M_mid['trend']]
-		extereme['trend_short1'] = [trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend'],trend_local_extreme_5M_short_1['trend']]
-		extereme['trend_short2'] = [trend_local_extreme_5M_short_2['trend'],trend_local_extreme_5M_short_2['trend'],trend_local_extreme_5M_short_2['trend']]
+	if T_5M == True:
+		extereme['trend_long'] = [trend_local_extreme_5M_long['trend'][0],trend_local_extreme_5M_long['trend'][0],trend_local_extreme_5M_long['trend'][0]]
+		extereme['trend_mid'] = [trend_local_extreme_5M_mid['trend'][0],trend_local_extreme_5M_mid['trend'][0],trend_local_extreme_5M_mid['trend'][0]]
+		extereme['trend_short1'] = [trend_local_extreme_5M_short_1['trend'][0],trend_local_extreme_5M_short_1['trend'][0],trend_local_extreme_5M_short_1['trend'][0]]
+		extereme['trend_short2'] = [trend_local_extreme_5M_short_2['trend'][0],trend_local_extreme_5M_short_2['trend'][0],trend_local_extreme_5M_short_2['trend'][0]]
 
 	if (plot == True):
 		fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))

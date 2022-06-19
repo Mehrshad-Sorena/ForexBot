@@ -1,0 +1,2 @@
+,Unnamed: 0,score_min_max,score_pr,mean_tp_pr,mean_st_pr,max_tp_pr,max_st_pr,sum_st_pr,sum_tp_pr,num_tp_pr,num_st_pr,num_trade_pr,max_st,min_st,max_tp,min_tp,diff_extereme_pr,money,methode,fast_period,slow_period,signal_period,apply_to,alpha,num_extreme,diff_extereme,signal,score_buy,score_sell,permit
+0,0,0,1270793.955,0.534099606,0.094910338,0.69,0.27,6.309905473,67.38227931,117,28,145,0.27,0.2,0.69,0.67,19,578,pr,60,1500,1,HL/2,0.05,80,22,"buy,sell",1270793.955,0,TRUE

@@ -202,6 +202,8 @@ def divergence_macd(
 				dataset_1H,
 				Apply_to,
 				symbol,
+				out_before_buy,
+				out_before_sell,
 				macd_fast=12,
 				macd_slow=26,
 				macd_signal=9,
@@ -360,6 +362,14 @@ def divergence_macd(
 				#signal_buy_primary['power_pr_high'] = np.nan
 				#signal_buy_primary['power_pr_low'] = np.nan
 				signal_buy_primary['money'][0] = my_money
+				if flag_learning == True:
+					signal_buy_primary['diff_pr_top_noise'] = np.nan
+					signal_buy_primary['R_diff_top'] = np.nan
+					signal_buy_primary['R_est_diff_top'] = np.nan
+
+					signal_buy_primary['diff_pr_down_noise'] = np.nan
+					signal_buy_primary['R_diff_down'] = np.nan
+					signal_buy_primary['R_est_diff_down'] = np.nan
 
 		signal_buy_secondry = pd.DataFrame(np.zeros(len(extreme_min)))
 		signal_buy_secondry['signal'] = np.nan
@@ -462,10 +472,10 @@ def divergence_macd(
 		secondry_counter = 0
 
 		print('exterme finded ======> ',len(extreme_min['index']))
-		print('len dataset =========> ',len(dataset[symbol]['low']))
 
 		print('last max finded ======> ',extreme_max['index'].iloc[-1])
 		print('last min finded ======> ',extreme_min['index'].iloc[-1])
+		print('flag learning ========> ',flag_learning)
 
 		mehrshad = 0
 
@@ -545,6 +555,7 @@ def divergence_macd(
 					continue 
 			else:
 				if (elm - 1 < 0): continue
+				continue
 				diff_extereme_buy = 1
 				list_elm = [1]
 
@@ -680,9 +691,18 @@ def divergence_macd(
 													plot=False,
 													alpha=alpha
 													)
-						except:
+						except Exception as ex:
+							#print('res pro error ===>',ex)
 							res_pro['high'] = [dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_min/100)),0,0]#res_pro['high'] = 'nan'
 							res_pro['low'] = [0,0,dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_min/100))]#res_pro['low'] = 'nan'
+
+							res_pro['power_high'] = [0.5,0,0]
+							res_pro['power_low'] = [0,0,0.5]
+
+							res_pro['trend_long'] = ['no_flag','no_flag','no_flag']
+							res_pro['trend_mid'] = ['no_flag','no_flag','no_flag']
+							res_pro['trend_short1'] = ['no_flag','no_flag','no_flag']
+							res_pro['trend_short2'] = ['no_flag','no_flag','no_flag']
 
 						if (res_pro.empty == False):
 							signal_buy_primary['diff_pr_top'][primary_counter] = (((res_pro['high'][0]) - dataset[symbol]['high'][extreme_min['index'][elm]])/dataset[symbol]['high'][extreme_min['index'][elm]]) * 100
@@ -690,36 +710,186 @@ def divergence_macd(
 
 							#signal_buy_primary['power_pr_high'][primary_counter] = res_pro['power_high'][0]
 							#signal_buy_primary['power_pr_low'][primary_counter] = res_pro['power_low'][2]
+							#print('top1 ====> ',signal_buy_primary['diff_pr_top'][primary_counter])
+							#print('down1 ====> ',signal_buy_primary['diff_pr_down'][primary_counter])
+							if (
+								out_before_buy.empty == False and
+								flag_learning == True
+								):
 
-							#if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_minmax_buy_max:
-								#signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_minmax_buy_max
-								#res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_minmax_buy_max/100))
-							
+								if primary_counter >= 1:
+									signal_buy_primary['diff_pr_top_noise'][primary_counter] = (
+																								(signal_buy_primary['diff_pr_top'][primary_counter] * (1 - alpha)) 
+																								#+ 
+																								#((signal_buy_primary['tp_pr'][primary_counter-1] - signal_buy_primary['diff_pr_top'][primary_counter]) * alpha)
+																								)
 
-							#signal_buy_primary['tp_line'][primary_counter] = res_pro['high'][0]
-							#signal_buy_primary['st_line'][primary_counter] = res_pro['low'][2]
+									signal_buy_primary['R_diff_top'][primary_counter] = (
+																						#signal_buy_primary['R_est_diff_top'][primary_counter-1] + 
+																						signal_buy_primary['diff_pr_top_noise'][primary_counter]
+																						)#/2
+								else:
+									signal_buy_primary['diff_pr_top_noise'][primary_counter] = (
+																								(signal_buy_primary['diff_pr_top'][primary_counter] * (1 - alpha)) 
+																								)
+									signal_buy_primary['R_diff_top'][primary_counter] = (
+																						signal_buy_primary['diff_pr_top_noise'][primary_counter]
+																						)
 
+								signal_buy_primary['R_est_diff_top'][primary_counter] = (
+																						#(((tp_percent_buy_min - tp_percent_buy_max)/2) * (1 - out_before_buy['alpha'][0])) + 
+																						#(signal_buy_primary['R_diff_top'][primary_counter] * (1 - alpha))
 
-							#if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_minmax_buy:
-							#signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_minmax_buy
-							#res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_minmax_buy/100))
+																						((signal_buy_primary['R_diff_top'][primary_counter]) + ((tp_percent_buy_max - signal_buy_primary['R_diff_top'][primary_counter]) * (((out_before_buy['alpha'][0]) + out_before_buy['max_tp_power'][0])/2))) +
+																						((signal_buy_primary['R_diff_top'][primary_counter]) + ((tp_percent_buy_min - signal_buy_primary['R_diff_top'][primary_counter]) * (((out_before_buy['alpha'][0]) + out_before_buy['min_tp_power'][0])/2)))
+																						)/2
 
-
-							if signal_buy_primary['diff_pr_down'][primary_counter] < st_percent_buy_min:#signal_buy['diff_pr_top'][buy_counter]:
-								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_min
-								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_min/100))
-
-							if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_buy_max:
-								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_max
-								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_max/100))
+								signal_buy_primary['diff_pr_top'][primary_counter] = signal_buy_primary['R_est_diff_top'][primary_counter]
 								
-							if signal_buy_primary['diff_pr_top'][primary_counter] < tp_percent_buy_min:
-								signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_min
-								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_min/100))
+								#print('top2 ====> ',signal_buy_primary['diff_pr_top'][primary_counter])
+								#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 
-							if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_buy_max:
-								signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_max
-								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_max/100))
+								#print('long ===> ',res_pro['trend_long'][0])
+								#print('mid ===> ',res_pro['trend_mid'][0])
+								#print('short1 ===> ',res_pro['trend_short1'][0])
+								#print('short2 ===> ',res_pro['trend_short2'][0])
+								if (
+									res_pro['trend_long'][0] == 'sell' or
+									res_pro['trend_long'][0] == 'parcham'
+									): 
+									weight_long = 4
+								elif (
+									res_pro['trend_long'][0] == 'no_flag' or
+									pd.isnull(res_pro['trend_long'][0])
+									):
+									weight_long = 0
+								else: 
+									weight_long = -4
+
+								if (
+									res_pro['trend_mid'][0] == 'sell' or
+									res_pro['trend_mid'][0] == 'parcham'
+									): 
+									weight_mid = 3
+								elif (
+									res_pro['trend_mid'][0] == 'no_flag' or
+									pd.isnull(res_pro['trend_mid'][0])
+									):
+									weight_mid = 0
+								else: 
+									weight_mid = -3
+
+								if (
+									res_pro['trend_short1'][0] == 'sell' or
+									res_pro['trend_short1'][0] == 'parcham'
+									): 
+									weight_sohrt_1 = 2
+								elif (
+									res_pro['trend_short1'][0] == 'no_flag' or
+									pd.isnull(res_pro['trend_short1'][0])
+									):
+									weight_sohrt_1 = 0
+								else: 
+									weight_sohrt_1 = -2
+
+								if (
+									res_pro['trend_short2'][0] == 'sell' or
+									res_pro['trend_short2'][0] == 'parcham'
+									): 
+									weight_sohrt_2 = 1
+								elif (
+									res_pro['trend_short2'][0] == 'no_flag' or
+									pd.isnull(res_pro['trend_short2'][0])
+									):
+									weight_sohrt_2 = 0
+								else: 
+									weight_sohrt_2 = -1
+
+								weight_trend = (weight_long + weight_mid + weight_sohrt_1 + weight_sohrt_2)/100
+
+
+								if (
+									out_before_buy['value_front_intervals_pr_lower'][0] <= signal_buy_primary['value_front'][primary_counter] <= out_before_buy['value_front_intervals_pr_upper'][0] 
+									):
+									weight_value_front = (((out_before_buy['value_front_intervals_pr_upper_power'][0]+out_before_buy['value_front_intervals_pr_lower_power'][0])/2) * (1 - out_before_buy['alpha'][0]))#/2
+								else:
+									weight_value_front = (-((out_before_buy['value_front_intervals_pr_upper_power'][0]+out_before_buy['value_front_intervals_pr_lower_power'][0])/2) * (out_before_buy['alpha'][0]))#/2
+								
+								if (
+									out_before_buy['value_back_intervals_pr_lower'][0] <= signal_buy_primary['value_back'][primary_counter] <= out_before_buy['value_back_intervals_pr_upper'][0]
+									):
+									weight_value_back = (((out_before_buy['value_back_intervals_pr_lower_power'][0]+out_before_buy['value_back_intervals_pr_upper_power'][0])/2) * (1 - out_before_buy['alpha'][0]))#/2
+
+								else:
+									weight_value_back = (-(((out_before_buy['value_back_intervals_pr_lower_power'][0]+out_before_buy['value_back_intervals_pr_upper_power'][0]))/2) * (out_before_buy['alpha'][0]))#/2
+
+								weight_signal = (weight_value_front + weight_value_back)/2
+								#print('weight_signal ====> ',weight_signal)
+
+								signal_buy_primary['diff_pr_top'][primary_counter] = (signal_buy_primary['diff_pr_top'][primary_counter] * (1 + ((weight_signal + weight_trend)/2)))
+
+								
+								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(signal_buy_primary['diff_pr_top'][primary_counter]/100))
+
+								#print('sum weight top =====> ',(weight_signal + weight_trend))
+								#print('top3 =====> ',signal_buy_primary['diff_pr_top'][primary_counter])
+
+								#print('weight ===========> ',(1 + ((weight_signal + weight_trend)/2)))
+								#print()
+								if primary_counter >= 1:
+									signal_buy_primary['diff_pr_down_noise'][primary_counter] = (
+																								(signal_buy_primary['diff_pr_down'][primary_counter] * (1 - alpha)) 
+																								#+ 
+																								#((signal_buy_primary['st_pr'][primary_counter-1] - signal_buy_primary['diff_pr_down'][primary_counter]) * alpha)
+																								)
+
+									signal_buy_primary['R_diff_down'][primary_counter] = (
+																						#signal_buy_primary['R_est_diff_down'][primary_counter-1] + 
+																						signal_buy_primary['diff_pr_down_noise'][primary_counter]
+																						)#/2
+								else:
+									signal_buy_primary['diff_pr_down_noise'][primary_counter] = (
+																								(signal_buy_primary['diff_pr_down'][primary_counter]  * (1 - alpha)) 
+																								)
+									signal_buy_primary['R_diff_down'][primary_counter] = (
+																						signal_buy_primary['diff_pr_down_noise'][primary_counter]
+																						)
+
+								signal_buy_primary['R_est_diff_down'][primary_counter] = (
+																						#(((st_percent_buy_min + st_percent_buy_max)/2) * (1 - ((out_before_buy['alpha'][0] + alpha)/2))) + 
+																						#(signal_buy_primary['R_diff_down'][primary_counter] * (((out_before_buy['alpha'][0] + alpha)/2)))
+
+																						((signal_buy_primary['R_diff_down'][primary_counter]) + ((st_percent_buy_max - signal_buy_primary['R_diff_down'][primary_counter]) * (((out_before_buy['alpha'][0]) + out_before_buy['max_st_power'][0])/2))) + 
+																						((signal_buy_primary['R_diff_down'][primary_counter]) + ((st_percent_buy_min - signal_buy_primary['R_diff_down'][primary_counter]) * (((out_before_buy['alpha'][0]) + out_before_buy['min_st_power'][0])/2)))
+																						)/2
+
+								signal_buy_primary['diff_pr_down'][primary_counter] = signal_buy_primary['R_est_diff_down'][primary_counter]
+
+								#print('down2 ====> ',signal_buy_primary['diff_pr_down'][primary_counter])
+								#print()
+
+								signal_buy_primary['diff_pr_down'][primary_counter] = (signal_buy_primary['diff_pr_down'][primary_counter] * (1 + ((weight_signal + weight_trend)/2)))
+
+								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])]*(1-(signal_buy_primary['diff_pr_down'][primary_counter]/100))
+								#print('sum weight =====> ',(abs(1 - weight_signal) + weight_trend))
+								#print('down3 =====> ',signal_buy_primary['diff_pr_down'][primary_counter])
+								#print()
+							else:
+								if signal_buy_primary['diff_pr_down'][primary_counter] < st_percent_buy_min:#signal_buy['diff_pr_top'][buy_counter]:
+									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_min
+									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_min/100))
+
+								if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_buy_max:
+									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_max
+									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_max/100))
+								
+								if signal_buy_primary['diff_pr_top'][primary_counter] < tp_percent_buy_min:
+									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_min
+									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_min/100))
+
+								if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_buy_max:
+									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_max
+									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_max/100))
 
 							if int(extreme_min['index'][elm] + 1) >= len(dataset[symbol]['low']): break
 
@@ -1835,9 +2005,9 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 			Upper_Line = Extereme[1]
 			Lower_Line = Extereme[0]
 			Mid_Line = np.array(dist_parameters['loc'])
-			Power_Upper_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Upper_Line = (signal_final['power'][kmeans.predict(Upper_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 			Power_Lower_Line =(signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
-			Power_Mid_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Mid_Line = (signal_final['power'][kmeans.predict(Lower_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 	
 		elif dist_name == 'dweibull':
 			Y = f.fitted_pdf['dweibull']
@@ -1846,9 +2016,9 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 			Upper_Line = Extereme[1]
 			Lower_Line = Extereme[0]
 			Mid_Line = np.array(dist_parameters['loc'])
-			Power_Upper_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Upper_Line = (signal_final['power'][kmeans.predict(Upper_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 			Power_Lower_Line =(signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
-			Power_Mid_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Mid_Line = (signal_final['power'][kmeans.predict(Lower_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 		
 		elif dist_name == 'rayleigh':
 			Y = f.fitted_pdf['rayleigh']
@@ -1857,9 +2027,9 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 			Upper_Line = Extereme[1]
 			Lower_Line = Extereme[0]
 			Mid_Line = np.array(dist_parameters['loc'])
-			Power_Upper_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Upper_Line = (signal_final['power'][kmeans.predict(Upper_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 			Power_Lower_Line =(signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
-			Power_Mid_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Mid_Line = (signal_final['power'][kmeans.predict(Lower_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 	
 		elif dist_name == 'expon':
 			Y = f.fitted_pdf['expon']
@@ -1868,9 +2038,9 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 			Upper_Line = Extereme[1]
 			Lower_Line = Extereme[0]
 			Mid_Line = np.array(dist_parameters['loc'])
-			Power_Upper_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Upper_Line = (signal_final['power'][kmeans.predict(Upper_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 			Power_Lower_Line =(signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
-			Power_Mid_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Mid_Line = (signal_final['power'][kmeans.predict(Lower_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 	
 		elif dist_name == 'nakagami':
 			Y = f.fitted_pdf['nakagami']
@@ -1879,9 +2049,9 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 			Upper_Line = Extereme[1]
 			Lower_Line = Extereme[0]
 			Mid_Line = np.array(dist_parameters['loc'])
-			Power_Upper_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Upper_Line = (signal_final['power'][kmeans.predict(Upper_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 			Power_Lower_Line =(signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
-			Power_Mid_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Mid_Line = (signal_final['power'][kmeans.predict(Lower_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 	
 		elif dist_name == 'norm':
 			Y = f.fitted_pdf['norm']
@@ -1890,9 +2060,9 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 			Upper_Line = Extereme[1]
 			Lower_Line = Extereme[0]
 			Mid_Line = np.array(dist_parameters['loc'])
-			Power_Upper_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Upper_Line = (signal_final['power'][kmeans.predict(Upper_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 			Power_Lower_Line =(signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
-			Power_Mid_Line = (signal_final['power'][kmeans.predict(Mid_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
+			Power_Mid_Line = (signal_final['power'][kmeans.predict(Lower_Line.reshape(1,-1))].to_numpy())/np.max(signal_final['power'])
 
 		#if (time.time() > timeout):
 		#	if (distributions_sell == None):
@@ -2365,16 +2535,34 @@ def tester_div_macd(
 			output_buy['num_trade_pr'] = [st_counter + tp_counter]
 
 			output_buy['max_st'] = [round(diff_down_pr_buy['interval'][upper],2)]
-			output_buy['min_st'] = [round(diff_down_pr_buy['interval'][lower],2)]
-			output_buy['max_tp'] = [round(diff_top_pr_buy['interval'][upper],2)]
-			output_buy['min_tp'] = [round(diff_top_pr_buy['interval'][lower],2)]
+			output_buy['max_st_power'] = diff_down_pr_buy['power'][upper]
 
-			#output_buy['value_front_intervals_pr_upper'] = [value_front_intervals_pr['interval'][upper]]
-			#output_buy['value_front_intervals_pr_lower'] = [value_front_intervals_pr['interval'][lower]]
-			#output_buy['value_back_intervals_pr_upper'] = [value_back_intervals_pr['interval'][upper]]
-			#output_buy['value_back_intervals_pr_lower'] = [value_back_intervals_pr['interval'][lower]]
+			output_buy['min_st'] = [round(diff_down_pr_buy['interval'][lower],2)]
+			output_buy['min_st_power'] = diff_down_pr_buy['power'][lower]
+
+			output_buy['max_tp'] = [round(diff_top_pr_buy['interval'][upper],2)]
+			output_buy['max_tp_power'] = diff_top_pr_buy['power'][upper]
+
+			output_buy['min_tp'] = [round(diff_top_pr_buy['interval'][lower],2)]
+			output_buy['min_tp_power'] = diff_top_pr_buy['power'][lower]
+
+
+			output_buy['value_front_intervals_pr_upper'] = [value_front_intervals_pr['interval'][upper]]
+			output_buy['value_front_intervals_pr_upper_power'] = value_front_intervals_pr['power'][upper]
+
+			output_buy['value_front_intervals_pr_lower'] = [value_front_intervals_pr['interval'][lower]]
+			output_buy['value_front_intervals_pr_lower_power'] = value_front_intervals_pr['power'][lower]
+
+			output_buy['value_back_intervals_pr_upper'] = [value_back_intervals_pr['interval'][upper]]
+			output_buy['value_back_intervals_pr_upper_power'] = value_back_intervals_pr['power'][upper]
+
+			output_buy['value_back_intervals_pr_lower'] = [value_back_intervals_pr['interval'][lower]]
+			output_buy['value_back_intervals_pr_lower_power'] = value_back_intervals_pr['power'][lower]
+
 			
 			output_buy['diff_extereme_pr'] = [round(diff_extereme_pr_buy['interval'][upper])]
+
+			output_buy['alpha'] = [alpha]
 
 			#output_buy['ramp_vol'] = [ramp_volume_intervals_pr['interval'][lower]]
 			#output_buy['value_back'] = [value_back_intervals_pr['interval'][upper]]
@@ -3076,7 +3264,7 @@ def genetic_algo_div_macd(
 			min_st_buy = ga_result_buy['min_st'][0]
 			max_tp_buy = ga_result_buy['max_tp'][0]
 			min_tp_buy = ga_result_buy['min_tp'][0]
-			flag_learning = True
+			flag_learning = False   ########################################################################
 
 		else:
 			max_st_buy = randint(80, 100)/100
@@ -3121,6 +3309,9 @@ def genetic_algo_div_macd(
 
 	#print('===============> ',symbol)
 
+	output_buy = pd.DataFrame()
+
+
 	if flag_trade == 'buy':
 		if os.path.exists(buy_path):
 			with open(buy_path, 'r', newline='') as myfile:
@@ -3149,7 +3340,9 @@ def genetic_algo_div_macd(
 							max_score_ga_buy = float(chrom_get['score_min_max'])
 
 						if ga_result_buy['methode'][0] == 'pr':
-							max_score_ga_buy = 90000#float(chrom_get['score_pr'])
+							max_score_ga_buy = float(chrom_get['score_pr'])
+
+						output_buy = ga_result_buy
 					print(Chromosome[0])
 
 	if flag_trade == 'sell':
@@ -3189,6 +3382,8 @@ def genetic_algo_div_macd(
 
 	result_sell = pd.DataFrame()
 	chromosome_sell = pd.DataFrame()
+
+	
 
 	chrom_counter = 0
 	all_chorms = 0
@@ -3367,7 +3562,7 @@ def genetic_algo_div_macd(
 				print('........................................................')
 				print()
 
-			try:
+			if True:
 				if flag_trade == 'buy':
 					if primary_doing == True:
 						buy_data, _, _, _ = divergence_macd(
@@ -3376,6 +3571,8 @@ def genetic_algo_div_macd(
 															dataset_1H=dataset_1H,
 															Apply_to=Chromosome[chrom_counter]['apply_to'],
 															symbol=symbol,
+															out_before_buy = output_buy,
+															out_before_sell = '',
 															macd_fast=Chromosome[chrom_counter]['fast_period'],
 															macd_slow=Chromosome[chrom_counter]['slow_period'],
 															macd_signal=Chromosome[chrom_counter]['signal_period'],
@@ -3398,7 +3595,7 @@ def genetic_algo_div_macd(
 															alpha=Chromosome[chrom_counter]['alpha'],
 															num_exteremes=Chromosome[chrom_counter]['num_extreme'],
 															diff_extereme=Chromosome[chrom_counter]['diff_extereme'],
-															real_test = True,
+															real_test = False,
 															flag_learning=flag_learning
 															)
 					if secondry_doing == True:
@@ -3425,7 +3622,7 @@ def genetic_algo_div_macd(
 															tp_percent_minmax_buy_max = max_tp_buy
 															)
 					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						#print('=======> buy_data = ',buy_data))
+						#print('=======> buy_data = ',buy_data)
 
 				if flag_trade == 'sell':
 					if primary_doing == True:
@@ -3457,7 +3654,7 @@ def genetic_algo_div_macd(
 															alpha=Chromosome[chrom_counter]['alpha'],
 															num_exteremes=Chromosome[chrom_counter]['num_extreme'],
 															diff_extereme=Chromosome[chrom_counter]['diff_extereme'],
-															real_test = True,
+															real_test = False,
 															flag_learning=flag_learning
 															)
 
@@ -3496,7 +3693,7 @@ def genetic_algo_div_macd(
 				if flag_trade == 'sell' and sell_data.empty==True:
 					flag_golden_cross = True
 
-			except Exception as ex:
+			else:#except Exception as ex:
 				print('getting error GA Golden Cross: ', ex)
 				flag_golden_cross = True
 
@@ -3635,7 +3832,7 @@ def genetic_algo_div_macd(
 
 
 							if os.path.exists(buy_path):
-								max_score_ga_buy_before = 34000#ga_result_buy['score_pr'][0] #* 0.9
+								max_score_ga_buy_before = ga_result_buy['score_pr'][0] #* 0.9
 							else:
 								max_score_ga_buy_before = max_score_ga_buy #* 0.9
 
@@ -3648,7 +3845,7 @@ def genetic_algo_div_macd(
 									):
 									max_score_ga_buy = max_score_ga_buy_before #* 0.9
 								else:
-									if os.path.exists(buy_path): max_score_ga_buy = 34000#ga_result_buy['score_pr'][0] #* 0.9
+									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0] #* 0.9
 									if not os.path.exists(buy_path): max_score_ga_buy = 34000
 
 							Chromosome[chrom_counter].update({'score_buy': score_buy })
@@ -4120,7 +4317,7 @@ def genetic_algo_div_macd(
 										'signal_period': randint(signal_period_lower, signal_period_upper),
 										'apply_to': np.random.choice(apply_to_list_ga),
 										'alpha': randint(1, 50)/100,
-										'num_extreme': int(buy_data['num_extreme'][0]),#randint(int(Chromosome[chrom_counter]['fast_period']/2),Chromosome[chrom_counter]['fast_period']*5),#int(randint(50,500)/10),#randint(int(Chromosome[chrom_counter]['fast_period']*0.25),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
+										'num_extreme': int(output_buy['num_trade_pr'][0]),#randint(int(Chromosome[chrom_counter]['fast_period']/2),Chromosome[chrom_counter]['fast_period']*5),#int(randint(50,500)/10),#randint(int(Chromosome[chrom_counter]['fast_period']*0.25),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
 										'diff_extereme': 25,#Chromosome[chrom_counter]['slow_period'],
 										'signal': None,
 										'score_buy': 0,
@@ -4442,6 +4639,8 @@ def macd_div_tester_for_permit(
 													dataset_1H=symbol_data_1H,
 													Apply_to=ga_result_buy['apply_to'][0],
 													symbol=symbol,
+													out_before_buy = ga_result_buy,
+													out_before_sell = '',
 													macd_fast=ga_result_buy['fast_period'][0],
 													macd_slow=ga_result_buy['slow_period'][0],
 													macd_signal=ga_result_buy['signal_period'][0],
@@ -4464,7 +4663,7 @@ def macd_div_tester_for_permit(
 													alpha=ga_result_buy['alpha'][0],
 													num_exteremes = ga_result_buy['num_extreme'][0],
 													diff_extereme = ga_result_buy['diff_extereme'][0],
-													real_test = True,
+													real_test = False,
 													flag_learning=True
 													)
 			if secondry_doing == True:
@@ -4686,7 +4885,7 @@ def macd_div_tester_for_permit(
 				for idx in buy_data['index'][np.where(buy_data['flag_pr'] == 'st')[0]]:
 					print('time st = ',dataset[symbol]['time'][idx])
 
-				if output_buy['score_pr'][0] * 50 >= ga_result_buy['score_pr'][0]*0.99: 
+				if output_buy['score_pr'][0] >= ga_result_buy['score_pr'][0]*0.9: 
 					ga_result_buy['permit'] = True
 					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 
@@ -4745,7 +4944,7 @@ def macd_div_tester_for_permit(
 												alpha=ga_result_sell['alpha'][0],
 												num_exteremes = ga_result_sell['num_extreme'][0],
 												diff_extereme = ga_result_sell['diff_extereme'][0],
-												real_test = True,
+												real_test = False,
 												flag_learning=True
 												)
 			if secondry_doing == True:
@@ -5035,6 +5234,8 @@ def last_signal_macd_div(
 														dataset_1H=dataset_1H,
 														Apply_to=ga_result_buy_primary['apply_to'][0],
 														symbol=symbol,
+														out_before_buy = '',
+														out_before_sell = '',
 														macd_fast= int(ga_result_buy_primary['fast_period'][0]),
 														macd_slow= int(ga_result_buy_primary['slow_period'][0]),
 														macd_signal= int(ga_result_buy_primary['signal_period'][0]),
@@ -5056,7 +5257,9 @@ def last_signal_macd_div(
 														tp_percent_sell_min = 0,
 														alpha= ga_result_buy_primary['alpha'][0],
 														num_exteremes= int(ga_result_buy_primary['num_extreme'][0]),
-														diff_extereme = int(ga_result_buy_primary['diff_extereme'][0])
+														diff_extereme = int(ga_result_buy_primary['diff_extereme'][0]),
+														real_test = False,
+														flag_learning=False
 														)
 			if (buy_data_primary.empty == False):
 				lst_idx_buy_primary = int(buy_data_primary['index'].iloc[-1])#cut_first + 1
@@ -5332,27 +5535,112 @@ def last_signal_macd_div(
 					res_pro_buy_primary['high'] = [dataset[symbol]['high'][int(lst_idx_buy_primary)] * (1+(ga_result_buy_primary['min_tp'][0]/100)),0,0]#res_pro_buy_primary['high'] = 'nan'
 					res_pro_buy_primary['low'] = [0,0,dataset[symbol]['low'][int(lst_idx_buy_primary)] * (1-(ga_result_buy_primary['min_st'][0]/100))]
 
+					res_pro_buy_primary['power_high'] = [0.5,0,0]
+					res_pro_buy_primary['power_low'] = [0,0,0.5]
+
+					res_pro_buy_primary['trend_long'] = ['no_flag','no_flag','no_flag']
+					res_pro_buy_primary['trend_mid'] = ['no_flag','no_flag','no_flag']
+					res_pro_buy_primary['trend_short1'] = ['no_flag','no_flag','no_flag']
+					res_pro_buy_primary['trend_short2'] = ['no_flag','no_flag','no_flag']
 
 				if (res_pro_buy_primary.empty == False):
 					diff_pr_top_buy_primary = (((res_pro_buy_primary['high'][0]) - dataset[symbol]['high'][int(lst_idx_buy_primary)])/dataset[symbol]['high'][int(lst_idx_buy_primary)]) * 100
 					diff_pr_down_buy_primary = ((dataset[symbol]['low'][int(lst_idx_buy_primary)] - (res_pro_buy_primary['low'][2]))/dataset[symbol]['low'][int(lst_idx_buy_primary)]) * 100
 
-					if diff_pr_down_buy_primary < ga_result_buy_primary['min_st'][0]:
-						diff_pr_down_buy_primary = ga_result_buy_primary['min_st'][0]
-						res_pro_buy_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_buy_primary)] * (1-(ga_result_buy_primary['min_st'][0]/100))
+					if (
+						res_pro_buy_primary['trend_long'][0] == 'sell' or
+						res_pro_buy_primary['trend_long'][0] == 'parcham'
+						): 
+						weight_long = 4
+					elif (
+						res_pro_buy_primary['trend_long'][0] == 'no_flag' or
+						pd.isnull(res_pro_buy_primary['trend_long'][0])
+						):
+						weight_long = 0
+					else: 
+						weight_long = -4
+
+					if (
+						res_pro_buy_primary['trend_mid'][0] == 'sell' or
+						res_pro_buy_primary['trend_mid'][0] == 'parcham'
+						): 
+						weight_mid = 3
+					elif (
+						res_pro_buy_primary['trend_mid'][0] == 'no_flag' or
+						pd.isnull(res_pro_buy_primary['trend_mid'][0])
+						):
+						weight_mid = 0
+					else: 
+						weight_mid = -3
+
+					if (
+						res_pro_buy_primary['trend_short1'][0] == 'sell' or
+						res_pro_buy_primary['trend_short1'][0] == 'parcham'
+						): 
+						weight_sohrt_1 = 2
+					elif (
+						res_pro_buy_primary['trend_short1'][0] == 'no_flag' or
+						pd.isnull(res_pro_buy_primary['trend_short1'][0])
+						):
+						weight_sohrt_1 = 0
+					else: 
+						weight_sohrt_1 = -2
+
+					if (
+						res_pro_buy_primary['trend_short2'][0] == 'sell' or
+						res_pro_buy_primary['trend_short2'][0] == 'parcham'
+						): 
+						weight_sohrt_2 = 1
+					elif (
+						res_pro_buy_primary['trend_short2'][0] == 'no_flag' or
+						pd.isnull(res_pro_buy_primary['trend_short2'][0])
+						):
+						weight_sohrt_2 = 0
+					else: 
+						weight_sohrt_2 = -1
+
+					weight_trend = (weight_long + weight_mid + weight_sohrt_1 + weight_sohrt_2)/100
 
 
-					if diff_pr_down_buy_primary > ga_result_buy_primary['max_st'][0]:
-						diff_pr_down_buy_primary = ga_result_buy_primary['max_st'][0]
-						res_pro_buy_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_buy_primary)] * (1-(ga_result_buy_primary['max_st'][0]/100))
+					if (
+						ga_result_buy_primary['value_front_intervals_pr_lower'][0] <= buy_data_primary['value_front'][lst_idx_buy_primary] <= ga_result_buy_primary['value_front_intervals_pr_upper'][0] 
+						):
+						weight_value_front = (((ga_result_buy_primary['value_front_intervals_pr_upper_power'][0]+ga_result_buy_primary['value_front_intervals_pr_lower_power'][0])/2) * (1 - ga_result_buy_primary['alpha'][0]))#/2
+					else:
+						weight_value_front = (-((ga_result_buy_primary['value_front_intervals_pr_upper_power'][0]+ga_result_buy_primary['value_front_intervals_pr_lower_power'][0])/2) * (ga_result_buy_primary['alpha'][0]))#/2
+								
+					if (
+						ga_result_buy_primary['value_back_intervals_pr_lower'][0] <= buy_data_primary['value_back'][lst_idx_buy_primary] <= ga_result_buy_primary['value_back_intervals_pr_upper'][0]
+						):
+						weight_value_back = (((ga_result_buy_primary['value_back_intervals_pr_lower_power'][0]+ga_result_buy_primary['value_back_intervals_pr_upper_power'][0])/2) * (1 - ga_result_buy_primary['alpha'][0]))#/2
 
-					if diff_pr_top_buy_primary < ga_result_buy_primary['min_tp'][0]:
-						diff_pr_top_buy_primary = ga_result_buy_primary['min_tp'][0]
-						res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)] * (1+(ga_result_buy_primary['min_tp'][0]/100))
-					
-					if diff_pr_top_buy_primary > ga_result_buy_primary['max_tp'][0]:
-						diff_pr_top_buy_primary = ga_result_buy_primary['max_tp'][0]
-						res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)] * (1+(ga_result_buy_primary['max_tp'][0]/100))
+					else:
+						weight_value_back = (-(((ga_result_buy_primary['value_back_intervals_pr_lower_power'][0]+ga_result_buy_primary['value_back_intervals_pr_upper_power'][0]))/2) * (ga_result_buy_primary['alpha'][0]))#/2
+
+					weight_signal = (weight_value_front + weight_value_back)/2
+
+
+					diff_pr_top_buy_primary = diff_pr_top_buy_primary * (1 - ga_result_buy_primary['alpha'][0])
+
+					diff_pr_top_buy_primary = (
+												(diff_pr_top_buy_primary + ((ga_result_buy_primary['max_tp'][0] - diff_pr_top_buy_primary) * ((ga_result_buy_primary['alpha'][0] + ga_result_buy_primary['max_tp_power'][0])/2)))
+												+
+												(diff_pr_top_buy_primary + ((ga_result_buy_primary['min_tp'][0] - diff_pr_top_buy_primary) * ((ga_result_buy_primary['alpha'][0] + ga_result_buy_primary['min_tp_power'][0])/2)))
+												)/2
+
+					diff_pr_top_buy_primary = (diff_pr_top_buy_primary * (1 + ((weight_signal + weight_trend)/2)))			
+					res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary/100))
+
+					diff_pr_down_buy_primary = diff_pr_down_buy_primary * (1 - ga_result_buy_primary['alpha'][0])
+					diff_pr_down_buy_primary = (
+												(diff_pr_down_buy_primary + ((ga_result_buy_primary['max_st'][0] - diff_pr_down_buy_primary) * ((ga_result_buy_primary['alpha'][0] + ga_result_buy_primary['max_st_power'][0])/2)))
+												+
+												(diff_pr_down_buy_primary + ((ga_result_buy_primary['min_st'][0] - diff_pr_down_buy_primary) * ((ga_result_buy_primary['alpha'][0] + ga_result_buy_primary['min_st_power'][0])/2)))
+												)
+
+					diff_pr_down_buy_primary = (diff_pr_down_buy_primary * (1 + ((weight_signal + weight_trend)/2)))
+					res_pro_buy_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary/100))
+
 					#trend_long_buy = res_pro['trend_long'][0].values[0]
 					#trend_mid_buy = res_pro['trend_mid'][0].values[0]
 					#trend_short_1_buy = res_pro['trend_short1'][0].values[0]

@@ -727,7 +727,7 @@ def divergence_macd(
 
 								if primary_counter >= 1:
 									signal_buy_primary['diff_pr_top_noise'][primary_counter] = (
-																								(signal_buy_primary['diff_pr_top'][primary_counter] * (1 - alpha)) 
+																								(signal_buy_primary['diff_pr_top'][primary_counter] * (((1 - alpha) + (1 - res_pro['power_high'][0]))/2)) 
 																								#+ 
 																								#((signal_buy_primary['tp_pr'][primary_counter-1] - signal_buy_primary['diff_pr_top'][primary_counter]) * alpha)
 																								)
@@ -846,7 +846,7 @@ def divergence_macd(
 								#print()
 								if primary_counter >= 1:
 									signal_buy_primary['diff_pr_down_noise'][primary_counter] = (
-																								(signal_buy_primary['diff_pr_down'][primary_counter] * (1 - alpha)) 
+																								(signal_buy_primary['diff_pr_down'][primary_counter] * (((1 - alpha) + (1 - res_pro['power_low'][0]))/2)) 
 																								#+ 
 																								#((signal_buy_primary['st_pr'][primary_counter-1] - signal_buy_primary['diff_pr_down'][primary_counter]) * alpha)
 																								)
@@ -1402,7 +1402,7 @@ def divergence_macd(
 
 								if primary_counter >= 1:
 									signal_sell_primary['diff_pr_top_noise'][primary_counter] = (
-																								(signal_sell_primary['diff_pr_top'][primary_counter] * (1 - alpha)) 
+																								(signal_sell_primary['diff_pr_top'][primary_counter] * (((1 - alpha) + (1 - res_pro['power_high'][0]))/2)) 
 																								#+ 
 																								#((signal_buy_primary['tp_pr'][primary_counter-1] - signal_buy_primary['diff_pr_top'][primary_counter]) * alpha)
 																								)
@@ -1532,7 +1532,7 @@ def divergence_macd(
 																						)#/2
 								else:
 									signal_sell_primary['diff_pr_down_noise'][primary_counter] = (
-																								(signal_sell_primary['diff_pr_down'][primary_counter]  * (1 - alpha)) 
+																								(signal_sell_primary['diff_pr_down'][primary_counter]  * (((1 - alpha) + (1 - res_pro['power_low'][0]))/2)) 
 																								)
 									signal_sell_primary['R_diff_down'][primary_counter] = (
 																						signal_sell_primary['diff_pr_down_noise'][primary_counter]

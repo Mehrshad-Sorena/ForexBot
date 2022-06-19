@@ -26,9 +26,9 @@ symbol_black_list = np.array(
 	])
 
 def get_all_deta_online():
-	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,10000)
+	symbol_data_5M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,18000)
 	#symbol_data_15M,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_M15,0,1)
-	symbol_data_1H,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,510)
+	symbol_data_1H,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,2000)
 	#symbol_data_H4,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_H4,0,1)
 	#symbol_data_D1,money,symbol = log_get_data_Genetic(mt5.TIMEFRAME_D1,0,1)
 
@@ -122,7 +122,7 @@ def trader_macd_div(
 			sym.name == 'WSt30_m_i'
 			):
 			
-			lot = lot * 10 
+			lot = lot * 0#10 
 			lot = float("{:.1f}".format((lot)))
 
 		print('================> ',sym.name)

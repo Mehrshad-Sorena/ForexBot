@@ -1423,8 +1423,8 @@ def divergence_macd(
 																						#(((tp_percent_buy_min - tp_percent_buy_max)/2) * (1 - out_before_buy['alpha'][0])) + 
 																						#(signal_buy_primary['R_diff_top'][primary_counter] * (1 - alpha))
 
-																						((signal_sell_primary['R_diff_top'][primary_counter]) + ((st_percent_buy_max - signal_sell_primary['R_diff_top'][primary_counter]) * (((out_before_sell['alpha'][0]) + out_before_sell['max_st_power'][0])/2))) +
-																						((signal_sell_primary['R_diff_top'][primary_counter]) + ((st_percent_buy_min - signal_sell_primary['R_diff_top'][primary_counter]) * (((out_before_sell['alpha'][0]) + out_before_sell['min_st_power'][0])/2)))
+																						((signal_sell_primary['R_diff_top'][primary_counter]) + ((st_percent_sell_max - signal_sell_primary['R_diff_top'][primary_counter]) * (((out_before_sell['alpha'][0]) + out_before_sell['max_st_power'][0])/2))) +
+																						((signal_sell_primary['R_diff_top'][primary_counter]) + ((st_percent_sell_min - signal_sell_primary['R_diff_top'][primary_counter]) * (((out_before_sell['alpha'][0]) + out_before_sell['min_st_power'][0])/2)))
 																						)/2
 
 								signal_sell_primary['diff_pr_top'][primary_counter] = signal_sell_primary['R_est_diff_top'][primary_counter]
@@ -1542,8 +1542,8 @@ def divergence_macd(
 																						#(((st_percent_buy_min + st_percent_buy_max)/2) * (1 - ((out_before_buy['alpha'][0] + alpha)/2))) + 
 																						#(signal_buy_primary['R_diff_down'][primary_counter] * (((out_before_buy['alpha'][0] + alpha)/2)))
 
-																						((signal_sell_primary['R_diff_down'][primary_counter]) + ((tp_percent_buy_max - signal_sell_primary['R_diff_down'][primary_counter]) * (((out_before_sell['alpha'][0]) + out_before_sell['max_tp_power'][0])/2))) + 
-																						((signal_sell_primary['R_diff_down'][primary_counter]) + ((tp_percent_buy_min - signal_sell_primary['R_diff_down'][primary_counter]) * (((out_before_sell['alpha'][0]) + out_before_sell['min_tp_power'][0])/2)))
+																						((signal_sell_primary['R_diff_down'][primary_counter]) + ((tp_percent_sell_max - signal_sell_primary['R_diff_down'][primary_counter]) * (((out_before_sell['alpha'][0]) + out_before_sell['max_tp_power'][0])/2))) + 
+																						((signal_sell_primary['R_diff_down'][primary_counter]) + ((tp_percent_sell_min - signal_sell_primary['R_diff_down'][primary_counter]) * (((out_before_sell['alpha'][0]) + out_before_sell['min_tp_power'][0])/2)))
 																						)/2
 
 								signal_sell_primary['diff_pr_down'][primary_counter] = signal_sell_primary['R_est_diff_down'][primary_counter]

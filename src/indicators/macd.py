@@ -881,33 +881,25 @@ def divergence_macd(
 
 								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])]*(1-(signal_buy_primary['diff_pr_down'][primary_counter]/100))
 
-								if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_buy_max:
-									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_max
-									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_max/100))
-
-								if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_buy_max:
-									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_max
-									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_max/100))
-									
 								#print('sum weight =====> ',(abs(1 - weight_signal) + weight_trend))
 								#print('down3 =====> ',signal_buy_primary['diff_pr_down'][primary_counter])
 								#print()
-							else:
-								if signal_buy_primary['diff_pr_down'][primary_counter] < st_percent_buy_min:#signal_buy['diff_pr_top'][buy_counter]:
-									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_min
-									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_min/100))
+							#else:
+							if signal_buy_primary['diff_pr_down'][primary_counter] < st_percent_buy_min:#signal_buy['diff_pr_top'][buy_counter]:
+								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_min
+								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_min/100))
 
-								if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_buy_max:
-									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_max
-									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_max/100))
+							if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_buy_max:
+								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_max
+								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_max/100))
 								
-								if signal_buy_primary['diff_pr_top'][primary_counter] < tp_percent_buy_min:
-									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_min
-									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_min/100))
+							if signal_buy_primary['diff_pr_top'][primary_counter] < tp_percent_buy_min:
+								signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_min
+								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_min/100))
 
-								if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_buy_max:
-									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_max
-									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_max/100))
+							if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_buy_max:
+								signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_max
+								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_max/100))
 
 							if int(extreme_min['index'][elm] + 1) >= len(dataset[symbol]['low']): break
 
@@ -1526,7 +1518,7 @@ def divergence_macd(
 								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_max['index'][elm])]*(1+(signal_sell_primary['diff_pr_top'][primary_counter]/100))
 
 								#print('sum weight top =====> ',(weight_signal + weight_trend))
-								print('top3 =====> ',signal_sell_primary['diff_pr_top'][primary_counter])
+								#print('top3 =====> ',signal_sell_primary['diff_pr_top'][primary_counter])
 
 								#print('weight ===========> ',(1 + ((weight_signal + weight_trend)/2)))
 								#print()
@@ -1575,25 +1567,25 @@ def divergence_macd(
 									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_max/100))
 
 								#print('sum weight =====> ',(abs(1 - weight_signal) + weight_trend))
-								print('down3 =====> ',signal_sell_primary['diff_pr_down'][primary_counter])
-								print()
-							else:
+								#print('down3 =====> ',signal_sell_primary['diff_pr_down'][primary_counter])
+								#print()
+							#else:
 
-								if signal_sell_primary['diff_pr_top'][primary_counter] < st_percent_sell_min:#signal_buy['diff_pr_top'][buy_counter]:
-									signal_sell_primary['diff_pr_top'][primary_counter] = st_percent_sell_min
-									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_max['index'][elm])] * (1+(st_percent_sell_min/100))
+							if signal_sell_primary['diff_pr_top'][primary_counter] < st_percent_sell_min:#signal_buy['diff_pr_top'][buy_counter]:
+								signal_sell_primary['diff_pr_top'][primary_counter] = st_percent_sell_min
+								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_max['index'][elm])] * (1+(st_percent_sell_min/100))
 
-								if signal_sell_primary['diff_pr_top'][primary_counter] > st_percent_sell_max:
-									signal_sell_primary['diff_pr_top'][primary_counter] = st_percent_sell_max
-									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_max['index'][elm])] * (1+(st_percent_sell_max/100))
+							if signal_sell_primary['diff_pr_top'][primary_counter] > st_percent_sell_max:
+								signal_sell_primary['diff_pr_top'][primary_counter] = st_percent_sell_max
+								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_max['index'][elm])] * (1+(st_percent_sell_max/100))
 								
-								if signal_sell_primary['diff_pr_down'][primary_counter] < tp_percent_sell_min:
-									signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_min
-									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_min/100))
+							if signal_sell_primary['diff_pr_down'][primary_counter] < tp_percent_sell_min:
+								signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_min
+								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_min/100))
 
-								if signal_sell_primary['diff_pr_down'][primary_counter] > tp_percent_sell_max:
-									signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_max
-									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_max/100))
+							if signal_sell_primary['diff_pr_down'][primary_counter] > tp_percent_sell_max:
+								signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_max
+								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_max/100))
 
 
 

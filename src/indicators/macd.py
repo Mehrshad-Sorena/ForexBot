@@ -5833,7 +5833,7 @@ def last_signal_macd_div(
 					weight_signal = (weight_value_front + weight_value_back)/2
 
 
-					diff_pr_top_buy_primary = diff_pr_top_buy_primary * (1 - ga_result_buy_primary['alpha'][0])
+					diff_pr_top_buy_primary = diff_pr_top_buy_primary * (((1 - ga_result_buy_primary['alpha'][0]) + (1 - res_pro_buy_primary['power_high'][0]))/2)
 
 					diff_pr_top_buy_primary = (
 												(diff_pr_top_buy_primary + ((ga_result_buy_primary['max_tp'][0] - diff_pr_top_buy_primary) * ((ga_result_buy_primary['alpha'][0] + ga_result_buy_primary['max_tp_power'][0])/2)))
@@ -5844,7 +5844,7 @@ def last_signal_macd_div(
 					diff_pr_top_buy_primary = (diff_pr_top_buy_primary * (1 + ((weight_signal + weight_trend)/2)))			
 					res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary/100))
 
-					diff_pr_down_buy_primary = diff_pr_down_buy_primary * (1 - ga_result_buy_primary['alpha'][0])
+					diff_pr_down_buy_primary = diff_pr_down_buy_primary * (((1 - ga_result_buy_primary['alpha'][0]) + (1 - res_pro_buy_primary['power_low'][0]))/2)
 					diff_pr_down_buy_primary = (
 												(diff_pr_down_buy_primary + ((ga_result_buy_primary['max_st'][0] - diff_pr_down_buy_primary) * ((ga_result_buy_primary['alpha'][0] + ga_result_buy_primary['max_st_power'][0])/2)))
 												+
@@ -5939,27 +5939,114 @@ def last_signal_macd_div(
 					res_pro_sell_primary['high'] = [dataset[symbol]['high'][int(lst_idx_sell_primary)] * (1+(ga_result_sell_primary['min_st'][0]/100)),0,0]#res_pro_sell_primary['high'] = 'nan'
 					res_pro_sell_primary['low'] = [0,0,dataset[symbol]['low'][int(lst_idx_sell_primary)] * (1-(ga_result_sell_primary['min_tp'][0]/100))]#res_pro_sell_primary['low'] = 'nan'
 
+					res_pro_sell_primary['power_high'] = [0.5,0,0]
+					res_pro_sell_primary['power_low'] = [0,0,0.5]
+
+					res_pro_sell_primary['trend_long'] = ['no_flag','no_flag','no_flag']
+					res_pro_sell_primary['trend_mid'] = ['no_flag','no_flag','no_flag']
+					res_pro_sell_primary['trend_short1'] = ['no_flag','no_flag','no_flag']
+					res_pro_sell_primary['trend_short2'] = ['no_flag','no_flag','no_flag']
+
 
 				if (res_pro_sell_primary.empty == False):
 					diff_pr_top_sell_primary = (((res_pro_sell_primary['high'][0]) - dataset[symbol]['high'][int(lst_idx_sell_primary)])/dataset[symbol]['high'][int(lst_idx_sell_primary)]) * 100
 					diff_pr_down_sell_primary = ((dataset[symbol]['low'][int(lst_idx_sell_primary)] - (res_pro_sell_primary['low'][2]))/dataset[symbol]['low'][int(lst_idx_sell_primary)]) * 100
 
-					if diff_pr_top_sell_primary < ga_result_sell_primary['min_st'][0]:
-						diff_pr_top_sell_primary = ga_result_sell_primary['min_st'][0]
-						res_pro_sell_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_sell_primary)] * (1+(ga_result_sell_primary['min_st'][0]/100))
+
+					if (
+						res_pro_sell_primary['trend_long'][0] == 'buy' or
+						res_pro_sell_primary['trend_long'][0] == 'parcham'
+						): 
+						weight_long = 4
+					elif (
+						res_pro_sell_primary['trend_long'][0] == 'no_flag' or
+						pd.isnull(res_pro_sell_primary['trend_long'][0])
+						):
+						weight_long = 0
+					else: 
+						weight_long = -4
+
+					if (
+						res_pro_sell_primary['trend_mid'][0] == 'buy' or
+						res_pro_sell_primary['trend_mid'][0] == 'parcham'
+						): 
+						weight_mid = 3
+					elif (
+						res_pro_sell_primary['trend_mid'][0] == 'no_flag' or
+						pd.isnull(res_pro_sell_primary['trend_mid'][0])
+						):
+						weight_mid = 0
+					else: 
+						weight_mid = -3
+
+					if (
+						res_pro_sell_primary['trend_short1'][0] == 'buy' or
+						res_pro_sell_primary['trend_short1'][0] == 'parcham'
+						): 
+						weight_sohrt_1 = 2
+					elif (
+						res_pro_sell_primary['trend_short1'][0] == 'no_flag' or
+						pd.isnull(res_pro_sell_primary['trend_short1'][0])
+						):
+						weight_sohrt_1 = 0
+					else: 
+						weight_sohrt_1 = -2
+
+					if (
+						res_pro_sell_primary['trend_short2'][0] == 'buy' or
+						res_pro_sell_primary['trend_short2'][0] == 'parcham'
+						): 
+						weight_sohrt_2 = 1
+					elif (
+						res_pro_sell_primary['trend_short2'][0] == 'no_flag' or
+						pd.isnull(res_pro_sell_primary['trend_short2'][0])
+						):
+						weight_sohrt_2 = 0
+					else: 
+						weight_sohrt_2 = -1
+
+					weight_trend = (weight_long + weight_mid + weight_sohrt_1 + weight_sohrt_2)/100
 
 
-					if diff_pr_top_sell_primary > ga_result_sell_primary['max_st'][0]:
-						diff_pr_top_sell_primary = ga_result_sell_primary['max_st'][0]
-						res_pro_sell_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_sell_primary)] * (1+(ga_result_sell_primary['max_st'][0]/100))
+					if (
+						ga_result_sell_primary['value_front_intervals_pr_lower'][0] <= buy_data_primary['value_front'][lst_idx_buy_primary] <= ga_result_sell_primary['value_front_intervals_pr_upper'][0] 
+						):
+						weight_value_front = (((ga_result_sell_primary['value_front_intervals_pr_upper_power'][0]+ga_result_sell_primary['value_front_intervals_pr_lower_power'][0])/2) * (1 - ga_result_sell_primary['alpha'][0]))#/2
+					else:
+						weight_value_front = (-((ga_result_sell_primary['value_front_intervals_pr_upper_power'][0]+ga_result_sell_primary['value_front_intervals_pr_lower_power'][0])/2) * (ga_result_sell_primary['alpha'][0]))#/2
+								
+					if (
+						ga_result_sell_primary['value_back_intervals_pr_lower'][0] <= buy_data_primary['value_back'][lst_idx_buy_primary] <= ga_result_sell_primary['value_back_intervals_pr_upper'][0]
+						):
+						weight_value_back = (((ga_result_sell_primary['value_back_intervals_pr_lower_power'][0]+ga_result_sell_primary['value_back_intervals_pr_upper_power'][0])/2) * (1 - ga_result_sell_primary['alpha'][0]))#/2
 
-					if diff_pr_down_sell_primary < ga_result_sell_primary['min_tp'][0]:
-						diff_pr_down_sell_primary = ga_result_sell_primary['min_tp'][0]
-						res_pro_sell_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_sell_primary)] * (1-(ga_result_sell_primary['min_tp'][0]/100))
+					else:
+						weight_value_back = (-(((ga_result_sell_primary['value_back_intervals_pr_lower_power'][0]+ga_result_sell_primary['value_back_intervals_pr_upper_power'][0]))/2) * (ga_result_sell_primary['alpha'][0]))#/2
+
+					weight_signal = (weight_value_front + weight_value_back)/2
+
+
+					diff_pr_top_sell_primary = diff_pr_top_sell_primary * (((1 - ga_result_sell_primary['alpha'][0]) + (1 - res_pro_sell_primary['power_high'][0]))/2)
+
+					diff_pr_top_sell_primary = (
+												(diff_pr_top_sell_primary + ((ga_result_sell_primary['max_st'][0] - diff_pr_top_sell_primary) * ((ga_result_sell_primary['alpha'][0] + ga_result_sell_primary['max_st_power'][0])/2)))
+												+
+												(diff_pr_top_sell_primary + ((ga_result_sell_primary['min_st'][0] - diff_pr_top_sell_primary) * ((ga_result_sell_primary['alpha'][0] + ga_result_sell_primary['min_st_power'][0])/2)))
+												)/2
+
+					diff_pr_top_sell_primary = (diff_pr_top_sell_primary * (1 + ((weight_signal + weight_trend)/2)))			
+					res_pro_sell_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_sell_primary)]*(1+(diff_pr_top_sell_primary/100))
+
+					diff_pr_down_sell_primary = diff_pr_down_sell_primary * (((1 - ga_result_sell_primary['alpha'][0]) + (1 - res_pro_sell_primary['power_low'][0]))/2)
+					diff_pr_down_sell_primary = (
+												(diff_pr_down_sell_primary + ((ga_result_sell_primary['max_tp'][0] - diff_pr_down_sell_primary) * ((ga_result_sell_primary['alpha'][0] + ga_result_sell_primary['max_tp_power'][0])/2)))
+												+
+												(diff_pr_down_sell_primary + ((ga_result_sell_primary['min_tp'][0] - diff_pr_down_sell_primary) * ((ga_result_sell_primary['alpha'][0] + ga_result_sell_primary['min_tp_power'][0])/2)))
+												)
+
+					diff_pr_down_sell_primary = (diff_pr_down_sell_primary * (1 + ((weight_signal + weight_trend)/2)))
+					res_pro_sell_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_sell_primary)]*(1-(diff_pr_down_sell_primary/100))
 					
-					if diff_pr_down_sell_primary > ga_result_sell_primary['max_tp'][0]:
-						diff_pr_down_sell_primary = ga_result_sell_primary['max_tp'][0]
-						res_pro_sell_primary['low'][2] = dataset[symbol]['high'][int(lst_idx_sell_primary)] * (1-(ga_result_sell_primary['max_tp'][0]/100))
 					#trend_long_buy = res_pro['trend_long'][0].values[0]
 					#trend_mid_buy = res_pro['trend_mid'][0].values[0]
 					#trend_short_1_buy = res_pro['trend_short1'][0].values[0]

@@ -37,6 +37,7 @@ warnings.filterwarnings("ignore")
 #genetic_algo_div_macd()
 #macd_div_tester_for_permit()
 #last_signal_macd_div()
+#learning_algo_div_macd()
 
 #/////////////////////////////////////////
 
@@ -738,7 +739,7 @@ def divergence_macd(
 																						)#/2
 								else:
 									signal_buy_primary['diff_pr_top_noise'][primary_counter] = (
-																								(signal_buy_primary['diff_pr_top'][primary_counter] * (1 - alpha)) 
+																								(signal_buy_primary['diff_pr_top'][primary_counter] * (((1 - alpha) + (1 - res_pro['power_high'][0]))/2)) 
 																								)
 									signal_buy_primary['R_diff_top'][primary_counter] = (
 																						signal_buy_primary['diff_pr_top_noise'][primary_counter]
@@ -857,7 +858,7 @@ def divergence_macd(
 																						)#/2
 								else:
 									signal_buy_primary['diff_pr_down_noise'][primary_counter] = (
-																								(signal_buy_primary['diff_pr_down'][primary_counter]  * (1 - alpha)) 
+																								(signal_buy_primary['diff_pr_down'][primary_counter]  * (((1 - alpha) + (1 - res_pro['power_low'][0]))/2)) 
 																								)
 									signal_buy_primary['R_diff_down'][primary_counter] = (
 																						signal_buy_primary['diff_pr_down_noise'][primary_counter]
@@ -1413,7 +1414,7 @@ def divergence_macd(
 																						)#/2
 								else:
 									signal_sell_primary['diff_pr_top_noise'][primary_counter] = (
-																								(signal_sell_primary['diff_pr_top'][primary_counter] * (1 - alpha)) 
+																								(signal_sell_primary['diff_pr_top'][primary_counter] * (((1 - alpha) + (1 - res_pro['power_high'][0]))/2)) 
 																								)
 									signal_sell_primary['R_diff_top'][primary_counter] = (
 																						signal_sell_primary['diff_pr_top_noise'][primary_counter]
@@ -1521,7 +1522,7 @@ def divergence_macd(
 								#print()
 								if primary_counter >= 1:
 									signal_sell_primary['diff_pr_down_noise'][primary_counter] = (
-																								(signal_sell_primary['diff_pr_down'][primary_counter] * (1 - alpha)) 
+																								(signal_sell_primary['diff_pr_down'][primary_counter] * (((1 - alpha) + (1 - res_pro['power_low'][0]))/2)) 
 																								#+ 
 																								#((signal_buy_primary['st_pr'][primary_counter-1] - signal_buy_primary['diff_pr_down'][primary_counter]) * alpha)
 																								)
@@ -3497,7 +3498,7 @@ def genetic_algo_div_macd(
 			min_st_sell = ga_result_sell['min_st'][0]
 			max_tp_sell = ga_result_sell['max_tp'][0]
 			min_tp_sell = ga_result_sell['min_tp'][0]
-			flag_learning = False ####################################
+			flag_learning = True ####################################
 
 		else:
 			max_st_sell = randint(80, 100)/100
@@ -3515,8 +3516,8 @@ def genetic_algo_div_macd(
 
 	#print('===============> ',symbol)
 
-	output_buy = pd.DataFrame()
-	output_sell = pd.DataFrame()
+	output_before_buy = pd.DataFrame()
+	output_before_sell = pd.DataFrame()
 
 
 	if flag_trade == 'buy':
@@ -3549,7 +3550,7 @@ def genetic_algo_div_macd(
 						if ga_result_buy['methode'][0] == 'pr':
 							max_score_ga_buy = float(chrom_get['score_pr'])
 
-						output_buy = ga_result_buy
+						output_before_buy = ga_result_buy
 					print(Chromosome[0])
 
 	if flag_trade == 'sell':
@@ -3581,7 +3582,7 @@ def genetic_algo_div_macd(
 						if ga_result_sell['methode'][0] == 'pr':
 							max_score_ga_sell = 90000#float(chrom_get['score_pr'])
 
-						output_sell = ga_result_sell
+						output_before_sell = ga_result_sell
 					print(Chromosome[0])
 
 				
@@ -3780,7 +3781,7 @@ def genetic_algo_div_macd(
 															dataset_1H=dataset_1H,
 															Apply_to=Chromosome[chrom_counter]['apply_to'],
 															symbol=symbol,
-															out_before_buy = output_buy,
+															out_before_buy = output_before_buy,
 															out_before_sell = '',
 															macd_fast=Chromosome[chrom_counter]['fast_period'],
 															macd_slow=Chromosome[chrom_counter]['slow_period'],
@@ -3842,7 +3843,7 @@ def genetic_algo_div_macd(
 															Apply_to=Chromosome[chrom_counter]['apply_to'],
 															symbol=symbol,
 															out_before_buy = '',
-															out_before_sell = output_sell,
+															out_before_sell = output_before_sell,
 															macd_fast=Chromosome[chrom_counter]['fast_period'],
 															macd_slow=Chromosome[chrom_counter]['slow_period'],
 															macd_signal=Chromosome[chrom_counter]['signal_period'],
@@ -4036,10 +4037,23 @@ def genetic_algo_div_macd(
 							output_buy['max_st'][0] = max_st_last_buy
 							output_buy['min_st'][0] = min_st_last_buy
 							output_buy['min_tp'][0] = min_tp_last_buy
+
+							output_before_buy['num_st_pr'][0] = output_buy['num_st_pr'][0]
+							output_before_buy['num_tp_pr'][0] = output_buy['num_tp_pr'][0]
+							output_before_buy['score_pr'][0] = output_buy['score_pr'][0]
+							output_before_buy['max_tp_pr'][0] = output_buy['max_tp_pr'][0]
+							output_before_buy['mean_tp_pr'][0] = output_buy['mean_tp_pr'][0]
+							output_before_buy['mean_st_pr'][0] = output_buy['mean_st_pr'][0]
+							output_before_buy['sum_st_pr'][0] = output_buy['sum_st_pr'][0]
+							output_before_buy['sum_tp_pr'][0] = output_buy['sum_tp_pr'][0]
+							output_before_buy['money'][0] = output_buy['money'][0]
+
 						
 							Chromosome[chrom_counter]['signal'] = ('buy' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
-							result_buy = result_buy.append(output_buy, ignore_index=True)
+							result_buy = result_buy.append(output_before_buy, ignore_index=True)
 							score_buy = (output_buy['score_pr'][0])
+
+							output_before_buy = output_buy
 
 
 							if os.path.exists(buy_path):
@@ -4092,6 +4106,8 @@ def genetic_algo_div_macd(
 							flag_learning = True
 							score_for_reset = (output_buy['score_pr'][0])
 
+							output_before_buy = output_buy
+
 							if output_buy['diff_extereme_pr'][0] != 0:
 								diff_extereme_pr_buy = output_buy['diff_extereme_pr'][0]
 							else:
@@ -4101,6 +4117,8 @@ def genetic_algo_div_macd(
 						bad_buy = True
 
 						bad_score_counter_buy += 1
+
+						output_before_buy = output_buy
 
 						if (
 							output_buy['max_tp'][0] >= 0.1 and
@@ -4260,10 +4278,23 @@ def genetic_algo_div_macd(
 							output_sell['max_st'][0] = max_st_last_sell
 							output_sell['min_st'][0] = min_st_last_sell
 							output_sell['min_tp'][0] = min_tp_last_sell
+
+							output_before_sell['num_st_pr'][0] = output_sell['num_st_pr'][0]
+							output_before_sell['num_tp_pr'][0] = output_sell['num_tp_pr'][0]
+							output_before_sell['score_pr'][0] = output_sell['score_pr'][0]
+							output_before_sell['max_tp_pr'][0] = output_sell['max_tp_pr'][0]
+							output_before_sell['mean_tp_pr'][0] = output_sell['mean_tp_pr'][0]
+							output_before_sell['mean_st_pr'][0] = output_sell['mean_st_pr'][0]
+							output_before_sell['sum_st_pr'][0] = output_sell['sum_st_pr'][0]
+							output_before_sell['sum_tp_pr'][0] = output_sell['sum_tp_pr'][0]
+							output_before_sell['money'][0] = output_sell['money'][0]
+
 						
 							Chromosome[chrom_counter]['signal'] = ('sell' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
 							result_sell = result_sell.append(output_sell, ignore_index=True)
 							score_sell = output_sell['score_pr'][0]
+
+							output_before_sell = output_sell
 
 
 							if os.path.exists(sell_path):
@@ -4316,6 +4347,8 @@ def genetic_algo_div_macd(
 							flag_learning = True
 							score_for_reset_sell = (output_sell['score_pr'][0])
 
+							output_before_sell = output_sell
+
 							if output_sell['diff_extereme_pr'][0] != 0:
 								diff_extereme_pr_sell = output_sell['diff_extereme_pr'][0]
 							else:
@@ -4324,6 +4357,8 @@ def genetic_algo_div_macd(
 						bad_sell = True
 
 						bad_score_counter_sell += 1
+
+						output_before_sell = output_sell
 
 						if (
 							output_sell['max_tp'][0] >= 0.1 and
@@ -6175,6 +6210,1363 @@ def last_signal_macd_div(
 		return signal, 0, 0
 
 #//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#***************************************** Learning Algorithm **************************************************************
+
+#@stTime
+#@cuda.jit()
+def learning_algo_div_macd(
+							symbol_data_5M,
+							symbol_data_15M,
+							dataset_1H,
+							dataset_4H,
+							symbol,
+							num_turn,
+							max_score_ga_buy,
+							max_score_ga_sell,
+							flag_trade,
+							primary_doing,
+							secondry_doing
+							):
+
+	#*************************** Algorithm *************************************************//
+
+	fast_period_upper = 800
+	fast_period_lower = 60
+
+	slow_period_upper = 1500
+	slow_period_lower = 140
+
+	signal_period_upper = 25
+	signal_period_lower = 1
+
+	#Chromosome = initilize_values_genetic(
+										#fast_period_upper=fast_period_upper,
+										#fast_period_lower=fast_period_lower,
+										#slow_period_upper=slow_period_upper,
+										#slow_period_lower=slow_period_lower,
+										#signal_period_upper=signal_period_upper,
+										#signal_period_lower=signal_period_lower
+										#)
+
+	if flag_trade == 'buy':
+		if primary_doing == True:
+			buy_path = 'GA/MACD/primary/buy/'+symbol+'.csv'
+		if secondry_doing == True:
+			buy_path = 'GA/MACD/secondry/buy/'+symbol+'.csv'
+
+	if flag_trade == 'sell':
+		if primary_doing == True:
+			sell_path = 'GA/MACD/primary/sell/'+symbol+'.csv'
+		if secondry_doing == True:
+			sell_path = 'GA/MACD/secondry/sell/'+symbol+'.csv'
+
+	if False:#flag_trade == 'buy':
+		if os.path.exists(buy_path):
+			with open(buy_path, 'r', newline='') as myfile:
+				for line in csv.DictReader(myfile):
+					chrom_get = line
+
+					Chromosome[0]['fast_period'] = int(float(chrom_get['fast_period']))
+					Chromosome[0]['slow_period'] = int(float(chrom_get['slow_period']))
+
+					if flag_trade == 'buy':
+						fast_period_upper = Chromosome[0]['fast_period'] + int(Chromosome[0]['fast_period']/2)
+						fast_period_lower = Chromosome[0]['fast_period'] - int(Chromosome[0]['fast_period']/2)
+
+						if fast_period_lower <= 0: fast_period_lower = 1
+
+						slow_period_upper = Chromosome[0]['slow_period'] + int(Chromosome[0]['slow_period']/2)
+						slow_period_lower = Chromosome[0]['slow_period'] - int(Chromosome[0]['slow_period']/2)
+
+						if slow_period_lower <= 0: slow_period_lower = 1
+
+						signal_period_upper = Chromosome[0]['signal_period'] + int(Chromosome[0]['signal_period']/2)
+						signal_period_lower = Chromosome[0]['signal_period'] - int(Chromosome[0]['signal_period']/2)
+
+						if signal_period_lower <= 0: signal_period_lower = 1
+
+	if False:#flag_trade == 'sell':
+		if os.path.exists(sell_path):
+			with open(sell_path, 'r', newline='') as myfile:
+				for line in csv.DictReader(myfile):
+					chrom_get = line
+
+					Chromosome[0]['fast_period'] = int(float(chrom_get['fast_period']))
+					Chromosome[0]['slow_period'] = int(float(chrom_get['slow_period']))
+
+					if flag_trade == 'sell':
+						fast_period_upper = 20#Chromosome[0]['fast_period'] + int(Chromosome[0]['fast_period']/2)
+						fast_period_lower = 5#Chromosome[0]['fast_period'] - int(Chromosome[0]['fast_period']/2)
+
+						if fast_period_lower <= 0: fast_period_lower = 1
+
+						slow_period_upper = 40#Chromosome[0]['slow_period'] + int(Chromosome[0]['slow_period']/2)
+						slow_period_lower = 10#Chromosome[0]['slow_period'] - int(Chromosome[0]['slow_period']/2)
+
+						if slow_period_lower <= 0: slow_period_lower = 1
+
+						signal_period_upper = Chromosome[0]['signal_period'] + int(Chromosome[0]['signal_period']/2)
+						signal_period_lower = Chromosome[0]['signal_period'] - int(Chromosome[0]['signal_period']/2)
+
+						if signal_period_lower <= 0: signal_period_lower = 1
+
+	#Chromosome = initilize_values_genetic(
+										#fast_period_upper=fast_period_upper,
+										#fast_period_lower=fast_period_lower,
+										#slow_period_upper=slow_period_upper,
+										#slow_period_lower=slow_period_lower,
+										#signal_period_upper=signal_period_upper,
+										#signal_period_lower=signal_period_lower
+										#)
+
+	Chromosome = {}
+
+	Chromosome[0] = {
+					'fast_period': fast_period_upper,
+					'slow_period': slow_period_upper,
+					'signal_period': signal_period_lower,
+					'apply_to': 'HLCC/4',
+					'alpha': 0.5,
+					'num_extreme': int(fast_period_upper/10),
+					'diff_extereme': 25,
+					'signal': None,
+					'score_buy': 0,
+					'score_sell': 0
+					}
+
+	print('================================ START Genetic BUY ==> ',symbol)
+	print('\n')
+
+	now = datetime.now()
+
+	if flag_trade == 'buy':
+		if os.path.exists(buy_path):
+			if primary_doing == True:
+				ga_result_buy, _, _, _ = read_ga_result(symbol=symbol)
+
+			if secondry_doing == True:
+				_, ga_result_buy, _, _ = read_ga_result(symbol=symbol)
+
+			max_st_buy = ga_result_buy['max_st'][0]
+			min_st_buy = ga_result_buy['min_st'][0]
+			max_tp_buy = ga_result_buy['max_tp'][0]
+			min_tp_buy = ga_result_buy['min_tp'][0]
+			flag_learning = True   ########################################################################
+
+		else:
+			max_st_buy = randint(80, 100)/100
+			min_st_buy = randint(80, 100)/100
+			max_tp_buy = randint(80, 100)/100
+			min_tp_buy = randint(80, 100)/100
+
+			flag_learning = False
+
+			while max_tp_buy < max_st_buy:
+				max_st_buy = randint(80, 100)/100
+				min_st_buy = randint(80, 100)/100
+				max_tp_buy = randint(80, 100)/100
+
+	if flag_trade == 'sell':
+		if os.path.exists(sell_path):
+			if primary_doing == True:
+				_, _, ga_result_sell, _ = read_ga_result(symbol=symbol)
+
+			if secondry_doing == True:
+				_, _, _, ga_result_sell = read_ga_result(symbol=symbol)
+
+			max_st_sell = ga_result_sell['max_st'][0]
+			min_st_sell = ga_result_sell['min_st'][0]
+			max_tp_sell = ga_result_sell['max_tp'][0]
+			min_tp_sell = ga_result_sell['min_tp'][0]
+			flag_learning = True ####################################
+
+		else:
+			max_st_sell = randint(80, 100)/100
+			min_st_sell = randint(80, 100)/100
+			max_tp_sell = randint(80, 100)/100
+			min_tp_sell = randint(80, 100)/100
+
+			flag_learning = False
+
+			while max_tp_sell < max_st_sell:
+				max_st_sell = randint(80, 100)/100
+				min_st_sell = randint(80, 100)/100
+				max_tp_sell = randint(80, 100)/100
+				min_tp_sell = randint(80, 100)/100
+
+	#print('===============> ',symbol)
+
+	output_before_buy = pd.DataFrame()
+	output_before_sell = pd.DataFrame()
+
+
+	if flag_trade == 'buy':
+		if os.path.exists(buy_path):
+			with open(buy_path, 'r', newline='') as myfile:
+				for line in csv.DictReader(myfile):
+					chrom_get = line
+
+					Chromosome[0]['fast_period'] = int(float(chrom_get['fast_period']))
+					Chromosome[0]['slow_period'] = int(float(chrom_get['slow_period']))
+					Chromosome[0]['signal_period'] = int(float(chrom_get['signal_period']))
+					Chromosome[0]['apply_to'] = chrom_get['apply_to']
+					Chromosome[0]['alpha'] = float(chrom_get['alpha'])
+					Chromosome[0]['num_extreme'] = int(float(chrom_get['num_extreme']))
+					Chromosome[0]['diff_extereme'] = int(float(chrom_get['diff_extereme']))
+					Chromosome[0]['signal'] = chrom_get['signal']
+					Chromosome[0]['score_buy'] = float(chrom_get['score_buy'])
+					Chromosome[0]['score_sell'] = float(chrom_get['score_sell'])
+
+					if flag_trade == 'buy':
+						if primary_doing == True:
+							ga_result_buy, _, _, _ = read_ga_result(symbol=symbol)
+
+						if secondry_doing == True:
+							_, ga_result_buy, _, _ = read_ga_result(symbol=symbol)
+
+						if ga_result_buy['methode'][0] == 'min_max':
+							max_score_ga_buy = float(chrom_get['score_min_max'])
+
+						if ga_result_buy['methode'][0] == 'pr':
+							max_score_ga_buy = float(chrom_get['score_pr'])
+
+						output_before_buy = ga_result_buy
+					print(Chromosome[0])
+
+	if flag_trade == 'sell':
+		if os.path.exists(sell_path):
+			with open(sell_path, 'r', newline='') as myfile:
+				for line in csv.DictReader(myfile):
+					chrom_get = line
+					Chromosome[0]['fast_period'] = int(float(chrom_get['fast_period']))
+					Chromosome[0]['slow_period'] = int(float(chrom_get['slow_period']))
+					Chromosome[0]['signal_period'] = int(float(chrom_get['signal_period']))
+					Chromosome[0]['apply_to'] = chrom_get['apply_to']
+					Chromosome[0]['alpha'] = float(chrom_get['alpha'])
+					Chromosome[0]['num_extreme'] = int(float(chrom_get['num_extreme']))
+					Chromosome[0]['diff_extereme'] = int(float(chrom_get['diff_extereme']))
+					Chromosome[0]['signal'] = chrom_get['signal']
+					Chromosome[0]['score_buy'] = float(chrom_get['score_buy'])
+					Chromosome[0]['score_sell'] = float(chrom_get['score_sell'])
+
+					if flag_trade == 'sell':
+						if primary_doing == True:
+							_, _, ga_result_sell, _ = read_ga_result(symbol=symbol)
+
+						if secondry_doing == True:
+							_, _, _, ga_result_sell = read_ga_result(symbol=symbol)
+
+						if ga_result_sell['methode'][0] == 'min_max':
+							max_score_ga_sell = float(chrom_get['score_min_max'])
+
+						if ga_result_sell['methode'][0] == 'pr':
+							max_score_ga_sell = float(chrom_get['score_pr'])
+
+						output_before_sell = ga_result_sell
+					print(Chromosome[0])
+
+				
+
+	result_buy = pd.DataFrame()
+	chromosome_buy = pd.DataFrame()
+
+	result_sell = pd.DataFrame()
+	chromosome_sell = pd.DataFrame()
+
+	
+
+	chrom_counter = 0
+	all_chorms = 0
+	chorm_reset_counter = 0
+	bad_score_counter_buy = 0
+	bad_score_counter_buy_2 = 0
+	score_buy = max_score_ga_buy
+	score_for_reset = 0
+
+	bad_score_counter_sell = 0
+	bad_score_counter_sell_2 = 0
+	score_sell = max_score_ga_sell
+	score_for_reset_sell = 0
+
+	learning_interval_counter = 0
+	learn_counter = 1
+
+	with tqdm(total=num_turn) as pbar:
+		while chrom_counter < len(Chromosome):
+
+			#print('==== flag trade===> ', flag_trade)
+			print()
+
+			if flag_trade == 'buy':
+				print()
+				print('================== Num BUY Symbol ==>',symbol)
+				print()
+				print('================== Num BUY =========> ',len(chromosome_buy))
+
+			if flag_trade == 'sell':
+				print()
+				print('================== Num SELL Symbol =>',symbol)
+				print()
+				print('================== Num SELL ========> ',len(chromosome_sell))
+
+			print('================== Num Chroms ======> ',chrom_counter)
+			print('================== All Chorms ======> ',all_chorms)
+			print('================== Chorm Reseter ===> ',chorm_reset_counter)
+			print('================== AI Turn =========> ',learn_counter-1)
+
+			if flag_trade == 'buy':
+				print('===== bad score counter buy ========> ',bad_score_counter_buy)
+				print('===== bad score counter buy 2 ======> ',bad_score_counter_buy_2)
+
+			if flag_trade == 'sell':
+				print('===== bad score counter buy ========> ',bad_score_counter_sell)
+				print('===== bad score counter buy 2 ======> ',bad_score_counter_sell_2)
+
+			print()
+			pbar_numbers = int((len(chromosome_buy) + len(chromosome_sell))/2)
+			pbar.update(pbar_numbers)
+
+			print()
+
+			if all_chorms >= int(num_turn / 2): break
+			all_chorms += 1
+
+			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				print('======== Chorme ================> ')
+				print()
+				print('........................................................')
+				print(Chromosome[chrom_counter])
+				print('........................................................')
+				print()
+
+			if flag_trade == 'buy':
+				print('======== max st tp ================> ')
+				print()
+				print('........................................................')
+				print('======== max tp ===================> ',max_tp_buy)
+				print('======== min tp ===================> ',min_tp_buy)
+				print('======== max st ===================> ',max_st_buy)
+				print('======== min st ===================> ',min_st_buy)
+				print('........................................................')
+				print()
+
+			if flag_trade == 'sell':
+				print('======== max st tp ================> ')
+				print()
+				print('........................................................')
+				print('======== max tp ===================> ',max_tp_sell)
+				print('======== min tp ===================> ',min_tp_sell)
+				print('======== max st ===================> ',max_st_sell)
+				print('======== min st ===================> ',min_st_sell)
+				print('........................................................')
+				print()
+
+			if True:
+				if flag_trade == 'buy':
+					if primary_doing == True:
+						buy_data, _, _, _ = divergence_macd(
+															dataset=symbol_data_5M,
+															dataset_15M=symbol_data_15M,
+															dataset_1H=dataset_1H,
+															Apply_to=Chromosome[chrom_counter]['apply_to'],
+															symbol=symbol,
+															out_before_buy = output_before_buy,
+															out_before_sell = '',
+															macd_fast=Chromosome[chrom_counter]['fast_period'],
+															macd_slow=Chromosome[chrom_counter]['slow_period'],
+															macd_signal=Chromosome[chrom_counter]['signal_period'],
+															mode='optimize',
+															plot=False,
+															buy_doing=True,
+															sell_doing=False,
+															primary_doing=True,
+															secondry_doing=False,
+															name_stp_pr=True,
+															name_stp_minmax=False,
+															st_percent_buy_max = max_st_buy,
+															st_percent_buy_min = min_st_buy,
+															st_percent_sell_max = 0,
+															st_percent_sell_min = 0,
+															tp_percent_buy_max = max_tp_buy,
+															tp_percent_buy_min = min_tp_buy,
+															tp_percent_sell_max = 0,
+															tp_percent_sell_min = 0,
+															alpha=Chromosome[chrom_counter]['alpha'],
+															num_exteremes=Chromosome[chrom_counter]['num_extreme'],
+															diff_extereme=Chromosome[chrom_counter]['diff_extereme'],
+															real_test = False,
+															flag_learning=flag_learning
+															)
+					if secondry_doing == True:
+						_, buy_data, _, _ = divergence_macd(
+															dataset=symbol_data_5M,
+															dataset_15M=symbol_data_15M,
+															dataset_1H=dataset_1H,
+															Apply_to=Chromosome[chrom_counter]['apply_to'],
+															symbol=symbol,
+															macd_fast=Chromosome[chrom_counter]['fast_period'],
+															macd_slow=Chromosome[chrom_counter]['slow_period'],
+															macd_signal=Chromosome[chrom_counter]['signal_period'],
+															mode='optimize',
+															plot=False,
+															buy_doing=True,
+															sell_doing=False,
+															primary_doing=False,
+															secondry_doing=True,
+															name_stp_pr=True,
+															name_stp_minmax=False,
+															st_percent_minmax_buy = max_st_buy,
+															st_percent_minmax_sell = 0.9,
+															tp_percent_minmax_sell_max = 0.9,
+															tp_percent_minmax_buy_max = max_tp_buy
+															)
+					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						#print('=======> buy_data = ',buy_data)
+
+				if flag_trade == 'sell':
+					if primary_doing == True:
+						_, _, sell_data, _ = divergence_macd(
+															dataset=symbol_data_5M,
+															dataset_15M=symbol_data_15M,
+															dataset_1H=dataset_1H,
+															Apply_to=Chromosome[chrom_counter]['apply_to'],
+															symbol=symbol,
+															out_before_buy = '',
+															out_before_sell = output_before_sell,
+															macd_fast=Chromosome[chrom_counter]['fast_period'],
+															macd_slow=Chromosome[chrom_counter]['slow_period'],
+															macd_signal=Chromosome[chrom_counter]['signal_period'],
+															mode='optimize',
+															plot=False,
+															buy_doing=False,
+															sell_doing=True,
+															primary_doing=True,
+															secondry_doing=False,
+															name_stp_pr=True,
+															name_stp_minmax=False,
+															st_percent_buy_max=0,
+															st_percent_buy_min=0,
+															st_percent_sell_max=max_st_sell,
+															st_percent_sell_min=min_st_sell,
+															tp_percent_buy_max=0,
+															tp_percent_buy_min=0,
+															tp_percent_sell_max=max_tp_sell,
+															tp_percent_sell_min=min_tp_sell,
+															alpha=Chromosome[chrom_counter]['alpha'],
+															num_exteremes=Chromosome[chrom_counter]['num_extreme'],
+															diff_extereme=Chromosome[chrom_counter]['diff_extereme'],
+															real_test = False,
+															flag_learning=flag_learning
+															)
+
+					if secondry_doing == True:
+						_, _, _, sell_data = divergence_macd(
+															dataset=symbol_data_5M,
+															dataset_15M=symbol_data_15M,
+															dataset_1H=dataset_1H,
+															Apply_to=Chromosome[chrom_counter]['apply_to'],
+															symbol=symbol,
+															macd_fast=Chromosome[chrom_counter]['fast_period'],
+															macd_slow=Chromosome[chrom_counter]['slow_period'],
+															macd_signal=Chromosome[chrom_counter]['signal_period'],
+															mode='optimize',
+															plot=False,
+															buy_doing=False,
+															sell_doing=True,
+															primary_doing=False,
+															secondry_doing=True,
+															name_stp_pr=True,
+															name_stp_minmax=False,
+															st_percent_minmax_buy = 0.9,
+															st_percent_minmax_sell = max_st_buy,
+															tp_percent_minmax_sell_max = max_tp_buy,
+															tp_percent_minmax_buy_max = 0.9
+															)
+					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						#print('=======> sell_data = ',sell_data))
+
+	
+				flag_golden_cross = False
+
+				if flag_trade == 'buy' and buy_data.empty==True:
+					flag_golden_cross = True
+
+				if flag_trade == 'sell' and sell_data.empty==True:
+					flag_golden_cross = True
+
+			else:#except Exception as ex:
+				print('getting error GA Golden Cross: ', ex)
+				flag_golden_cross = True
+
+			if flag_golden_cross:
+
+				Chromosome[chrom_counter] = {
+					'fast_period': Chromosome[chrom_counter]['fast_period'],#high_period,
+					'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
+					'signal_period': randint(signal_period_lower, signal_period_upper),
+					'apply_to': np.random.choice(apply_to_list_ga),
+					'alpha': randint(1, 50)/100,
+					'num_extreme': randint(5,int(Chromosome[chrom_counter]['num_extreme'])),#int(randint(50,500)/10),#randint(int(Chromosome[chrom_counter]['fast_period']*0.25),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
+					'diff_extereme': 25,#randint(2,Chromosome[chrom_counter]['diff_extereme']),
+					'signal': None,
+					'score_buy': 0,
+					'score_sell': 0
+					}
+				continue
+
+			try:
+				if flag_trade == 'buy':
+					output_buy, _ = tester_div_macd(
+													signal_buy=buy_data,
+													signal_sell=buy_data,
+													min_tp=0,
+													max_st=0,
+													alpha=Chromosome[chrom_counter]['alpha'],
+													name_stp_minmax=False,
+													name_stp_pr=True,
+													flag_trade='buy'
+													)
+					with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						print('======== Output Buy =======> ')
+						print()
+						print('........................................................')
+						print(output_buy)
+						print('........................................................')
+						print()
+
+				if flag_trade == 'sell':
+					_, output_sell = tester_div_macd(
+													signal_buy=sell_data,
+													signal_sell=sell_data,
+													min_tp=0,
+													max_st=0,
+													alpha=Chromosome[chrom_counter]['alpha'],
+													name_stp_minmax=False,
+													name_stp_pr=True,
+													flag_trade='sell'
+													)
+					with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						print('======== Output SELL ======> ')
+						print()
+						print('........................................................')
+						print(output_sell)
+						print('........................................................')
+						print()
+
+				flag_tester = False
+			except Exception as ex:
+				print('GA tester: ',ex)
+				flag_tester = True
+
+			if flag_tester:
+
+				Chromosome[chrom_counter] = {
+					'fast_period': Chromosome[chrom_counter]['fast_period'],#high_period,
+					'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
+					'signal_period': randint(signal_period_lower, signal_period_upper),
+					'apply_to': np.random.choice(apply_to_list_ga),
+					'alpha': randint(1, 50)/100,
+					'num_extreme': int(Chromosome[chrom_counter]['fast_period']/10),#int(randint(50,500)/10),#randint(int(Chromosome[chrom_counter]['fast_period']*0.25),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
+					'diff_extereme': 25,#Chromosome[chrom_counter]['slow_period'],
+					'signal': None,
+					'score_buy': 0,
+					'score_sell': 0
+					}
+				continue
+
+			if flag_trade == 'buy':
+				if not np.isnan(output_buy['score_pr'][0]) or not np.isnan(output_buy['score_min_max'][0]):
+					if (
+						(
+							output_buy['score_pr'][0] >= max_score_ga_buy * 0.99 and
+							np.isnan(output_buy['score_pr'][0]) == False
+						) or						
+						(
+							output_buy['score_min_max'][0] >= max_score_ga_buy * 0.99 and
+							np.isnan(output_buy['score_min_max'][0]) == False
+						)
+						):
+
+						max_st_last_buy = max_st_buy
+						min_st_last_buy = min_st_buy
+						max_tp_last_buy = max_tp_buy
+						min_tp_last_buy = min_tp_buy
+
+						if output_buy['max_tp'][0] >= 0.1:
+							max_tp_buy = output_buy['max_tp'][0]
+						else:
+							max_tp_buy = output_buy['max_tp_pr'][0]#randint(50, 100)/100
+
+						if output_buy['min_tp'][0] >= 0.1:
+							min_tp_buy = output_buy['min_tp'][0]
+						else:
+							min_tp_buy = output_buy['mean_tp_pr'][0]
+
+
+						if output_buy['max_st'][0] >= 0.1:
+							max_st_buy = output_buy['max_st'][0]
+
+							#if max_st_buy > max_tp_buy:
+								#max_st_buy = max_tp_buy
+						else:
+							max_st_buy = output_buy['max_st_pr'][0]#randint(50, 100)/100
+
+							#while max_tp_buy < max_st_buy:
+								#max_st_buy = randint(15, 100)/100
+
+						if output_buy['min_st'][0] >= 0.1:
+							min_st_buy = output_buy['min_st'][0]
+
+						else:
+							min_st_buy = output_buy['mean_st_pr'][0]#randint(50, 100)/100
+
+						if flag_learning == True:
+
+							output_buy['max_tp'][0] = max_tp_last_buy
+							output_buy['max_st'][0] = max_st_last_buy
+							output_buy['min_st'][0] = min_st_last_buy
+							output_buy['min_tp'][0] = min_tp_last_buy
+
+							output_before_buy['num_st_pr'][0] = output_buy['num_st_pr'][0]
+							output_before_buy['num_tp_pr'][0] = output_buy['num_tp_pr'][0]
+							output_before_buy['score_pr'][0] = output_buy['score_pr'][0]
+							output_before_buy['max_tp_pr'][0] = output_buy['max_tp_pr'][0]
+							output_before_buy['mean_tp_pr'][0] = output_buy['mean_tp_pr'][0]
+							output_before_buy['mean_st_pr'][0] = output_buy['mean_st_pr'][0]
+							output_before_buy['sum_st_pr'][0] = output_buy['sum_st_pr'][0]
+							output_before_buy['sum_tp_pr'][0] = output_buy['sum_tp_pr'][0]
+							output_before_buy['money'][0] = output_buy['money'][0]
+
+
+						
+							Chromosome[chrom_counter]['signal'] = ('buy' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
+							result_buy = result_buy.append(output_before_buy, ignore_index=True)
+							score_buy = (output_buy['score_pr'][0])
+
+							out_before_buy = output_buy
+
+
+							if os.path.exists(buy_path):
+								max_score_ga_buy_before = ga_result_buy['score_pr'][0] #* 0.9
+							else:
+								max_score_ga_buy_before = max_score_ga_buy #* 0.9
+
+							max_score_ga_buy = (output_buy['score_pr'][0])
+
+							if (max_score_ga_buy >= 34000):
+								if (
+									os.path.exists(buy_path) and
+									max_score_ga_buy > max_score_ga_buy_before
+									):
+									max_score_ga_buy = max_score_ga_buy_before #* 0.9
+								else:
+									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0] #* 0.9
+									if not os.path.exists(buy_path): max_score_ga_buy = 34000
+
+							Chromosome[chrom_counter].update({'score_buy': score_buy })
+							chromosome_buy = chromosome_buy.append(Chromosome[chrom_counter], ignore_index=True)
+							chorm_reset_counter = 0
+
+							bad_score_counter_buy = 0
+
+							score_for_reset = 0
+
+							max_st_buy = randint(80, 100)/100
+							min_st_buy = randint(80, 100)/100
+							max_tp_buy = randint(80, 100)/100
+							min_tp_buy = randint(80, 100)/100
+
+							if output_buy['diff_extereme_pr'][0] != 0:
+								diff_extereme_pr_buy = output_buy['diff_extereme_pr'][0]
+							else:
+								diff_extereme_pr_buy = randint(1,Chromosome[chrom_counter]['slow_period'])
+
+							flag_learning = False
+
+							while max_tp_buy < max_st_buy:
+								max_st_buy = randint(80, 100)/100
+								max_tp_buy = randint(80, 100)/100
+						#max_score_ga_buy = np.max(chromosome_buy['score_pr'],1)
+						#print('MMMMMMMMMaxxxxxxx ==========> ',max_score_ga_buy)
+
+							bad_buy = False
+						else:
+							bad_score_counter_buy += 1
+							bad_buy = True
+							flag_learning = True
+							score_for_reset = (output_buy['score_pr'][0])
+
+							out_before_buy = output_buy
+
+							if output_buy['diff_extereme_pr'][0] != 0:
+								diff_extereme_pr_buy = output_buy['diff_extereme_pr'][0]
+							else:
+								diff_extereme_pr_buy = randint(1,Chromosome[chrom_counter]['slow_period'])
+
+					else:
+						bad_buy = True
+
+						bad_score_counter_buy += 1
+
+						out_before_buy = output_buy
+
+						if (
+							output_buy['max_tp'][0] >= 0.1 and
+							output_buy['score_pr'][0] >= score_for_reset and
+							output_buy['max_tp'][0] > output_buy['min_st'][0]*1.2
+							):
+							max_tp_buy = output_buy['max_tp'][0]
+							flag_learning = True
+						else:
+							if (
+								output_buy['score_pr'][0] >= score_for_reset and
+								output_buy['min_st'][0] >= 0.1 and
+								output_buy['max_st'][0] >= 0.1
+								):
+								max_tp_buy = randint(int((output_buy['max_st'][0]/2)*100), int(output_buy['max_st'][0]*100)*2)/100
+
+								while max_tp_buy <= output_buy['min_st'][0]:
+									max_tp_buy = randint(int((output_buy['max_st'][0]/2)*100), int(output_buy['max_st'][0]*100)*2)/100
+
+								flag_learning = True
+							else:
+								if (
+									output_buy['max_tp'][0] == 0 and
+									output_buy['min_tp'][0] == 0 and
+									output_buy['max_st'][0] == 0 and
+									output_buy['min_st'][0] == 0
+									):
+									max_tp_buy = output_buy['max_tp_pr'][0]
+									flag_learning = True
+								else:
+									max_tp_buy = randint(80, 100)/100
+									flag_learning = False
+
+						if (
+							output_buy['score_pr'][0] >= score_for_reset and
+							output_buy['min_tp'][0] >= 0.1
+							):
+							min_tp_buy = output_buy['min_tp'][0]
+							flag_learning = True
+						else:
+							if (
+								output_buy['max_tp'][0] == 0 and
+								output_buy['min_tp'][0] == 0 and
+								output_buy['max_st'][0] == 0 and
+								output_buy['min_st'][0] == 0
+								):
+								min_tp_buy = output_buy['mean_tp_pr'][0]
+								flag_learning = True
+							else:
+								min_tp_buy = randint(80, 100)/100
+								flag_learning = False
+
+						if (
+							output_buy['score_pr'][0] >= score_for_reset and
+							output_buy['max_st'][0] >= 0.1
+							):
+							max_st_buy = output_buy['max_st'][0]
+							flag_learning = True
+
+						else:
+							if (
+								output_buy['max_tp'][0] == 0 and
+								output_buy['min_tp'][0] == 0 and
+								output_buy['max_st'][0] == 0 and
+								output_buy['min_st'][0] == 0
+								):
+								max_st_buy = output_buy['max_st_pr'][0]
+								flag_learning = True
+							else:
+								max_st_buy = randint(80, 100)/100
+								flag_learning = False
+
+							#while max_tp_buy < max_st_buy:
+								#max_st_buy = randint(int((max_tp_buy/2)*100), 100)/100
+
+						if (
+							output_buy['score_pr'][0] >= score_for_reset and
+							output_buy['min_st'][0] >= 0.1
+							):
+							min_st_buy = output_buy['min_st'][0]
+							flag_learning = True
+
+						else:
+							if (
+								output_buy['max_tp'][0] == 0 and
+								output_buy['min_tp'][0] == 0 and
+								output_buy['max_st'][0] == 0 and
+								output_buy['min_st'][0] == 0
+								):
+								min_st_buy = output_buy['mean_st_pr'][0]
+								flag_learning = True
+							else:
+								min_st_buy = randint(80, 100)/100
+								flag_learning = False
+
+								while max_tp_buy < min_st_buy:
+									min_st_buy = randint(int((max_tp_buy/2)*100), 100)/100
+
+						if output_buy['diff_extereme_pr'][0] != 0:
+							diff_extereme_pr_buy = output_buy['diff_extereme_pr'][0]
+						else:
+							diff_extereme_pr_buy = randint(1,Chromosome[chrom_counter]['slow_period'])
+
+						score_for_reset = output_buy['score_pr'][0]
+
+			print('== Max Score Buy Must Be ====> ',max_score_ga_buy)
+
+			if flag_trade == 'sell':
+				if not np.isnan(output_sell['score_pr'][0]) or not np.isnan(output_sell['score_min_max'][0]):
+					if (
+						(
+							output_sell['score_pr'][0] >= max_score_ga_sell * 0.99 and
+							np.isnan(output_sell['score_pr'][0]) == False
+						) or
+						(
+							output_sell['score_min_max'][0] >= max_score_ga_sell * 0.99 and
+							np.isnan(output_sell['score_min_max'][0]) == False
+						)
+						):
+
+						max_st_last_sell = max_st_sell
+						min_st_last_sell = min_st_sell
+						max_tp_last_sell = max_tp_sell
+						min_tp_last_sell = min_tp_sell
+
+						if output_sell['max_tp'][0] >= 0.1:
+							max_tp_sell = output_sell['max_tp'][0]
+						else:
+							max_tp_sell = output_sell['max_tp_pr'][0]#randint(50, 100)/100
+
+						if output_sell['min_tp'][0] >= 0.1:
+							min_tp_sell = output_sell['min_tp'][0]
+						else:
+							min_tp_sell = output_sell['mean_tp_pr'][0]
+
+
+						if output_sell['max_st'][0] >= 0.1:
+							max_st_sell = output_sell['max_st'][0]
+
+							#if max_st_buy > max_tp_buy:
+								#max_st_buy = max_tp_buy
+						else:
+							max_st_sell = output_sell['max_st_pr'][0]#randint(50, 100)/100
+
+							#while max_tp_buy < max_st_buy:
+								#max_st_buy = randint(15, 100)/100
+
+						if output_sell['min_st'][0] >= 0.1:
+							min_st_sell = output_sell['min_st'][0]
+
+						else:
+							min_st_sell = output_sell['mean_st_pr'][0]#randint(50, 100)/100
+
+						if flag_learning == True:
+
+							output_sell['max_tp'][0] = max_tp_last_sell
+							output_sell['max_st'][0] = max_st_last_sell
+							output_sell['min_st'][0] = min_st_last_sell
+							output_sell['min_tp'][0] = min_tp_last_sell
+
+							output_before_sell['num_st_pr'][0] = output_sell['num_st_pr'][0]
+							output_before_sell['num_tp_pr'][0] = output_sell['num_tp_pr'][0]
+							output_before_sell['score_pr'][0] = output_sell['score_pr'][0]
+							output_before_sell['max_tp_pr'][0] = output_sell['max_tp_pr'][0]
+							output_before_sell['mean_tp_pr'][0] = output_sell['mean_tp_pr'][0]
+							output_before_sell['mean_st_pr'][0] = output_sell['mean_st_pr'][0]
+							output_before_sell['sum_st_pr'][0] = output_sell['sum_st_pr'][0]
+							output_before_sell['sum_tp_pr'][0] = output_sell['sum_tp_pr'][0]
+							output_before_sell['money'][0] = output_sell['money'][0]
+						
+							Chromosome[chrom_counter]['signal'] = ('sell' if Chromosome[chrom_counter].get('signal') else 'buy,sell')
+							result_sell = result_sell.append(output_before_sell, ignore_index=True)
+							score_sell = output_sell['score_pr'][0]
+
+							output_before_sell = output_sell
+
+
+							if os.path.exists(sell_path):
+								max_score_ga_sell_before = ga_result_sell['score_pr'][0] #* 0.9
+							else:
+								max_score_ga_sell_before = max_score_ga_sell #* 0.9
+
+							max_score_ga_sell = (output_sell['score_pr'][0])
+
+							if (max_score_ga_sell >= 34000):
+								if (
+									os.path.exists(sell_path) and
+									max_score_ga_sell > max_score_ga_sell_before
+									):
+									max_score_ga_sell = max_score_ga_sell_before #* 0.9
+								else:
+									if os.path.exists(sell_path): max_score_ga_sell = ga_result_sell['score_pr'][0] #* 0.9
+									if not os.path.exists(sell_path): max_score_ga_sell = 34000
+
+							Chromosome[chrom_counter].update({'score_sell': score_sell })
+							chromosome_sell = chromosome_sell.append(Chromosome[chrom_counter], ignore_index=True)
+							chorm_reset_counter = 0
+
+							bad_score_counter_sell = 0
+
+							score_for_reset_sell = 0
+
+							max_st_sell = randint(80, 100)/100
+							min_st_sell = randint(80, 100)/100
+							max_tp_sell = randint(80, 100)/100
+							min_tp_sell = randint(80, 100)/100
+
+							if output_sell['diff_extereme_pr'][0] != 0:
+								diff_extereme_pr_sell = output_sell['diff_extereme_pr'][0]
+							else:
+								diff_extereme_pr_sell = randint(1,Chromosome[chrom_counter]['slow_period'])
+
+							flag_learning = False
+
+							while max_tp_sell < max_st_sell:
+								max_st_sell = randint(80, 100)/100
+								max_tp_sell = randint(80, 100)/100
+						#max_score_ga_buy = np.max(chromosome_buy['score_pr'],1)
+						#print('MMMMMMMMMaxxxxxxx ==========> ',max_score_ga_buy)
+
+							bad_sell = False
+						else:
+							bad_score_counter_sell += 1
+							bad_sell = True
+							flag_learning = True
+							score_for_reset_sell = (output_sell['score_pr'][0])
+
+							output_before_sell = output_sell
+
+							if output_sell['diff_extereme_pr'][0] != 0:
+								diff_extereme_pr_sell = output_sell['diff_extereme_pr'][0]
+							else:
+								diff_extereme_pr_sell = randint(1,Chromosome[chrom_counter]['slow_period'])
+					else:
+						bad_sell = True
+
+						bad_score_counter_sell += 1
+
+						out_before_sell = output_sell
+
+						if (
+							output_sell['max_tp'][0] >= 0.1 and
+							output_sell['score_pr'][0] >= score_for_reset_sell and
+							output_sell['max_tp'][0] > output_sell['min_st'][0]*1.2
+							):
+							max_tp_sell = output_sell['max_tp'][0]
+							flag_learning = True
+						else:
+							if (
+								output_sell['score_pr'][0] >= score_for_reset_sell and
+								output_sell['min_st'][0] >= 0.1 and
+								output_sell['max_st'][0] >= 0.1
+								):
+								max_tp_sell = randint(int((output_sell['max_st'][0]/2)*100), int(output_sell['max_st'][0]*100)*2)/100
+
+								while max_tp_sell <= output_sell['min_st'][0]:
+									max_tp_sell = randint(int((output_sell['max_st'][0]/2)*100), int(output_sell['max_st'][0]*100)*2)/100
+
+								flag_learning = True
+							else:
+								if (
+									output_sell['max_tp'][0] == 0 and
+									output_sell['min_tp'][0] == 0 and
+									output_sell['max_st'][0] == 0 and
+									output_sell['min_st'][0] == 0
+									):
+									max_tp_sell = output_sell['max_tp_pr'][0]
+									flag_learning = True
+								else:
+									max_tp_sell = randint(80, 100)/100
+									flag_learning = False
+
+						if (
+							output_sell['score_pr'][0] >= score_for_reset_sell and
+							output_sell['min_tp'][0] >= 0.1
+							):
+							min_tp_sell = output_sell['min_tp'][0]
+							flag_learning = True
+						else:
+							if (
+								output_sell['max_tp'][0] == 0 and
+								output_sell['min_tp'][0] == 0 and
+								output_sell['max_st'][0] == 0 and
+								output_sell['min_st'][0] == 0
+								):
+								min_tp_sell = output_sell['mean_tp_pr'][0]
+								flag_learning = True
+							else:
+								min_tp_sell = randint(80, 100)/100
+								flag_learning = False
+
+						if (
+							output_sell['score_pr'][0] >= score_for_reset_sell and
+							output_sell['max_st'][0] >= 0.1
+							):
+							max_st_sell = output_sell['max_st'][0]
+							flag_learning = True
+
+						else:
+							if (
+								output_sell['max_tp'][0] == 0 and
+								output_sell['min_tp'][0] == 0 and
+								output_sell['max_st'][0] == 0 and
+								output_sell['min_st'][0] == 0
+								):
+								max_st_sell = output_sell['max_st_pr'][0]
+								flag_learning = True
+							else:
+								max_st_sell = randint(80, 100)/100
+								flag_learning = False
+
+							#while max_tp_buy < max_st_buy:
+								#max_st_buy = randint(int((max_tp_buy/2)*100), 100)/100
+
+						if (
+							output_sell['score_pr'][0] >= score_for_reset_sell and
+							output_sell['min_st'][0] >= 0.1
+							):
+							min_st_sell = output_sell['min_st'][0]
+							flag_learning = True
+
+						else:
+							if (
+								output_sell['max_tp'][0] == 0 and
+								output_sell['min_tp'][0] == 0 and
+								output_sell['max_st'][0] == 0 and
+								output_sell['min_st'][0] == 0
+								):
+								min_st_sell = output_sell['mean_st_pr'][0]
+								flag_learning = True
+							else:
+								min_st_sell = randint(80, 100)/100
+								flag_learning = False
+
+								while max_tp_sell < min_st_sell:
+									min_st_sell = randint(int((max_tp_sell/2)*100), 100)/100
+
+						if output_sell['diff_extereme_pr'][0] != 0:
+							diff_extereme_pr_sell = output_sell['diff_extereme_pr'][0]
+						else:
+							diff_extereme_pr_sell = randint(1,Chromosome[chrom_counter]['slow_period'])
+
+						score_for_reset_sell = output_sell['score_pr'][0]
+
+			print('== Max Score Sell Must Be =====> ',max_score_ga_sell)
+
+			if flag_trade == 'buy':
+				if (
+					len(chromosome_buy) >= int(num_turn/20)
+					):
+					break
+
+			if flag_trade == 'sell':
+				if (
+					len(chromosome_sell) >= int(num_turn/20)
+					):
+					break
+
+			#if (
+				#len(chromosome_buy) >= int(num_turn/12) or
+				#len(chromosome_sell) >= int(num_turn/12)
+				#):
+				#if (len(chromosome_buy) >= int(num_turn/12)) and (len(chromosome_sell) >= 4): break
+				#if (len(chromosome_sell) >= int(num_turn/12)) and (len(chromosome_buy) >= 4): break
+
+			if flag_trade == 'buy':
+				if bad_buy == True:
+
+					if bad_score_counter_buy < 4:
+						Chromosome[chrom_counter] = {
+										'fast_period': Chromosome[chrom_counter]['fast_period'],#high_period,
+										'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
+										'signal_period': Chromosome[chrom_counter]['signal_period'],#randint(signal_period_lower, signal_period_upper),
+										'apply_to': np.random.choice(apply_to_list_ga),
+										'alpha': randint(1, 50)/100,
+										'num_extreme': Chromosome[chrom_counter]['num_extreme'],#int(buy_data['num_extreme'][0]),#Chromosome[chrom_counter]['num_extreme'],#randint(int(Chromosome[chrom_counter]['fast_period']*0.5),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
+										'diff_extereme': diff_extereme_pr_buy,
+										'signal': None,
+										'score_buy': 0,
+										'score_sell': 0
+										}
+
+					else:
+						if (
+							bad_score_counter_buy_2 >= 3
+							):
+
+							score_for_reset = 0
+
+							bad_score_counter_buy = 0
+							bad_score_counter_buy_2 = 0
+
+							max_st_buy = randint(80, 100)/100
+							min_st_buy = randint(80, 100)/100
+							max_tp_buy = randint(80, 100)/100
+							min_tp_buy = randint(80, 100)/100
+
+							flag_learning = False
+
+							while max_tp_buy < max_st_buy:
+								max_st_buy = randint(70, 100)/100
+								max_tp_buy = randint(80, 100)/100
+
+							fast_period = randint(fast_period_lower,fast_period_upper)
+							while Chromosome[chrom_counter]['slow_period'] < fast_period * 2:
+								fast_period = randint(fast_period_lower,fast_period_upper)
+								if (fast_period == Chromosome[chrom_counter]['fast_period']): continue
+
+							Chromosome[chrom_counter] = {
+										'fast_period': fast_period,#high_period,
+										'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
+										'signal_period': randint(signal_period_lower, signal_period_upper),
+										'apply_to': np.random.choice(apply_to_list_ga),
+										'alpha': randint(1, 50)/100,
+										'num_extreme': int(fast_period/10),#randint(int(fast_period/2),fast_period*5),#int(randint(50,500)/10),#randint(int(fast_period*0.25),(Chromosome[chrom_counter]['slow_period']-fast_period)),
+										'diff_extereme': 25,#Chromosome[chrom_counter]['slow_period'],
+										'signal': None,
+										'score_buy': 0,
+										'score_sell': 0
+										}
+						else:
+							score_for_reset = 0
+
+							bad_score_counter_buy_2 += 1
+							bad_score_counter_buy = 0
+
+							max_st_buy = randint(80, 100)/100
+							min_st_buy = randint(80, 100)/100
+							max_tp_buy = randint(80, 100)/100
+							min_tp_buy = randint(80, 100)/100
+
+							flag_learning = False
+
+							while max_tp_buy < max_st_buy:
+								max_st_buy = randint(70, 100)/100
+								max_tp_buy = randint(80, 100)/100
+
+							Chromosome[chrom_counter] = {
+										'fast_period': Chromosome[chrom_counter]['fast_period'],#high_period,
+										'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
+										'signal_period': randint(signal_period_lower, signal_period_upper),
+										'apply_to': np.random.choice(apply_to_list_ga),
+										'alpha': randint(1, 50)/100,
+										'num_extreme': int(output_buy['num_trade_pr'][0]),#randint(int(Chromosome[chrom_counter]['fast_period']/2),Chromosome[chrom_counter]['fast_period']*5),#int(randint(50,500)/10),#randint(int(Chromosome[chrom_counter]['fast_period']*0.25),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
+										'diff_extereme': 25,#Chromosome[chrom_counter]['slow_period'],
+										'signal': None,
+										'score_buy': 0,
+										'score_sell': 0
+										}
+
+					continue
+
+
+			if flag_trade == 'sell':
+				if bad_sell == True:
+
+					if bad_score_counter_sell < 4:
+						Chromosome[chrom_counter] = {
+										'fast_period': Chromosome[chrom_counter]['fast_period'],#high_period,
+										'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
+										'signal_period': Chromosome[chrom_counter]['signal_period'],#randint(signal_period_lower, signal_period_upper),
+										'apply_to': np.random.choice(apply_to_list_ga),
+										'alpha': Chromosome[chrom_counter]['alpha'],#randint(1, 50)/100,
+										'num_extreme': Chromosome[chrom_counter]['num_extreme'],#int(sell_data['num_extreme'][0]),#Chromosome[chrom_counter]['num_extreme'],#randint(int(Chromosome[chrom_counter]['fast_period']*0.5),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
+										'diff_extereme': diff_extereme_pr_sell,
+										'signal': None,
+										'score_buy': 0,
+										'score_sell': 0
+										}
+
+					else:
+						if (
+							bad_score_counter_sell_2 >= 3
+							):
+
+							score_for_reset_sell = 0
+
+							bad_score_counter_sell = 0
+							bad_score_counter_sell_2 = 0
+
+							max_st_sell = randint(80, 100)/100
+							min_st_sell = randint(80, 100)/100
+							max_tp_sell = randint(80, 100)/100
+							min_tp_sell = randint(80, 100)/100
+
+							flag_learning = False
+
+							while max_tp_sell < max_st_sell:
+								max_st_sell = randint(70, 100)/100
+								max_tp_sell = randint(80, 100)/100
+
+							fast_period = randint(fast_period_lower,fast_period_upper)
+							while Chromosome[chrom_counter]['slow_period'] < fast_period * 2:
+								fast_period = randint(fast_period_lower,fast_period_upper)
+								if (fast_period == Chromosome[chrom_counter]['fast_period']): continue
+
+							Chromosome[chrom_counter] = {
+										'fast_period': fast_period,#high_period,
+										'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
+										'signal_period': randint(signal_period_lower, signal_period_upper),
+										'apply_to': np.random.choice(apply_to_list_ga),
+										'alpha': randint(1, 50)/100,
+										'num_extreme': int(fast_period/10),#randint(int(fast_period/2),fast_period*2),#int(randint(50,500)/10),#randint(int(fast_period*0.25),(Chromosome[chrom_counter]['slow_period']-fast_period)),
+										'diff_extereme': 25,#Chromosome[chrom_counter]['slow_period'],
+										'signal': None,
+										'score_buy': 0,
+										'score_sell': 0
+										}
+						else:
+							score_for_reset_sell = 0
+
+							bad_score_counter_sell_2 += 1
+							bad_score_counter_sell = 0
+
+							max_st_sell = randint(80, 100)/100
+							min_st_sell = randint(80, 100)/100
+							max_tp_sell = randint(80, 100)/100
+							min_tp_sell = randint(80, 100)/100
+
+							flag_learning = False
+
+							while max_tp_sell < max_st_sell:
+								max_st_sell = randint(70, 100)/100
+								max_tp_sell = randint(80, 100)/100
+
+							Chromosome[chrom_counter] = {
+										'fast_period': Chromosome[chrom_counter]['fast_period'],#high_period,
+										'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
+										'signal_period': randint(signal_period_lower, signal_period_upper),
+										'apply_to': np.random.choice(apply_to_list_ga),
+										'alpha':  randint(1, 50)/100,
+										'num_extreme': int(output_sell['num_trade_pr'][0]),#randint(int(Chromosome[chrom_counter]['fast_period']/2),Chromosome[chrom_counter]['fast_period']*2),#randint(int(Chromosome[chrom_counter]['fast_period']*0.25),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
+										'diff_extereme': 25,#Chromosome[chrom_counter]['slow_period'],
+										'signal': None,
+										'score_buy': 0,
+										'score_sell': 0
+										}
+
+					continue
+
+			if Chromosome[chrom_counter]['signal'] is None: continue
+
+			#chrom_counter += 1
+			#learning_interval_counter += 1
+
+			
+	
+	#**************************** Best Find *********************************************************
+
+	#************ Buy Find:
+	if flag_trade == 'buy':
+
+		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			print('=======> Chorme ===> ')
+			print()
+			print('........................................................')
+			print(chromosome_buy)
+			print('........................................................')
+			print()
+
+		best_buy = pd.DataFrame()
+		max_score_buy_pr = np.max(result_buy['score_pr'].dropna())
+		max_score_buy_min_max = np.max(result_buy['score_min_max'].dropna())
+		max_score_buy = max(max_score_buy_pr,max_score_buy_min_max)
+		best_buy_score_index = np.where((result_buy['score_pr']==max_score_buy) | (result_buy['score_min_max'] == max_score_buy))[0]
+		best_dict = dict()
+		for idx in best_buy_score_index:
+			for clm in result_buy.columns:
+				best_dict.update(
+					{
+					clm: result_buy[clm][idx]
+					})
+			for clm in chromosome_buy.columns:
+				best_dict.update(
+					{
+					clm: chromosome_buy[clm][idx]
+					})
+
+			best_buy = best_buy.append(best_dict, ignore_index=True)
+	#//////////////////////
+	#********** Sell Find:
+	if flag_trade == 'sell':
+
+		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			print('=======> Chorme ===> ')
+			print()
+			print('........................................................')
+			print(chromosome_sell)
+			print('........................................................')
+			print()
+
+		best_sell = pd.DataFrame()
+		max_score_sell_pr = np.max(result_sell['score_pr'].dropna())
+		max_score_sell_min_max = np.max(result_sell['score_min_max'].dropna())
+		max_score_sell = max(max_score_sell_pr,max_score_sell_min_max)
+		best_sell_score_index = np.where((result_sell['score_pr']==max_score_sell) | (result_sell['score_min_max'] == max_score_sell))[0]
+		best_dict = dict()
+		for idx in best_sell_score_index:
+			for clm in result_sell.columns:
+				best_dict.update(
+					{
+					clm: result_sell[clm][idx]
+					})
+			for clm in chromosome_sell.columns:
+				best_dict.update(
+					{
+					clm: chromosome_sell[clm][idx]
+					})
+
+			best_sell = best_sell.append(best_dict, ignore_index=True)
+	#//////////////////////
+
+	#********************************///////////////****************************************************************
+
+	#*************************** Save to TXT File ***************************************************************
+
+	if flag_trade == 'buy':
+		try:
+			if os.path.exists(buy_path):
+				os.remove(buy_path)
+
+			with open(buy_path, 'w', newline='') as myfile:
+				fields = best_buy.columns.to_list()
+				writer = csv.DictWriter(myfile, fieldnames=fields)
+				writer.writeheader()
+	
+				for idx in range(len(best_buy)):
+					rows = dict()
+					for clm in best_buy.columns:
+						rows.update({clm: best_buy[clm][idx]})
+					writer.writerow(rows)
+					
+		except Exception as ex:
+			print('some thing wrong: ', ex)
+
+	if flag_trade == 'sell':
+		try:
+			if os.path.exists(sell_path):
+				os.remove(sell_path)
+
+			with open(sell_path, 'w', newline='') as myfile:
+				fields = best_sell.columns.to_list()
+				writer = csv.DictWriter(myfile, fieldnames=fields)
+				writer.writeheader()
+	
+				for idx in range(len(best_sell)):
+					rows = dict()
+					for clm in best_sell.columns:
+						rows.update({clm: best_sell[clm][idx]})
+					writer.writerow(rows)
+					
+		except Exception as ex:
+			print('some thing wrong: ', ex)
+
+	print('/////////////////////// Finish Genetic BUY ',symbol,'///////////////////////////////////')
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #*********************************** How To Use Funcs ************************************************************
 """

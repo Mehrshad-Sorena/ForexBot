@@ -1558,14 +1558,6 @@ def divergence_macd(
 
 								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(signal_sell_primary['diff_pr_down'][primary_counter]/100))
 
-								if signal_sell_primary['diff_pr_top'][primary_counter] > st_percent_sell_max:
-									signal_sell_primary['diff_pr_top'][primary_counter] = st_percent_sell_max
-									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_max['index'][elm])] * (1+(st_percent_sell_max/100))
-
-								if signal_sell_primary['diff_pr_down'][primary_counter] > tp_percent_sell_max:
-									signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_max
-									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_max/100))
-
 								#print('sum weight =====> ',(abs(1 - weight_signal) + weight_trend))
 								#print('down3 =====> ',signal_sell_primary['diff_pr_down'][primary_counter])
 								#print()
@@ -5862,14 +5854,14 @@ def last_signal_macd_div(
 
 
 					if (
-						ga_result_buy_primary['value_front_intervals_pr_lower'][0] <= buy_data_primary['value_front'][lst_idx_buy_primary] <= ga_result_buy_primary['value_front_intervals_pr_upper'][0] 
+						ga_result_buy_primary['value_front_intervals_pr_lower'][0] <= buy_data_primary['value_front'].iloc[-1] <= ga_result_buy_primary['value_front_intervals_pr_upper'][0] 
 						):
 						weight_value_front = (((ga_result_buy_primary['value_front_intervals_pr_upper_power'][0]+ga_result_buy_primary['value_front_intervals_pr_lower_power'][0])/2) * (1 - ga_result_buy_primary['alpha'][0]))#/2
 					else:
 						weight_value_front = (-((ga_result_buy_primary['value_front_intervals_pr_upper_power'][0]+ga_result_buy_primary['value_front_intervals_pr_lower_power'][0])/2) * (ga_result_buy_primary['alpha'][0]))#/2
 								
 					if (
-						ga_result_buy_primary['value_back_intervals_pr_lower'][0] <= buy_data_primary['value_back'][lst_idx_buy_primary] <= ga_result_buy_primary['value_back_intervals_pr_upper'][0]
+						ga_result_buy_primary['value_back_intervals_pr_lower'][0] <= buy_data_primary['value_back'].iloc[-1] <= ga_result_buy_primary['value_back_intervals_pr_upper'][0]
 						):
 						weight_value_back = (((ga_result_buy_primary['value_back_intervals_pr_lower_power'][0]+ga_result_buy_primary['value_back_intervals_pr_upper_power'][0])/2) * (1 - ga_result_buy_primary['alpha'][0]))#/2
 
@@ -6071,14 +6063,14 @@ def last_signal_macd_div(
 
 
 					if (
-						ga_result_sell_primary['value_front_intervals_pr_lower'][0] <= buy_data_primary['value_front'][lst_idx_buy_primary] <= ga_result_sell_primary['value_front_intervals_pr_upper'][0] 
+						ga_result_sell_primary['value_front_intervals_pr_lower'][0] <= sell_data_primary['value_front'].iloc[-1]  <= ga_result_sell_primary['value_front_intervals_pr_upper'][0] 
 						):
 						weight_value_front = (((ga_result_sell_primary['value_front_intervals_pr_upper_power'][0]+ga_result_sell_primary['value_front_intervals_pr_lower_power'][0])/2) * (1 - ga_result_sell_primary['alpha'][0]))#/2
 					else:
 						weight_value_front = (-((ga_result_sell_primary['value_front_intervals_pr_upper_power'][0]+ga_result_sell_primary['value_front_intervals_pr_lower_power'][0])/2) * (ga_result_sell_primary['alpha'][0]))#/2
 								
 					if (
-						ga_result_sell_primary['value_back_intervals_pr_lower'][0] <= buy_data_primary['value_back'][lst_idx_buy_primary] <= ga_result_sell_primary['value_back_intervals_pr_upper'][0]
+						ga_result_sell_primary['value_back_intervals_pr_lower'][0] <= sell_data_primary['value_back'].iloc[-1]  <= ga_result_sell_primary['value_back_intervals_pr_upper'][0]
 						):
 						weight_value_back = (((ga_result_sell_primary['value_back_intervals_pr_lower_power'][0]+ga_result_sell_primary['value_back_intervals_pr_upper_power'][0])/2) * (1 - ga_result_sell_primary['alpha'][0]))#/2
 

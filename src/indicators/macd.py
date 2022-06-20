@@ -4019,7 +4019,7 @@ def genetic_algo_div_macd(
 						else:
 							max_tp_buy = output_buy['max_tp_pr'][0]#randint(50, 100)/100
 
-						if output_buy['min_tp'][0] >= 0.1:
+						if output_buy['min_tp'][0] != 0:
 							min_tp_buy = output_buy['min_tp'][0]
 						else:
 							min_tp_buy = output_buy['mean_tp_pr'][0]
@@ -4036,7 +4036,7 @@ def genetic_algo_div_macd(
 							#while max_tp_buy < max_st_buy:
 								#max_st_buy = randint(15, 100)/100
 
-						if output_buy['min_st'][0] >= 0.1:
+						if output_buy['min_st'][0] != 0:
 							min_st_buy = output_buy['min_st'][0]
 
 						else:
@@ -4141,7 +4141,7 @@ def genetic_algo_div_macd(
 						else:
 							if (
 								output_buy['score_pr'][0] >= score_for_reset and
-								output_buy['min_st'][0] >= 0.1 and
+								output_buy['min_st'][0] != 0 and
 								output_buy['max_st'][0] >= 0.1
 								):
 								max_tp_buy = randint(int((output_buy['max_st'][0]/2)*100), int(output_buy['max_st'][0]*100)*2)/100
@@ -4165,7 +4165,7 @@ def genetic_algo_div_macd(
 
 						if (
 							output_buy['score_pr'][0] >= score_for_reset and
-							output_buy['min_tp'][0] >= 0.1
+							output_buy['min_tp'][0] != 0
 							):
 							min_tp_buy = output_buy['min_tp'][0]
 							flag_learning = True
@@ -4207,7 +4207,7 @@ def genetic_algo_div_macd(
 
 						if (
 							output_buy['score_pr'][0] >= score_for_reset and
-							output_buy['min_st'][0] >= 0.1
+							output_buy['min_st'][0] != 0
 							):
 							min_st_buy = output_buy['min_st'][0]
 							flag_learning = True
@@ -4260,7 +4260,7 @@ def genetic_algo_div_macd(
 						else:
 							max_tp_sell = output_sell['max_tp_pr'][0]#randint(50, 100)/100
 
-						if output_sell['min_tp'][0] >= 0.1:
+						if output_sell['min_tp'][0] != 0:
 							min_tp_sell = output_sell['min_tp'][0]
 						else:
 							min_tp_sell = output_sell['mean_tp_pr'][0]
@@ -4277,7 +4277,7 @@ def genetic_algo_div_macd(
 							#while max_tp_buy < max_st_buy:
 								#max_st_buy = randint(15, 100)/100
 
-						if output_sell['min_st'][0] >= 0.1:
+						if output_sell['min_st'][0] != 0:
 							min_st_sell = output_sell['min_st'][0]
 
 						else:
@@ -4381,7 +4381,7 @@ def genetic_algo_div_macd(
 						else:
 							if (
 								output_sell['score_pr'][0] >= score_for_reset_sell and
-								output_sell['min_st'][0] >= 0.1 and
+								output_sell['min_st'][0] != 0 and
 								output_sell['max_st'][0] >= 0.1
 								):
 								max_tp_sell = randint(int((output_sell['max_st'][0]/2)*100), int(output_sell['max_st'][0]*100)*2)/100
@@ -4405,7 +4405,7 @@ def genetic_algo_div_macd(
 
 						if (
 							output_sell['score_pr'][0] >= score_for_reset_sell and
-							output_sell['min_tp'][0] >= 0.1
+							output_sell['min_tp'][0] != 0
 							):
 							min_tp_sell = output_sell['min_tp'][0]
 							flag_learning = True
@@ -4447,7 +4447,7 @@ def genetic_algo_div_macd(
 
 						if (
 							output_sell['score_pr'][0] >= score_for_reset_sell and
-							output_sell['min_st'][0] >= 0.1
+							output_sell['min_st'][0] != 0
 							):
 							min_st_sell = output_sell['min_st'][0]
 							flag_learning = True
@@ -6809,7 +6809,7 @@ def learning_algo_div_macd(
 						else:
 							max_tp_buy = output_buy['max_tp_pr'][0]#randint(50, 100)/100
 
-						if output_buy['min_tp'][0] >= 0.1:
+						if output_buy['min_tp'][0] != 0:
 							min_tp_buy = output_buy['min_tp'][0]
 						else:
 							min_tp_buy = output_buy['mean_tp_pr'][0]
@@ -6826,7 +6826,7 @@ def learning_algo_div_macd(
 							#while max_tp_buy < max_st_buy:
 								#max_st_buy = randint(15, 100)/100
 
-						if output_buy['min_st'][0] >= 0.1:
+						if output_buy['min_st'][0] != 0:
 							min_st_buy = output_buy['min_st'][0]
 
 						else:
@@ -6932,7 +6932,7 @@ def learning_algo_div_macd(
 						else:
 							if (
 								output_buy['score_pr'][0] >= score_for_reset and
-								output_buy['min_st'][0] >= 0.1 and
+								output_buy['min_st'][0] != 0 and
 								output_buy['max_st'][0] >= 0.1
 								):
 								max_tp_buy = randint(int((output_buy['max_st'][0]/2)*100), int(output_buy['max_st'][0]*100)*2)/100
@@ -6956,7 +6956,7 @@ def learning_algo_div_macd(
 
 						if (
 							output_buy['score_pr'][0] >= score_for_reset and
-							output_buy['min_tp'][0] >= 0.1
+							output_buy['min_tp'][0] != 0
 							):
 							min_tp_buy = output_buy['min_tp'][0]
 							flag_learning = True
@@ -6998,7 +6998,7 @@ def learning_algo_div_macd(
 
 						if (
 							output_buy['score_pr'][0] >= score_for_reset and
-							output_buy['min_st'][0] >= 0.1
+							output_buy['min_st'][0] != 0
 							):
 							min_st_buy = output_buy['min_st'][0]
 							flag_learning = True
@@ -7051,7 +7051,7 @@ def learning_algo_div_macd(
 						else:
 							max_tp_sell = output_sell['max_tp_pr'][0]#randint(50, 100)/100
 
-						if output_sell['min_tp'][0] >= 0.1:
+						if output_sell['min_tp'][0] != 0:
 							min_tp_sell = output_sell['min_tp'][0]
 						else:
 							min_tp_sell = output_sell['mean_tp_pr'][0]
@@ -7068,7 +7068,7 @@ def learning_algo_div_macd(
 							#while max_tp_buy < max_st_buy:
 								#max_st_buy = randint(15, 100)/100
 
-						if output_sell['min_st'][0] >= 0.1:
+						if output_sell['min_st'][0] != 0:
 							min_st_sell = output_sell['min_st'][0]
 
 						else:
@@ -7171,7 +7171,7 @@ def learning_algo_div_macd(
 						else:
 							if (
 								output_sell['score_pr'][0] >= score_for_reset_sell and
-								output_sell['min_st'][0] >= 0.1 and
+								output_sell['min_st'][0] != 0 and
 								output_sell['max_st'][0] >= 0.1
 								):
 								max_tp_sell = randint(int((output_sell['max_st'][0]/2)*100), int(output_sell['max_st'][0]*100)*2)/100
@@ -7195,7 +7195,7 @@ def learning_algo_div_macd(
 
 						if (
 							output_sell['score_pr'][0] >= score_for_reset_sell and
-							output_sell['min_tp'][0] >= 0.1
+							output_sell['min_tp'][0] != 0
 							):
 							min_tp_sell = output_sell['min_tp'][0]
 							flag_learning = True
@@ -7237,7 +7237,7 @@ def learning_algo_div_macd(
 
 						if (
 							output_sell['score_pr'][0] >= score_for_reset_sell and
-							output_sell['min_st'][0] >= 0.1
+							output_sell['min_st'][0] != 0
 							):
 							min_st_sell = output_sell['min_st'][0]
 							flag_learning = True

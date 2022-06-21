@@ -5625,6 +5625,8 @@ def last_signal_macd_div(
 														dataset_1H=dataset_1H,
 														Apply_to=ga_result_sell_primary['apply_to'][0],
 														symbol=symbol,
+														out_before_buy = '',
+														out_before_sell = '',
 														macd_fast= int(ga_result_sell_primary['fast_period'][0]),
 														macd_slow= int(ga_result_sell_primary['slow_period'][0]),
 														macd_signal= int(ga_result_sell_primary['signal_period'][0]),

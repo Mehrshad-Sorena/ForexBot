@@ -884,18 +884,20 @@ def divergence_macd(
 								#print('sum weight =====> ',(abs(1 - weight_signal) + weight_trend))
 								#print('down3 =====> ',signal_buy_primary['diff_pr_down'][primary_counter])
 								#print()
-							#else:
-							if signal_buy_primary['diff_pr_down'][primary_counter] < st_percent_buy_min:#signal_buy['diff_pr_top'][buy_counter]:
-								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_min
-								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_min/100))
+							else:
+								if signal_buy_primary['diff_pr_down'][primary_counter] < st_percent_buy_min:#signal_buy['diff_pr_top'][buy_counter]:
+									signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_min
+									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_min/100))
+
+								if signal_buy_primary['diff_pr_top'][primary_counter] < tp_percent_buy_min:
+									signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_min
+									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_min/100))
 
 							if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_buy_max:
 								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_max
 								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_max/100))
 								
-							if signal_buy_primary['diff_pr_top'][primary_counter] < tp_percent_buy_min:
-								signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_min
-								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_min/100))
+							
 
 							if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_buy_max:
 								signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_max
@@ -7327,7 +7329,7 @@ def learning_algo_div_macd(
 										'fast_period': Chromosome[chrom_counter]['fast_period'],#high_period,
 										'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
 										'signal_period': Chromosome[chrom_counter]['signal_period'],#randint(signal_period_lower, signal_period_upper),
-										'apply_to': np.random.choice(apply_to_list_ga),
+										'apply_to': Chromosome[chrom_counter]['alpha'],
 										'alpha': randint(1, 50)/100,
 										'num_extreme': Chromosome[chrom_counter]['num_extreme'],#int(buy_data['num_extreme'][0]),#Chromosome[chrom_counter]['num_extreme'],#randint(int(Chromosome[chrom_counter]['fast_period']*0.5),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
 										'diff_extereme': diff_extereme_pr_buy,

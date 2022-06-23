@@ -1561,20 +1561,22 @@ def divergence_macd(
 								#print('sum weight =====> ',(abs(1 - weight_signal) + weight_trend))
 								#print('down3 =====> ',signal_sell_primary['diff_pr_down'][primary_counter])
 								#print()
-							#else:
+							else:
 
-							if signal_sell_primary['diff_pr_top'][primary_counter] < st_percent_sell_min:#signal_buy['diff_pr_top'][buy_counter]:
-								signal_sell_primary['diff_pr_top'][primary_counter] = st_percent_sell_min
-								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_max['index'][elm])] * (1+(st_percent_sell_min/100))
+								if signal_sell_primary['diff_pr_top'][primary_counter] < st_percent_sell_min:#signal_buy['diff_pr_top'][buy_counter]:
+									signal_sell_primary['diff_pr_top'][primary_counter] = st_percent_sell_min
+									res_pro['high'][0] = dataset[symbol]['high'][int(extreme_max['index'][elm])] * (1+(st_percent_sell_min/100))
+
+								if signal_sell_primary['diff_pr_down'][primary_counter] < tp_percent_sell_min:
+									signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_min
+									res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_min/100))
+
 
 							if signal_sell_primary['diff_pr_top'][primary_counter] > st_percent_sell_max:
 								signal_sell_primary['diff_pr_top'][primary_counter] = st_percent_sell_max
 								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_max['index'][elm])] * (1+(st_percent_sell_max/100))
 								
-							if signal_sell_primary['diff_pr_down'][primary_counter] < tp_percent_sell_min:
-								signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_min
-								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_min/100))
-
+							
 							if signal_sell_primary['diff_pr_down'][primary_counter] > tp_percent_sell_max:
 								signal_sell_primary['diff_pr_down'][primary_counter] = tp_percent_sell_max
 								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_max['index'][elm])]*(1-(tp_percent_sell_max/100))
@@ -5625,6 +5627,8 @@ def last_signal_macd_div(
 														dataset_1H=dataset_1H,
 														Apply_to=ga_result_sell_primary['apply_to'][0],
 														symbol=symbol,
+														out_before_buy = '',
+														out_before_sell = '',
 														macd_fast= int(ga_result_sell_primary['fast_period'][0]),
 														macd_slow= int(ga_result_sell_primary['slow_period'][0]),
 														macd_signal= int(ga_result_sell_primary['signal_period'][0]),
@@ -5880,7 +5884,12 @@ def last_signal_macd_div(
 												)/2
 
 					diff_pr_top_buy_primary = (diff_pr_top_buy_primary * (1 + ((weight_signal + weight_trend)/2)))			
-					res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary/100))
+					
+					if type(diff_pr_top_buy_primary) == 'np.ndarray':	
+						res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary[0]/100))
+					else:
+						res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary/100))
+
 
 					diff_pr_down_buy_primary = diff_pr_down_buy_primary * (((1 - ga_result_buy_primary['alpha'][0]) + (1 - res_pro_buy_primary['power_low'][0]))/2)
 					diff_pr_down_buy_primary = (
@@ -5890,23 +5899,21 @@ def last_signal_macd_div(
 												)
 
 					diff_pr_down_buy_primary = (diff_pr_down_buy_primary * (1 + ((weight_signal + weight_trend)/2)))
-					res_pro_buy_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary/100))
+					
+					if type(diff_pr_down_buy_primary) == 'np.ndarray':
+						res_pro_buy_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary[0]/100))
+					else:
+						res_pro_buy_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary/100))
+
 
 					if diff_pr_top_buy_primary > ga_result_buy_primary['max_tp'][0]:
 						diff_pr_top_buy_primary = ga_result_buy_primary['max_tp'][0]
-						res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary/100))
-
-					if diff_pr_top_buy_primary < ga_result_buy_primary['min_tp'][0]:
-						diff_pr_top_buy_primary = ga_result_buy_primary['min_tp'][0]
 						res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary/100))
 
 					if diff_pr_down_buy_primary > ga_result_buy_primary['max_st'][0]:
 						diff_pr_down_buy_primary = ga_result_buy_primary['max_st'][0]
 						res_pro_buy_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary/100))
 
-					if diff_pr_down_buy_primary < ga_result_buy_primary['min_st'][0]:
-						diff_pr_down_buy_primary = ga_result_buy_primary['min_st'][0]
-						res_pro_buy_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary/100))
 
 					#trend_long_buy = res_pro['trend_long'][0].values[0]
 					#trend_mid_buy = res_pro['trend_mid'][0].values[0]
@@ -6089,7 +6096,12 @@ def last_signal_macd_div(
 												)/2
 
 					diff_pr_top_sell_primary = (diff_pr_top_sell_primary * (1 + ((weight_signal + weight_trend)/2)))			
-					res_pro_sell_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_sell_primary)]*(1+(diff_pr_top_sell_primary/100))
+
+					if type(diff_pr_top_sell_primary) == 'np.ndarray':
+						res_pro_sell_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_sell_primary)]*(1+(diff_pr_top_sell_primary[0]/100))
+					else:
+						res_pro_sell_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_sell_primary)]*(1+(diff_pr_top_sell_primary/100))
+
 
 					diff_pr_down_sell_primary = diff_pr_down_sell_primary * (((1 - ga_result_sell_primary['alpha'][0]) + (1 - res_pro_sell_primary['power_low'][0]))/2)
 					diff_pr_down_sell_primary = (
@@ -6099,22 +6111,19 @@ def last_signal_macd_div(
 												)
 
 					diff_pr_down_sell_primary = (diff_pr_down_sell_primary * (1 + ((weight_signal + weight_trend)/2)))
-					res_pro_sell_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_sell_primary)]*(1-(diff_pr_down_sell_primary/100))
+
+					if type(diff_pr_down_sell_primary) == 'np.ndarray':
+						res_pro_sell_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_sell_primary)]*(1-(diff_pr_down_sell_primary[0]/100))
+					else:
+						res_pro_sell_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_sell_primary)]*(1-(diff_pr_down_sell_primary/100))
+
 
 					if diff_pr_top_sell_primary > ga_result_sell_primary['max_st'][0]:
 						diff_pr_top_sell_primary = ga_result_sell_primary['max_st'][0]
 						res_pro_sell_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_sell_primary)]*(1+(diff_pr_top_sell_primary/100))
 
-					if diff_pr_top_sell_primary < ga_result_sell_primary['min_st'][0]:
-						diff_pr_top_sell_primary = ga_result_sell_primary['min_st'][0]
-						res_pro_sell_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_sell_primary)]*(1+(diff_pr_top_sell_primary/100))
-
 					if diff_pr_down_sell_primary > ga_result_sell_primary['max_tp'][0]:
 						diff_pr_down_sell_primary = ga_result_sell_primary['max_tp'][0]
-						res_pro_sell_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_sell_primary)]*(1-(diff_pr_down_sell_primary/100))
-
-					if diff_pr_down_sell_primary < ga_result_sell_primary['min_tp'][0]:
-						diff_pr_down_sell_primary = ga_result_sell_primary['min_tp'][0]
 						res_pro_sell_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_sell_primary)]*(1-(diff_pr_down_sell_primary/100))
 					
 					#trend_long_buy = res_pro['trend_long'][0].values[0]

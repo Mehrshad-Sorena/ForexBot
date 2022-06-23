@@ -19,7 +19,7 @@ def carrier_buy(symbol,lot,st,tp,comment,magic):
 		return
 
 	tp = tp - abs(price_ask-price_bid)
-	st = st - abs(price_ask-price_bid)
+	#st = st - abs(price_ask-price_bid)
 
 	if (tp <= (price)): 
 		print('tp return: ',price)

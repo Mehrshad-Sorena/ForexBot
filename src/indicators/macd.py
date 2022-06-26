@@ -480,11 +480,11 @@ def divergence_macd(
 		primary_counter = 0
 		secondry_counter = 0
 
-		print('exterme finded ======> ',len(extreme_min['index']))
+		#print('exterme finded ======> ',len(extreme_min['index']))
 
-		print('last max finded ======> ',extreme_max['index'].iloc[-1])
-		print('last min finded ======> ',extreme_min['index'].iloc[-1])
-		print('flag learning ========> ',flag_learning)
+		#print('last max finded ======> ',extreme_max['index'].iloc[-1])
+		#print('last min finded ======> ',extreme_min['index'].iloc[-1])
+		#print('flag learning ========> ',flag_learning)
 
 		mehrshad = 0
 
@@ -896,9 +896,7 @@ def divergence_macd(
 							if signal_buy_primary['diff_pr_down'][primary_counter] > st_percent_buy_max:
 								signal_buy_primary['diff_pr_down'][primary_counter] = st_percent_buy_max
 								res_pro['low'][2] = dataset[symbol]['low'][int(extreme_min['index'][elm])] * (1-(st_percent_buy_max/100))
-								
 							
-
 							if signal_buy_primary['diff_pr_top'][primary_counter] > tp_percent_buy_max:
 								signal_buy_primary['diff_pr_top'][primary_counter] = tp_percent_buy_max
 								res_pro['high'][0] = dataset[symbol]['high'][int(extreme_min['index'][elm])]*(1+(tp_percent_buy_max/100))
@@ -5887,7 +5885,7 @@ def last_signal_macd_div(
 
 					diff_pr_top_buy_primary = (diff_pr_top_buy_primary * (1 + ((weight_signal + weight_trend)/2)))			
 					
-					if type(diff_pr_top_buy_primary) == 'np.ndarray':	
+					if type(diff_pr_top_buy_primary) is np.ndarray:	
 						res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary[0]/100))
 					else:
 						res_pro_buy_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary/100))
@@ -5902,7 +5900,7 @@ def last_signal_macd_div(
 
 					diff_pr_down_buy_primary = (diff_pr_down_buy_primary * (1 + ((weight_signal + weight_trend)/2)))
 					
-					if type(diff_pr_down_buy_primary) == 'np.ndarray':
+					if type(diff_pr_down_buy_primary) is np.ndarray:
 						res_pro_buy_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary[0]/100))
 					else:
 						res_pro_buy_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary/100))
@@ -6099,7 +6097,7 @@ def last_signal_macd_div(
 
 					diff_pr_top_sell_primary = (diff_pr_top_sell_primary * (1 + ((weight_signal + weight_trend)/2)))			
 
-					if type(diff_pr_top_sell_primary) == 'np.ndarray':
+					if type(diff_pr_top_sell_primary) is np.ndarray:
 						res_pro_sell_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_sell_primary)]*(1+(diff_pr_top_sell_primary[0]/100))
 					else:
 						res_pro_sell_primary['high'][0] = dataset[symbol]['high'][int(lst_idx_sell_primary)]*(1+(diff_pr_top_sell_primary/100))
@@ -6114,7 +6112,7 @@ def last_signal_macd_div(
 
 					diff_pr_down_sell_primary = (diff_pr_down_sell_primary * (1 + ((weight_signal + weight_trend)/2)))
 
-					if type(diff_pr_down_sell_primary) == 'np.ndarray':
+					if type(diff_pr_down_sell_primary) is np.ndarray:
 						res_pro_sell_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_sell_primary)]*(1-(diff_pr_down_sell_primary[0]/100))
 					else:
 						res_pro_sell_primary['low'][2] = dataset[symbol]['low'][int(lst_idx_sell_primary)]*(1-(diff_pr_down_sell_primary/100))
@@ -7329,8 +7327,8 @@ def learning_algo_div_macd(
 										'fast_period': Chromosome[chrom_counter]['fast_period'],#high_period,
 										'slow_period': Chromosome[chrom_counter]['slow_period'],#low_period,
 										'signal_period': Chromosome[chrom_counter]['signal_period'],#randint(signal_period_lower, signal_period_upper),
-										'apply_to': Chromosome[chrom_counter]['alpha'],
-										'alpha': randint(1, 50)/100,
+										'apply_to': np.random.choice(apply_to_list_ga),
+										'alpha': Chromosome[chrom_counter]['alpha'],
 										'num_extreme': Chromosome[chrom_counter]['num_extreme'],#int(buy_data['num_extreme'][0]),#Chromosome[chrom_counter]['num_extreme'],#randint(int(Chromosome[chrom_counter]['fast_period']*0.5),(Chromosome[chrom_counter]['slow_period']-Chromosome[chrom_counter]['fast_period'])),
 										'diff_extereme': diff_extereme_pr_buy,
 										'signal': None,

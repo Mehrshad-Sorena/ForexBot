@@ -34,6 +34,7 @@ def news_threaded():
 
 # Schedules the job_function to be executed Monday through Friday at between 12-16 at specific times. 
 minute_trader = '0,5,10,15,20,25,30,35,40,45,50,55'
+days = 'sun,mon,tue,wen,thu,fri'
 
 minute_news = '10'
 hour_news = '00,12'
@@ -41,7 +42,7 @@ hour_news = '00,12'
 news_task()
 
 #scheduler_trader.add_job(func=trader_threaded, trigger='cron', day_of_week='mon-fri', hour='00-23', minute=minute_trader, timezone='UTC')
-scheduler_trader_macd_div.add_job(func=trader_macd_div_threaded, trigger='cron', day_of_week='mon-fri', hour='00-23', minute=minute_trader, timezone='UTC')
+scheduler_trader_macd_div.add_job(func=trader_macd_div_threaded, trigger='cron', day_of_week=days, hour='00-23', minute=minute_trader, timezone='UTC')
 scheduler_news.add_job(func=news_threaded, trigger='cron', day_of_week='mon-fri', hour=hour_news, minute=minute_news, timezone='UTC')
 # Start the scheduler
 scheduler_trader_macd_div.start()

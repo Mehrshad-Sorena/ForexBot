@@ -75,9 +75,10 @@ def trader_macd_div(
 			#sym.name == 'CHNA50_m_i' or
 			#sym.name == 'HSI50_i' or
 			#sym.name == 'NQ100_i' or
-			sym.name == 'ltcusd_i' or
-			sym.name == 'xrpusd_i' or
-			sym.name == 'btcusd_i' or
+			sym.name == 'LTCUSD_i' or
+			sym.name == 'XRPUSD_i' or
+			sym.name == 'BTCUSD_i' or
+			sym.name == 'ETHUSD_i' or
 			sym.name == 'XAUUSD_i'
 			): continue
 

@@ -6324,7 +6324,6 @@ def last_signal_macd_div(
 														secondry_doing=True,
 														name_stp_pr=True,
 														name_stp_minmax=False,
-														#***************** Not Doing Yet *****************************
 														st_percent_buy_max = ga_result_buy_secondry['max_st'][0],
 														st_percent_buy_min = ga_result_buy_secondry['min_st'][0],
 														st_percent_sell_max = 0,

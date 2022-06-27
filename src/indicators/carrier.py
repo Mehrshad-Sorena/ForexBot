@@ -14,9 +14,35 @@ def carrier_buy(symbol,lot,st,tp,comment,magic):
 	print('==== BUY =======> ',symbol)
 	print('spred: ',spred)
 
-	if (spred > 0.045): 
-		print('spred return: ',spred)
-		return
+	if (
+		symbol != 'ltcusd_i' or
+		symbol != 'xrpusd_i' or
+		symbol != 'btcusd_i'
+		):
+		if (spred > 0.045): 
+			print('spred return: ',spred)
+			return
+	else:
+		if (
+			symbol == 'ltcusd_i'
+			):
+			if (spred > 1.7): 
+				print('spred return: ',spred)
+				return
+		
+		if (
+			symbol == 'xrpusd_i'
+			):
+			if (spred > 1.3): 
+				print('spred return: ',spred)
+				return
+
+		if (
+			symbol == 'btcusd_i'
+			):
+			if (spred > 0.4): 
+				print('spred return: ',spred)
+				return
 
 	tp = tp - abs(price_ask-price_bid)
 	#st = st - abs(price_ask-price_bid)
@@ -82,9 +108,35 @@ def carrier_sell(symbol,lot,st,tp,comment,magic):
 	print('spred: ',spred)
 	
 
-	if (spred > 0.045): 
-		print('spred return: ',spred)
-		return
+	if (
+		symbol != 'ltcusd_i' or
+		symbol != 'xrpusd_i' or
+		symbol != 'btcusd_i'
+		):
+		if (spred > 0.045): 
+			print('spred return: ',spred)
+			return
+	else:
+		if (
+			symbol == 'ltcusd_i'
+			):
+			if (spred > 1.7): 
+				print('spred return: ',spred)
+				return
+		
+		if (
+			symbol == 'xrpusd_i'
+			):
+			if (spred > 1.3): 
+				print('spred return: ',spred)
+				return
+
+		if (
+			symbol == 'btcusd_i'
+			):
+			if (spred > 0.4): 
+				print('spred return: ',spred)
+				return
 
 	tp = tp + abs(price_ask-price_bid)
 	st = st + abs(price_ask-price_bid)

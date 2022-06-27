@@ -7328,6 +7328,11 @@ def last_signal_macd_div(
 					signal = 'no_trade'			
 
 		print('================================')
+	else:
+		resist_sell = 0
+		protect_sell = 0
+
+		signal = 'no_trade'	
 
 	if (
 		signal == 'buy_primary' or

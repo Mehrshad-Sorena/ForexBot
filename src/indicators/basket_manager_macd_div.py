@@ -122,6 +122,8 @@ def lot_checker(my_money,symbol,signal,risk_lot=0.02,levrage=100):
 	if (lot >= vol_traded_max):
 		lot = vol_traded_max
 
+	lot = float("{:.2f}".format((lot)))
+
 	return lot,vol_traded_max
 #//////////////////////////////////////////////////////////////////////////////////////////
 
@@ -205,9 +207,9 @@ def basket_manager_macd_div(symbols,symbol,my_money,signal):
 	lot,vol_traded_max = lot_checker(my_money=my_money,symbol=symbol,signal=signal,risk_lot=risk_lot_now,levrage=levrage_now)
 	symbol_position = position_checker(signal=signal,symbol=symbol)
 
-	print(lot)
-	print(vol_traded_max)
-	print(symbol_position)
+	#print(lot)
+	#print(vol_traded_max)
+	#print(symbol_position)
 	if ((vol_traded + lot) > vol_traded_max):
 		# *** No Money ***
 		return False

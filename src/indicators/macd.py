@@ -508,7 +508,7 @@ def divergence_macd(
 		if symbol == 'LTCUSD_i': 
 			coef_money = 0.01
 			spred = 0.017
-		if symbol == 'xrpusd_i': 
+		if symbol == 'XRPUSD_i': 
 			coef_money = 0.01
 			spred = 0.013
 		if symbol == 'BTCUSD_i': 

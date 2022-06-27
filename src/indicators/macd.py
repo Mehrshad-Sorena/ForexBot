@@ -6471,7 +6471,6 @@ def last_signal_macd_div(
 														secondry_doing=True,
 														name_stp_pr=True,
 														name_stp_minmax=False,
-														#******** Dont Doing Not Yet ********************************
 														st_percent_buy_max = 0,
 														st_percent_buy_min = 0,
 														st_percent_sell_max = ga_result_sell_secondry['max_st'][0],
@@ -6509,7 +6508,7 @@ def last_signal_macd_div(
 	if (
 		lst_idx_buy_primary > lst_idx_sell_primary and
 		lst_idx_buy_primary > lst_idx_sell_secondry and
-		lst_idx_buy_primary > lst_idx_buy_secondry and
+		lst_idx_buy_primary >= lst_idx_buy_secondry and
 		(len(dataset[symbol]['close']) - 1 - lst_idx_buy_primary) <= 1#ga_result_buy_primary['num_extreme'][0]
 		):
 
@@ -6920,7 +6919,7 @@ def last_signal_macd_div(
 
 	elif (
 		lst_idx_sell_primary > lst_idx_buy_primary and
-		lst_idx_sell_primary > lst_idx_sell_secondry and
+		lst_idx_sell_primary >= lst_idx_sell_secondry and
 		lst_idx_sell_primary > lst_idx_buy_secondry and
 		(len(dataset[symbol]['close']) - 1 - lst_idx_sell_primary) <= 1#ga_result_sell_primary['num_extreme'][0]
 		):

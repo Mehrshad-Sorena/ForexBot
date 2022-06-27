@@ -15,32 +15,40 @@ def carrier_buy(symbol,lot,st,tp,comment,magic):
 	print('spred: ',spred)
 
 	if (
-		symbol != 'ltcusd_i' or
-		symbol != 'xrpusd_i' or
-		symbol != 'btcusd_i'
+		symbol != 'LTCUSD_i' and
+		symbol != 'XRPUSD_i' and
+		symbol != 'BTCUSD_i' and
+		symbol != 'ETHUSD_i'
 		):
 		if (spred > 0.045): 
 			print('spred return: ',spred)
 			return
 	else:
 		if (
-			symbol == 'ltcusd_i'
+			symbol == 'LTCUSD_i'
 			):
 			if (spred > 1.7): 
 				print('spred return: ',spred)
 				return
 		
 		if (
-			symbol == 'xrpusd_i'
+			symbol == 'XRPUSD_i'
 			):
 			if (spred > 1.3): 
 				print('spred return: ',spred)
 				return
 
 		if (
-			symbol == 'btcusd_i'
+			symbol == 'BTCUSD_i'
 			):
 			if (spred > 0.4): 
+				print('spred return: ',spred)
+				return
+
+		if (
+			symbol == 'ETHUSD_i'
+			):
+			if (spred > 0.5): 
 				print('spred return: ',spred)
 				return
 
@@ -109,32 +117,40 @@ def carrier_sell(symbol,lot,st,tp,comment,magic):
 	
 
 	if (
-		symbol != 'ltcusd_i' or
-		symbol != 'xrpusd_i' or
-		symbol != 'btcusd_i'
+		symbol != 'LTCUSD_i' and
+		symbol != 'XRPUSD_i' and
+		symbol != 'BTCUSD_i' and
+		symbol != 'ETHUSD_i'
 		):
 		if (spred > 0.045): 
 			print('spred return: ',spred)
 			return
 	else:
 		if (
-			symbol == 'ltcusd_i'
+			symbol == 'LTCUSD_i'
 			):
 			if (spred > 1.7): 
 				print('spred return: ',spred)
 				return
 		
 		if (
-			symbol == 'xrpusd_i'
+			symbol == 'XRPUSD_i'
 			):
 			if (spred > 1.3): 
 				print('spred return: ',spred)
 				return
 
 		if (
-			symbol == 'btcusd_i'
+			symbol == 'BTCUSD_i'
 			):
 			if (spred > 0.4): 
+				print('spred return: ',spred)
+				return
+
+		if (
+			symbol == 'ETHUSD_i'
+			):
+			if (spred > 0.5): 
 				print('spred return: ',spred)
 				return
 

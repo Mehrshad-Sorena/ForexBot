@@ -505,15 +505,19 @@ def divergence_macd(
 		if symbol == 'XAUUSD_i': coef_money = 20
 		if symbol == 'ASX200_i': coef_money = 8
 
-		if symbol == 'ltcusd_i': 
+		if symbol == 'LTCUSD_i': 
 			coef_money = 0.01
 			spred = 0.017
 		if symbol == 'xrpusd_i': 
 			coef_money = 0.01
 			spred = 0.013
-		if symbol == 'btcusd_i': 
+		if symbol == 'BTCUSD_i': 
 			coef_money = 3
 			spred = 0.004
+
+		if symbol == 'ETHUSD_i':
+			coef_money = 0.5
+			spred = 0.005
 		
 
 		#***************************** Buy Find Section ***********************************************
@@ -4214,9 +4218,10 @@ def genetic_algo_div_macd(
 				max_tp_buy = randint(80, 100)/100
 
 			if (
-				symbol == 'ltcusd_i' or
-				symbol == 'xrpusd_i' or
-				symbol == 'btcusd_i'
+				symbol == 'LTCUSD_i' or
+				symbol == 'XRPUSD_i' or
+				symbol == 'BTCUSD_i' or
+				symbol == 'ETHUSD_i'
 				):
 
 				max_st_buy = randint(80, 1500)/100
@@ -4260,9 +4265,10 @@ def genetic_algo_div_macd(
 				min_tp_sell = randint(80, 100)/100
 
 			if (
-				symbol == 'ltcusd_i' or
-				symbol == 'xrpusd_i' or
-				symbol == 'btcusd_i'
+				symbol == 'LTCUSD_i' or
+				symbol == 'XRPUSD_i' or
+				symbol == 'BTCUSD_i' or
+				symbol == 'ETHUSD_i'
 				):
 
 				max_st_sell = randint(80, 1500)/100
@@ -4435,9 +4441,10 @@ def genetic_algo_div_macd(
 					max_tp_buy = randint(80, 100)/100
 
 				if (
-					symbol == 'ltcusd_i' or
-					symbol == 'xrpusd_i' or
-					symbol == 'btcusd_i'
+					symbol == 'LTCUSD_i' or
+					symbol == 'XRPUSD_i' or
+					symbol == 'BTCUSD_i' or
+					symbol == 'ETHUSD_i'
 					):
 
 					max_st_buy = randint(80, 1500)/100
@@ -4464,9 +4471,10 @@ def genetic_algo_div_macd(
 					max_tp_sell = randint(80, 100)/100
 
 				if (
-					symbol == 'ltcusd_i' or
-					symbol == 'xrpusd_i' or
-					symbol == 'btcusd_i'
+					symbol == 'LTCUSD_i' or
+					symbol == 'XRPUSD_i' or
+					symbol == 'BTCUSD_i' or
+					symbol == 'ETHUSD_i'
 					):
 					max_st_sell = randint(80, 1500)/100
 					min_st_sell = randint(80, 1500)/100
@@ -4919,9 +4927,10 @@ def genetic_algo_div_macd(
 								max_tp_buy = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_buy = randint(80, 1500)/100
 								min_st_buy = randint(80, 1500)/100
@@ -4986,9 +4995,10 @@ def genetic_algo_div_macd(
 								else:
 									max_tp_buy = randint(80, 100)/100
 									if (
-										symbol == 'ltcusd_i' or
-										symbol == 'xrpusd_i' or
-										symbol == 'btcusd_i'
+										symbol == 'LTCUSD_i' or
+										symbol == 'XRPUSD_i' or
+										symbol == 'BTCUSD_i' or
+										symbol == 'ETHUSD_i'
 										):
 										max_tp_buy = randint(80,1500)/100
 									flag_learning = False
@@ -5011,9 +5021,10 @@ def genetic_algo_div_macd(
 							else:
 								min_tp_buy = randint(80, 100)/100
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									min_tp_buy = randint(80,1500)/100
 								flag_learning = False
@@ -5037,9 +5048,10 @@ def genetic_algo_div_macd(
 							else:
 								max_st_buy = randint(80, 100)/100
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									max_st_buy = randint(80,1500)/100
 								flag_learning = False
@@ -5071,9 +5083,10 @@ def genetic_algo_div_macd(
 									min_st_buy = randint(int((max_tp_buy/2)*100), 100)/100
 
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									min_st_buy = randint(80, 1500)/100
 									while max_tp_buy < min_st_buy:
@@ -5201,9 +5214,10 @@ def genetic_algo_div_macd(
 								max_tp_sell = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_sell = randint(80, 1500)/100
 								min_st_sell = randint(80, 1500)/100
@@ -5267,9 +5281,10 @@ def genetic_algo_div_macd(
 								else:
 									max_tp_sell = randint(80, 100)/100
 									if (
-										symbol == 'ltcusd_i' or
-										symbol == 'xrpusd_i' or
-										symbol == 'btcusd_i'
+										symbol == 'LTCUSD_i' or
+										symbol == 'XRPUSD_i' or
+										symbol == 'BTCUSD_i' or
+										symbol == 'ETHUSD_i'
 										):
 										max_tp_sell = randint(80,1500)/100
 									flag_learning = False
@@ -5292,9 +5307,10 @@ def genetic_algo_div_macd(
 							else:
 								min_tp_sell = randint(80, 100)/100
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									min_tp_sell = randint(80,1500)/100
 								flag_learning = False
@@ -5318,9 +5334,10 @@ def genetic_algo_div_macd(
 							else:
 								max_st_sell = randint(80, 100)/100
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									max_st_sell = randint(80,1500)/100
 								flag_learning = False
@@ -5352,9 +5369,10 @@ def genetic_algo_div_macd(
 									min_st_sell = randint(int((max_tp_sell/2)*100), 100)/100
 
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									min_st_sell = randint(80, 100)/100
 									while max_tp_sell < min_st_sell:
@@ -5427,9 +5445,10 @@ def genetic_algo_div_macd(
 								max_tp_buy = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_buy = randint(80, 1500)/100
 								min_st_buy = randint(80, 1500)/100
@@ -5475,9 +5494,10 @@ def genetic_algo_div_macd(
 								max_tp_buy = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_buy = randint(80, 1500)/100
 								min_st_buy = randint(80, 1500)/100
@@ -5543,9 +5563,10 @@ def genetic_algo_div_macd(
 								max_tp_sell = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_sell = randint(80, 1500)/100
 								min_st_sell = randint(80, 1500)/100
@@ -5591,9 +5612,10 @@ def genetic_algo_div_macd(
 								max_tp_sell = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_sell = randint(80, 1500)/100
 								min_st_sell = randint(80, 1500)/100
@@ -7721,9 +7743,10 @@ def learning_algo_div_macd(
 				max_tp_buy = randint(80, 100)/100
 
 			if (
-				symbol == 'ltcusd_i' or
-				symbol == 'xrpusd_i' or
-				symbol == 'btcusd_i'
+				symbol == 'LTCUSD_i' or
+				symbol == 'XRPUSD_i' or
+				symbol == 'BTCUSD_i' or
+				symbol == 'ETHUSD_i'
 				):
 				max_st_buy = randint(80, 1500)/100
 				min_st_buy = randint(80, 1500)/100
@@ -7764,9 +7787,10 @@ def learning_algo_div_macd(
 				min_tp_sell = randint(80, 100)/100
 
 			if (
-				symbol == 'ltcusd_i' or
-				symbol == 'xrpusd_i' or
-				symbol == 'btcusd_i'
+				symbol == 'LTCUSD_i' or
+				symbol == 'XRPUSD_i' or
+				symbol == 'BTCUSD_i' or
+				symbol == 'ETHUSD_i'
 				):
 				max_st_sell = randint(80, 1500)/100
 				min_st_sell = randint(80, 1500)/100
@@ -8298,9 +8322,10 @@ def learning_algo_div_macd(
 								max_tp_buy = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_buy = randint(80, 1500)/100
 								min_st_buy = randint(80, 1500)/100
@@ -8365,9 +8390,10 @@ def learning_algo_div_macd(
 								else:
 									max_tp_buy = randint(80, 100)/100
 									if (
-										symbol == 'ltcusd_i' or
-										symbol == 'xrpusd_i' or
-										symbol == 'btcusd_i'
+										symbol == 'LTCUSD_i' or
+										symbol == 'XRPUSD_i' or
+										symbol == 'BTCUSD_i' or
+										symbol == 'ETHUSD_i'
 										):
 										max_tp_buy = randint(80,1500)/100
 									flag_learning = False
@@ -8390,9 +8416,10 @@ def learning_algo_div_macd(
 							else:
 								min_tp_buy = randint(80, 100)/100
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									min_tp_buy = randint(80,1500)/100
 								flag_learning = False
@@ -8416,9 +8443,10 @@ def learning_algo_div_macd(
 							else:
 								max_st_buy = randint(80, 100)/100
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									max_st_buy = randint(80,1500)/100
 								flag_learning = False
@@ -8445,9 +8473,10 @@ def learning_algo_div_macd(
 							else:
 								min_st_buy = randint(80, 100)/100
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									min_st_buy = randint(80,1500)/100
 								flag_learning = False
@@ -8576,9 +8605,10 @@ def learning_algo_div_macd(
 								max_tp_sell = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_sell = randint(80, 1500)/100
 								min_st_sell = randint(80, 1500)/100
@@ -8642,9 +8672,10 @@ def learning_algo_div_macd(
 								else:
 									max_tp_sell = randint(80, 100)/100
 									if (
-										symbol == 'ltcusd_i' or
-										symbol == 'xrpusd_i' or
-										symbol == 'btcusd_i'
+										symbol == 'LTCUSD_i' or
+										symbol == 'XRPUSD_i' or
+										symbol == 'BTCUSD_i' or
+										symbol == 'ETHUSD_i'
 										):
 										max_tp_sell = randint(80,1500)/100
 									flag_learning = False
@@ -8667,9 +8698,10 @@ def learning_algo_div_macd(
 							else:
 								min_tp_sell = randint(80, 100)/100
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									min_tp_sell = randint(80,1500)/100
 								flag_learning = False
@@ -8693,9 +8725,10 @@ def learning_algo_div_macd(
 							else:
 								max_st_sell = randint(80, 100)/100
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									max_st_sell = randint(80,1500)/100
 								flag_learning = False
@@ -8722,9 +8755,10 @@ def learning_algo_div_macd(
 							else:
 								min_st_sell = randint(80, 100)/100
 								if (
-									symbol == 'ltcusd_i' or
-									symbol == 'xrpusd_i' or
-									symbol == 'btcusd_i'
+									symbol == 'LTCUSD_i' or
+									symbol == 'XRPUSD_i' or
+									symbol == 'BTCUSD_i' or
+									symbol == 'ETHUSD_i'
 									):
 									min_st_sell = randint(80,1500)/100
 								flag_learning = False
@@ -8799,9 +8833,10 @@ def learning_algo_div_macd(
 								max_tp_buy = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_buy = randint(80, 1500)/100
 								min_st_buy = randint(80, 1500)/100
@@ -8847,9 +8882,10 @@ def learning_algo_div_macd(
 								max_tp_buy = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_buy = randint(80, 1500)/100
 								min_st_buy = randint(80, 1500)/100
@@ -8915,9 +8951,10 @@ def learning_algo_div_macd(
 								max_tp_sell = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_sell = randint(80, 1500)/100
 								min_st_sell = randint(80, 1500)/100
@@ -8963,9 +9000,10 @@ def learning_algo_div_macd(
 								max_tp_sell = randint(80, 100)/100
 
 							if (
-								symbol == 'ltcusd_i' or
-								symbol == 'xrpusd_i' or
-								symbol == 'btcusd_i'
+								symbol == 'LTCUSD_i' or
+								symbol == 'XRPUSD_i' or
+								symbol == 'BTCUSD_i' or
+								symbol == 'ETHUSD_i'
 								):
 								max_st_sell = randint(80, 1500)/100
 								min_st_sell = randint(80, 1500)/100

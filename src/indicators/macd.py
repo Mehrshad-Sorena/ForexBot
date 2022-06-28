@@ -506,17 +506,20 @@ def divergence_macd(
 		if symbol == 'ASX200_i': coef_money = 8
 
 		if symbol == 'LTCUSD_i': 
-			coef_money = 0.01
+			#lot = 1
+			coef_money = 1
 			spred = 0.017
-		if symbol == 'XRPUSD_i': 
-			coef_money = 0.01
+		if symbol == 'XRPUSD_i':
+			#lot =  1 
+			coef_money = 1
 			spred = 0.013
 		if symbol == 'BTCUSD_i': 
 			coef_money = 3
 			spred = 0.004
 
 		if symbol == 'ETHUSD_i':
-			coef_money = 0.5
+			#lot = 0.05
+			coef_money = 2.5
 			spred = 0.005
 		
 
@@ -5890,7 +5893,7 @@ def macd_div_tester_for_permit(
 													alpha=ga_result_buy['alpha'][0],
 													num_exteremes = ga_result_buy['num_extreme'][0],
 													diff_extereme = ga_result_buy['diff_extereme'][0],
-													real_test = False,
+													real_test = True,
 													flag_learning=True
 													)
 			if secondry_doing == True:
@@ -5924,7 +5927,7 @@ def macd_div_tester_for_permit(
 													alpha=ga_result_buy['alpha'][0],
 													num_exteremes = ga_result_buy['num_extreme'][0],
 													diff_extereme = ga_result_buy['diff_extereme'][0],
-													real_test = False,
+													real_test = True,
 													flag_learning=True
 													)
 
@@ -6185,7 +6188,7 @@ def macd_div_tester_for_permit(
 												alpha=ga_result_sell['alpha'][0],
 												num_exteremes = ga_result_sell['num_extreme'][0],
 												diff_extereme = ga_result_sell['diff_extereme'][0],
-												real_test = False,
+												real_test = True,
 												flag_learning=True
 												)
 			if secondry_doing == True:
@@ -6219,7 +6222,7 @@ def macd_div_tester_for_permit(
 													alpha=ga_result_sell['alpha'][0],
 													num_exteremes = ga_result_sell['num_extreme'][0],
 													diff_extereme = ga_result_sell['diff_extereme'][0],
-													real_test = False,
+													real_test = True,
 													flag_learning=True
 													)
 

@@ -7428,7 +7428,7 @@ def last_signal_macd_div(
 
 				if (res_pro_sell_secondry.empty == False):
 					diff_pr_top_sell_secondry = (((res_pro_sell_secondry['high'][0]) - dataset[symbol]['high'][int(lst_idx_sell_secondry)])/dataset[symbol]['high'][int(lst_idx_sell_secondry)]) * 100
-					diff_pr_down_sell_secondry = ((dataset[symbol]['low'][int(lst_idx_sell_secondry)] - (res_pro_sell_primary['low'][2]))/dataset[symbol]['low'][int(lst_idx_sell_secondry)]) * 100
+					diff_pr_down_sell_secondry = ((dataset[symbol]['low'][int(lst_idx_sell_secondry)] - (res_pro_sell_secondry['low'][2]))/dataset[symbol]['low'][int(lst_idx_sell_secondry)]) * 100
 
 
 					if (

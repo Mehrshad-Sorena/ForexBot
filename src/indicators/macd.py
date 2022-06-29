@@ -577,6 +577,8 @@ def divergence_macd(
 
 			#print(list_elm)
 
+			if mode == 'online': diff_extereme_buy = diff_extereme
+
 			
 
 			if (elm - diff_extereme_buy < 0): continue
@@ -1089,7 +1091,7 @@ def divergence_macd(
 
 			#print(list_elm)
 
-			
+			if mode == 'online': diff_extereme_buy = diff_extereme
 
 			if (elm - diff_extereme_buy < 0): continue
 
@@ -1582,7 +1584,7 @@ def divergence_macd(
 				diff_extereme_sell = 1
 				list_elm = [1]
 
-			
+			if mode == 'online': diff_extereme_sell = diff_extereme
 
 			if (elm - diff_extereme_sell < 0): continue
 
@@ -2135,7 +2137,7 @@ def divergence_macd(
 				diff_extereme_sell = 1
 				list_elm = [1]
 
-			
+			if mode == 'online': diff_extereme_sell = diff_extereme
 
 			if (elm - diff_extereme_sell < 0): continue
 

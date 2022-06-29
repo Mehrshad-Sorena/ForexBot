@@ -4129,7 +4129,7 @@ def genetic_algo_div_macd(
 		if secondry_doing == True:
 			sell_path = 'GA/MACD/secondry/sell/'+symbol+'.csv'
 
-	if False:#flag_trade == 'buy':
+	if flag_trade == 'buy':
 		if os.path.exists(buy_path):
 			with open(buy_path, 'r', newline='') as myfile:
 				for line in csv.DictReader(myfile):
@@ -4139,22 +4139,22 @@ def genetic_algo_div_macd(
 					Chromosome[0]['slow_period'] = int(float(chrom_get['slow_period']))
 
 					if flag_trade == 'buy':
-						fast_period_upper = Chromosome[0]['fast_period'] + int(Chromosome[0]['fast_period']/2)
-						fast_period_lower = Chromosome[0]['fast_period'] - int(Chromosome[0]['fast_period']/2)
+						fast_period_upper = Chromosome[0]['fast_period'] + int(Chromosome[0]['fast_period'])
+						fast_period_lower = Chromosome[0]['fast_period'] - int(Chromosome[0]['fast_period'])
 
-						if fast_period_lower <= 0: fast_period_lower = 1
+						if fast_period_lower <= 20: fast_period_lower = 20
 
-						slow_period_upper = Chromosome[0]['slow_period'] + int(Chromosome[0]['slow_period']/2)
-						slow_period_lower = Chromosome[0]['slow_period'] - int(Chromosome[0]['slow_period']/2)
+						slow_period_upper = Chromosome[0]['slow_period'] + int(Chromosome[0]['slow_period']) + 10
+						slow_period_lower = Chromosome[0]['slow_period'] - int(Chromosome[0]['slow_period'])
 
-						if slow_period_lower <= 0: slow_period_lower = 1
+						if slow_period_lower <= 25: slow_period_lower = 25
 
-						signal_period_upper = Chromosome[0]['signal_period'] + int(Chromosome[0]['signal_period']/2)
-						signal_period_lower = Chromosome[0]['signal_period'] - int(Chromosome[0]['signal_period']/2)
+						signal_period_upper = 25#Chromosome[0]['signal_period'] + int(Chromosome[0]['signal_period']/2)
+						signal_period_lower = 2#Chromosome[0]['signal_period'] - int(Chromosome[0]['signal_period']/2)
 
 						if signal_period_lower <= 0: signal_period_lower = 1
 
-	if False:#flag_trade == 'sell':
+	if flag_trade == 'sell':
 		if os.path.exists(sell_path):
 			with open(sell_path, 'r', newline='') as myfile:
 				for line in csv.DictReader(myfile):
@@ -4164,20 +4164,20 @@ def genetic_algo_div_macd(
 					Chromosome[0]['slow_period'] = int(float(chrom_get['slow_period']))
 
 					if flag_trade == 'sell':
-						fast_period_upper = 20#Chromosome[0]['fast_period'] + int(Chromosome[0]['fast_period']/2)
-						fast_period_lower = 5#Chromosome[0]['fast_period'] - int(Chromosome[0]['fast_period']/2)
+						fast_period_upper = Chromosome[0]['fast_period'] + int(Chromosome[0]['fast_period'])
+						fast_period_lower = Chromosome[0]['fast_period'] - int(Chromosome[0]['fast_period'])
 
-						if fast_period_lower <= 0: fast_period_lower = 1
+						if fast_period_lower <= 20: fast_period_lower = 20
 
-						slow_period_upper = 40#Chromosome[0]['slow_period'] + int(Chromosome[0]['slow_period']/2)
-						slow_period_lower = 10#Chromosome[0]['slow_period'] - int(Chromosome[0]['slow_period']/2)
+						slow_period_upper = Chromosome[0]['slow_period'] + int(Chromosome[0]['slow_period']) + 10
+						slow_period_lower = Chromosome[0]['slow_period'] - int(Chromosome[0]['slow_period'])
 
-						if slow_period_lower <= 0: slow_period_lower = 1
+						if slow_period_lower <= 25: slow_period_lower = 25
 
-						signal_period_upper = Chromosome[0]['signal_period'] + int(Chromosome[0]['signal_period']/2)
-						signal_period_lower = Chromosome[0]['signal_period'] - int(Chromosome[0]['signal_period']/2)
+						signal_period_upper = 25#Chromosome[0]['signal_period'] + int(Chromosome[0]['signal_period']/2)
+						signal_period_lower = 2#Chromosome[0]['signal_period'] - int(Chromosome[0]['signal_period']/2)
 
-						if signal_period_lower <= 0: signal_period_lower = 1
+						if signal_period_lower <= 0: signal_period_lower = 10
 
 	Chromosome = initilize_values_genetic(
 										fast_period_upper=fast_period_upper,
@@ -4205,7 +4205,7 @@ def genetic_algo_div_macd(
 			min_st_buy = ga_result_buy['min_st'][0]
 			max_tp_buy = ga_result_buy['max_tp'][0]
 			min_tp_buy = ga_result_buy['min_tp'][0]
-			flag_learning = False   ########################################################################
+			flag_learning = True   ########################################################################
 
 		else:
 			max_st_buy = randint(80, 100)/100
@@ -4352,7 +4352,7 @@ def genetic_algo_div_macd(
 							max_score_ga_sell = float(chrom_get['score_min_max'])
 
 						if ga_result_sell['methode'][0] == 'pr':
-							max_score_ga_sell = 90000#float(chrom_get['score_pr'])
+							max_score_ga_sell = float(chrom_get['score_pr'])
 
 						output_before_sell = ga_result_sell
 					print(Chromosome[0])
@@ -5176,7 +5176,7 @@ def genetic_algo_div_macd(
 
 
 							if os.path.exists(sell_path):
-								max_score_ga_sell_before = 34000#ga_result_sell['score_pr'][0] #* 0.9
+								max_score_ga_sell_before = ga_result_sell['score_pr'][0] #* 0.9
 							else:
 								max_score_ga_sell_before = max_score_ga_sell #* 0.9
 
@@ -5189,7 +5189,7 @@ def genetic_algo_div_macd(
 									):
 									max_score_ga_sell = max_score_ga_sell_before #* 0.9
 								else:
-									if os.path.exists(sell_path): max_score_ga_sell = 34000#ga_result_sell['score_pr'][0] #* 0.9
+									if os.path.exists(sell_path): max_score_ga_sell = ga_result_sell['score_pr'][0] #* 0.9
 									if not os.path.exists(sell_path): max_score_ga_sell = 34000
 
 							Chromosome[chrom_counter].update({'score_sell': score_sell })
@@ -5893,7 +5893,7 @@ def macd_div_tester_for_permit(
 													alpha=ga_result_buy['alpha'][0],
 													num_exteremes = ga_result_buy['num_extreme'][0],
 													diff_extereme = ga_result_buy['diff_extereme'][0],
-													real_test = True,
+													real_test = False,
 													flag_learning=True
 													)
 			if secondry_doing == True:
@@ -5927,7 +5927,7 @@ def macd_div_tester_for_permit(
 													alpha=ga_result_buy['alpha'][0],
 													num_exteremes = ga_result_buy['num_extreme'][0],
 													diff_extereme = ga_result_buy['diff_extereme'][0],
-													real_test = True,
+													real_test = False,
 													flag_learning=True
 													)
 
@@ -6188,7 +6188,7 @@ def macd_div_tester_for_permit(
 												alpha=ga_result_sell['alpha'][0],
 												num_exteremes = ga_result_sell['num_extreme'][0],
 												diff_extereme = ga_result_sell['diff_extereme'][0],
-												real_test = True,
+												real_test = False,
 												flag_learning=True
 												)
 			if secondry_doing == True:
@@ -6222,7 +6222,7 @@ def macd_div_tester_for_permit(
 													alpha=ga_result_sell['alpha'][0],
 													num_exteremes = ga_result_sell['num_extreme'][0],
 													diff_extereme = ga_result_sell['diff_extereme'][0],
-													real_test = True,
+													real_test = False,
 													flag_learning=True
 													)
 
@@ -7372,7 +7372,7 @@ def last_signal_macd_div(
 
 		print('======> last signal buy ',symbol)
 		print('dataset length: ',len(dataset[symbol]['close']))
-		print('ga result buy methode: ',lst_idx_sell_secondry['methode'][0])
+		print('ga result buy methode: ',ga_result_sell_secondry['methode'][0])
 		print('last index: ',lst_idx_sell_secondry)
 		
 

@@ -798,6 +798,36 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 														weight=4800
 														)
 
+	trend_local_extreme_1H_long = pd.DataFrame()
+	trend_local_extreme_1H_long['min'] = np.nan
+	trend_local_extreme_1H_long['max'] = np.nan
+	trend_local_extreme_1H_long['power'] = np.nan
+
+	if False:#(T_1H == True):
+
+		trend_local_extreme_1H_long = pd.DataFrame()
+		trend_local_extreme_1H_long = np.nan
+
+		dataset_ramp_1H = pd.DataFrame()
+		cut_first = 0
+		if (int(len(dataset_1H['low'])-1) > 100):
+			cut_first = int(len(dataset_1H['low'])-1) - 100
+
+		dataset_ramp_1H['low'] = dataset_1H['low'][cut_first:int(len(dataset_1H['low'])-1)].reset_index(drop=True)
+		dataset_ramp_1H['high'] = dataset_1H['high'][cut_first:int(len(dataset_1H['high'])-1)].reset_index(drop=True)
+		dataset_ramp_1H['close'] = dataset_1H['close'][cut_first:int(len(dataset_1H['close'])-1)].reset_index(drop=True)
+		dataset_ramp_5M['open'] = dataset_1H['open'][cut_first:int(len(dataset_1H['open'])-1)].reset_index(drop=True)
+
+		trend_local_extreme_1H_long = extreme_points_ramp_lines(
+																high = dataset_ramp_1H['high'],
+																low = dataset_ramp_1H['low'],
+																close = dataset_ramp_1H['close'],
+																length='long',
+																number_min=5,
+																number_max=5,
+																plot=False
+																)
+
 	ichi_local_extreme_4H = pd.DataFrame()
 	ichi_local_extreme_4H['extreme'] = np.nan
 	ichi_local_extreme_4H['power'] = np.nan
@@ -849,7 +879,9 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 											ichi_local_extreme_15M['extreme'].to_numpy(),
 											ichi_local_extreme_1H['extreme'].to_numpy(),
 											ichi_local_extreme_4H['extreme'].to_numpy(),
-											ichi_local_extreme_1D['extreme'].to_numpy()
+											ichi_local_extreme_1D['extreme'].to_numpy(),
+											trend_local_extreme_1H_long['min'].to_numpy(),
+											trend_local_extreme_1H_long['max'].to_numpy()
 											)
 											 , axis=None),columns=['extremes'])
 
@@ -872,7 +904,9 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 										ichi_local_extreme_15M['power'].to_numpy(),
 										ichi_local_extreme_1H['power'].to_numpy(),
 										ichi_local_extreme_4H['power'].to_numpy(),
-										ichi_local_extreme_1D['power'].to_numpy()
+										ichi_local_extreme_1D['power'].to_numpy(),
+										trend_local_extreme_1H_long['power'].to_numpy(),
+										trend_local_extreme_1H_long['power'].to_numpy()
 										) , axis=None)
 
 	exterm_point = exterm_point.dropna()
@@ -894,6 +928,11 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 		extereme['trend_mid'] = [trend_local_extreme_5M_mid['trend'][0],trend_local_extreme_5M_mid['trend'][0],trend_local_extreme_5M_mid['trend'][0]]
 		extereme['trend_short1'] = [trend_local_extreme_5M_short_1['trend'][0],trend_local_extreme_5M_short_1['trend'][0],trend_local_extreme_5M_short_1['trend'][0]]
 		extereme['trend_short2'] = [trend_local_extreme_5M_short_2['trend'][0],trend_local_extreme_5M_short_2['trend'][0],trend_local_extreme_5M_short_2['trend'][0]]
+
+	if False:#T_1H == True:
+		extereme['trend_1H'] = [trend_local_extreme_1H_long['trend'][0],trend_local_extreme_1H_long['trend'][0],trend_local_extreme_1H_long['trend'][0]]
+		extereme['trend_1H_min'] = [trend_local_extreme_1H_long['min'][0],trend_local_extreme_1H_long['min'][0],trend_local_extreme_1H_long['min'][0]]
+		extereme['trend_1H_max'] = [trend_local_extreme_1H_long['max'][0],trend_local_extreme_1H_long['max'][0],trend_local_extreme_1H_long['max'][0]]
 
 	if (plot == True):
 		fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))

@@ -1218,7 +1218,8 @@ def divergence_macd(
 						signal_buy_secondry['max_bet_value'][secondry_counter] >= out_before_buy['max_bet_value_lower'][0]
 					)
 					):
-					continue
+					pass
+					#continue
 				#print(max_bet_values)
 
 				signal_buy_secondry['num_diff_to_extremes'][secondry_counter] = diff_extereme_buy

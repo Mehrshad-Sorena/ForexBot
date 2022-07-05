@@ -1,8 +1,21 @@
 from datetime import datetime
-from MetaTrader5 import *
-import MetaTrader5 as mt5
+try:
+	from MetaTrader5 import *
+	import MetaTrader5 as mt5
+except Exception as ex:
+	print('login get data : ',ex)
+
 import pandas as pd
 import numpy as np
+
+syms = np.array(
+	[
+		'WSt30_m_i','SPX500_m_i','NQ100_m_i','GER40_m_i',
+		'GER40_i','WTI_i','BRN_i','STOXX50_i','NQ100_i',
+		'EURDKK_i','DAX30_i','XRPUSD_i','XBNUSD_i',
+		'LTCUSD_i','ETHUSD_i','BTCUSD_i','XAUUSD_i'
+	]
+	)
 
 def log_get_data(frame,number):
 	#if not mt5.initialize(login=2671410, server="MofidSecurities-Server",password="gfx7zzqe"):
@@ -367,19 +380,23 @@ def read_dataset_csv(sym,num_5M,num_15M,num_1H,num_4H):
 	dataset_path_1H = 'dataset/1H/' + sym + '.csv'
 	dataset_path_4H = 'dataset/4H/' + sym + '.csv'
 
-	if not mt5.initialize():
-		print("initialize() failed, error code =",mt5.last_error())
-		quit()
+	try:
+		if not mt5.initialize():
+			print("initialize() failed, error code =",mt5.last_error())
+			quit()
 
-	authorized=mt5.login(51149098, password="zyowt2zj")
-	if True:#authorized:
-		account_info=mt5.account_info()
-		if account_info!=None:
-			account_info_dict = mt5.account_info()._asdict()
-	else:
-		print("failed to connect to trade account 25115284 with password=gqz0343lbdm, error code =",mt5.last_error())
+		authorized=mt5.login(51149098, password="zyowt2zj")
+		if True:#authorized:
+			account_info=mt5.account_info()
+			if account_info!=None:
+				account_info_dict = mt5.account_info()._asdict()
+		else:
+			print("failed to connect to trade account 25115284 with password=gqz0343lbdm, error code =",mt5.last_error())
+	except Exception as ex:
+		print('read csv: ',ex)
 
-	symbols=mt5.symbols_get()
+	#symbols=mt5.symbols_get()
+	symbols = syms
 	count=0
 	symbol_data_5M = {}
 	symbol_data_15M = {}
@@ -389,12 +406,12 @@ def read_dataset_csv(sym,num_5M,num_15M,num_1H,num_4H):
 	if True:
 		for i in symbols:
 
-			if i.name != sym: continue
+			if i != sym: continue
 
 			if True:
 				rates_frame = pd.read_csv(dataset_path_5M)
-				symbol_data_5M[i.name] = {
-								i.name: i.name,
+				symbol_data_5M[i] = {
+								i: i,
 								'open': rates_frame['open'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
 								'close': rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
 								'low': rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
@@ -408,8 +425,8 @@ def read_dataset_csv(sym,num_5M,num_15M,num_1H,num_4H):
 								}
 
 				rates_frame = pd.read_csv(dataset_path_15M)
-				symbol_data_15M[i.name] = {
-								i.name: i.name,
+				symbol_data_15M[i] = {
+								i: i,
 								'open': rates_frame['open'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
 								'close': rates_frame['close'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
 								'low': rates_frame['low'][(len(rates_frame['open'])-num_15M-1):-1].reset_index(drop=True),
@@ -423,8 +440,8 @@ def read_dataset_csv(sym,num_5M,num_15M,num_1H,num_4H):
 								}
 
 				rates_frame = pd.read_csv(dataset_path_1H)
-				symbol_data_1H[i.name] = {
-								i.name: i.name,
+				symbol_data_1H[i] = {
+								i: i,
 								'open': rates_frame['open'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
 								'close': rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
 								'low': rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
@@ -439,8 +456,8 @@ def read_dataset_csv(sym,num_5M,num_15M,num_1H,num_4H):
 
 
 				rates_frame = pd.read_csv(dataset_path_4H)
-				symbol_data_4H[i.name] = {
-								i.name: i.name,
+				symbol_data_4H[i] = {
+								i: i,
 								'open': rates_frame['open'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
 								'close': rates_frame['close'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
 								'low': rates_frame['low'][(len(rates_frame['open'])-num_4H-1):-1].reset_index(drop=True),
@@ -455,11 +472,14 @@ def read_dataset_csv(sym,num_5M,num_15M,num_1H,num_4H):
 
 
 			else:
-				print("some thing wrong log get data_1!!!",i.name)
+				print("some thing wrong log get data_1!!!",i)
 	else:
-		print("some thing wrong log get data_2!!!",i.name)
+		print("some thing wrong log get data_2!!!",i)
 
-	mt5.shutdown()
+	try:
+		mt5.shutdown()
+	except:
+		pass
 
 	time_counter = 0
 	for ti in symbol_data_1H[sym]['time']:

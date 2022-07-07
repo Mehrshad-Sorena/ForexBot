@@ -952,10 +952,10 @@ def learning_sell():
 		ga_result_sell.to_csv(sell_path)
 
 def Task_optimizer():
-	job_thread_buy = threading.Thread(target=ga_optimizer_buy)
+	job_thread_buy = threading.Thread(target=ga_optimizer_buy(priority='primary',real_test=False))
 	job_thread_buy.start()
 	print()
-	print('optimizer job_thread_buy ===> optimizer job_thread_buy runed')
+	print('optimizer job_thread_buy ===> optimizer job_thread_buy Primary runed')
 
 	job_thread_sell = threading.Thread(target=ga_optimizer_sell)
 	job_thread_sell.start()
@@ -984,9 +984,10 @@ def Task_tester():
 
 my_sym = 'GBPUSD_i'
 
+Task_optimizer()
 #learning_buy()
 #ga_tester_buy()
-ga_optimizer_buy(priority='primary',real_test=False)
+#ga_optimizer_buy(priority='primary',real_test=False)
 #ga_optimizer_buy(priority='secondry',real_test=False)
 
 #ga_optimizer_sell(priority='primary',real_test=False)

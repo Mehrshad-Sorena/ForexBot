@@ -1,5 +1,6 @@
 from macd import genetic_algo_div_macd, read_ga_result, macd_div_tester_for_permit
 from log_get_data import read_dataset_csv, get_symbols, log_get_data_Genetic
+from multiprocessing import Process
 from datetime import datetime
 from random import randint
 #import MetaTrader5 as mt5
@@ -274,7 +275,7 @@ def ga_optimizer_buy(priority,real_test):
 			else:
 				learn_counter = 2
 				if learn_counter > 1: 
-					num_turn = 120
+					num_turn = 100
 				else:
 					num_turn = 200
 				ga_runner(
@@ -500,7 +501,7 @@ def ga_optimizer_sell(priority,real_test):
 			else:
 				learn_counter = 2
 				if learn_counter > 1: 
-					num_turn = 120
+					num_turn = 100
 				else:
 					num_turn = 200
 				ga_runner(
@@ -996,7 +997,7 @@ def Task_tester():
 
 my_sym = 'GBPUSD_i'
 
-Task_optimizer()
+#Task_optimizer()
 
 #learning_buy()
 #ga_tester_buy()
@@ -1005,6 +1006,25 @@ Task_optimizer()
 
 #ga_optimizer_sell(priority='primary',real_test=False)
 #ga_optimizer_sell(priority='secondry',real_test=False)
+
+if __name__ == "__main__":
+	Buy_Primary = Process(target=ga_optimizer_buy,args=('primary',False))
+	Buy_Primary.start()
+
+	Buy_Secondry = Process(target=ga_optimizer_buy,args=('secondry',False))
+	Buy_Secondry.start()
+
+	Sell_Primary = Process(target=ga_optimizer_sell,args=('primary',False))
+	Sell_Primary.start()
+
+	Sell_Secondry = Process(target=ga_optimizer_sell,args=('secondry',False))
+	Sell_Secondry.start()
+
+	
+	
+	
+	
+
 #learning_buy()
 #ga_tester_buy()
 

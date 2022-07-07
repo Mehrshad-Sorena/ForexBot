@@ -952,19 +952,31 @@ def learning_sell():
 		ga_result_sell.to_csv(sell_path)
 
 def Task_optimizer():
-	job_thread_buy = threading.Thread(target=ga_optimizer_buy(priority='primary',real_test=False))
-	job_thread_buy.start()
+	job_thread_buy_primary = threading.Thread(target=ga_optimizer_buy(priority='primary',real_test=False))
+	job_thread_buy_primary.start()
 	print()
 	print('optimizer job_thread_buy ===> optimizer job_thread_buy Primary runed')
 
-	job_thread_sell = threading.Thread(target=ga_optimizer_sell)
-	job_thread_sell.start()
+  job_thread_buy_secondry = threading.Thread(target=ga_optimizer_buy(priority='secondry',real_test=False))
+	job_thread_buy_secondry.start()
 	print()
-	print('optimizer job_thread_sell ===> optimizer job_thread_sell runed')
+	print('optimizer job_thread_buy ===> optimizer job_thread_buy Secondry runed')
+
+	job_thread_sell_primary = threading.Thread(target=ga_optimizer_sell(priority='primary',real_test=False))
+	job_thread_sell_primary.start()
+	print()
+	print('optimizer job_thread_sell ===> optimizer job_thread_sell Primary runed')
+
+  job_thread_sell_secondry = threading.Thread(target=ga_optimizer_sell(priority='secondry',real_test=False))
+	job_thread_sell_secondry.start()
+	print()
+	print('optimizer job_thread_sell ===> optimizer job_thread_sell Secondry runed')
 
 	
-	job_thread_buy.join()
-	job_thread_sell.join()
+	job_thread_buy_primary.join()
+	job_thread_sell_primary.join()
+  job_thread_buy_secondry.join()
+	job_thread_sell_secondry.join()
 
 def Task_tester():
 	job_thread_buy = threading.Thread(target=ga_tester_buy)

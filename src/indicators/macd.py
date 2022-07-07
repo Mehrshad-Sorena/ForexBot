@@ -4406,7 +4406,14 @@ def genetic_algo_div_macd(
 										signal_period_lower=signal_period_lower
 										)
 
-	print('================================ START Genetic BUY ==> ',symbol)
+	if primary_doing == True:
+		priority = 'Primary'
+	else:
+		priority = 'Secondry'
+
+
+
+	print('================================ START Genetic ',flag_trade,' ===> ',symbol,' ',priority)
 	print('\n')
 
 	now = datetime.now()
@@ -4607,15 +4614,20 @@ def genetic_algo_div_macd(
 			#print('==== flag trade===> ', flag_trade)
 			print()
 
+			if primary_doing == True:
+				priority = 'Primary'
+			else:
+				priority = 'Secondry'
+
 			if flag_trade == 'buy':
 				print()
-				print('================== Num BUY Symbol ==>',symbol)
+				print('================== Num BUY Symbol ==>',symbol,' ',priority)
 				print()
 				print('================== Num BUY =========> ',len(chromosome_buy))
 
 			if flag_trade == 'sell':
 				print()
-				print('================== Num SELL Symbol =>',symbol)
+				print('================== Num SELL Symbol =>',symbol,' ', priority)
 				print()
 				print('================== Num SELL ========> ',len(chromosome_sell))
 

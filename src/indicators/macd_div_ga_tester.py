@@ -262,7 +262,7 @@ def ga_optimizer_buy(priority,real_test):
 						symbol_data_1H=symbol_data_1H,
 						symbol_data_4H=symbol_data_4H,
 						symbol=sym,
-						num_turn=1000,
+						num_turn=400,
 						max_score_ga_buy=100,
 						max_score_ga_sell=600,
 						flag_trade='buy',
@@ -274,7 +274,7 @@ def ga_optimizer_buy(priority,real_test):
 			else:
 				learn_counter = 2
 				if learn_counter > 1: 
-					num_turn = 200
+					num_turn = 120
 				else:
 					num_turn = 200
 				ga_runner(

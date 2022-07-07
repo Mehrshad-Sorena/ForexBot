@@ -1001,24 +1001,24 @@ my_sym = 'GBPUSD_i'
 
 #learning_buy()
 #ga_tester_buy()
-#ga_optimizer_buy(priority='primary',real_test=False)
+ga_optimizer_buy(priority='primary',real_test=False)
 #ga_optimizer_buy(priority='secondry',real_test=False)
 
 #ga_optimizer_sell(priority='primary',real_test=False)
 #ga_optimizer_sell(priority='secondry',real_test=False)
 
-if __name__ == "__main__":
-	Buy_Primary = Process(target=ga_optimizer_buy,args=('primary',False))
-	Buy_Primary.start()
+#if __name__ == "__main__":
+	#Buy_Primary = Process(target=ga_optimizer_buy,args=('primary',False))
+	#Buy_Primary.start()
 
-	Buy_Secondry = Process(target=ga_optimizer_buy,args=('secondry',False))
-	Buy_Secondry.start()
+	#Buy_Secondry = Process(target=ga_optimizer_buy,args=('secondry',False))
+	#Buy_Secondry.start()
 
-	Sell_Primary = Process(target=ga_optimizer_sell,args=('primary',False))
-	Sell_Primary.start()
+	#Sell_Primary = Process(target=ga_optimizer_sell,args=('primary',False))
+	#Sell_Primary.start()
 
-	Sell_Secondry = Process(target=ga_optimizer_sell,args=('secondry',False))
-	Sell_Secondry.start()
+	#Sell_Secondry = Process(target=ga_optimizer_sell,args=('secondry',False))
+	#Sell_Secondry.start()
 
 	
 	

@@ -957,7 +957,7 @@ def Task_optimizer():
 	print()
 	print('optimizer job_thread_buy ===> optimizer job_thread_buy Primary runed')
 
-  job_thread_buy_secondry = threading.Thread(target=ga_optimizer_buy(priority='secondry',real_test=False))
+  job_thread_buy_secondry = threading.Thread(target=ga_optimizer_buy,args=(priority='secondry',real_test=False))
 	job_thread_buy_secondry.start()
 	print()
 	print('optimizer job_thread_buy ===> optimizer job_thread_buy Secondry runed')

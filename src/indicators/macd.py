@@ -4745,7 +4745,7 @@ def genetic_algo_div_macd(
 				if flag_trade == 'buy':
 					if len(chromosome_buy) == 0:
 						result_buy = result_buy.append(output_before_buy, ignore_index=True)
-						score_buy = (output_before_buy['score_pr'][0]) * 0.001
+						score_buy = (output_before_buy['score_pr'][0]) * 0.1
 						Chromosome[0].update({'score_buy': score_buy })
 						chromosome_buy = chromosome_buy.append(Chromosome[0], ignore_index=True)
 
@@ -4770,7 +4770,7 @@ def genetic_algo_div_macd(
 					if len(chromosome_sell) == 0:
 				
 						result_sell = result_sell.append(output_before_buy, ignore_index=True)
-						score_sell = (output_before_sell['score_pr'][0]) * 0.001
+						score_sell = (output_before_sell['score_pr'][0]) * 0.1
 						Chromosome[0].update({'score_sell': score_sell })
 						chromosome_sell = chromosome_sell.append(Chromosome[0], ignore_index=True)
 

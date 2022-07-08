@@ -275,7 +275,7 @@ def ga_optimizer_buy(priority,real_test):
 			else:
 				learn_counter = 2
 				if learn_counter > 1: 
-					num_turn = 100
+					num_turn = 50
 				else:
 					num_turn = 200
 				ga_runner(
@@ -501,7 +501,7 @@ def ga_optimizer_sell(priority,real_test):
 			else:
 				learn_counter = 2
 				if learn_counter > 1: 
-					num_turn = 100
+					num_turn = 50
 				else:
 					num_turn = 200
 				ga_runner(

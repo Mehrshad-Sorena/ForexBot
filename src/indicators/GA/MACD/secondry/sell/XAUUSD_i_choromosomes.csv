@@ -1,2 +1,3 @@
-,fast_period,slow_period,signal_period,apply_to,alpha,num_extreme,diff_extereme,signal,score_buy,score_sell
-0,4,25,14,close,0.45,39,5,sell,0.0,147.7071427793725
+,Unnamed: 0,fast_period,slow_period,signal_period,apply_to,alpha,num_extreme,diff_extereme,signal,score_buy,score_sell
+0,0.0,4,25,14,close,0.45,39,5,sell,0.0,147.7071427793725
+1,,13,127,17,high,0.24,39,6,,0.0,0.0

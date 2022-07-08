@@ -1,0 +1,2 @@
+,fast_period,slow_period,signal_period,apply_to,alpha,num_extreme,diff_extereme,signal,score_buy,score_sell
+0,4,25,25,HLC/3,0.19,64,4,"buy,sell",0.0,1711.713665

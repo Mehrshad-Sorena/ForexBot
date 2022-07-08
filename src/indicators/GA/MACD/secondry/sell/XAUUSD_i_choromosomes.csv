@@ -1,0 +1,2 @@
+,fast_period,slow_period,signal_period,apply_to,alpha,num_extreme,diff_extereme,signal,score_buy,score_sell
+0,4,25,14,close,0.45,39,5,sell,0.0,147.7071427793725

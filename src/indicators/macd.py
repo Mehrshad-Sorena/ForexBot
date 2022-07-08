@@ -4509,8 +4509,8 @@ def genetic_algo_div_macd(
 
 
 
-	print('================================ START Genetic ',flag_trade,' ===> ',symbol,' ',priority)
-	print('\n')
+	#print('================================ START Genetic ',flag_trade,' ===> ',symbol,' ',priority)
+	#print('\n')
 
 	now = datetime.now()
 
@@ -4648,7 +4648,7 @@ def genetic_algo_div_macd(
 							max_score_ga_buy = float(chrom_get['score_pr'])/1000
 
 						output_before_buy = ga_result_buy
-					print(Chromosome[0])
+					#print(Chromosome[0])
 
 	if flag_trade == 'sell':
 		if os.path.exists(sell_path):
@@ -4682,7 +4682,7 @@ def genetic_algo_div_macd(
 							max_score_ga_sell = float(chrom_get['score_pr'])/1000
 
 						output_before_sell = ga_result_sell
-					print(Chromosome[0])
+					#print(Chromosome[0])
 
 				
 
@@ -4792,7 +4792,7 @@ def genetic_algo_div_macd(
 						new_chromosome = False
 
 			#print('==== flag trade===> ', flag_trade)
-			print()
+			#print()
 
 			if primary_doing == True:
 				priority = 'Primary'
@@ -4800,36 +4800,40 @@ def genetic_algo_div_macd(
 				priority = 'Secondry'
 
 			if flag_trade == 'buy':
-				print()
-				print('================== Num BUY Symbol ==>',symbol,' ',priority)
-				print()
-				print('================== Num BUY =========> ',len(chromosome_buy))
+				#print()
+				#print('================== Num BUY Symbol ==>',symbol,' ',priority)
+				#print()
+				#print('================== Num BUY =========> ',len(chromosome_buy))
+				pass
 
 			if flag_trade == 'sell':
-				print()
-				print('================== Num SELL Symbol =>',symbol,' ', priority)
-				print()
-				print('================== Num SELL ========> ',len(chromosome_sell))
+				#print()
+				#print('================== Num SELL Symbol =>',symbol,' ', priority)
+				#print()
+				#print('================== Num SELL ========> ',len(chromosome_sell))
+				pass
 
-			print('================== Num Chroms ======> ',chrom_counter)
-			print('================== All Chorms ======> ',all_chorms)
-			print('================== Chorm Reseter ===> ',chorm_reset_counter)
-			print('================== AI Turn =========> ',learn_counter-1)
-			print('================== New Chromosome ==> ',new_chromosome)
+			#print('================== Num Chroms ======> ',chrom_counter)
+			#print('================== All Chorms ======> ',all_chorms)
+			#print('================== Chorm Reseter ===> ',chorm_reset_counter)
+			#print('================== AI Turn =========> ',learn_counter-1)
+			#print('================== New Chromosome ==> ',new_chromosome)
 
 			if flag_trade == 'buy':
-				print('===== bad score counter buy ========> ',bad_score_counter_buy)
-				print('===== bad score counter buy 2 ======> ',bad_score_counter_buy_2)
+				#print('===== bad score counter buy ========> ',bad_score_counter_buy)
+				#print('===== bad score counter buy 2 ======> ',bad_score_counter_buy_2)
+				pass
 
 			if flag_trade == 'sell':
-				print('===== bad score counter buy ========> ',bad_score_counter_sell)
-				print('===== bad score counter buy 2 ======> ',bad_score_counter_sell_2)
+				#print('===== bad score counter buy ========> ',bad_score_counter_sell)
+				#print('===== bad score counter buy 2 ======> ',bad_score_counter_sell_2)
+				pass
 
-			print()
-			pbar_numbers = int((len(chromosome_buy) + len(chromosome_sell))/2)
+			#print()
+			pbar_numbers = all_chorms
 			pbar.update(pbar_numbers)
 
-			print()
+			#print()
 			
 
 			if (chorm_reset_counter >= 27):
@@ -4930,13 +4934,13 @@ def genetic_algo_div_macd(
 					low_distance = randint((learn_counter*16800), ((learn_counter*16800) + 16800))
 					high_distance = randint((learn_counter*16800), ((learn_counter*16800) + 16800))
 
-				print('==== High Distance =============> ',high_distance)
-				print('==== Low Distance ==============> ',low_distance)
+				#print('==== High Distance =============> ',high_distance)
+				#print('==== Low Distance ==============> ',low_distance)
 
-				print('==== Symbol ====================> ',symbol)
+				#print('==== Symbol ====================> ',symbol)
 
-				print('==== AI Turn ===================> ',learn_counter)
-				print('==== Length Dataset ============> ',high_distance - low_distance)
+				#print('==== AI Turn ===================> ',learn_counter)
+				#print('==== Length Dataset ============> ',high_distance - low_distance)
 				
 
 				dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, _ = read_dataset_csv(
@@ -4960,40 +4964,40 @@ def genetic_algo_div_macd(
 			if all_chorms >= int(num_turn): break
 			all_chorms += 1
 
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				print('======== Chorme ================> ')
-				print()
-				print('........................................................')
-				print(Chromosome[chrom_counter])
-				print('........................................................')
-				print()
+			#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				#print('======== Chorme ================> ')
+				#print()
+				#print('........................................................')
+				#print(Chromosome[chrom_counter])
+				#print('........................................................')
+				#print()
 
-			if flag_trade == 'buy':
-				print('======== max st tp ================> ')
-				print()
-				print('........................................................')
-				print('======== max tp ===================> ',max_tp_buy)
-				print('======== min tp ===================> ',min_tp_buy)
-				print('======== max st ===================> ',max_st_buy)
-				print('======== min st ===================> ',min_st_buy)
-				print('........................................................')
-				print()
+			#if flag_trade == 'buy':
+				#print('======== max st tp ================> ')
+				#print()
+				#print('........................................................')
+				#print('======== max tp ===================> ',max_tp_buy)
+				#print('======== min tp ===================> ',min_tp_buy)
+				#print('======== max st ===================> ',max_st_buy)
+				#print('======== min st ===================> ',min_st_buy)
+				#print('........................................................')
+				#print()
 
-			if flag_trade == 'sell':
-				print('======== max st tp ================> ')
-				print()
-				print('........................................................')
-				print('======== max tp ===================> ',max_tp_sell)
-				print('======== min tp ===================> ',min_tp_sell)
-				print('======== max st ===================> ',max_st_sell)
-				print('======== min st ===================> ',min_st_sell)
-				print('........................................................')
-				print()
+			#if flag_trade == 'sell':
+				#print('======== max st tp ================> ')
+				#print()
+				#print('........................................................')
+				#print('======== max tp ===================> ',max_tp_sell)
+				#print('======== min tp ===================> ',min_tp_sell)
+				#print('======== max st ===================> ',max_st_sell)
+				#print('======== min st ===================> ',min_st_sell)
+				#print('........................................................')
+				#print()
 
 			if True:
 				if flag_trade == 'buy':
 					if primary_doing == True:
-						print('Primary Buy:')
+						#print('Primary Buy:')
 						buy_data, _, _, _ = divergence_macd(
 															dataset=symbol_data_5M,
 															dataset_15M=symbol_data_15M,
@@ -5028,7 +5032,7 @@ def genetic_algo_div_macd(
 															flag_learning=flag_learning
 															)
 					if secondry_doing == True:
-						print('Secondry Buy:')
+						#print('Secondry Buy:')
 						_, buy_data, _, _ = divergence_macd(
 															dataset=symbol_data_5M,
 															dataset_15M=symbol_data_15M,
@@ -5067,7 +5071,7 @@ def genetic_algo_div_macd(
 
 				if flag_trade == 'sell':
 					if primary_doing == True:
-						print('Primary Sell:')
+						#print('Primary Sell:')
 						_, _, sell_data, _ = divergence_macd(
 															dataset=symbol_data_5M,
 															dataset_15M=symbol_data_15M,
@@ -5103,7 +5107,7 @@ def genetic_algo_div_macd(
 															)
 
 					if secondry_doing == True:
-						print('Secondry Sell:')
+						#print('Secondry Sell:')
 						_, _, _, sell_data = divergence_macd(
 															dataset=symbol_data_5M,
 															dataset_15M=symbol_data_15M,
@@ -5150,7 +5154,7 @@ def genetic_algo_div_macd(
 					flag_golden_cross = True
 
 			else:#except Exception as ex:
-				print('getting error GA Golden Cross: ', ex)
+				#print('getting error GA Golden Cross: ', ex)
 				flag_golden_cross = True
 
 			if flag_golden_cross:
@@ -5185,13 +5189,13 @@ def genetic_algo_div_macd(
 													name_stp_pr=True,
 													flag_trade='buy'
 													)
-					with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						print('======== Output Buy =======> ')
-						print()
-						print('........................................................')
-						print(output_buy)
-						print('........................................................')
-						print()
+					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						#print('======== Output Buy =======> ')
+						#print()
+						#print('........................................................')
+						#print(output_buy)
+						#print('........................................................')
+						#print()
 
 				if flag_trade == 'sell':
 					_, output_sell = tester_div_macd(
@@ -5204,17 +5208,17 @@ def genetic_algo_div_macd(
 													name_stp_pr=True,
 													flag_trade='sell'
 													)
-					with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						print('======== Output SELL ======> ')
-						print()
-						print('........................................................')
-						print(output_sell)
-						print('........................................................')
-						print()
+					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						#print('======== Output SELL ======> ')
+						#print()
+						#print('........................................................')
+						#print(output_sell)
+						#print('........................................................')
+						#print()
 
 				flag_tester = False
 			except Exception as ex:
-				print('GA tester: ',ex)
+				#print('GA tester: ',ex)
 				flag_tester = True
 
 			if flag_tester:
@@ -5522,7 +5526,7 @@ def genetic_algo_div_macd(
 
 						score_for_reset = output_buy['score_pr'][0]
 
-			print('== Max Score Buy Must Be ====> ',max_score_ga_buy)
+			#print('== Max Score Buy Must Be ====> ',max_score_ga_buy)
 
 			if flag_trade == 'sell':
 				if not np.isnan(output_sell['score_pr'][0]) or not np.isnan(output_sell['score_min_max'][0]):
@@ -5808,7 +5812,7 @@ def genetic_algo_div_macd(
 
 						score_for_reset_sell = output_sell['score_pr'][0]
 
-			print('== Max Score Sell Must Be =====> ',max_score_ga_sell)
+			#print('== Max Score Sell Must Be =====> ',max_score_ga_sell)
 
 			if flag_trade == 'buy':
 				if (

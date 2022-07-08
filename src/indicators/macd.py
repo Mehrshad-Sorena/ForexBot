@@ -2776,7 +2776,7 @@ def divergence_macd(
 	#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 		#print('=======> signal_buy_primary before = ',signal_buy_primary)
 
-	print('mehrshad =====> ',mehrshad)
+	#print('mehrshad =====> ',mehrshad)
 
 	signal_buy_primary = signal_buy_primary.drop(columns=0)
 	signal_buy_primary = signal_buy_primary.dropna()
@@ -2804,7 +2804,7 @@ def divergence_macd(
 	signal_sell_secondry = signal_sell_secondry.sort_values(by = ['index'])
 	signal_sell_secondry = signal_sell_secondry.reset_index(drop=True)
 	
-	print('*********************** Buy *********************************')
+	#print('*********************** Buy *********************************')
 	#print(signal_buy_primary)
 	#print(signal_buy_secondry)
 	if False:#(mode == 'optimize'):
@@ -2862,9 +2862,9 @@ def divergence_macd(
 		print('min down = ',np.min(signal_buy_secondry['diff_pr_down'][np.where(signal_buy_secondry['flag_pr'] == 'st')[0]].to_numpy()))
 		print('mean down = ',np.mean(signal_buy_secondry['diff_pr_down'][np.where(signal_buy_secondry['flag_pr'] == 'st')[0]].to_numpy()))
 
-	print('/////////////////////////////////////////////////////////////////')
+	#print('/////////////////////////////////////////////////////////////////')
 
-	print('*************************** Sell ***********************************')
+	#print('*************************** Sell ***********************************')
 	#print(signal_sell_primary)
 	#print(signal_sell_secondry)
 	if False:#(mode == 'optimize'):	

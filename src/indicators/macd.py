@@ -38,6 +38,7 @@ warnings.filterwarnings("ignore")
 #macd_div_tester_for_permit()
 #last_signal_macd_div()
 #learning_algo_div_macd()
+#chromosome_saver()
 
 #/////////////////////////////////////////
 
@@ -4288,6 +4289,101 @@ def gen_creator(
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#**************************************** Choromosome Saver ***************************************************************
+
+def chromosome_saver(
+						Chromosome,
+						chrom_counter,
+						symbol,
+						flag_trade,
+						primary_doing,
+						secondry_doing,
+						fast_period_upper,
+						fast_period_lower,
+						slow_period_upper,
+						slow_period_lower,
+						signal_period_upper,
+						signal_period_lower
+						):
+	
+	if flag_trade == 'buy':
+		if primary_doing == True:
+			chromosome_path = 'GA/MACD/primary/buy/'+symbol + '_choromosomes' + '.csv'
+		if secondry_doing == True:
+			chromosome_path = 'GA/MACD/secondry/buy/'+symbol + '_choromosomes' + '.csv'
+
+	if flag_trade == 'sell':
+		if primary_doing == True:
+			chromosome_path = 'GA/MACD/primary/sell/'+symbol + '_choromosomes' + '.csv'
+		if secondry_doing == True:
+			chromosome_path = 'GA/MACD/secondry/sell/'+symbol + '_choromosomes' + '.csv'
+
+
+	if os.path.exists(chromosome_path):
+		if flag_trade == 'buy':
+			if primary_doing == True:
+				ga_result = pd.read_csv(chromosome_path)
+
+			if secondry_doing == True:
+				ga_result = pd.read_csv(chromosome_path)
+
+		if flag_trade == 'sell':
+			if primary_doing == True:
+				ga_result = pd.read_csv(chromosome_path)
+
+			if secondry_doing == True:
+				ga_result = pd.read_csv(chromosome_path)
+
+
+		ga_chromosome_counter = 0
+		while ga_chromosome_counter < len(ga_result['fast_period']):
+			if (
+				Chromosome[chrom_counter]['fast_period'] == ga_result['fast_period'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['slow_period'] == ga_result['slow_period'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['signal_period'] == ga_result['signal_period'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['apply_to'] == ga_result['apply_to'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['alpha'] == ga_result['alpha'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['num_extreme'] == ga_result['num_extreme'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['diff_extereme'] == ga_result['diff_extereme'][ga_chromosome_counter]
+				):
+
+				slow_period = randint(slow_period_lower, slow_period_upper) 
+				fast_period = randint(fast_period_lower, fast_period_upper)
+				while slow_period <= fast_period:
+					slow_period = randint(slow_period_lower, slow_period_upper) 
+					fast_period = randint(fast_period_lower, fast_period_upper)
+
+				Chromosome[chrom_counter] = {
+											'fast_period': fast_period,
+											'slow_period': slow_period,
+											'signal_period': randint(signal_period_lower, signal_period_upper),
+											'apply_to': np.random.choice(apply_to_list_ga),
+											'alpha': randint(40, 50)/100,
+											'num_extreme': int((fast_period/slow_period)*100*fast_period),
+											'diff_extereme': 6,
+											'signal': None,
+											'score_buy': 0,
+											'score_sell': 0
+											}
+				ga_chromosome_counter = 0
+				continue
+
+			else:
+				ga_result = ga_result.append(Chromosome[chrom_counter], ignore_index=True)
+				os.remove(chromosome_path)
+				ga_result.to_csv(chromosome_path)
+				return Chromosome
+
+			ga_chromosome_counter += 1
+	else:
+		ga_result = pd.DataFrame()
+		ga_result = ga_result.append(Chromosome[chrom_counter], ignore_index=True)
+		ga_result.to_csv(chromosome_path)
+
+		return Chromosome
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #***************************************** Genetic Algorithm **************************************************************
 
 #@stTime
@@ -4306,7 +4402,7 @@ def genetic_algo_div_macd(
 							secondry_doing,
 							real_test
 							):
-
+	
 	#*************************** Algorithm *************************************************//
 
 	fast_period_upper = 800
@@ -4516,6 +4612,8 @@ def genetic_algo_div_macd(
 	output_before_buy = pd.DataFrame()
 	output_before_sell = pd.DataFrame()
 
+	new_chromosome = True
+
 
 	if flag_trade == 'buy':
 		if os.path.exists(buy_path):
@@ -4533,6 +4631,8 @@ def genetic_algo_div_macd(
 					Chromosome[0]['signal'] = chrom_get['signal']
 					Chromosome[0]['score_buy'] = float(chrom_get['score_buy'])
 					Chromosome[0]['score_sell'] = float(chrom_get['score_sell'])
+
+					new_chromosome = False
 
 					if flag_trade == 'buy':
 						if primary_doing == True:
@@ -4565,6 +4665,8 @@ def genetic_algo_div_macd(
 					Chromosome[0]['signal'] = chrom_get['signal']
 					Chromosome[0]['score_buy'] = float(chrom_get['score_buy'])
 					Chromosome[0]['score_sell'] = float(chrom_get['score_sell'])
+
+					new_chromosome = False
 
 					if flag_trade == 'sell':
 						if primary_doing == True:
@@ -4608,8 +4710,86 @@ def genetic_algo_div_macd(
 	learning_interval_counter = 0
 	learn_counter = 1
 
+	
+
 	with tqdm(total=num_turn) as pbar:
 		while chrom_counter < len(Chromosome):
+
+			if (
+				new_chromosome == True and
+				flag_learning == False
+				):
+
+				Chromosome = chromosome_saver(
+												Chromosome=Chromosome,
+												chrom_counter=chrom_counter,
+												symbol=symbol,
+												flag_trade=flag_trade,
+												primary_doing=primary_doing,
+												secondry_doing=secondry_doing,
+												fast_period_upper=fast_period_upper,
+												fast_period_lower=fast_period_lower,
+												slow_period_upper=slow_period_upper,
+												slow_period_lower=slow_period_lower,
+												signal_period_upper=signal_period_upper,
+												signal_period_lower=signal_period_lower
+												)
+				flag_learning = False
+				new_chromosome = False
+			elif (
+				new_chromosome == False #and
+				#chrom_counter == 0
+					):
+
+				
+				if flag_trade == 'buy':
+					if len(chromosome_buy) == 0:
+						result_buy = result_buy.append(output_before_buy, ignore_index=True)
+						score_buy = (output_before_buy['score_pr'][0]) * 0.001
+						Chromosome[0].update({'score_buy': score_buy })
+						chromosome_buy = chromosome_buy.append(Chromosome[0], ignore_index=True)
+
+						Chromosome = chromosome_saver(
+														Chromosome=Chromosome,
+														chrom_counter=chrom_counter,
+														symbol=symbol,
+														flag_trade=flag_trade,
+														primary_doing=primary_doing,
+														secondry_doing=secondry_doing,
+														fast_period_upper=fast_period_upper,
+														fast_period_lower=fast_period_lower,
+														slow_period_upper=slow_period_upper,
+														slow_period_lower=slow_period_lower,
+														signal_period_upper=signal_period_upper,
+														signal_period_lower=signal_period_lower
+														)
+						flag_learning = False
+						new_chromosome = False
+
+				if flag_trade == 'sell':
+					if len(chromosome_sell) == 0:
+				
+						result_sell = result_sell.append(output_before_buy, ignore_index=True)
+						score_sell = (output_before_sell['score_pr'][0]) * 0.001
+						Chromosome[0].update({'score_sell': score_sell })
+						chromosome_sell = chromosome_sell.append(Chromosome[0], ignore_index=True)
+
+						Chromosome = chromosome_saver(
+														Chromosome=Chromosome,
+														chrom_counter=chrom_counter,
+														symbol=symbol,
+														flag_trade=flag_trade,
+														primary_doing=primary_doing,
+														secondry_doing=secondry_doing,
+														fast_period_upper=fast_period_upper,
+														fast_period_lower=fast_period_lower,
+														slow_period_upper=slow_period_upper,
+														slow_period_lower=slow_period_lower,
+														signal_period_upper=signal_period_upper,
+														signal_period_lower=signal_period_lower
+														)
+						flag_learning = False
+						new_chromosome = False
 
 			#print('==== flag trade===> ', flag_trade)
 			print()
@@ -4635,6 +4815,7 @@ def genetic_algo_div_macd(
 			print('================== All Chorms ======> ',all_chorms)
 			print('================== Chorm Reseter ===> ',chorm_reset_counter)
 			print('================== AI Turn =========> ',learn_counter-1)
+			print('================== New Chromosome ==> ',new_chromosome)
 
 			if flag_trade == 'buy':
 				print('===== bad score counter buy ========> ',bad_score_counter_buy)
@@ -4731,6 +4912,7 @@ def genetic_algo_div_macd(
 					'score_buy': 0,
 					'score_sell': 0
 					}
+				new_chromosome = True
 				#all_chorms += 1
 				#continue
 
@@ -4985,8 +5167,11 @@ def genetic_algo_div_macd(
 					'score_buy': 0,
 					'score_sell': 0
 					}
+				new_chromosome = True
 				flag_learning = False
 				continue
+			else:
+				new_chromosome = False
 
 			try:
 				if flag_trade == 'buy':
@@ -5046,8 +5231,11 @@ def genetic_algo_div_macd(
 					'score_buy': 0,
 					'score_sell': 0
 					}
+				new_chromosome = True
 				flag_learning = False
 				continue
+			else:
+				new_chromosome = False
 
 			if flag_trade == 'buy':
 				if not np.isnan(output_buy['score_pr'][0]) or not np.isnan(output_buy['score_min_max'][0]):
@@ -5644,6 +5832,8 @@ def genetic_algo_div_macd(
 			if flag_trade == 'buy':
 				if bad_buy == True:
 
+					new_chromosome = True
+
 					if bad_score_counter_buy < 4:
 						Chromosome[chrom_counter] = {
 										'fast_period': Chromosome[chrom_counter]['fast_period'],#high_period,
@@ -5759,9 +5949,14 @@ def genetic_algo_div_macd(
 
 					continue
 
+				else:
+					new_chromosome = False
+
 
 			if flag_trade == 'sell':
 				if bad_sell == True:
+
+					new_chromosome = True
 
 					if bad_score_counter_sell < 4:
 						Chromosome[chrom_counter] = {
@@ -5877,6 +6072,8 @@ def genetic_algo_div_macd(
 										}
 
 					continue
+				else:
+					new_chromosome = False
 
 			if Chromosome[chrom_counter]['signal'] is None: continue
 

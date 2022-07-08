@@ -487,11 +487,11 @@ def divergence_macd(
 		primary_counter = 0
 		secondry_counter = 0
 
-		print('exterme finded ======> ',len(extreme_min['index']))
+		#print('exterme finded ======> ',len(extreme_min['index']))
 
 		#print('last max finded ======> ',extreme_max['index'].iloc[-1])
 		#print('last min finded ======> ',extreme_min['index'].iloc[-1])
-		print('flag learning ========> ',flag_learning)
+		#print('flag learning ========> ',flag_learning)
 
 		mehrshad = 0
 
@@ -3607,7 +3607,7 @@ def tester_div_macd(
 				output_buy['sum_st_pr'] = [np.sum(signal_buy['st_pr'][np.where(signal_buy['flag_pr'] == 'st')[0]].to_numpy())]
 				output_buy['sum_tp_pr'] = [np.sum(signal_buy['tp_pr'][np.where(signal_buy['flag_pr'] == 'tp')[0]].to_numpy())]
 			except Exception as ex:
-				print('error tester pr buy: ',ex)
+				#print('error tester pr buy: ',ex)
 				output_buy['sum_st_pr'] = 0
 				output_buy['sum_tp_pr'] = 0
 
@@ -3839,7 +3839,7 @@ def tester_div_macd(
 				output_sell['sum_st_pr'] = [np.sum(signal_sell['st_pr'][np.where(signal_sell['flag_pr'] == 'st')[0]].to_numpy())]
 				output_sell['sum_tp_pr'] = [np.sum(signal_sell['tp_pr'][np.where(signal_sell['flag_pr'] == 'tp')[0]].to_numpy())]
 			except Exception as ex:
-				print('error tester pr sell: ',ex)
+				#print('error tester pr sell: ',ex)
 				output_sell['sum_st_pr'] = 0
 				output_sell['sum_tp_pr'] = 0
 

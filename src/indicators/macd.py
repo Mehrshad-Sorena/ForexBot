@@ -198,7 +198,7 @@ def golden_cross(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************************************** Divergence Strategy *******************************************************
-@stTime
+#@stTime
 def divergence_macd(
 				dataset,
 				dataset_15M,
@@ -2968,7 +2968,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 											)[0])
 
 		if (signal_good.empty == True): 
-			print('no good signal 1')
+			#print('no good signal 1')
 			best_signals_interval = pd.DataFrame()
 			best_signals_interval['interval'] = [0,0,0]
 			best_signals_interval['power'] = [0,0,0]
@@ -3012,7 +3012,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 		signal_final = signal_final.sort_values(by = ['Y'])
 
 	except Exception as ex:
-		print('no good signal 1')
+		#print('no good signal 1')
 		best_signals_interval = pd.DataFrame()
 		best_signals_interval['interval'] = [0,0,0]
 		best_signals_interval['power'] = [0,0,0]
@@ -6214,7 +6214,7 @@ def genetic_algo_div_macd(
 
 #********************** read GA result ****************************************************************************
 
-@stTime
+#@stTime
 def read_ga_result(symbol):
 
 	if os.path.exists('GA/MACD/primary/buy/'+symbol+'.csv'):

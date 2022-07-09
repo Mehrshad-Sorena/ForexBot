@@ -8,6 +8,7 @@ from scipy.optimize import fsolve
 from sma import last_signal_sma
 import matplotlib.pyplot as plt
 from datetime import datetime
+from progress.bar import Bar
 from random import randint
 from log_get_data import *
 from timer import stTime
@@ -4710,7 +4711,7 @@ def genetic_algo_div_macd(
 	learning_interval_counter = 0
 	learn_counter = 1
 
-	
+	bar = Bar(flag_trade, max = int(num_turn))
 
 	with tqdm(total=num_turn) as pbar:
 		while chrom_counter < len(Chromosome):
@@ -4830,8 +4831,10 @@ def genetic_algo_div_macd(
 				pass
 
 			#print()
-			pbar_numbers = all_chorms
-			pbar.update(pbar_numbers)
+			#pbar_numbers = all_chorms
+			#pbar.update(pbar_numbers)
+			bar.next()
+
 
 			#print()
 			

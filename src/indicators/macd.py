@@ -8,6 +8,7 @@ from scipy.optimize import fsolve
 from sma import last_signal_sma
 import matplotlib.pyplot as plt
 from datetime import datetime
+from progress.bar import Bar
 from random import randint
 from log_get_data import *
 from timer import stTime
@@ -197,7 +198,7 @@ def golden_cross(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************************************** Divergence Strategy *******************************************************
-@stTime
+#@stTime
 def divergence_macd(
 				dataset,
 				dataset_15M,
@@ -334,7 +335,7 @@ def divergence_macd(
 		signal_buy_primary['index'] = np.nan
 		signal_buy_primary['num_diff_to_extremes'] = np.nan
 		signal_buy_primary['num_extreme'] = np.nan
-		signal_buy_primary['num_extreme_between'] = np.nan
+		#signal_buy_primary['num_extreme_between'] = np.nan
 
 		if (mode == 'optimize'):
 			if (name_stp_minmax == True):
@@ -374,8 +375,8 @@ def divergence_macd(
 		signal_buy_secondry['index'] = np.nan
 		signal_buy_secondry['num_diff_to_extremes'] = np.nan
 		signal_buy_secondry['num_extreme'] = np.nan
-		signal_buy_secondry['num_extreme_between'] = np.nan
-		signal_buy_secondry['max_bet_value'] = np.nan
+		#signal_buy_secondry['num_extreme_between'] = np.nan
+		#signal_buy_secondry['max_bet_value'] = np.nan
 
 		if (mode == 'optimize'):
 			if (name_stp_minmax == True):
@@ -415,7 +416,7 @@ def divergence_macd(
 		signal_sell_primary['index'] = np.nan
 		signal_sell_primary['num_diff_to_extremes'] = np.nan
 		signal_sell_primary['num_extreme'] = np.nan
-		signal_sell_primary['num_extreme_between'] = np.nan
+		#signal_sell_primary['num_extreme_between'] = np.nan
 
 		if (mode == 'optimize'):
 			if (name_stp_minmax == True):
@@ -453,7 +454,7 @@ def divergence_macd(
 		signal_sell_secondry['index'] = np.nan
 		signal_sell_secondry['num_diff_to_extremes'] = np.nan
 		signal_sell_secondry['num_extreme'] = np.nan
-		signal_sell_secondry['num_extreme_between'] = np.nan
+		#signal_sell_secondry['num_extreme_between'] = np.nan
 
 		if (mode == 'optimize'):
 			if (name_stp_minmax == True):
@@ -582,10 +583,10 @@ def divergence_macd(
 
 				if len(list_elm) > 1:
 					diff_extereme_buy = round(np.max(list_elm))
-					num_extreme_between = len(list_elm)
+					#num_extreme_between = len(list_elm)
 				elif len(list_elm) == 1:
 					diff_extereme_buy = list_elm[0]
-					num_extreme_between = 1
+					#num_extreme_between = 1
 				else:
 					continue 
 			else:
@@ -620,7 +621,7 @@ def divergence_macd(
 				signal_buy_primary['value_front'][primary_counter] = extreme_min['value'][elm]
 				signal_buy_primary['value_back'][primary_counter] = extreme_min['value'][elm-diff_extereme_buy]
 				signal_buy_primary['index'][primary_counter] = extreme_min['index'][elm]
-				signal_buy_primary['num_extreme_between'][primary_counter] = num_extreme_between
+				#signal_buy_primary['num_extreme_between'][primary_counter] = num_extreme_between
 				#signal_buy_primary['ramp_macd'][primary_counter] = (extreme_min['value'][elm] - extreme_min['value'][elm-3])/(extreme_min['index'][elm] - extreme_min['index'][elm-3])
 				#signal_buy_primary['ramp_candle'][primary_counter] = (dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm-3]])/(extreme_min['index'][elm] - extreme_min['index'][elm-3])
 				#signal_buy_primary['coef_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter]/abs(signal_buy_primary['ramp_candle'][primary_counter])
@@ -1163,10 +1164,10 @@ def divergence_macd(
 
 				if len(list_elm) > 1:
 					diff_extereme_buy = round(np.max(list_elm))
-					num_extreme_between = len(list_elm)
+					#num_extreme_between = len(list_elm)
 				elif len(list_elm) == 1:
 					diff_extereme_buy = list_elm[0]
-					num_extreme_between = 1
+					#num_extreme_between = 1
 				else:
 					continue 
 			else:
@@ -1197,45 +1198,45 @@ def divergence_macd(
 				signal_buy_secondry['value_back'][secondry_counter] = extreme_min['value'][elm-diff_extereme_buy]
 				signal_buy_secondry['index'][secondry_counter] = extreme_min['index'][elm]
 
-				max_bet_counter = 0
-				max_bet_values = {}
-				for max_bet in extreme_max.index:
-					if extreme_min['index'][elm-diff_extereme_buy] <= extreme_max['index'][max_bet] <= extreme_min['index'][elm]:
-						max_bet_values[max_bet_counter] = extreme_max['value'][max_bet]
-						max_bet_counter += 1
+				#max_bet_counter = 0
+				#max_bet_values = {}
+				#for max_bet in extreme_max.index:
+					#if extreme_min['index'][elm-diff_extereme_buy] <= extreme_max['index'][max_bet] <= extreme_min['index'][elm]:
+						#max_bet_values[max_bet_counter] = extreme_max['value'][max_bet]
+						#max_bet_counter += 1
 
-				if len(max_bet_values) > 1:
-					signal_buy_secondry['max_bet_value'][secondry_counter] = max(max_bet_values.values())				
-				elif len(max_bet_values) == 1:
-					signal_buy_secondry['max_bet_value'][secondry_counter] = max_bet_values[0]
-				else:
-					signal_buy_secondry['max_bet_value'][secondry_counter] = 0
+				#if len(max_bet_values) > 1:
+					#signal_buy_secondry['max_bet_value'][secondry_counter] = max(max_bet_values.values())				
+				#elif len(max_bet_values) == 1:
+					#signal_buy_secondry['max_bet_value'][secondry_counter] = max_bet_values[0]
+				#else:
+					#signal_buy_secondry['max_bet_value'][secondry_counter] = 0
 
 				
-				if (
-					flag_learning == True and
-					(
+				#if (
+					#flag_learning == True and
+					#(
 						#signal_buy_secondry['max_bet_value'][secondry_counter] > out_before_buy['max_bet_value_upper'][0] or
-						signal_buy_secondry['max_bet_value'][secondry_counter] >= out_before_buy['max_bet_value_lower'][0]
-					)
-					):
-					pass
+						#signal_buy_secondry['max_bet_value'][secondry_counter] >= out_before_buy['max_bet_value_lower'][0]
+					#)
+					#):
+					#pass
 					#continue
 				#print(max_bet_values)
 
 				signal_buy_secondry['num_diff_to_extremes'][secondry_counter] = diff_extereme_buy
 				signal_buy_secondry['num_extreme'][secondry_counter] = len(extreme_min['index'])
 
-				signal_buy_secondry['num_extreme_between'][secondry_counter] = num_extreme_between
+				#signal_buy_secondry['num_extreme_between'][secondry_counter] = num_extreme_between
 
-				if (
-					flag_learning == True and
-					(
-						num_extreme_between < out_before_buy['num_extreme_between_lower'][0] or
-						num_extreme_between > out_before_buy['num_extreme_between_upper'][0]
-					)
-					):
-					pass
+				#if (
+					#flag_learning == True and
+					#(
+						#num_extreme_between < out_before_buy['num_extreme_between_lower'][0] or
+						#num_extreme_between > out_before_buy['num_extreme_between_upper'][0]
+					#)
+					#):
+					#pass
 					#continue
 
 				#Calculate porfits
@@ -1706,10 +1707,10 @@ def divergence_macd(
 
 				if len(list_elm) > 1:
 					diff_extereme_sell = round(np.max(list_elm))
-					num_extreme_between = len(list_elm)
+					#num_extreme_between = len(list_elm)
 				elif len(list_elm) == 1:
 					diff_extereme_sell = list_elm[0]
-					num_extreme_between = 1
+					#num_extreme_between = 1
 				else:
 					continue
 			else:
@@ -1737,7 +1738,7 @@ def divergence_macd(
 				signal_sell_primary['value_back'][primary_counter] = extreme_max['value'][elm-diff_extereme_sell]
 				signal_sell_primary['index'][primary_counter] = extreme_max['index'][elm]
 
-				signal_sell_primary['num_extreme_between'][primary_counter] = num_extreme_between
+				#signal_sell_primary['num_extreme_between'][primary_counter] = num_extreme_between
 				#signal_sell_primary['ramp_macd'][primary_counter] = (extreme_max['value'][elm] - extreme_max['value'][elm-1])/(extreme_max['index'][elm] - extreme_max['index'][elm-1])
 				#signal_sell_primary['ramp_candle'][primary_counter] = (dataset[symbol]['high'][extreme_max['index'][elm]] - dataset[symbol]['high'][extreme_max['index'][elm-1]])/(extreme_max['index'][elm] - extreme_max['index'][elm-1])
 				#signal_sell_primary['coef_ramps'][primary_counter] = signal_sell_primary['ramp_macd'][primary_counter]/signal_sell_primary['ramp_candle'][primary_counter]
@@ -2268,10 +2269,10 @@ def divergence_macd(
 
 				if len(list_elm) > 1:
 					diff_extereme_sell = round(np.max(list_elm))
-					num_extreme_between = len(list_elm)
+					#num_extreme_between = len(list_elm)
 				elif len(list_elm) == 1:
 					diff_extereme_sell = list_elm[0]
-					num_extreme_between = 1
+					#num_extreme_between = 1
 				else:
 					continue
 			else:
@@ -2303,7 +2304,7 @@ def divergence_macd(
 				signal_sell_secondry['num_diff_to_extremes'][secondry_counter] = diff_extereme_sell
 				signal_sell_secondry['num_extreme'][secondry_counter] = len(extreme_max['index'])
 
-				signal_sell_secondry['num_extreme_between'][secondry_counter] = num_extreme_between
+				#signal_sell_secondry['num_extreme_between'][secondry_counter] = num_extreme_between
 				#Calculate porfits
 				#must read protect and resist from protect resist function
 				if (mode == 'optimize'):
@@ -2967,7 +2968,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 											)[0])
 
 		if (signal_good.empty == True): 
-			print('no good signal 1')
+			#print('no good signal 1')
 			best_signals_interval = pd.DataFrame()
 			best_signals_interval['interval'] = [0,0,0]
 			best_signals_interval['power'] = [0,0,0]
@@ -3011,7 +3012,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 		signal_final = signal_final.sort_values(by = ['Y'])
 
 	except Exception as ex:
-		print('no good signal 1')
+		#print('no good signal 1')
 		best_signals_interval = pd.DataFrame()
 		best_signals_interval['interval'] = [0,0,0]
 		best_signals_interval['power'] = [0,0,0]
@@ -3568,23 +3569,23 @@ def tester_div_macd(
 													alpha=alpha
 													)
 
-			num_extereme_pr_buy = Find_Best_intervals(
-													signals=signal_buy,
-													apply_to='num_extreme_between',
-													min_tp=0.0, 
-													max_st=0, 
-													name_stp='flag_pr',
-													alpha=alpha
-													)
+			#num_extereme_pr_buy = Find_Best_intervals(
+													#signals=signal_buy,
+													#apply_to='num_extreme_between',
+													#min_tp=0.0, 
+													#max_st=0, 
+													#name_stp='flag_pr',
+													#alpha=alpha
+													#)
 
-			max_extereme_pr_buy = Find_Best_intervals(
-													signals=signal_buy,
-													apply_to='max_bet_value',
-													min_tp=0.0, 
-													max_st=0, 
-													name_stp='flag_pr',
-													alpha=alpha
-													)
+			#max_extereme_pr_buy = Find_Best_intervals(
+													#signals=signal_buy,
+													#apply_to='max_bet_value',
+													#min_tp=0.0, 
+													#max_st=0, 
+													#name_stp='flag_pr',
+													#alpha=alpha
+													#)
 
 
 			list_index_ok = np.where(
@@ -3652,11 +3653,11 @@ def tester_div_macd(
 
 			output_buy['alpha'] = [alpha]
 
-			output_buy['num_extreme_between_lower'] = [round(num_extereme_pr_buy['interval'][lower])]
-			output_buy['num_extreme_between_upper'] = [round(num_extereme_pr_buy['interval'][upper])]
+			#output_buy['num_extreme_between_lower'] = [round(num_extereme_pr_buy['interval'][lower])]
+			#output_buy['num_extreme_between_upper'] = [round(num_extereme_pr_buy['interval'][upper])]
 
-			output_buy['max_bet_value_upper'] = [max_extereme_pr_buy['interval'][upper]]
-			output_buy['max_bet_value_lower'] = [max_extereme_pr_buy['interval'][lower]]
+			#output_buy['max_bet_value_upper'] = [max_extereme_pr_buy['interval'][upper]]
+			#output_buy['max_bet_value_lower'] = [max_extereme_pr_buy['interval'][lower]]
 
 			#output_buy['ramp_vol'] = [ramp_volume_intervals_pr['interval'][lower]]
 			#output_buy['value_back'] = [value_back_intervals_pr['interval'][upper]]
@@ -3805,14 +3806,14 @@ def tester_div_macd(
 													alpha=alpha
 													)
 
-			num_extereme_pr_sell = Find_Best_intervals(
-													signals=signal_sell,
-													apply_to='num_extreme_between',
-													min_tp=0.0, 
-													max_st=0, 
-													name_stp='flag_pr',
-													alpha=alpha
-													)
+			#num_extereme_pr_sell = Find_Best_intervals(
+													#signals=signal_sell,
+													#apply_to='num_extreme_between',
+													#min_tp=0.0, 
+													#max_st=0, 
+													#name_stp='flag_pr',
+													#alpha=alpha
+													#)
 
 
 			list_index_ok = np.where(
@@ -3889,7 +3890,7 @@ def tester_div_macd(
 
 			output_sell['alpha'] = [alpha]
 
-			output_sell['num_extreme_between'] = [round(num_extereme_pr_sell['interval'][upper])]
+			#output_sell['num_extreme_between'] = [round(num_extereme_pr_sell['interval'][upper])]
 
 
 
@@ -4710,7 +4711,7 @@ def genetic_algo_div_macd(
 	learning_interval_counter = 0
 	learn_counter = 1
 
-	
+	bar = Bar(flag_trade, max = int(num_turn))
 
 	with tqdm(total=num_turn) as pbar:
 		while chrom_counter < len(Chromosome):
@@ -4830,8 +4831,10 @@ def genetic_algo_div_macd(
 				pass
 
 			#print()
-			pbar_numbers = all_chorms
-			pbar.update(pbar_numbers)
+			#pbar_numbers = all_chorms
+			#pbar.update(pbar_numbers)
+			bar.next()
+
 
 			#print()
 			
@@ -6211,7 +6214,7 @@ def genetic_algo_div_macd(
 
 #********************** read GA result ****************************************************************************
 
-@stTime
+#@stTime
 def read_ga_result(symbol):
 
 	if os.path.exists('GA/MACD/primary/buy/'+symbol+'.csv'):

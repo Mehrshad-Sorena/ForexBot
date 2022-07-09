@@ -1,3 +1,4 @@
-,Unnamed: 0,Unnamed: 0.1,Unnamed: 0.1.1,Unnamed: 0.1.1.1,Unnamed: 0.1.1.1.1,Unnamed: 0.1.1.1.1.1,Unnamed: 0.1.1.1.1.1.1,Unnamed: 0.1.1.1.1.1.1.1,fast_period,slow_period,signal_period,apply_to,alpha,num_extreme,diff_extereme,signal,score_buy,score_sell
-0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4,25,14,close,0.45,39,5,sell,0.0,147.7071428
-1,,,,,,,,,13,127,17,open,0.15,39,5,"buy,sell",0.0,33261.541659996205
+,Unnamed: 0,Unnamed: 0.1,Unnamed: 0.1.1,Unnamed: 0.1.1.1,Unnamed: 0.1.1.1.1,Unnamed: 0.1.1.1.1.1,Unnamed: 0.1.1.1.1.1.1,Unnamed: 0.1.1.1.1.1.1.1,Unnamed: 0.1.1.1.1.1.1.1.1,fast_period,slow_period,signal_period,apply_to,alpha,num_extreme,diff_extereme,signal,score_buy,score_sell
+0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4,25,14,close,0.45,39,5,sell,0.0,147.7071428
+1,1.0,,,,,,,,,13,127,17,open,0.15,39,5,"buy,sell",0.0,33261.541659996205
+2,,,,,,,,,,13,127,17,open,0.22,39,4,"buy,sell",0.0,15331.648339546611

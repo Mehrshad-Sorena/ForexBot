@@ -8,6 +8,7 @@ from scipy.optimize import fsolve
 from sma import last_signal_sma
 import matplotlib.pyplot as plt
 from datetime import datetime
+from progress.bar import Bar
 from random import randint
 from log_get_data import *
 from timer import stTime
@@ -38,6 +39,7 @@ warnings.filterwarnings("ignore")
 #macd_div_tester_for_permit()
 #last_signal_macd_div()
 #learning_algo_div_macd()
+#chromosome_saver()
 
 #/////////////////////////////////////////
 
@@ -196,7 +198,7 @@ def golden_cross(dataset,Apply_to,symbol,macd_fast=12,macd_slow=26,macd_signal=9
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #**************************************************** Divergence Strategy *******************************************************
-@stTime
+#@stTime
 def divergence_macd(
 				dataset,
 				dataset_15M,
@@ -262,6 +264,8 @@ def divergence_macd(
 
 	#***************************** Initialize Inputs ************************
 
+	diff_extereme = int(diff_extereme)
+
 	macd_read = ind.macd(dataset[symbol][Apply_to],fast = macd_fast,slow = macd_slow,signal = macd_signal)
 
 	macd = pd.DataFrame()
@@ -275,7 +279,7 @@ def divergence_macd(
 		):
 		num_exteremes = 2
 
-	n = num_exteremes
+	n = int(num_exteremes)
 	
 	min_ex = macd.iloc[argrelextrema(
 									macd.macds.values, 
@@ -333,7 +337,7 @@ def divergence_macd(
 		signal_buy_primary['index'] = np.nan
 		signal_buy_primary['num_diff_to_extremes'] = np.nan
 		signal_buy_primary['num_extreme'] = np.nan
-		signal_buy_primary['num_extreme_between'] = np.nan
+		#signal_buy_primary['num_extreme_between'] = np.nan
 
 		if (mode == 'optimize'):
 			if (name_stp_minmax == True):
@@ -373,8 +377,8 @@ def divergence_macd(
 		signal_buy_secondry['index'] = np.nan
 		signal_buy_secondry['num_diff_to_extremes'] = np.nan
 		signal_buy_secondry['num_extreme'] = np.nan
-		signal_buy_secondry['num_extreme_between'] = np.nan
-		signal_buy_secondry['max_bet_value'] = np.nan
+		#signal_buy_secondry['num_extreme_between'] = np.nan
+		#signal_buy_secondry['max_bet_value'] = np.nan
 
 		if (mode == 'optimize'):
 			if (name_stp_minmax == True):
@@ -414,7 +418,7 @@ def divergence_macd(
 		signal_sell_primary['index'] = np.nan
 		signal_sell_primary['num_diff_to_extremes'] = np.nan
 		signal_sell_primary['num_extreme'] = np.nan
-		signal_sell_primary['num_extreme_between'] = np.nan
+		#signal_sell_primary['num_extreme_between'] = np.nan
 
 		if (mode == 'optimize'):
 			if (name_stp_minmax == True):
@@ -452,7 +456,7 @@ def divergence_macd(
 		signal_sell_secondry['index'] = np.nan
 		signal_sell_secondry['num_diff_to_extremes'] = np.nan
 		signal_sell_secondry['num_extreme'] = np.nan
-		signal_sell_secondry['num_extreme_between'] = np.nan
+		#signal_sell_secondry['num_extreme_between'] = np.nan
 
 		if (mode == 'optimize'):
 			if (name_stp_minmax == True):
@@ -486,11 +490,11 @@ def divergence_macd(
 		primary_counter = 0
 		secondry_counter = 0
 
-		print('exterme finded ======> ',len(extreme_min['index']))
+		#print('exterme finded ======> ',len(extreme_min['index']))
 
 		#print('last max finded ======> ',extreme_max['index'].iloc[-1])
 		#print('last min finded ======> ',extreme_min['index'].iloc[-1])
-		print('flag learning ========> ',flag_learning)
+		#print('flag learning ========> ',flag_learning)
 
 		mehrshad = 0
 
@@ -581,10 +585,10 @@ def divergence_macd(
 
 				if len(list_elm) > 1:
 					diff_extereme_buy = round(np.max(list_elm))
-					num_extreme_between = len(list_elm)
+					#num_extreme_between = len(list_elm)
 				elif len(list_elm) == 1:
 					diff_extereme_buy = list_elm[0]
-					num_extreme_between = 1
+					#num_extreme_between = 1
 				else:
 					continue 
 			else:
@@ -619,7 +623,7 @@ def divergence_macd(
 				signal_buy_primary['value_front'][primary_counter] = extreme_min['value'][elm]
 				signal_buy_primary['value_back'][primary_counter] = extreme_min['value'][elm-diff_extereme_buy]
 				signal_buy_primary['index'][primary_counter] = extreme_min['index'][elm]
-				signal_buy_primary['num_extreme_between'][primary_counter] = num_extreme_between
+				#signal_buy_primary['num_extreme_between'][primary_counter] = num_extreme_between
 				#signal_buy_primary['ramp_macd'][primary_counter] = (extreme_min['value'][elm] - extreme_min['value'][elm-3])/(extreme_min['index'][elm] - extreme_min['index'][elm-3])
 				#signal_buy_primary['ramp_candle'][primary_counter] = (dataset[symbol]['low'][extreme_min['index'][elm]] - dataset[symbol]['low'][extreme_min['index'][elm-3]])/(extreme_min['index'][elm] - extreme_min['index'][elm-3])
 				#signal_buy_primary['coef_ramps'][primary_counter] = signal_buy_primary['ramp_macd'][primary_counter]/abs(signal_buy_primary['ramp_candle'][primary_counter])
@@ -1162,10 +1166,10 @@ def divergence_macd(
 
 				if len(list_elm) > 1:
 					diff_extereme_buy = round(np.max(list_elm))
-					num_extreme_between = len(list_elm)
+					#num_extreme_between = len(list_elm)
 				elif len(list_elm) == 1:
 					diff_extereme_buy = list_elm[0]
-					num_extreme_between = 1
+					#num_extreme_between = 1
 				else:
 					continue 
 			else:
@@ -1196,45 +1200,45 @@ def divergence_macd(
 				signal_buy_secondry['value_back'][secondry_counter] = extreme_min['value'][elm-diff_extereme_buy]
 				signal_buy_secondry['index'][secondry_counter] = extreme_min['index'][elm]
 
-				max_bet_counter = 0
-				max_bet_values = {}
-				for max_bet in extreme_max.index:
-					if extreme_min['index'][elm-diff_extereme_buy] <= extreme_max['index'][max_bet] <= extreme_min['index'][elm]:
-						max_bet_values[max_bet_counter] = extreme_max['value'][max_bet]
-						max_bet_counter += 1
+				#max_bet_counter = 0
+				#max_bet_values = {}
+				#for max_bet in extreme_max.index:
+					#if extreme_min['index'][elm-diff_extereme_buy] <= extreme_max['index'][max_bet] <= extreme_min['index'][elm]:
+						#max_bet_values[max_bet_counter] = extreme_max['value'][max_bet]
+						#max_bet_counter += 1
 
-				if len(max_bet_values) > 1:
-					signal_buy_secondry['max_bet_value'][secondry_counter] = max(max_bet_values.values())				
-				elif len(max_bet_values) == 1:
-					signal_buy_secondry['max_bet_value'][secondry_counter] = max_bet_values[0]
-				else:
-					signal_buy_secondry['max_bet_value'][secondry_counter] = 0
+				#if len(max_bet_values) > 1:
+					#signal_buy_secondry['max_bet_value'][secondry_counter] = max(max_bet_values.values())				
+				#elif len(max_bet_values) == 1:
+					#signal_buy_secondry['max_bet_value'][secondry_counter] = max_bet_values[0]
+				#else:
+					#signal_buy_secondry['max_bet_value'][secondry_counter] = 0
 
 				
-				if (
-					flag_learning == True and
-					(
+				#if (
+					#flag_learning == True and
+					#(
 						#signal_buy_secondry['max_bet_value'][secondry_counter] > out_before_buy['max_bet_value_upper'][0] or
-						signal_buy_secondry['max_bet_value'][secondry_counter] >= out_before_buy['max_bet_value_lower'][0]
-					)
-					):
-					pass
+						#signal_buy_secondry['max_bet_value'][secondry_counter] >= out_before_buy['max_bet_value_lower'][0]
+					#)
+					#):
+					#pass
 					#continue
 				#print(max_bet_values)
 
 				signal_buy_secondry['num_diff_to_extremes'][secondry_counter] = diff_extereme_buy
 				signal_buy_secondry['num_extreme'][secondry_counter] = len(extreme_min['index'])
 
-				signal_buy_secondry['num_extreme_between'][secondry_counter] = num_extreme_between
+				#signal_buy_secondry['num_extreme_between'][secondry_counter] = num_extreme_between
 
-				if (
-					flag_learning == True and
-					(
-						num_extreme_between < out_before_buy['num_extreme_between_lower'][0] or
-						num_extreme_between > out_before_buy['num_extreme_between_upper'][0]
-					)
-					):
-					pass
+				#if (
+					#flag_learning == True and
+					#(
+						#num_extreme_between < out_before_buy['num_extreme_between_lower'][0] or
+						#num_extreme_between > out_before_buy['num_extreme_between_upper'][0]
+					#)
+					#):
+					#pass
 					#continue
 
 				#Calculate porfits
@@ -1705,10 +1709,10 @@ def divergence_macd(
 
 				if len(list_elm) > 1:
 					diff_extereme_sell = round(np.max(list_elm))
-					num_extreme_between = len(list_elm)
+					#num_extreme_between = len(list_elm)
 				elif len(list_elm) == 1:
 					diff_extereme_sell = list_elm[0]
-					num_extreme_between = 1
+					#num_extreme_between = 1
 				else:
 					continue
 			else:
@@ -1736,7 +1740,7 @@ def divergence_macd(
 				signal_sell_primary['value_back'][primary_counter] = extreme_max['value'][elm-diff_extereme_sell]
 				signal_sell_primary['index'][primary_counter] = extreme_max['index'][elm]
 
-				signal_sell_primary['num_extreme_between'][primary_counter] = num_extreme_between
+				#signal_sell_primary['num_extreme_between'][primary_counter] = num_extreme_between
 				#signal_sell_primary['ramp_macd'][primary_counter] = (extreme_max['value'][elm] - extreme_max['value'][elm-1])/(extreme_max['index'][elm] - extreme_max['index'][elm-1])
 				#signal_sell_primary['ramp_candle'][primary_counter] = (dataset[symbol]['high'][extreme_max['index'][elm]] - dataset[symbol]['high'][extreme_max['index'][elm-1]])/(extreme_max['index'][elm] - extreme_max['index'][elm-1])
 				#signal_sell_primary['coef_ramps'][primary_counter] = signal_sell_primary['ramp_macd'][primary_counter]/signal_sell_primary['ramp_candle'][primary_counter]
@@ -2267,10 +2271,10 @@ def divergence_macd(
 
 				if len(list_elm) > 1:
 					diff_extereme_sell = round(np.max(list_elm))
-					num_extreme_between = len(list_elm)
+					#num_extreme_between = len(list_elm)
 				elif len(list_elm) == 1:
 					diff_extereme_sell = list_elm[0]
-					num_extreme_between = 1
+					#num_extreme_between = 1
 				else:
 					continue
 			else:
@@ -2302,7 +2306,7 @@ def divergence_macd(
 				signal_sell_secondry['num_diff_to_extremes'][secondry_counter] = diff_extereme_sell
 				signal_sell_secondry['num_extreme'][secondry_counter] = len(extreme_max['index'])
 
-				signal_sell_secondry['num_extreme_between'][secondry_counter] = num_extreme_between
+				#signal_sell_secondry['num_extreme_between'][secondry_counter] = num_extreme_between
 				#Calculate porfits
 				#must read protect and resist from protect resist function
 				if (mode == 'optimize'):
@@ -2775,7 +2779,7 @@ def divergence_macd(
 	#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 		#print('=======> signal_buy_primary before = ',signal_buy_primary)
 
-	print('mehrshad =====> ',mehrshad)
+	#print('mehrshad =====> ',mehrshad)
 
 	signal_buy_primary = signal_buy_primary.drop(columns=0)
 	signal_buy_primary = signal_buy_primary.dropna()
@@ -2803,7 +2807,7 @@ def divergence_macd(
 	signal_sell_secondry = signal_sell_secondry.sort_values(by = ['index'])
 	signal_sell_secondry = signal_sell_secondry.reset_index(drop=True)
 	
-	print('*********************** Buy *********************************')
+	#print('*********************** Buy *********************************')
 	#print(signal_buy_primary)
 	#print(signal_buy_secondry)
 	if False:#(mode == 'optimize'):
@@ -2861,9 +2865,9 @@ def divergence_macd(
 		print('min down = ',np.min(signal_buy_secondry['diff_pr_down'][np.where(signal_buy_secondry['flag_pr'] == 'st')[0]].to_numpy()))
 		print('mean down = ',np.mean(signal_buy_secondry['diff_pr_down'][np.where(signal_buy_secondry['flag_pr'] == 'st')[0]].to_numpy()))
 
-	print('/////////////////////////////////////////////////////////////////')
+	#print('/////////////////////////////////////////////////////////////////')
 
-	print('*************************** Sell ***********************************')
+	#print('*************************** Sell ***********************************')
 	#print(signal_sell_primary)
 	#print(signal_sell_secondry)
 	if False:#(mode == 'optimize'):	
@@ -2966,7 +2970,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 											)[0])
 
 		if (signal_good.empty == True): 
-			print('no good signal 1')
+			#print('no good signal 1')
 			best_signals_interval = pd.DataFrame()
 			best_signals_interval['interval'] = [0,0,0]
 			best_signals_interval['power'] = [0,0,0]
@@ -3010,7 +3014,7 @@ def Find_Best_intervals(signals,apply_to, min_tp=0.1, max_st=0.1, name_stp='flag
 		signal_final = signal_final.sort_values(by = ['Y'])
 
 	except Exception as ex:
-		print('no good signal 1')
+		#print('no good signal 1')
 		best_signals_interval = pd.DataFrame()
 		best_signals_interval['interval'] = [0,0,0]
 		best_signals_interval['power'] = [0,0,0]
@@ -3567,23 +3571,23 @@ def tester_div_macd(
 													alpha=alpha
 													)
 
-			num_extereme_pr_buy = Find_Best_intervals(
-													signals=signal_buy,
-													apply_to='num_extreme_between',
-													min_tp=0.0, 
-													max_st=0, 
-													name_stp='flag_pr',
-													alpha=alpha
-													)
+			#num_extereme_pr_buy = Find_Best_intervals(
+													#signals=signal_buy,
+													#apply_to='num_extreme_between',
+													#min_tp=0.0, 
+													#max_st=0, 
+													#name_stp='flag_pr',
+													#alpha=alpha
+													#)
 
-			max_extereme_pr_buy = Find_Best_intervals(
-													signals=signal_buy,
-													apply_to='max_bet_value',
-													min_tp=0.0, 
-													max_st=0, 
-													name_stp='flag_pr',
-													alpha=alpha
-													)
+			#max_extereme_pr_buy = Find_Best_intervals(
+													#signals=signal_buy,
+													#apply_to='max_bet_value',
+													#min_tp=0.0, 
+													#max_st=0, 
+													#name_stp='flag_pr',
+													#alpha=alpha
+													#)
 
 
 			list_index_ok = np.where(
@@ -3606,7 +3610,7 @@ def tester_div_macd(
 				output_buy['sum_st_pr'] = [np.sum(signal_buy['st_pr'][np.where(signal_buy['flag_pr'] == 'st')[0]].to_numpy())]
 				output_buy['sum_tp_pr'] = [np.sum(signal_buy['tp_pr'][np.where(signal_buy['flag_pr'] == 'tp')[0]].to_numpy())]
 			except Exception as ex:
-				print('error tester pr buy: ',ex)
+				#print('error tester pr buy: ',ex)
 				output_buy['sum_st_pr'] = 0
 				output_buy['sum_tp_pr'] = 0
 
@@ -3651,11 +3655,11 @@ def tester_div_macd(
 
 			output_buy['alpha'] = [alpha]
 
-			output_buy['num_extreme_between_lower'] = [round(num_extereme_pr_buy['interval'][lower])]
-			output_buy['num_extreme_between_upper'] = [round(num_extereme_pr_buy['interval'][upper])]
+			#output_buy['num_extreme_between_lower'] = [round(num_extereme_pr_buy['interval'][lower])]
+			#output_buy['num_extreme_between_upper'] = [round(num_extereme_pr_buy['interval'][upper])]
 
-			output_buy['max_bet_value_upper'] = [max_extereme_pr_buy['interval'][upper]]
-			output_buy['max_bet_value_lower'] = [max_extereme_pr_buy['interval'][lower]]
+			#output_buy['max_bet_value_upper'] = [max_extereme_pr_buy['interval'][upper]]
+			#output_buy['max_bet_value_lower'] = [max_extereme_pr_buy['interval'][lower]]
 
 			#output_buy['ramp_vol'] = [ramp_volume_intervals_pr['interval'][lower]]
 			#output_buy['value_back'] = [value_back_intervals_pr['interval'][upper]]
@@ -3804,14 +3808,14 @@ def tester_div_macd(
 													alpha=alpha
 													)
 
-			num_extereme_pr_sell = Find_Best_intervals(
-													signals=signal_sell,
-													apply_to='num_extreme_between',
-													min_tp=0.0, 
-													max_st=0, 
-													name_stp='flag_pr',
-													alpha=alpha
-													)
+			#num_extereme_pr_sell = Find_Best_intervals(
+													#signals=signal_sell,
+													#apply_to='num_extreme_between',
+													#min_tp=0.0, 
+													#max_st=0, 
+													#name_stp='flag_pr',
+													#alpha=alpha
+													#)
 
 
 			list_index_ok = np.where(
@@ -3838,7 +3842,7 @@ def tester_div_macd(
 				output_sell['sum_st_pr'] = [np.sum(signal_sell['st_pr'][np.where(signal_sell['flag_pr'] == 'st')[0]].to_numpy())]
 				output_sell['sum_tp_pr'] = [np.sum(signal_sell['tp_pr'][np.where(signal_sell['flag_pr'] == 'tp')[0]].to_numpy())]
 			except Exception as ex:
-				print('error tester pr sell: ',ex)
+				#print('error tester pr sell: ',ex)
 				output_sell['sum_st_pr'] = 0
 				output_sell['sum_tp_pr'] = 0
 
@@ -3888,7 +3892,7 @@ def tester_div_macd(
 
 			output_sell['alpha'] = [alpha]
 
-			output_sell['num_extreme_between'] = [round(num_extereme_pr_sell['interval'][upper])]
+			#output_sell['num_extreme_between'] = [round(num_extereme_pr_sell['interval'][upper])]
 
 
 
@@ -4288,6 +4292,101 @@ def gen_creator(
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#**************************************** Choromosome Saver ***************************************************************
+
+def chromosome_saver(
+						Chromosome,
+						chrom_counter,
+						symbol,
+						flag_trade,
+						primary_doing,
+						secondry_doing,
+						fast_period_upper,
+						fast_period_lower,
+						slow_period_upper,
+						slow_period_lower,
+						signal_period_upper,
+						signal_period_lower
+						):
+	
+	if flag_trade == 'buy':
+		if primary_doing == True:
+			chromosome_path = 'GA/MACD/primary/buy/'+symbol + '_choromosomes' + '.csv'
+		if secondry_doing == True:
+			chromosome_path = 'GA/MACD/secondry/buy/'+symbol + '_choromosomes' + '.csv'
+
+	if flag_trade == 'sell':
+		if primary_doing == True:
+			chromosome_path = 'GA/MACD/primary/sell/'+symbol + '_choromosomes' + '.csv'
+		if secondry_doing == True:
+			chromosome_path = 'GA/MACD/secondry/sell/'+symbol + '_choromosomes' + '.csv'
+
+
+	if os.path.exists(chromosome_path):
+		if flag_trade == 'buy':
+			if primary_doing == True:
+				ga_result = pd.read_csv(chromosome_path)
+
+			if secondry_doing == True:
+				ga_result = pd.read_csv(chromosome_path)
+
+		if flag_trade == 'sell':
+			if primary_doing == True:
+				ga_result = pd.read_csv(chromosome_path)
+
+			if secondry_doing == True:
+				ga_result = pd.read_csv(chromosome_path)
+
+
+		ga_chromosome_counter = 0
+		while ga_chromosome_counter < len(ga_result['fast_period']):
+			if (
+				Chromosome[chrom_counter]['fast_period'] == ga_result['fast_period'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['slow_period'] == ga_result['slow_period'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['signal_period'] == ga_result['signal_period'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['apply_to'] == ga_result['apply_to'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['alpha'] == ga_result['alpha'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['num_extreme'] == ga_result['num_extreme'][ga_chromosome_counter] and
+				Chromosome[chrom_counter]['diff_extereme'] == ga_result['diff_extereme'][ga_chromosome_counter]
+				):
+
+				slow_period = randint(slow_period_lower, slow_period_upper) 
+				fast_period = randint(fast_period_lower, fast_period_upper)
+				while slow_period <= fast_period:
+					slow_period = randint(slow_period_lower, slow_period_upper) 
+					fast_period = randint(fast_period_lower, fast_period_upper)
+
+				Chromosome[chrom_counter] = {
+											'fast_period': fast_period,
+											'slow_period': slow_period,
+											'signal_period': randint(signal_period_lower, signal_period_upper),
+											'apply_to': np.random.choice(apply_to_list_ga),
+											'alpha': randint(1, 50)/100,
+											'num_extreme': randint(1,int((fast_period/slow_period)*100*fast_period)),
+											'diff_extereme': 6,
+											'signal': None,
+											'score_buy': 0,
+											'score_sell': 0
+											}
+				ga_chromosome_counter = 0
+				continue
+
+			else:
+				ga_result = ga_result.append(Chromosome[chrom_counter], ignore_index=True)
+				os.remove(chromosome_path)
+				ga_result.to_csv(chromosome_path)
+				return Chromosome
+
+			ga_chromosome_counter += 1
+	else:
+		ga_result = pd.DataFrame()
+		ga_result = ga_result.append(Chromosome[chrom_counter], ignore_index=True)
+		ga_result.to_csv(chromosome_path)
+
+		return Chromosome
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #***************************************** Genetic Algorithm **************************************************************
 
 #@stTime
@@ -4306,7 +4405,7 @@ def genetic_algo_div_macd(
 							secondry_doing,
 							real_test
 							):
-
+	
 	#*************************** Algorithm *************************************************//
 
 	fast_period_upper = 800
@@ -4406,8 +4505,15 @@ def genetic_algo_div_macd(
 										signal_period_lower=signal_period_lower
 										)
 
-	print('================================ START Genetic BUY ==> ',symbol)
-	print('\n')
+	if primary_doing == True:
+		priority = 'Primary'
+	else:
+		priority = 'Secondry'
+
+
+
+	#print('================================ START Genetic ',flag_trade,' ===> ',symbol,' ',priority)
+	#print('\n')
 
 	now = datetime.now()
 
@@ -4509,6 +4615,8 @@ def genetic_algo_div_macd(
 	output_before_buy = pd.DataFrame()
 	output_before_sell = pd.DataFrame()
 
+	new_chromosome = True
+
 
 	if flag_trade == 'buy':
 		if os.path.exists(buy_path):
@@ -4527,6 +4635,8 @@ def genetic_algo_div_macd(
 					Chromosome[0]['score_buy'] = float(chrom_get['score_buy'])
 					Chromosome[0]['score_sell'] = float(chrom_get['score_sell'])
 
+					new_chromosome = False
+
 					if flag_trade == 'buy':
 						if primary_doing == True:
 							ga_result_buy, _, _, _ = read_ga_result(symbol=symbol)
@@ -4538,10 +4648,10 @@ def genetic_algo_div_macd(
 							max_score_ga_buy = float(chrom_get['score_min_max'])
 
 						if ga_result_buy['methode'][0] == 'pr':
-							max_score_ga_buy = float(chrom_get['score_pr'])
+							max_score_ga_buy = float(chrom_get['score_pr'])/1000
 
 						output_before_buy = ga_result_buy
-					print(Chromosome[0])
+					#print(Chromosome[0])
 
 	if flag_trade == 'sell':
 		if os.path.exists(sell_path):
@@ -4559,6 +4669,8 @@ def genetic_algo_div_macd(
 					Chromosome[0]['score_buy'] = float(chrom_get['score_buy'])
 					Chromosome[0]['score_sell'] = float(chrom_get['score_sell'])
 
+					new_chromosome = False
+
 					if flag_trade == 'sell':
 						if primary_doing == True:
 							_, _, ga_result_sell, _ = read_ga_result(symbol=symbol)
@@ -4570,10 +4682,10 @@ def genetic_algo_div_macd(
 							max_score_ga_sell = float(chrom_get['score_min_max'])
 
 						if ga_result_sell['methode'][0] == 'pr':
-							max_score_ga_sell = float(chrom_get['score_pr'])
+							max_score_ga_sell = float(chrom_get['score_pr'])/1000
 
 						output_before_sell = ga_result_sell
-					print(Chromosome[0])
+					#print(Chromosome[0])
 
 				
 
@@ -4601,42 +4713,132 @@ def genetic_algo_div_macd(
 	learning_interval_counter = 0
 	learn_counter = 1
 
+	bar = Bar(flag_trade, max = int(num_turn))
+
 	with tqdm(total=num_turn) as pbar:
 		while chrom_counter < len(Chromosome):
 
+			if (
+				new_chromosome == True and
+				flag_learning == False
+				):
+
+				Chromosome = chromosome_saver(
+												Chromosome=Chromosome,
+												chrom_counter=chrom_counter,
+												symbol=symbol,
+												flag_trade=flag_trade,
+												primary_doing=primary_doing,
+												secondry_doing=secondry_doing,
+												fast_period_upper=fast_period_upper,
+												fast_period_lower=fast_period_lower,
+												slow_period_upper=slow_period_upper,
+												slow_period_lower=slow_period_lower,
+												signal_period_upper=signal_period_upper,
+												signal_period_lower=signal_period_lower
+												)
+				flag_learning = False
+				new_chromosome = False
+			elif (
+				new_chromosome == False #and
+				#chrom_counter == 0
+					):
+
+				
+				if flag_trade == 'buy':
+					if len(chromosome_buy) == 0:
+						result_buy = result_buy.append(output_before_buy, ignore_index=True)
+						score_buy = (output_before_buy['score_pr'][0])
+						Chromosome[0].update({'score_buy': score_buy })
+						chromosome_buy = chromosome_buy.append(Chromosome[0], ignore_index=True)
+
+						Chromosome = chromosome_saver(
+														Chromosome=Chromosome,
+														chrom_counter=chrom_counter,
+														symbol=symbol,
+														flag_trade=flag_trade,
+														primary_doing=primary_doing,
+														secondry_doing=secondry_doing,
+														fast_period_upper=fast_period_upper,
+														fast_period_lower=fast_period_lower,
+														slow_period_upper=slow_period_upper,
+														slow_period_lower=slow_period_lower,
+														signal_period_upper=signal_period_upper,
+														signal_period_lower=signal_period_lower
+														)
+						flag_learning = False
+						new_chromosome = False
+
+				if flag_trade == 'sell':
+					if len(chromosome_sell) == 0:
+				
+						result_sell = result_sell.append(output_before_buy, ignore_index=True)
+						score_sell = (output_before_sell['score_pr'][0])
+						Chromosome[0].update({'score_sell': score_sell })
+						chromosome_sell = chromosome_sell.append(Chromosome[0], ignore_index=True)
+
+						Chromosome = chromosome_saver(
+														Chromosome=Chromosome,
+														chrom_counter=chrom_counter,
+														symbol=symbol,
+														flag_trade=flag_trade,
+														primary_doing=primary_doing,
+														secondry_doing=secondry_doing,
+														fast_period_upper=fast_period_upper,
+														fast_period_lower=fast_period_lower,
+														slow_period_upper=slow_period_upper,
+														slow_period_lower=slow_period_lower,
+														signal_period_upper=signal_period_upper,
+														signal_period_lower=signal_period_lower
+														)
+						flag_learning = False
+						new_chromosome = False
+
 			#print('==== flag trade===> ', flag_trade)
-			print()
+			#print()
+
+			if primary_doing == True:
+				priority = 'Primary'
+			else:
+				priority = 'Secondry'
 
 			if flag_trade == 'buy':
-				print()
-				print('================== Num BUY Symbol ==>',symbol)
-				print()
-				print('================== Num BUY =========> ',len(chromosome_buy))
+				#print()
+				#print('================== Num BUY Symbol ==>',symbol,' ',priority)
+				#print()
+				#print('================== Num BUY =========> ',len(chromosome_buy))
+				pass
 
 			if flag_trade == 'sell':
-				print()
-				print('================== Num SELL Symbol =>',symbol)
-				print()
-				print('================== Num SELL ========> ',len(chromosome_sell))
+				#print()
+				#print('================== Num SELL Symbol =>',symbol,' ', priority)
+				#print()
+				#print('================== Num SELL ========> ',len(chromosome_sell))
+				pass
 
-			print('================== Num Chroms ======> ',chrom_counter)
-			print('================== All Chorms ======> ',all_chorms)
-			print('================== Chorm Reseter ===> ',chorm_reset_counter)
-			print('================== AI Turn =========> ',learn_counter-1)
+			#print('================== Num Chroms ======> ',chrom_counter)
+			#print('================== All Chorms ======> ',all_chorms)
+			#print('================== Chorm Reseter ===> ',chorm_reset_counter)
+			#print('================== AI Turn =========> ',learn_counter-1)
+			#print('================== New Chromosome ==> ',new_chromosome)
 
 			if flag_trade == 'buy':
-				print('===== bad score counter buy ========> ',bad_score_counter_buy)
-				print('===== bad score counter buy 2 ======> ',bad_score_counter_buy_2)
+				#print('===== bad score counter buy ========> ',bad_score_counter_buy)
+				#print('===== bad score counter buy 2 ======> ',bad_score_counter_buy_2)
+				pass
 
 			if flag_trade == 'sell':
-				print('===== bad score counter buy ========> ',bad_score_counter_sell)
-				print('===== bad score counter buy 2 ======> ',bad_score_counter_sell_2)
+				#print('===== bad score counter buy ========> ',bad_score_counter_sell)
+				#print('===== bad score counter buy 2 ======> ',bad_score_counter_sell_2)
+				pass
 
-			print()
-			pbar_numbers = int((len(chromosome_buy) + len(chromosome_sell))/2)
-			pbar.update(pbar_numbers)
+			#print()
+			#pbar_numbers = all_chorms
+			#pbar.update(pbar_numbers)
+			bar.next()
 
-			print()
+
+			#print()
 			
 
 			if (chorm_reset_counter >= 27):
@@ -4719,6 +4921,7 @@ def genetic_algo_div_macd(
 					'score_buy': 0,
 					'score_sell': 0
 					}
+				new_chromosome = True
 				#all_chorms += 1
 				#continue
 
@@ -4736,13 +4939,13 @@ def genetic_algo_div_macd(
 					low_distance = randint((learn_counter*16800), ((learn_counter*16800) + 16800))
 					high_distance = randint((learn_counter*16800), ((learn_counter*16800) + 16800))
 
-				print('==== High Distance =============> ',high_distance)
-				print('==== Low Distance ==============> ',low_distance)
+				#print('==== High Distance =============> ',high_distance)
+				#print('==== Low Distance ==============> ',low_distance)
 
-				print('==== Symbol ====================> ',symbol)
+				#print('==== Symbol ====================> ',symbol)
 
-				print('==== AI Turn ===================> ',learn_counter)
-				print('==== Length Dataset ============> ',high_distance - low_distance)
+				#print('==== AI Turn ===================> ',learn_counter)
+				#print('==== Length Dataset ============> ',high_distance - low_distance)
 				
 
 				dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, _ = read_dataset_csv(
@@ -4766,40 +4969,40 @@ def genetic_algo_div_macd(
 			if all_chorms >= int(num_turn): break
 			all_chorms += 1
 
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				print('======== Chorme ================> ')
-				print()
-				print('........................................................')
-				print(Chromosome[chrom_counter])
-				print('........................................................')
-				print()
+			#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				#print('======== Chorme ================> ')
+				#print()
+				#print('........................................................')
+				#print(Chromosome[chrom_counter])
+				#print('........................................................')
+				#print()
 
-			if flag_trade == 'buy':
-				print('======== max st tp ================> ')
-				print()
-				print('........................................................')
-				print('======== max tp ===================> ',max_tp_buy)
-				print('======== min tp ===================> ',min_tp_buy)
-				print('======== max st ===================> ',max_st_buy)
-				print('======== min st ===================> ',min_st_buy)
-				print('........................................................')
-				print()
+			#if flag_trade == 'buy':
+				#print('======== max st tp ================> ')
+				#print()
+				#print('........................................................')
+				#print('======== max tp ===================> ',max_tp_buy)
+				#print('======== min tp ===================> ',min_tp_buy)
+				#print('======== max st ===================> ',max_st_buy)
+				#print('======== min st ===================> ',min_st_buy)
+				#print('........................................................')
+				#print()
 
-			if flag_trade == 'sell':
-				print('======== max st tp ================> ')
-				print()
-				print('........................................................')
-				print('======== max tp ===================> ',max_tp_sell)
-				print('======== min tp ===================> ',min_tp_sell)
-				print('======== max st ===================> ',max_st_sell)
-				print('======== min st ===================> ',min_st_sell)
-				print('........................................................')
-				print()
+			#if flag_trade == 'sell':
+				#print('======== max st tp ================> ')
+				#print()
+				#print('........................................................')
+				#print('======== max tp ===================> ',max_tp_sell)
+				#print('======== min tp ===================> ',min_tp_sell)
+				#print('======== max st ===================> ',max_st_sell)
+				#print('======== min st ===================> ',min_st_sell)
+				#print('........................................................')
+				#print()
 
 			if True:
 				if flag_trade == 'buy':
 					if primary_doing == True:
-						print('Primary Buy:')
+						#print('Primary Buy:')
 						buy_data, _, _, _ = divergence_macd(
 															dataset=symbol_data_5M,
 															dataset_15M=symbol_data_15M,
@@ -4834,7 +5037,7 @@ def genetic_algo_div_macd(
 															flag_learning=flag_learning
 															)
 					if secondry_doing == True:
-						print('Secondry Buy:')
+						#print('Secondry Buy:')
 						_, buy_data, _, _ = divergence_macd(
 															dataset=symbol_data_5M,
 															dataset_15M=symbol_data_15M,
@@ -4873,7 +5076,7 @@ def genetic_algo_div_macd(
 
 				if flag_trade == 'sell':
 					if primary_doing == True:
-						print('Primary Sell:')
+						#print('Primary Sell:')
 						_, _, sell_data, _ = divergence_macd(
 															dataset=symbol_data_5M,
 															dataset_15M=symbol_data_15M,
@@ -4909,7 +5112,7 @@ def genetic_algo_div_macd(
 															)
 
 					if secondry_doing == True:
-						print('Secondry Sell:')
+						#print('Secondry Sell:')
 						_, _, _, sell_data = divergence_macd(
 															dataset=symbol_data_5M,
 															dataset_15M=symbol_data_15M,
@@ -4956,7 +5159,7 @@ def genetic_algo_div_macd(
 					flag_golden_cross = True
 
 			else:#except Exception as ex:
-				print('getting error GA Golden Cross: ', ex)
+				#print('getting error GA Golden Cross: ', ex)
 				flag_golden_cross = True
 
 			if flag_golden_cross:
@@ -4973,8 +5176,11 @@ def genetic_algo_div_macd(
 					'score_buy': 0,
 					'score_sell': 0
 					}
+				new_chromosome = True
 				flag_learning = False
 				continue
+			else:
+				new_chromosome = False
 
 			try:
 				if flag_trade == 'buy':
@@ -4988,13 +5194,13 @@ def genetic_algo_div_macd(
 													name_stp_pr=True,
 													flag_trade='buy'
 													)
-					with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						print('======== Output Buy =======> ')
-						print()
-						print('........................................................')
-						print(output_buy)
-						print('........................................................')
-						print()
+					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						#print('======== Output Buy =======> ')
+						#print()
+						#print('........................................................')
+						#print(output_buy)
+						#print('........................................................')
+						#print()
 
 				if flag_trade == 'sell':
 					_, output_sell = tester_div_macd(
@@ -5007,17 +5213,17 @@ def genetic_algo_div_macd(
 													name_stp_pr=True,
 													flag_trade='sell'
 													)
-					with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-						print('======== Output SELL ======> ')
-						print()
-						print('........................................................')
-						print(output_sell)
-						print('........................................................')
-						print()
+					#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+						#print('======== Output SELL ======> ')
+						#print()
+						#print('........................................................')
+						#print(output_sell)
+						#print('........................................................')
+						#print()
 
 				flag_tester = False
 			except Exception as ex:
-				print('GA tester: ',ex)
+				#print('GA tester: ',ex)
 				flag_tester = True
 
 			if flag_tester:
@@ -5034,8 +5240,11 @@ def genetic_algo_div_macd(
 					'score_buy': 0,
 					'score_sell': 0
 					}
+				new_chromosome = True
 				flag_learning = False
 				continue
+			else:
+				new_chromosome = False
 
 			if flag_trade == 'buy':
 				if not np.isnan(output_buy['score_pr'][0]) or not np.isnan(output_buy['score_min_max'][0]):
@@ -5109,7 +5318,7 @@ def genetic_algo_div_macd(
 
 
 							if os.path.exists(buy_path):
-								max_score_ga_buy_before = ga_result_buy['score_pr'][0] #* 0.9
+								max_score_ga_buy_before = ga_result_buy['score_pr'][0]/1000
 							else:
 								max_score_ga_buy_before = max_score_ga_buy #* 0.9
 
@@ -5122,7 +5331,7 @@ def genetic_algo_div_macd(
 									):
 									max_score_ga_buy = max_score_ga_buy_before #* 0.9
 								else:
-									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0] #* 0.9
+									if os.path.exists(buy_path): max_score_ga_buy = ga_result_buy['score_pr'][0]/1000
 									if not os.path.exists(buy_path): max_score_ga_buy = 34000
 
 							Chromosome[chrom_counter].update({'score_buy': score_buy })
@@ -5322,7 +5531,7 @@ def genetic_algo_div_macd(
 
 						score_for_reset = output_buy['score_pr'][0]
 
-			print('== Max Score Buy Must Be ====> ',max_score_ga_buy)
+			#print('== Max Score Buy Must Be ====> ',max_score_ga_buy)
 
 			if flag_trade == 'sell':
 				if not np.isnan(output_sell['score_pr'][0]) or not np.isnan(output_sell['score_min_max'][0]):
@@ -5396,7 +5605,7 @@ def genetic_algo_div_macd(
 
 
 							if os.path.exists(sell_path):
-								max_score_ga_sell_before = ga_result_sell['score_pr'][0] #* 0.9
+								max_score_ga_sell_before = ga_result_sell['score_pr'][0]/1000
 							else:
 								max_score_ga_sell_before = max_score_ga_sell #* 0.9
 
@@ -5409,7 +5618,7 @@ def genetic_algo_div_macd(
 									):
 									max_score_ga_sell = max_score_ga_sell_before #* 0.9
 								else:
-									if os.path.exists(sell_path): max_score_ga_sell = ga_result_sell['score_pr'][0] #* 0.9
+									if os.path.exists(sell_path): max_score_ga_sell = ga_result_sell['score_pr'][0]/1000
 									if not os.path.exists(sell_path): max_score_ga_sell = 34000
 
 							Chromosome[chrom_counter].update({'score_sell': score_sell })
@@ -5608,7 +5817,7 @@ def genetic_algo_div_macd(
 
 						score_for_reset_sell = output_sell['score_pr'][0]
 
-			print('== Max Score Sell Must Be =====> ',max_score_ga_sell)
+			#print('== Max Score Sell Must Be =====> ',max_score_ga_sell)
 
 			if flag_trade == 'buy':
 				if (
@@ -5631,6 +5840,8 @@ def genetic_algo_div_macd(
 
 			if flag_trade == 'buy':
 				if bad_buy == True:
+
+					new_chromosome = True
 
 					if bad_score_counter_buy < 4:
 						Chromosome[chrom_counter] = {
@@ -5747,9 +5958,14 @@ def genetic_algo_div_macd(
 
 					continue
 
+				else:
+					new_chromosome = False
+
 
 			if flag_trade == 'sell':
 				if bad_sell == True:
+
+					new_chromosome = True
 
 					if bad_score_counter_sell < 4:
 						Chromosome[chrom_counter] = {
@@ -5865,6 +6081,8 @@ def genetic_algo_div_macd(
 										}
 
 					continue
+				else:
+					new_chromosome = False
 
 			if Chromosome[chrom_counter]['signal'] is None: continue
 
@@ -5998,7 +6216,7 @@ def genetic_algo_div_macd(
 
 #********************** read GA result ****************************************************************************
 
-@stTime
+#@stTime
 def read_ga_result(symbol):
 
 	if os.path.exists('GA/MACD/primary/buy/'+symbol+'.csv'):

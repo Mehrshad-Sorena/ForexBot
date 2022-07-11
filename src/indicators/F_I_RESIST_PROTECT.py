@@ -962,9 +962,9 @@ def protect_resist(T_5M,T_15M,T_1H,T_4H,T_1D,dataset_5M,dataset_15M,dataset_1H,d
 from datetime import datetime
 symbol_data_5M, symbol_data_15M, symbol_data_1H, symbol_data_4H, symbol = read_dataset_csv(
 																								sym='EURUSD_i',
-																								num_5M=4000,
+																								num_5M=2000,
 																								num_15M=1,
-																								num_1H=2000,
+																								num_1H=500,
 																								num_4H=1
 																								)
 
@@ -972,13 +972,13 @@ sym = 'EURUSD_i'
 
 
 
-print('5M======> ',symbol_data_5M[sym]['time'][1796])
+#print('5M======> ',symbol_data_5M[sym]['time'][1796])
 
 
-print(symbol_data_1H[sym]['time'][location_1H])
+#print(symbol_data_1H[sym]['time'][location_1H])
 
 protect_resist(
-				T_5M=False,
+				T_5M=True,
 				T_15M=False,
 				T_1H=True,
 				T_4H=False,

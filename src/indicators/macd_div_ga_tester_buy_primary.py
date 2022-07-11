@@ -14,10 +14,6 @@ import os
 import warnings
 warnings.filterwarnings("ignore")
 
-try:
-	import MetaTrader5 as mt5
-except:
-	pass
 
 #ga_runner()
 #dataset_spliter()
@@ -310,9 +306,6 @@ def ga_tester_buy(priority,real_test):
 
 	symbols = syms
 
-	symbol_data_5M,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,99800)
-	symbol_data_1H,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,8323)
-
 	for sym in symbols:
 
 		if not (
@@ -364,29 +357,30 @@ def ga_tester_buy(priority,real_test):
 			if 'permit' not in ga_result_buy.columns:
 
 
-				#dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
-																										#sym=sym,
-																										#num_5M=99888,
-																										#num_15M=1,
-																										#num_1H=8250,
-																										#num_4H=1
-																										#)
+				dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
+																										sym=sym,
+																										num_5M=99888,
+																										num_15M=1,
+																										num_1H=8250,
+																										num_4H=1
+																										)
 
-				#symbol_data_5M,symbol_data_1H = dataset_spliter(
-														#symbol=sym,
-														#dataset_5M=dataset_5M,
-														#dataset_1H=dataset_1H,
-														#spliter_5M_end=99000,
-														#spliter_5M_first=90000
-														#)
+				symbol_data_5M,symbol_data_1H = dataset_spliter(
+														symbol=sym,
+														dataset_5M=dataset_5M,
+														dataset_1H=dataset_1H,
+														spliter_5M_end=99000,
+														spliter_5M_first=90000
+														)
 
-				
+				symbol_data_5M,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,20000)
+				symbol_data_1H,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,3000)
 
 				macd_div_tester_for_permit(
 												dataset=symbol_data_5M,
-												dataset_15M=symbol_data_1H,
+												dataset_15M=symbol_data_15M,
 												symbol_data_1H=symbol_data_1H,
-												symbol_data_4H=symbol_data_1H,
+												symbol_data_4H=symbol_data_4H,
 												symbol=sym,
 												flag_trade='buy',
 												primary_doing=primary_doing,
@@ -530,16 +524,13 @@ def ga_optimizer_sell(priority,real_test):
 
 			learn_counter += 1
 
-def ga_tester_sell(priority,real_test):
+def ga_tester_sell(real_test):
 
 	print('================================> ga tester sell')
 
 	#symbols,my_money = get_symbols(mt5.TIMEFRAME_M1)
 
 	symbols = syms
-
-	symbol_data_5M,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,99800)
-	symbol_data_1H,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,8323)
 
 	for sym in symbols:
 
@@ -596,29 +587,30 @@ def ga_tester_sell(priority,real_test):
 			if 'permit' not in ga_result_sell.columns:
 
 
-				#dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
-																										#sym=sym,
-																										#num_5M=99000,
-																										#num_15M=1,
-																										#num_1H=8250,
-																										#num_4H=1
-																										#)
+				dataset_5M, symbol_data_15M, dataset_1H, symbol_data_4H, symbol = read_dataset_csv(
+																										sym=sym,
+																										num_5M=99000,
+																										num_15M=1,
+																										num_1H=8250,
+																										num_4H=1
+																										)
 
-				#symbol_data_5M,symbol_data_1H = dataset_spliter(
-														#symbol=sym,
-														#dataset_5M=dataset_5M,
-														#dataset_1H=dataset_1H,
-														#spliter_5M_end=99000,
-														#spliter_5M_first=90000
-														#)
+				symbol_data_5M,symbol_data_1H = dataset_spliter(
+														symbol=sym,
+														dataset_5M=dataset_5M,
+														dataset_1H=dataset_1H,
+														spliter_5M_end=99000,
+														spliter_5M_first=90000
+														)
 
-				
+				symbol_data_5M,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,10000)
+				symbol_data_1H,money,_ = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,3000)
 
 				macd_div_tester_for_permit(
 											dataset=symbol_data_5M,
-											dataset_15M=symbol_data_1H,
+											dataset_15M=symbol_data_15M,
 											symbol_data_1H=symbol_data_1H,
-											symbol_data_4H=symbol_data_1H,
+											symbol_data_4H=symbol_data_4H,
 											symbol=sym,
 											flag_trade='sell',
 											primary_doing=primary_doing,
@@ -1009,9 +1001,9 @@ my_sym = 'GBPUSD_i'
 
 #learning_buy()
 #ga_tester_buy()
-#ga_optimizer_buy(priority='primary',real_test=False)
-#ga_optimizer_buy(priority='secondry',real_test=False)
 
+ga_optimizer_buy(priority='primary',real_test=False)
+#ga_optimizer_buy(priority='secondry',real_test=False)
 #ga_optimizer_sell(priority='primary',real_test=False)
 #ga_optimizer_sell(priority='secondry',real_test=False)
 
@@ -1034,11 +1026,7 @@ my_sym = 'GBPUSD_i'
 	
 
 #learning_buy()
-#ga_tester_buy(priority='primary',real_test=True)
-#ga_tester_buy(priority='secondry',real_test=True)
-
-ga_tester_sell(priority='primary',real_test=True)
-ga_tester_sell(priority='secondry',real_test=True)
+#ga_tester_buy()
 
 #ga_optimizer_sell()
 #learning_sell()

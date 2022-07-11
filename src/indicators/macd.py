@@ -264,6 +264,8 @@ def divergence_macd(
 
 	#***************************** Initialize Inputs ************************
 
+	diff_extereme = int(diff_extereme)
+
 	macd_read = ind.macd(dataset[symbol][Apply_to],fast = macd_fast,slow = macd_slow,signal = macd_signal)
 
 	macd = pd.DataFrame()
@@ -277,7 +279,7 @@ def divergence_macd(
 		):
 		num_exteremes = 2
 
-	n = num_exteremes
+	n = int(num_exteremes)
 	
 	min_ex = macd.iloc[argrelextrema(
 									macd.macds.values, 

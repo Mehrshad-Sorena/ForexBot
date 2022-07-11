@@ -1,1 +1,1 @@
-{"AUD": {"hour": 6, "min": 0, "impact": "high"}, "JPY": {"hour": 4, "min": 20, "impact": "low"}, "CHF": {"hour": 11, "min": 30, "impact": "low"}, "EUR": {"hour": 14, "min": 0, "impact": "low"}, "GBP": {"hour": 19, "min": 30, "impact": "low"}, "CAD": {"hour": 18, "min": 30, "impact": "medium"}, "USD": {"hour": 23, "min": 30, "impact": "low"}}
+{"JPY": {"hour": 9, "min": 29, "impact": "low"}, "EUR": {"hour": 16, "min": 25, "impact": "medium"}, "CAD": {"hour": 17, "min": 0, "impact": "high"}, "USD": {"hour": 23, "min": 30, "impact": "low"}}

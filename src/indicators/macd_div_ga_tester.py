@@ -1034,11 +1034,11 @@ my_sym = 'GBPUSD_i'
 	
 
 #learning_buy()
-#ga_tester_buy(priority='primary',real_test=True)
-#ga_tester_buy(priority='secondry',real_test=True)
+ga_tester_buy(priority='primary',real_test=False)
+ga_tester_buy(priority='secondry',real_test=False)
 
-ga_tester_sell(priority='primary',real_test=True)
-ga_tester_sell(priority='secondry',real_test=True)
+ga_tester_sell(priority='primary',real_test=False)
+ga_tester_sell(priority='secondry',real_test=False)
 
 #ga_optimizer_sell()
 #learning_sell()

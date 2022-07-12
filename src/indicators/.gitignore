@@ -68,6 +68,8 @@ docs/static/
 
 
 images/*.png
+images/*.jpg
+pics/*.jpg
 # PyBuilder
 target/
 
@@ -94,4 +96,3 @@ ENV/
 
 # Rope project settings
 .ropeproject
-*.jpg

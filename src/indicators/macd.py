@@ -1,22 +1,26 @@
 from F_I_RESIST_PROTECT import Extreme_points, Extreme_points_ichimoko, extreme_points_ramp_lines, Best_Extreme_Finder, protect_resist
 from scipy.stats import foldnorm, dweibull, rayleigh, expon, nakagami, norm
 from fitter import Fitter, get_common_distributions, get_distributions
+from mplfinance.original_flavor import candlestick_ohlc
 from shapely.geometry import LineString
 from scipy.signal import argrelextrema
 from sklearn.cluster import KMeans
 from scipy.optimize import fsolve
 from sma import last_signal_sma
 import matplotlib.pyplot as plt
+import matplotlib as matplotlib
 from datetime import datetime
 from progress.bar import Bar
 from random import randint
 from log_get_data import *
+import mplfinance as mpf
 from timer import stTime
 from scipy import stats
 from random import seed
 import pandas_ta as ind
 from tqdm import tqdm
 import pandas as pd
+import tarfile
 import logging
 import fitter
 import math
@@ -40,6 +44,7 @@ warnings.filterwarnings("ignore")
 #last_signal_macd_div()
 #learning_algo_div_macd()
 #chromosome_saver()
+#plot_saver_div_macd()
 
 #/////////////////////////////////////////
 
@@ -230,7 +235,8 @@ def divergence_macd(
 				num_exteremes=5,
 				diff_extereme=100,
 				real_test=False,
-				flag_learning=False
+				flag_learning=False,
+				pic_save=False
 				):
 
 	#*************** OutPuts:
@@ -271,6 +277,10 @@ def divergence_macd(
 	macd = pd.DataFrame()
 	column = macd_read.columns[2]
 	macd['macds'] = pd.DataFrame(macd_read, columns=[column])
+	column = macd_read.columns[0]
+	macd['macd'] = pd.DataFrame(macd_read, columns=[column])
+	column = macd_read.columns[1]
+	macd['macdh'] = pd.DataFrame(macd_read, columns=[column])
 	macd = macd.dropna(inplace=False)
 
 	if (
@@ -1042,6 +1052,9 @@ def divergence_macd(
 
 
 								if (signal_buy_primary['st_pr_index'][primary_counter] < signal_buy_primary['tp_pr_index'][primary_counter]) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
+									
+									#*************** Failed *********************
+
 									signal_buy_primary['flag_pr'][primary_counter] = 'st'
 									signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['st_pr_index'][primary_counter]
 
@@ -1060,9 +1073,42 @@ def divergence_macd(
 									if signal_buy_primary['tp_pr'][primary_counter] > signal_buy_primary['diff_pr_top'][primary_counter]: 
 										signal_buy_primary['tp_pr'][primary_counter] = signal_buy_primary['diff_pr_top'][primary_counter]
 
+									if pic_save == True:
+
+										path_failed_candle = 'pics/macd_div/buy_primary/' + symbol + '/failed/candle/' + str(primary_counter) + '.jpg'
+										path_success_candle = 'pics/macd_div/buy_primary/' + symbol + '/success/candle/' + str(primary_counter) + '.jpg'
+										path_failed_macd = 'pics/macd_div/buy_primary/' + symbol + '/failed/macd/' + str(primary_counter) + '.jpg'
+										path_success_macd = 'pics/macd_div/buy_primary/' + symbol + '/success/macd/' + str(primary_counter) + '.jpg'
+
+										path_candle = path_failed_candle
+										path_macd = path_failed_macd
+
+										if not os.path.exists('pics/macd_div/buy_primary/' + symbol + '/failed/candle/'):
+											os.makedirs('pics/macd_div/buy_primary/' + symbol + '/failed/candle/')
+
+										if not os.path.exists('pics/macd_div/buy_primary/' + symbol + '/failed/macd/'):
+											os.makedirs('pics/macd_div/buy_primary/' + symbol + '/failed/macd/')
+
+										plot_saver_div_macd(
+															path_candle=path_candle,
+															path_macd=path_macd,
+															index_end=elm,
+															index_start=elm-diff_extereme_buy,
+															extreme_min=extreme_min,
+															extreme_max=extreme_max,
+															macd=macd,
+															dataset=dataset,
+															res_pro_high=res_pro['high'][0],
+															res_pro_low=res_pro['low'][2],
+															symbol=symbol
+															)
+
 								else:
 								
 									if (signal_buy_primary['tp_pr_index'][primary_counter] != -1):
+
+										#**************** Success ***************************
+
 										signal_buy_primary['flag_pr'][primary_counter] = 'tp'
 										signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['tp_pr_index'][primary_counter]
 
@@ -1082,7 +1128,40 @@ def divergence_macd(
 										if signal_buy_primary['st_pr'][primary_counter] > signal_buy_primary['diff_pr_down'][primary_counter]: 
 											signal_buy_primary['st_pr'][primary_counter] = signal_buy_primary['diff_pr_down'][primary_counter]
 
+										if pic_save == True:
+
+											path_failed_candle = 'pics/macd_div/buy_primary/' + symbol + '/failed/candle/' + str(primary_counter) + '.jpg'
+											path_success_candle = 'pics/macd_div/buy_primary/' + symbol + '/success/candle/' + str(primary_counter) + '.jpg'
+											path_failed_macd = 'pics/macd_div/buy_primary/' + symbol + '/failed/macd/' + str(primary_counter) + '.jpg'
+											path_success_macd = 'pics/macd_div/buy_primary/' + symbol + '/success/macd/' + str(primary_counter) + '.jpg'
+
+											path_candle = path_success_candle
+											path_macd = path_success_macd
+
+											if not os.path.exists('pics/macd_div/buy_primary/' + symbol + '/success/candle/'):
+												os.makedirs('pics/macd_div/buy_primary/' + symbol + '/success/candle/')
+
+											if not os.path.exists('pics/macd_div/buy_primary/' + symbol + '/success/macd/'):
+												os.makedirs('pics/macd_div/buy_primary/' + symbol + '/success/macd/')
+
+											plot_saver_div_macd(
+																path_candle=path_candle,
+																path_macd=path_macd,
+																index_end=elm,
+																index_start=elm-diff_extereme_buy,
+																extreme_min=extreme_min,
+																extreme_max=extreme_max,
+																macd=macd,
+																dataset=dataset,
+																res_pro_high=res_pro['high'][0],
+																res_pro_low=res_pro['low'][2],
+																symbol=symbol
+																)
+
 									if (signal_buy_primary['tp_pr_index'][primary_counter] == -1) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
+
+										#**************** Failed *******************************
+
 										signal_buy_primary['flag_pr'][primary_counter] = 'st'
 										signal_buy_primary['flag_pr_index'][primary_counter] = signal_buy_primary['st_pr_index'][primary_counter]
 
@@ -1101,6 +1180,50 @@ def divergence_macd(
 
 										if signal_buy_primary['tp_pr'][primary_counter] > signal_buy_primary['diff_pr_top'][primary_counter]: 
 											signal_buy_primary['tp_pr'][primary_counter] = signal_buy_primary['diff_pr_top'][primary_counter]
+
+										if pic_save == True:
+
+											path_failed_candle = 'pics/macd_div/buy_primary/' + symbol + '/failed/candle/' + str(primary_counter) + '.jpg'
+											path_success_candle = 'pics/macd_div/buy_primary/' + symbol + '/success/candle/' + str(primary_counter) + '.jpg'
+											path_failed_macd = 'pics/macd_div/buy_primary/' + symbol + '/failed/macd/' + str(primary_counter) + '.jpg'
+											path_success_macd = 'pics/macd_div/buy_primary/' + symbol + '/success/macd/' + str(primary_counter) + '.jpg'
+
+											path_candle = path_failed_candle
+											path_macd = path_failed_macd
+
+											if not os.path.exists('pics/macd_div/buy_primary/' + symbol + '/failed/candle/'):
+												os.makedirs('pics/macd_div/buy_primary/' + symbol + '/failed/candle/')
+
+											if not os.path.exists('pics/macd_div/buy_primary/' + symbol + '/failed/macd/'):
+												os.makedirs('pics/macd_div/buy_primary/' + symbol + '/failed/macd/')
+
+											plot_saver_div_macd(
+																path_candle=path_candle,
+																path_macd=path_macd,
+																index_end=elm,
+																index_start=elm-diff_extereme_buy,
+																extreme_min=extreme_min,
+																extreme_max=extreme_max,
+																macd=macd,
+																dataset=dataset,
+																res_pro_high=res_pro['high'][0],
+																res_pro_low=res_pro['low'][2],
+																symbol=symbol
+																)
+
+										if pic_save == True:
+											#path_failed_candle = 'pics/macd_div/buy_primary/failed/candle/' + primary_counter + '.jpg'
+											#path_success_candle = 'pics/macd_div/buy_primary/success/candle/' + primary_counter + '.jpg'
+											#path_failed_macd = 'pics/macd_div/buy_primary/failed/macd/' + primary_counter + '.jpg'
+											#path_success_macd = 'pics/macd_div/buy_primary/success/macd/' + primary_counter + '.jpg'
+
+											#plt.plot([extreme_min['index'][elm-diff_extereme_buy],extreme_min['index'][elm]],[extreme_min['value'][elm-diff_extereme_buy],extreme_min['value'][elm]],c='r',linestyle="-")
+											#plt.show()
+
+											pass
+											#ax1.plot([extreme_min['index'][elm-diff_extereme_buy],extreme_min['index'][elm]],[dataset[symbol]['low'][extreme_min['index'][elm-diff_extereme_buy]],dataset[symbol]['low'][extreme_min['index'][elm]]],c='r',linestyle="-")
+
+
 
 							else:
 								signal_buy_primary['tp_pr_index'][primary_counter] = -1
@@ -4339,7 +4462,9 @@ def chromosome_saver(
 
 
 		ga_chromosome_counter = 0
+		itter_counter = 0
 		while ga_chromosome_counter < len(ga_result['fast_period']):
+			if itter_counter > len(ga_result['fast_period']): return 'End_of_Chromosomes'
 			if (
 				Chromosome[chrom_counter]['fast_period'] == ga_result['fast_period'][ga_chromosome_counter] and
 				Chromosome[chrom_counter]['slow_period'] == ga_result['slow_period'][ga_chromosome_counter] and
@@ -4369,6 +4494,7 @@ def chromosome_saver(
 											'score_sell': 0
 											}
 				ga_chromosome_counter = 0
+				itter_counter += 1 
 				continue
 
 			else:
@@ -4737,6 +4863,9 @@ def genetic_algo_div_macd(
 												signal_period_upper=signal_period_upper,
 												signal_period_lower=signal_period_lower
 												)
+				if Chromosome == 'End_of_Chromosomes':
+					print(Chromosome)
+					break
 				flag_learning = False
 				new_chromosome = False
 			elif (
@@ -4766,6 +4895,11 @@ def genetic_algo_div_macd(
 														signal_period_upper=signal_period_upper,
 														signal_period_lower=signal_period_lower
 														)
+
+						if Chromosome == 'End_of_Chromosomes':
+							print(Chromosome)
+							break
+
 						flag_learning = False
 						new_chromosome = False
 
@@ -6335,7 +6469,8 @@ def macd_div_tester_for_permit(
 													num_exteremes = ga_result_buy['num_extreme'][0],
 													diff_extereme = ga_result_buy['diff_extereme'][0],
 													real_test = real_test,
-													flag_learning=True
+													flag_learning=True,
+													pic_save = True
 													)
 			if secondry_doing == True:
 				_, buy_data, _, _ = divergence_macd(
@@ -9608,6 +9743,101 @@ def learning_algo_div_macd(
 	print('/////////////////////// Finish Genetic BUY ',symbol,'///////////////////////////////////')
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#************************************* Plot Saver ***********************************************************************
+
+def plot_saver_div_macd(
+						path_candle,
+						path_macd,
+						index_end,
+						index_start,
+						extreme_min,
+						extreme_max,
+						macd,
+						dataset,
+						res_pro_high,
+						res_pro_low,
+						symbol
+						):
+	fig = plt.figure()
+	plt.figure().clear()
+	plt.close('all')
+	plt.cla()
+	plt.clf()
+
+	plt.plot(extreme_min['index'][index_start-2:index_end+1],extreme_min['value'][index_start-2:index_end+1], 'o',c='g')
+
+	index_max_end = np.max(np.where(extreme_max['index'] <= extreme_min['index'][index_end+1])[0])
+	index_max_start = np.min(np.where(extreme_max['index'] >= extreme_min['index'][index_start-2])[0])
+
+	plt.plot(extreme_max['index'][index_max_start:index_max_end],extreme_max['value'][index_max_start:index_max_end], 'o',c='purple')
+
+	plt.plot(range(extreme_min['index'][index_start-2],extreme_min['index'][index_end]),macd.macds[range(extreme_min['index'][index_start-2],extreme_min['index'][index_end])],c='b')
+	plt.plot(range(extreme_min['index'][index_start-2],extreme_min['index'][index_end]),macd.macd[range(extreme_min['index'][index_start-2],extreme_min['index'][index_end])],c='yellow')
+	plt.bar(range(extreme_min['index'][index_start-2],extreme_min['index'][index_end]),macd.macdh[range(extreme_min['index'][index_start-2],extreme_min['index'][index_end])],align='center',color='orange')
+	plt.plot([extreme_min['index'][index_start],extreme_min['index'][index_end]],[extreme_min['value'][index_start],extreme_min['value'][index_end]],c='r',linestyle="-")
+	plt.grid(linestyle = '--', linewidth = 0.5)
+
+	plt.savefig(path_macd, dpi=600, bbox_inches='tight')
+
+	plt.figure().clear()
+	plt.close('all')
+	plt.cla()
+	plt.clf()
+										
+	#ax1.plot(dataset[symbol]['close'].index,dataset[symbol]['close'],c='b')
+
+	dataset_plot_candle = pd.DataFrame()
+	dataset_plot_candle['low'] = dataset[symbol]['low'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle['high'] = dataset[symbol]['high'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle['close'] = dataset[symbol]['close'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle['open'] = dataset[symbol]['open'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle['time'] = dataset[symbol]['time'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle['volume'] = dataset[symbol]['volume'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+
+	daily = pd.DataFrame(dataset_plot_candle)
+	daily.index.name = 'Time'
+	daily.index = dataset_plot_candle['time']
+	daily.head(3)
+	daily.tail(3)
+
+	mc = mpf.make_marketcolors(
+								base_mpf_style='yahoo',
+								up='green',
+								down='red',
+								#vcedge = {'up': 'green', 'down': 'red'}, 
+								vcdopcod = True,
+								alpha = 0.0001
+								)
+	mco = [mc]*len(daily)
+
+
+	two_points = [
+				(dataset_plot_candle['time'].iloc[-1],dataset_plot_candle['low'].iloc[-1]),
+				(dataset_plot_candle['time'][0],dataset_plot_candle['low'][0])
+				]
+	mpf.plot(
+			daily,
+			type='candle',
+			volume=True,
+			style='yahoo',
+			figscale=1,
+			hlines=dict(hlines=[res_pro_low,res_pro_high],colors=['black','purple'],linestyle='-.'),
+			savefig=dict(fname=path_candle,dpi=600,pad_inches=0.25),
+			marketcolor_overrides=mco,
+			alines=dict(alines=two_points,colors=['orange'],linestyle='-.')
+			)#.savefig('plot.png', dpi=300, bbox_inches='tight')
+
+	mpf.figure().clear()
+	#mpf.close('all')
+	#mpf.cla()
+	#mpf.clf()
+
+	matplotlib.use("Agg")
+
+	#plt.show()
+
+#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #*********************************** How To Use Funcs ************************************************************
 """

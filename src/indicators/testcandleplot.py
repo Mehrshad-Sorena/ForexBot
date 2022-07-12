@@ -4,6 +4,7 @@ from mplfinance.original_flavor import candlestick_ohlc
 import pandas as pd
 import matplotlib.dates as mpl_dates
 from log_get_data import *
+import tarfile
 
 symbol_data_5M,money,sym = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,600)
 
@@ -40,3 +41,5 @@ mpf.plot(
 		alines=two_points
 		)#.savefig('plot.png', dpi=300, bbox_inches='tight')
 plt.show()
+
+

@@ -4488,7 +4488,7 @@ def chromosome_saver(
 											'apply_to': np.random.choice(apply_to_list_ga),
 											'alpha': randint(1, 50)/100,
 											'num_extreme': randint(1,int((fast_period/slow_period)*100*fast_period)),
-											'diff_extereme': 6,
+											'diff_extereme': randint(1,6),
 											'signal': None,
 											'score_buy': 0,
 											'score_sell': 0
@@ -4499,6 +4499,13 @@ def chromosome_saver(
 
 			else:
 				ga_result = ga_result.append(Chromosome[chrom_counter], ignore_index=True)
+				#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+					#print('first ===> ',ga_result)
+				for clm in ga_result.columns:
+					if clm == 'Unnamed: 0':
+						ga_result = ga_result.drop(columns='Unnamed: 0')
+				#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+					#print('after ===> ',ga_result)
 				os.remove(chromosome_path)
 				ga_result.to_csv(chromosome_path)
 				return Chromosome
@@ -4507,6 +4514,14 @@ def chromosome_saver(
 	else:
 		ga_result = pd.DataFrame()
 		ga_result = ga_result.append(Chromosome[chrom_counter], ignore_index=True)
+		#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			#print('first ===> ',ga_result)
+
+		for clm in ga_result.columns:
+			if ga_result.columns == 'Unnamed: 0':
+				ga_result = ga_result.drop(columns='Unnamed: 0')
+		#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			#print('after ===> ',ga_result)
 		ga_result.to_csv(chromosome_path)
 
 		return Chromosome
@@ -6269,6 +6284,10 @@ def genetic_algo_div_macd(
 					})
 
 			best_buy = best_buy.append(best_dict, ignore_index=True)
+
+			for clm in best_buy.columns:
+			if best_buy.columns == 'Unnamed: 0':
+				best_buy = best_buy.drop(columns='Unnamed: 0')
 	#//////////////////////
 	#********** Sell Find:
 	if flag_trade == 'sell':
@@ -6300,6 +6319,10 @@ def genetic_algo_div_macd(
 					})
 
 			best_sell = best_sell.append(best_dict, ignore_index=True)
+
+			for clm in best_sell.columns:
+			if best_sell.columns == 'Unnamed: 0':
+				best_sell = best_sell.drop(columns='Unnamed: 0')
 	#//////////////////////
 
 	#********************************///////////////****************************************************************
@@ -6708,18 +6731,18 @@ def macd_div_tester_for_permit(
 					ga_result_buy['permit'] = True
 					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 
-					if os.path.exists(buy_path):
-						os.remove(buy_path)
-
-					ga_result_buy.to_csv(buy_path)
 				else:
 					ga_result_buy['permit'] = False
 					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 
-					if os.path.exists(buy_path):
-						os.remove(buy_path)
+				for clm in ga_result_buy.columns:
+					if ga_result_buy.columns == 'Unnamed: 0':
+						ga_result_buy = ga_result_buy.drop(columns='Unnamed: 0')
 
-					ga_result_buy.to_csv(buy_path)
+				if os.path.exists(buy_path):
+					os.remove(buy_path)
+
+				ga_result_buy.to_csv(buy_path)
 
 	#///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -6936,19 +6959,18 @@ def macd_div_tester_for_permit(
 				if output_sell['score_pr'][0] >= ga_result_sell['score_pr'][0]*0.9:
 					ga_result_sell['permit'] = True
 					#ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
-
-					if os.path.exists(sell_path):
-						os.remove(sell_path)
-
-					ga_result_sell.to_csv(sell_path)
 				else:
 					ga_result_sell['permit'] = False
 					#ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
-					
-					if os.path.exists(sell_path):
-						os.remove(sell_path)
+				
+				for clm in ga_result_sell.columns:
+					if ga_result_sell.columns == 'Unnamed: 0':
+						ga_result_sell = ga_result_sell.drop(columns='Unnamed: 0')
+						
+				if os.path.exists(sell_path):
+					os.remove(sell_path)
 
-					ga_result_sell.to_csv(sell_path)
+				ga_result_sell.to_csv(sell_path)
 		#////////////////////////////////////////
 	print('//////////////////////////////////////////')
 
@@ -9665,6 +9687,10 @@ def learning_algo_div_macd(
 					})
 
 			best_buy = best_buy.append(best_dict, ignore_index=True)
+
+			for clm in best_buy.columns:
+			if best_buy.columns == 'Unnamed: 0':
+				best_buy = best_buy.drop(columns='Unnamed: 0')
 	#//////////////////////
 	#********** Sell Find:
 	if flag_trade == 'sell':
@@ -9696,6 +9722,10 @@ def learning_algo_div_macd(
 					})
 
 			best_sell = best_sell.append(best_dict, ignore_index=True)
+
+			for clm in best_sell.columns:
+			if best_sell.columns == 'Unnamed: 0':
+				best_sell = best_sell.drop(columns='Unnamed: 0')
 	#//////////////////////
 
 	#********************************///////////////****************************************************************

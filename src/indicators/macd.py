@@ -6286,8 +6286,8 @@ def genetic_algo_div_macd(
 			best_buy = best_buy.append(best_dict, ignore_index=True)
 
 			for clm in best_buy.columns:
-			if best_buy.columns == 'Unnamed: 0':
-				best_buy = best_buy.drop(columns='Unnamed: 0')
+				if best_buy.columns == 'Unnamed: 0':
+					best_buy = best_buy.drop(columns='Unnamed: 0')
 	#//////////////////////
 	#********** Sell Find:
 	if flag_trade == 'sell':
@@ -6321,8 +6321,8 @@ def genetic_algo_div_macd(
 			best_sell = best_sell.append(best_dict, ignore_index=True)
 
 			for clm in best_sell.columns:
-			if best_sell.columns == 'Unnamed: 0':
-				best_sell = best_sell.drop(columns='Unnamed: 0')
+				if best_sell.columns == 'Unnamed: 0':
+					best_sell = best_sell.drop(columns='Unnamed: 0')
 	#//////////////////////
 
 	#********************************///////////////****************************************************************
@@ -6966,7 +6966,7 @@ def macd_div_tester_for_permit(
 				for clm in ga_result_sell.columns:
 					if ga_result_sell.columns == 'Unnamed: 0':
 						ga_result_sell = ga_result_sell.drop(columns='Unnamed: 0')
-						
+
 				if os.path.exists(sell_path):
 					os.remove(sell_path)
 
@@ -9689,8 +9689,8 @@ def learning_algo_div_macd(
 			best_buy = best_buy.append(best_dict, ignore_index=True)
 
 			for clm in best_buy.columns:
-			if best_buy.columns == 'Unnamed: 0':
-				best_buy = best_buy.drop(columns='Unnamed: 0')
+				if best_buy.columns == 'Unnamed: 0':
+					best_buy = best_buy.drop(columns='Unnamed: 0')
 	#//////////////////////
 	#********** Sell Find:
 	if flag_trade == 'sell':
@@ -9724,8 +9724,8 @@ def learning_algo_div_macd(
 			best_sell = best_sell.append(best_dict, ignore_index=True)
 
 			for clm in best_sell.columns:
-			if best_sell.columns == 'Unnamed: 0':
-				best_sell = best_sell.drop(columns='Unnamed: 0')
+				if best_sell.columns == 'Unnamed: 0':
+					best_sell = best_sell.drop(columns='Unnamed: 0')
 	#//////////////////////
 
 	#********************************///////////////****************************************************************

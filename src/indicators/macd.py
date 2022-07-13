@@ -4519,7 +4519,7 @@ def chromosome_saver(
 		ga_result = ga_result.append(Chromosome[chrom_counter], ignore_index=True)
 		#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 			#print('first ===> ',ga_result)
-
+ 
 		for clm in ga_result.columns:
 			if clm == 'Unnamed: 0':
 				ga_result = ga_result.drop(columns='Unnamed: 0')

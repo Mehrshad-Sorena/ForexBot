@@ -1100,7 +1100,8 @@ def divergence_macd(
 															dataset=dataset,
 															res_pro_high=res_pro['high'][0],
 															res_pro_low=res_pro['low'][2],
-															symbol=symbol
+															symbol=symbol,
+															index_pos = signal_buy_primary['flag_pr_index'][primary_counter]
 															)
 
 								else:
@@ -1155,7 +1156,8 @@ def divergence_macd(
 																dataset=dataset,
 																res_pro_high=res_pro['high'][0],
 																res_pro_low=res_pro['low'][2],
-																symbol=symbol
+																symbol=symbol,
+																index_pos = signal_buy_primary['flag_pr_index'][primary_counter]
 																)
 
 									if (signal_buy_primary['tp_pr_index'][primary_counter] == -1) & (signal_buy_primary['st_pr_index'][primary_counter] != -1):
@@ -1208,7 +1210,8 @@ def divergence_macd(
 																dataset=dataset,
 																res_pro_high=res_pro['high'][0],
 																res_pro_low=res_pro['low'][2],
-																symbol=symbol
+																symbol=symbol,
+																index_pos = signal_buy_primary['flag_pr_index'][primary_counter]
 																)
 
 										if pic_save == True:
@@ -4518,7 +4521,7 @@ def chromosome_saver(
 			#print('first ===> ',ga_result)
 
 		for clm in ga_result.columns:
-			if ga_result.columns == 'Unnamed: 0':
+			if clm == 'Unnamed: 0':
 				ga_result = ga_result.drop(columns='Unnamed: 0')
 		#with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 			#print('after ===> ',ga_result)
@@ -6286,7 +6289,7 @@ def genetic_algo_div_macd(
 			best_buy = best_buy.append(best_dict, ignore_index=True)
 
 			for clm in best_buy.columns:
-				if best_buy.columns == 'Unnamed: 0':
+				if clm == 'Unnamed: 0':
 					best_buy = best_buy.drop(columns='Unnamed: 0')
 	#//////////////////////
 	#********** Sell Find:
@@ -6321,7 +6324,7 @@ def genetic_algo_div_macd(
 			best_sell = best_sell.append(best_dict, ignore_index=True)
 
 			for clm in best_sell.columns:
-				if best_sell.columns == 'Unnamed: 0':
+				if clm == 'Unnamed: 0':
 					best_sell = best_sell.drop(columns='Unnamed: 0')
 	#//////////////////////
 
@@ -6736,7 +6739,7 @@ def macd_div_tester_for_permit(
 					#ga_result_buy['max_st'][0] = value_min_cci_pr_buy['interval'][upper]
 
 				for clm in ga_result_buy.columns:
-					if ga_result_buy.columns == 'Unnamed: 0':
+					if clm == 'Unnamed: 0':
 						ga_result_buy = ga_result_buy.drop(columns='Unnamed: 0')
 
 				if os.path.exists(buy_path):
@@ -6964,7 +6967,7 @@ def macd_div_tester_for_permit(
 					#ga_result_sell['max_st'][0] = value_max_cci_pr_sell['interval'][lower]
 				
 				for clm in ga_result_sell.columns:
-					if ga_result_sell.columns == 'Unnamed: 0':
+					if clm == 'Unnamed: 0':
 						ga_result_sell = ga_result_sell.drop(columns='Unnamed: 0')
 
 				if os.path.exists(sell_path):
@@ -9689,7 +9692,7 @@ def learning_algo_div_macd(
 			best_buy = best_buy.append(best_dict, ignore_index=True)
 
 			for clm in best_buy.columns:
-				if best_buy.columns == 'Unnamed: 0':
+				if clm == 'Unnamed: 0':
 					best_buy = best_buy.drop(columns='Unnamed: 0')
 	#//////////////////////
 	#********** Sell Find:
@@ -9724,7 +9727,7 @@ def learning_algo_div_macd(
 			best_sell = best_sell.append(best_dict, ignore_index=True)
 
 			for clm in best_sell.columns:
-				if best_sell.columns == 'Unnamed: 0':
+				if clm == 'Unnamed: 0':
 					best_sell = best_sell.drop(columns='Unnamed: 0')
 	#//////////////////////
 
@@ -9787,13 +9790,16 @@ def plot_saver_div_macd(
 						dataset,
 						res_pro_high,
 						res_pro_low,
-						symbol
+						symbol,
+						index_pos
 						):
 	fig = plt.figure()
 	plt.figure().clear()
 	plt.close('all')
 	plt.cla()
 	plt.clf()
+
+	index_pos = int(index_pos)
 
 	plt.plot(extreme_min['index'][index_start-2:index_end+1],extreme_min['value'][index_start-2:index_end+1], 'o',c='g')
 
@@ -9802,9 +9808,9 @@ def plot_saver_div_macd(
 
 	plt.plot(extreme_max['index'][index_max_start:index_max_end],extreme_max['value'][index_max_start:index_max_end], 'o',c='purple')
 
-	plt.plot(range(extreme_min['index'][index_start-2],extreme_min['index'][index_end]),macd.macds[range(extreme_min['index'][index_start-2],extreme_min['index'][index_end])],c='b')
-	plt.plot(range(extreme_min['index'][index_start-2],extreme_min['index'][index_end]),macd.macd[range(extreme_min['index'][index_start-2],extreme_min['index'][index_end])],c='yellow')
-	plt.bar(range(extreme_min['index'][index_start-2],extreme_min['index'][index_end]),macd.macdh[range(extreme_min['index'][index_start-2],extreme_min['index'][index_end])],align='center',color='orange')
+	plt.plot(range(extreme_min['index'][index_start-2],index_pos),macd.macds[range(extreme_min['index'][index_start-2],index_pos)],c='b')
+	plt.plot(range(extreme_min['index'][index_start-2],index_pos),macd.macd[range(extreme_min['index'][index_start-2],index_pos)],c='yellow')
+	plt.bar(range(extreme_min['index'][index_start-2],index_pos),macd.macdh[range(extreme_min['index'][index_start-2],index_pos)],align='center',color='orange')
 	plt.plot([extreme_min['index'][index_start],extreme_min['index'][index_end]],[extreme_min['value'][index_start],extreme_min['value'][index_end]],c='r',linestyle="-")
 	plt.grid(linestyle = '--', linewidth = 0.5)
 
@@ -9818,12 +9824,20 @@ def plot_saver_div_macd(
 	#ax1.plot(dataset[symbol]['close'].index,dataset[symbol]['close'],c='b')
 
 	dataset_plot_candle = pd.DataFrame()
-	dataset_plot_candle['low'] = dataset[symbol]['low'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
-	dataset_plot_candle['high'] = dataset[symbol]['high'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
-	dataset_plot_candle['close'] = dataset[symbol]['close'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
-	dataset_plot_candle['open'] = dataset[symbol]['open'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
-	dataset_plot_candle['time'] = dataset[symbol]['time'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
-	dataset_plot_candle['volume'] = dataset[symbol]['volume'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle['low'] = dataset[symbol]['low'][range(extreme_min['index'][index_start],index_pos)].reset_index(drop=True)
+	dataset_plot_candle['high'] = dataset[symbol]['high'][range(extreme_min['index'][index_start],index_pos)].reset_index(drop=True)
+	dataset_plot_candle['close'] = dataset[symbol]['close'][range(extreme_min['index'][index_start],index_pos)].reset_index(drop=True)
+	dataset_plot_candle['open'] = dataset[symbol]['open'][range(extreme_min['index'][index_start],index_pos)].reset_index(drop=True)
+	dataset_plot_candle['time'] = dataset[symbol]['time'][range(extreme_min['index'][index_start],index_pos)].reset_index(drop=True)
+	dataset_plot_candle['volume'] = dataset[symbol]['volume'][range(extreme_min['index'][index_start],index_pos)].reset_index(drop=True)
+
+	dataset_plot_candle_line = pd.DataFrame()
+	dataset_plot_candle_line['low'] = dataset[symbol]['low'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle_line['high'] = dataset[symbol]['high'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle_line['close'] = dataset[symbol]['close'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle_line['open'] = dataset[symbol]['open'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle_line['time'] = dataset[symbol]['time'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
+	dataset_plot_candle_line['volume'] = dataset[symbol]['volume'][range(extreme_min['index'][index_start],extreme_min['index'][index_end])].reset_index(drop=True)
 
 	daily = pd.DataFrame(dataset_plot_candle)
 	daily.index.name = 'Time'
@@ -9843,8 +9857,8 @@ def plot_saver_div_macd(
 
 
 	two_points = [
-				(dataset_plot_candle['time'].iloc[-1],dataset_plot_candle['low'].iloc[-1]),
-				(dataset_plot_candle['time'][0],dataset_plot_candle['low'][0])
+				(dataset_plot_candle_line['time'].iloc[-1],dataset_plot_candle_line['low'].iloc[-1]),
+				(dataset_plot_candle_line['time'][0],dataset_plot_candle_line['low'][0])
 				]
 	mpf.plot(
 			daily,

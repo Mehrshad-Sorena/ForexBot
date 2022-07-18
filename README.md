@@ -8,6 +8,7 @@ This is the FOREX ROBOT with python script.
 
 -
 **Packages:**
+
 3. Install below packages:
 
 ```
@@ -59,12 +60,14 @@ For linux OS:
 I installed on `/home/user/.wine/drive_c/users/user/Local Settings/Application Data/Programs/Python/Python39`.
 
 4.Install mt5 library on your Windows Python version:
+
 ```
 pip install MetaTrader5
 pip install --upgrade MetaTrader5
 ```
 
 5.Install this package on your Linux Python version:
+
 ```
 pip install mt5linux
 ```

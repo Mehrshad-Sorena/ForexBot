@@ -25,12 +25,14 @@ pip install fitter
 pip install lxml
 ```
 
-For linux OS:
+**For linux OS:**
 
 1.Install Wine.
+
 2.Install Python for Windows on Linux.
 
 3.Find the path to python.exe:
+
 I installed on `/home/user/.wine/drive_c/users/user/Local Settings/Application Data/Programs/Python/Python39`.
 
 4.Install mt5 library on your Windows Python version:

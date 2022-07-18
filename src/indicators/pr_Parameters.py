@@ -21,6 +21,36 @@ class Parameters:
 
 
 							#Elemns For TrendingLines Module
+							'TrendLines_num_max_5M': 5,
+							'TrendLines_num_min_5M': 5,
+							'TrendLines_weight_5M': 5,
+
+							'TrendLines_num_max_1H': 5,
+							'TrendLines_num_min_1H': 5,
+							'TrendLines_weight_1H': 30,
+
+							'TrendLines' + '_length_long_5M': 400,
+							'TrendLines' + '_length_mid_5M': 200,
+							'TrendLines' + '_length_short1_5M': 50,
+							'TrendLines' + '_length_short2_5M': 25,
+							
+							'TrendLines' + '_length_long_1H': 200,
+							'TrendLines' + '_length_mid_1H': 200,
+							'TrendLines' + '_length_short1_1H': 50,
+							'TrendLines' + '_length_short2_1H': 25,
+
+							'TrendLines' + '_power_long_5M': 400,
+							'TrendLines' + '_power_mid_5M': 200,
+							'TrendLines' + '_power_short1_5M': 100,
+							'TrendLines' + '_power_short2_5M': 100,
+							
+							'TrendLines' + '_power_long_1H': 400,
+							'TrendLines' + '_power_mid_1H': 200,
+							'TrendLines' + '_power_short1_1H': 100,
+							'TrendLines' + '_power_short2_1H': 100,
+
+
+
 							'trend_short_length_1': 25,
 							'trend_short_length_2': 50,
 							'trend_mid_length': 100,

@@ -1,7 +1,8 @@
 from scipy.signal import argrelextrema
-#import src.utils.pr
 from pr_Parameters import Parameters
 from pr_Config import Config
+
+from timer import stTime
 
 import matplotlib.pyplot as plt
 import warnings as warnings
@@ -82,6 +83,7 @@ class ExtremePoints:
 										]['high']
 
 		#Concatenate Max And Min Points to One DataFrame:
+		#exterm_point = pd.DataFrame(columns=['extreme','max','min'])
 		exterm_point = pd.DataFrame(
 									np.concatenate(
 													(
@@ -92,9 +94,57 @@ class ExtremePoints:
 													),columns=['extreme']
 									)
 
+		if len(exterm_point.extreme) >= len(extremes['max'].dropna(inplace=False)):
+			exterm_point_max = pd.DataFrame(
+											np.concatenate(
+															(
+																extremes['max'].dropna(inplace=False).to_numpy(),
+																np.zeros(len(exterm_point.extreme) - len(extremes['max'].dropna()), dtype=np.int32)/0
+															),
+															axis=None
+															),columns=['max']
+											)
+
+			index_exterm_point_max = pd.DataFrame(
+											np.concatenate(
+															(
+																extremes['max'].dropna(inplace=False).index.to_numpy(),
+																np.zeros(len(exterm_point.extreme) - len(extremes['max'].dropna()), dtype=np.int32)/0
+															),
+															axis=None
+															),columns=['index_max']
+											)
+
+		if len(exterm_point.extreme) >= len(extremes['min'].dropna(inplace=False)):
+			exterm_point_min = pd.DataFrame(
+											np.concatenate(
+															(
+																extremes['min'].dropna(inplace=False).to_numpy(),
+																np.zeros(len(exterm_point.extreme) - len(extremes['min'].dropna()), dtype=np.int32)/0
+															),
+															axis=None
+															),columns=['min']
+											)
+
+			index_exterm_point_min = pd.DataFrame(
+											np.concatenate(
+															(
+																extremes['min'].dropna(inplace=False).index.to_numpy(),
+																np.zeros(len(exterm_point.extreme) - len(extremes['min'].dropna()), dtype=np.int32)/0
+															),
+															axis=None
+															),columns=['index_min']
+											)
+		
+		exterm_point = exterm_point.assign(
+											max = exterm_point_max,
+											min = exterm_point_min,
+											index_max = index_exterm_point_max,
+											index_min = index_exterm_point_min
+											)
 		return exterm_point
 
-
+	@stTime
 	def get(self, timeframe):
 
 		#Finding Extremes From Time Frame

@@ -7,47 +7,21 @@ This is the FOREX ROBOT with python script.
 2. Install Metatrader5 from `https://www.metatrader5.com/en/download`
 
 -
+
 **Packages:**
 
 3. Install below packages:
 
 ```
 pip install pandas-ta
-```
-
-```
 python -m pip install --user numpy scipy matplotlib ipython jupyter pandas sympy nose
-```
-
-```
 pip install -U scikit-learn
-```
-
-‍‍‍```
 sudo snap install tqdm
-```
-
-```
 pip install --upgrade mplfinance
-```
-
-```
 sudo yum -y install progress
-```
-
-```
 pip install schedule
-```
-
-```
 pip install shapely==1.8.1.post1
-```
-
-```
 pip install fitter
-```
-
-```
 pip install lxml
 ```
 

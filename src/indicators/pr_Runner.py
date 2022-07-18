@@ -5,14 +5,12 @@ import matplotlib.pyplot as plt
 import math
 
 from pr_BestFinder import best_extreme_finder
-from pr_RampLineFinder import extreme_points_ramp_lines
+from pr_TrendLines import TrendLines
 from pr_FlatLinesIchimoku import flat_lines_ichimoko
 from pr_ExtremePoints import ExtremePoints
 
 from pr_Parameters import Parameters
 from pr_Config import Config as config
-
-config = config()
 
 #from matplotlib.collections import LineCollection
 #from scipy.interpolate import interp1d
@@ -46,6 +44,7 @@ config = config()
 class Runner:
 
 	parameters = Parameters()
+	config = config()
 	#@stTime
 	def __init__(
 				self,
@@ -56,13 +55,13 @@ class Runner:
 							{
 
 							#Elemns For ExtremePoints Module:
-							'number_max_5M': parameters.elements['number_max_5M'],
-							'number_min_5M': parameters.elements['number_min_5M'],
-							'weight_extreme_5M': parameters.elements['weight_extreme_5M'],
+							'ExtremePoints_num_max_5M': parameters.elements['ExtremePoints_num_max_5M'],
+							'ExtremePoints_num_min_5M': parameters.elements['ExtremePoints_num_min_5M'],
+							'ExtremePoints_weight_5M': parameters.elements['ExtremePoints_weight_5M'],
 
-							'number_max_1H': parameters.elements['number_max_1H'],
-							'number_min_1H': parameters.elements['number_min_1H'],
-							'weight_extreme_1H': parameters.elements['weight_extreme_1H'],
+							'ExtremePoints_num_max_1H': parameters.elements['ExtremePoints_num_max_1H'],
+							'ExtremePoints_num_min_1H': parameters.elements['ExtremePoints_num_min_1H'],
+							'ExtremePoints_weight_1H': parameters.elements['ExtremePoints_weight_1H'],
 							#/////////////////////////////////
 
 
@@ -119,9 +118,13 @@ class Runner:
 
 		self.cfg = dict(
 							{
-							'status': config.cfg['status'],
-							'T_5M': config.cfg['T_5M'],
-							'T_1H': config.cfg['T_1H'],
+							#Config For ExtremePoints:
+							'ExtremePoints_status': config.cfg['ExtremePoints_status'],
+							'ExtremePoints_T_5M': config.cfg['ExtremePoints_T_5M'],
+							'ExtremePoints_T_1H': config.cfg['ExtremePoints_T_1H'],
+							#/////////////////////////
+
+							
 							'plot': config.cfg['plot'],
 							}
 						)
@@ -129,13 +132,26 @@ class Runner:
 
 
 	#This Function Calculate Tp And St With Above Function And Out Best Tp And St With Best_Extreme_Finder:
-	def start(pr_param):
+	def start(self):
 
 		#****************** Extreme Points Finder Function: Finding Top Down Points *********************
-		extreme_points = ExtremePoints(parameters = parameters)
+		extreme_points = ExtremePoints(parameters = self, config = self)
 		
-		local_extreme_5M = extreme_points.get(timeframe = '5M')
-		local_extreme_1H = extreme_points.get(timeframe = '1H')
+		if (
+			self.cfg['ExtremePoints_T_5M'] == True and
+			self.cfg['ExtremePoints_status'] == True
+			):
+			local_extreme_5M = extreme_points.get(timeframe = '5M')
+		else:
+			local_extreme_5M = pd.DataFrame(np.nan, index=[0], columns=['extreme','power'])
+
+		if (
+			self.cfg['ExtremePoints_T_1H'] == True and
+			self.cfg['ExtremePoints_status'] == True
+			):
+			local_extreme_1H = extreme_points.get(timeframe = '1H')
+		else:
+			local_extreme_1H = pd.DataFrame(np.nan, index=[0], columns=['extreme','power'])
 		#//////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -310,78 +326,6 @@ class Runner:
 		return extereme
 #///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#*******************
-
-def trend_line_get(
-					dataset_5M,
-					length,
-					parameters
-					):
-
-	#This Parameters is Defined For Finding Trending Lines:(How Many Candels We want To Find Trend?)
-
-	if length == 'long':
-		length_data = parameters['trend_long_length'][0]
-	elif length == 'mid':
-		length_data = parameters['trend_mid_length'][0]
-	elif length == 'short_length_1':
-		length_data = parameters['trend_short_length_1'][0]
-	elif length == 'short_length_2':
-		length_data = parameters['trend_short_length_2'][0]
-
-
-	trend_local_extreme_5M = pd.DataFrame()
-	trend_local_extreme_5M['min'] = np.nan
-	trend_local_extreme_5M['max'] = np.nan
-	trend_local_extreme_5M['power'] = np.nan
-
-	if (T_5M == True):
-
-		#Cut Input Dataset With Len That WE Want To finding Trend Lines
-		dataset_ramp_5M = pd.DataFrame()
-		cut_first = 0
-
-		if (
-			int(len(dataset_5M['low'])-1) > long_length
-			):
-
-			cut_first = int(len(dataset_5M['low'])-1) - long_length
-
-		dataset_ramp_5M['low'] = dataset_5M['low'][
-													cut_first:int(len(dataset_5M['low'])-1)
-													].reset_index(drop=True)
-
-		dataset_ramp_5M['high'] = dataset_5M['high'][
-													cut_first:int(len(dataset_5M['high'])-1)
-													].reset_index(drop=True)
-
-		dataset_ramp_5M['close'] = dataset_5M['close'][
-													cut_first:int(len(dataset_5M['close'])-1)
-													].reset_index(drop=True)
-
-		dataset_ramp_5M['open'] = dataset_5M['open'][
-													cut_first:int(len(dataset_5M['open'])-1)
-													].reset_index(drop=True)
-
-
-		trend_local_extreme_5M = pd.DataFrame()
-		trend_local_extreme_5M = np.nan
-
-		trend_local_extreme_5M = extreme_points_ramp_lines(
-															high = dataset_ramp_5M['high'],
-															low = dataset_ramp_5M['low'],
-															close = dataset_ramp_5M['close'],
-															length=length,
-															number_min=parameters['trend_num_min_long'][0],
-															number_max=parameters['trend_num_max_long'][0],
-															plot=False
-															)
-
-	return trend_local_extreme_5M
-
-#//////////////////
-
-
 #***************************** How To Use Functions **********************************************
 """
 from datetime import datetime
@@ -459,6 +403,3 @@ protect_resist(
 #print('************************ Finish ***************************************')
 
 #//////////////////////////////////////////////////////////////////////////////////
-
-obj = Runner()
-print(obj.start)

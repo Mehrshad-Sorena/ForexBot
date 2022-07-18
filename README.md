@@ -1,3 +1,5 @@
+.. image:: https://www.shadrad.ir/wp-content/uploads/2021/11/cropped-cropped-shadrad1.png
+   :alt: ShadRad Electronic
 Forex Robot
 -
 This is the FOREX ROBOT with python script.

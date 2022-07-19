@@ -191,11 +191,11 @@ class TrendLines:
 			ramp_high = 'none'
 
 		#Define DataFrame For Trending OutPuts:
-		trend_lines = pd.DataFrame(np.zeros(1))
-		trend_lines['trend'] = np.nan
-		trend_lines['power'] = np.nan
-		trend_lines['min'] = np.nan
-		trend_lines['max'] = np.nan
+		trend_lines = pd.DataFrame(np.nan, index = [0], columns=['trend','power','min','max'])
+		# trend_lines['trend'] = np.nan
+		# trend_lines['power'] = np.nan
+		# trend_lines['min'] = np.nan
+		# trend_lines['max'] = np.nan
 
 		#Finding Increasing Or Decreasing Trends:
 		#Buy: Increasing
@@ -353,10 +353,10 @@ class TrendLines:
 				try:
 					globals()[trendline_name[i]] = self.get(length=ln,timeframe = timeframe)
 				except Exception as ex:
-					globals()[trendline_name[i]] = pd.DataFrame(np.nan, index=[0], columns=['extreme','power'])
+					globals()[trendline_name[i]] = pd.DataFrame(np.nan, index=[0], columns=['trend','power','min','max'])
 
 			else:
-				globals()[trendline_name[i]] = pd.DataFrame(np.nan, index=[0], columns=['extreme','power'])
+				globals()[trendline_name[i]] = pd.DataFrame(np.nan, index=[0], columns=['trend','power','min','max'])
 			i += 1
 
 		if timeframe == '5M':

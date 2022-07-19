@@ -9,6 +9,14 @@ class Parameters:
 
 		self.elements = dict(
 							{
+
+							#Elemns For Runner Module:
+
+							'Runner' + '_methode1_' + '_lenght_data_5M': 600,
+							'Runner' + '_methode1_' + '_lenght_data_1H': 500,
+
+							#//////////////////////////////
+
 							#Elemns For ExtremePoints Module:
 							'ExtremePoints_num_max_5M': 5,
 							'ExtremePoints_num_min_5M': 5,
@@ -48,45 +56,37 @@ class Parameters:
 							'TrendLines' + '_power_mid_1H': 200,
 							'TrendLines' + '_power_short1_1H': 100,
 							'TrendLines' + '_power_short2_1H': 100,
-
-
-
-							'trend_short_length_1': 25,
-							'trend_short_length_2': 50,
-							'trend_mid_length': 100,
-							'trend_long_length': 200,
-
-							'trend_num_max_short_1': 5,
-							'trend_num_min_short_1': 5,
-
-							'trend_num_max_short_2': 5,
-							'trend_num_min_short_2': 5,
-
-							'trend_num_max_mid': 5,
-							'trend_num_min_mid': 5,
-					
-							'trend_num_max_long': 5,
-							'trend_num_min_long': 5,
 							#/////////////////////////////////
 
 
 							#Elemns For FlatLinesIchimoku Module:
-							'tenkan_5M': 9,
-							'kijun_5M': 26,
-							'senkou_5M': 52,
-							'culster_ichi_5M': 5,
-							'weight_ichi_5M': 400,
 
-							
-							'tenkan_1H': 9,
-							'kijun_1H': 26,
-							'senkou_1H': 52,
-							'culster_ichi_1H': 5,
-							'weight_ichi_1H': 400,
+							'IchimokouFlatLines' + '_tenkan_5M': 9,
+							'IchimokouFlatLines' + '_kijun_5M': 26,
+							'IchimokouFlatLines' + '_senkou_5M': 52,
+
+							'IchimokouFlatLines' + '_n_cluster_5M': 20,
+
+							'IchimokouFlatLines' + '_weight_5M': 200,
+
+							'IchimokouFlatLines' + '_tenkan_1H': 9,
+							'IchimokouFlatLines' + '_kijun_1H': 26,
+							'IchimokouFlatLines' + '_senkou_1H': 52,
+
+							'IchimokouFlatLines' + '_n_cluster_1H': 20,
+
+							'IchimokouFlatLines' + '_weight_1H': 400,
+
 							#/////////////////////////////////
 
 
 							#Elemns For BestFinder Module:
+							'BestFinder' + '_n_cluster_low': 5,
+							'BestFinder' + '_n_cluster_high': 5,
+
+							'BestFinder' + '_alpha_low': 0.1,
+							'BestFinder' + '_alpha_high': 0.1,
+
 							'n_clusters_best_low': 2,
 							'n_clusters_best_high': 2,
 							'alpha_low': 0.05,

@@ -11,8 +11,8 @@ from log_get_data import *
 import MetaTrader5 as mt5
 import sys
 
-data_5M,money,_  = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,800)
-data_1H,money,_  = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,600)
+data_5M,money,_  = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,18000)
+data_1H,money,_  = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,5000)
 
 parameters = Parameters()
 parameters.elements['ExtremePoints_num_max_5M'] = 5
@@ -60,9 +60,11 @@ flatlines = IchimokouFlatLines(parameters = parameters, config = config)
 """
 
 pr_Runner = Runner(parameters = parameters, config = config)
-print(pr_Runner.start(dataset_5M = pd.DataFrame(data_5M['XAUUSD_i']), dataset_1H = pd.DataFrame(data_1H['XAUUSD_i']),loc_end_5M=700))
+
+@stTime
+def run():
+	for i in range(100,17999):
+		pr_Runner.start(dataset_5M = pd.DataFrame(data_5M['XAUUSD_i']), dataset_1H = pd.DataFrame(data_1H['XAUUSD_i']),loc_end_5M=i)
+run()
 pr_Runner.ploter(dataset_5M = pd.DataFrame(data_5M['XAUUSD_i']), dataset_1H = pd.DataFrame(data_1H['XAUUSD_i']),loc_end_5M=700)
-
-
-
 

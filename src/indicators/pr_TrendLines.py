@@ -4,6 +4,7 @@ from pr_ExtremePoints import ExtremePoints
 from scipy.signal import argrelextrema
 from scipy.interpolate import interp1d
 from pr_Parameters import Parameters
+from DataChanger import DataChanger
 import matplotlib.pyplot as plt
 from pr_Config import Config
 import mplfinance as mpf
@@ -68,9 +69,22 @@ class TrendLines:
 						'ExtremePoints'  + '_T_1H': config.cfg[__class__.__name__  + '_T_1H'],
 						'ExtremePoints'  + '_status': config.cfg[__class__.__name__  + '_status'],
 
-						__class__.__name__ + '_T_5M': config.cfg[__class__.__name__  + '_T_5M'],
-						__class__.__name__ + '_T_1H': config.cfg[__class__.__name__  + '_T_1H'],
 						__class__.__name__ + '_status': config.cfg[__class__.__name__  + '_status'],
+
+						__class__.__name__ + '_T_5M': config.cfg[__class__.__name__  + '_T_5M'],
+
+						__class__.__name__ + '_long_T_5M': config.cfg[__class__.__name__  + '_long_T_5M'],
+						__class__.__name__ + '_mid_T_5M': config.cfg[__class__.__name__  + '_mid_T_5M'],
+						__class__.__name__ + '_short1_T_5M': config.cfg[__class__.__name__  + '_short1_T_5M'],
+						__class__.__name__ + '_short2_T_5M': config.cfg[__class__.__name__  + '_short2_T_5M'],
+
+						__class__.__name__ + '_T_1H': config.cfg[__class__.__name__  + '_T_1H'],
+
+						__class__.__name__ + '_long_T_1H': config.cfg[__class__.__name__  + '_long_T_1H'],
+						__class__.__name__ + '_mid_T_1H': config.cfg[__class__.__name__  + '_mid_T_1H'],
+						__class__.__name__ + '_short1_T_1H': config.cfg[__class__.__name__  + '_short1_T_1H'],
+						__class__.__name__ + '_short2_T_1H': config.cfg[__class__.__name__  + '_short2_T_1H'],
+
 						__class__.__name__ + '_plot': config.cfg[__class__.__name__ + '_plot'],
 						}
 						)
@@ -285,7 +299,7 @@ class TrendLines:
 	#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	#*********************************
-	@stTime
+	#@stTime
 	def get(
 			self,
 			length,
@@ -307,31 +321,11 @@ class TrendLines:
 			):
 
 			#Cut Input Dataset With Len That WE Want To finding Trend Lines
-			dataset_ramp = pd.DataFrame()
-			cut_first = 0
-
-			if (
-				int(len(self.elements['dataset_' + timeframe].low)-1) > length_data
-				):
-
-				cut_first = int(len(self.elements['dataset_' + timeframe].low)-1) - length_data
-
-			dataset_ramp['low'] = self.elements['dataset_' + timeframe].low[
-																			cut_first:int(len(self.elements['dataset_' + timeframe].low)-1)
-																			].reset_index(drop=True)
-
-			dataset_ramp['high'] = self.elements['dataset_' + timeframe].high[
-																			cut_first:int(len(self.elements['dataset_' + timeframe].high)-1)
-																			].reset_index(drop=True)
-
-			dataset_ramp['close'] = self.elements['dataset_' + timeframe].close[
-																				cut_first:int(len(self.elements['dataset_' + timeframe].close)-1)
-																				].reset_index(drop=True)
-
-			dataset_ramp['open'] = self.elements['dataset_' + timeframe].open[
-																			cut_first:int(len(self.elements['dataset_' + timeframe].open)-1)
-																			].reset_index(drop=True)
-
+			datachanger = DataChanger()
+			dataset_ramp = datachanger.Spliter(
+												data = self.elements['dataset_' + timeframe],
+												length = length_data
+												)
 
 			trend_local_extreme = pd.DataFrame()
 			trend_local_extreme = np.nan
@@ -343,6 +337,33 @@ class TrendLines:
 											)
 
 		return trend_local_extreme
+
+	def runner(self,timeframe):
+		length = ['long','mid','short1','short2']
+		trendline_name = []
+
+		i = 0
+		for ln in length:
+			trendline_name.append('trendline_' + ln + '_' + timeframe)
+			if (
+				self.cfg[__class__.__name__ + '_' + ln + '_T_' + timeframe] == True and
+				self.cfg[__class__.__name__ + '_T_' + timeframe] == True and
+				self.cfg[__class__.__name__ + '_status'] == True
+				):
+				try:
+					globals()[trendline_name[i]] = self.get(length=ln,timeframe = timeframe)
+				except Exception as ex:
+					globals()[trendline_name[i]] = pd.DataFrame(np.nan, index=[0], columns=['extreme','power'])
+
+			else:
+				globals()[trendline_name[i]] = pd.DataFrame(np.nan, index=[0], columns=['extreme','power'])
+			i += 1
+
+		if timeframe == '5M':
+			return trendline_long_5M, trendline_mid_5M, trendline_short1_5M, trendline_short2_5M
+
+		if timeframe == '1H':
+			return trendline_long_1H, trendline_mid_1H, trendline_short1_1H, trendline_short2_1H
 
 	def ploter(self,length):
 
@@ -365,36 +386,13 @@ class TrendLines:
 
 			length_data = self.elements[__class__.__name__ + '_length_' + length + '_5M']
 
-			dataset_ramp = pd.DataFrame()
-			cut_first = 0
+			datachanger = DataChanger()
+			dataset_ramp = datachanger.Spliter(
+												data = self.elements['dataset_' + '5M'],
+												length = length_data
+												)
 
-			if (
-				int(len(self.elements['dataset_' + '5M'].low)-1) > length_data
-				):
-
-				cut_first = int(len(self.elements['dataset_' + '5M'].low)-1) - length_data
-
-			dataset_ramp['low'] = self.elements['dataset_' + '5M'].low[
-																			cut_first:int(len(self.elements['dataset_' + '5M'].low)-1)
-																			].reset_index(drop=True)
-
-			dataset_ramp['high'] = self.elements['dataset_' + '5M'].high[
-																			cut_first:int(len(self.elements['dataset_' + '5M'].high)-1)
-																			].reset_index(drop=True)
-
-			dataset_ramp['close'] = self.elements['dataset_' + '5M'].close[
-																			cut_first:int(len(self.elements['dataset_' + '5M'].close)-1)
-																			].reset_index(drop=True)
-
-			dataset_ramp['open'] = self.elements['dataset_' + '5M'].open[
-																			cut_first:int(len(self.elements['dataset_' + '5M'].open)-1)
-																			].reset_index(drop=True)
-
-			dataset_ramp['time'] = self.elements['dataset_' + '5M'].time[
-																			cut_first:int(len(self.elements['dataset_' + '5M'].time)-1)
-																			].reset_index(drop=True)
-
-			dataset = pd.DataFrame(dataset_ramp)
+			dataset = dataset_ramp.copy(deep = True)
 			dataset.index.name = 'Time'
 			dataset.index = dataset_ramp.time
 			dataset.head(3)
@@ -448,36 +446,13 @@ class TrendLines:
 
 			length_data = self.elements[__class__.__name__ + '_length_' + length + '_1H']
 
-			dataset_ramp = pd.DataFrame()
-			cut_first = 0
+			datachanger = DataChanger()
+			dataset_ramp = datachanger.Spliter(
+												data = self.elements['dataset_' + '1H'],
+												length = length_data
+												)
 
-			if (
-				int(len(self.elements['dataset_' + '1H'].low)-1) > length_data
-				):
-
-				cut_first = int(len(self.elements['dataset_' + '1H'].low)-1) - length_data
-
-			dataset_ramp['low'] = self.elements['dataset_' + '1H'].low[
-																			cut_first:int(len(self.elements['dataset_' + '1H'].low)-1)
-																			].reset_index(drop=True)
-
-			dataset_ramp['high'] = self.elements['dataset_' + '1H'].high[
-																			cut_first:int(len(self.elements['dataset_' + '1H'].high)-1)
-																			].reset_index(drop=True)
-
-			dataset_ramp['close'] = self.elements['dataset_' + '1H'].close[
-																			cut_first:int(len(self.elements['dataset_' + '1H'].close)-1)
-																			].reset_index(drop=True)
-
-			dataset_ramp['open'] = self.elements['dataset_' + '1H'].open[
-																			cut_first:int(len(self.elements['dataset_' + '1H'].open)-1)
-																			].reset_index(drop=True)
-
-			dataset_ramp['time'] = self.elements['dataset_' + '1H'].time[
-																			cut_first:int(len(self.elements['dataset_' + '1H'].time)-1)
-																			].reset_index(drop=True)
-
-			dataset = pd.DataFrame(dataset_ramp)
+			dataset = dataset_ramp.copy(deep = True)
 			dataset.index.name = 'Time'
 			dataset.index = dataset_ramp.time
 			dataset.head(3)

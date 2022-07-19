@@ -360,7 +360,7 @@ class BestFinder:
 																		kmeans_f.predict(Lower_Line.reshape(1,-1))
 																		].to_numpy()/np.max(exterm_point_pred_final['power'])
 				Power_Mid_Line = exterm_point_pred_final['power'][
-																		kmeans_f.predict(Mid_Line_low.reshape(1,-1))
+																		kmeans_f.predict(Mid_Line.reshape(1,-1))
 																		].to_numpy()/np.max(exterm_point_pred_final['power'])
 			
 			elif dist_name == 'norm':
@@ -391,10 +391,9 @@ class BestFinder:
 				Power_Mid_Line = exterm_point_pred_final['power'][
 																	kmeans_f.predict(Mid_Line.reshape(1,-1))
 																	].to_numpy()/np.max(exterm_point_pred_final['power'])
-
-
 			
 		except Exception as ex:
+			#print(ex)
 			Upper_Line = 0
 			Lower_Line = 0
 			Mid_Line = 0

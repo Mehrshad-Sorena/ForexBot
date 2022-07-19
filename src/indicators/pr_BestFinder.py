@@ -85,7 +85,8 @@ class BestFinder:
 
 		dist_item, f_low = self.DistributePreparer(
 													data = data_X_low,
-													exterm_point_pred_final = exterm_point_pred_final_low
+													exterm_point_pred_final = exterm_point_pred_final_low,
+													distributions = ['expon','norm']
 													)
 		if dist_item != '':
 			Upper_Line_low, Mid_Line_low, Lower_Line_low, Power_Upper_Line_low, Power_Mid_Line_low, Power_Lower_Line_low = self.ValuesPreparer(
@@ -94,7 +95,8 @@ class BestFinder:
 																																			data = data_X_low,
 																																			exterm_point_pred_final = exterm_point_pred_final_low,
 																																			alpha = self.elements[__class__.__name__ + '_alpha_low'],
-																																			kmeans_f = kmeans_low
+																																			kmeans_f = kmeans_low,
+																																			distributions = ['expon','norm']
 																																			)
 		#//////////////////////////////////////////////////////////////////////////////////////
 
@@ -102,7 +104,8 @@ class BestFinder:
 
 		dist_item, f_high = self.DistributePreparer(
 													data = data_X_high,
-													exterm_point_pred_final = exterm_point_pred_final_high
+													exterm_point_pred_final = exterm_point_pred_final_high,
+													distributions = ['expon','norm']
 													)
 
 		if dist_item != '':
@@ -112,7 +115,8 @@ class BestFinder:
 																																					data = data_X_high,
 																																					exterm_point_pred_final = exterm_point_pred_final_high,
 																																					alpha = self.elements[__class__.__name__ + '_alpha_high'],
-																																					kmeans_f = kmeans_high
+																																					kmeans_f = kmeans_high,
+																																					distributions = ['expon','norm']
 																																					)
 		#/////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -272,12 +276,13 @@ class BestFinder:
 	def DistributePreparer(
 							self,
 							data,
-							exterm_point_pred_final
+							exterm_point_pred_final,
+							distributions
 							):
 		#'rayleigh','nakagami','expon','foldnorm','dweibull',
 
 		#Define Name Of Distributions that We Want To Use:
-		distributions = ['expon','norm']
+		#distributions = 
 
 		#************************************ Finding Low Distribution Functions ****************************
 
@@ -318,7 +323,8 @@ class BestFinder:
 						data,
 						exterm_point_pred_final,
 						alpha,
-						kmeans_f
+						kmeans_f,
+						distributions
 						):
 
 
@@ -330,9 +336,7 @@ class BestFinder:
 			dist_parameters = dist_items[0][1]
 
 			#Finding Best Points Of Low Extremes With Best Distributed Function and That Parameters:
-			if (
-				dist_name == 'expon'
-				):
+			if dist_name == 'expon':
 
 				Y = f.fitted_pdf['expon']
 				#Using Probability Distribution Function From Scipy Library:
@@ -391,6 +395,35 @@ class BestFinder:
 				Power_Mid_Line = exterm_point_pred_final['power'][
 																	kmeans_f.predict(Mid_Line.reshape(1,-1))
 																	].to_numpy()/np.max(exterm_point_pred_final['power'])
+			if (
+				Mid_Line >= Upper_Line or
+				Mid_Line <= Lower_Line
+				):
+				if len(distributions) > 0:
+
+					distributions.remove(dist_name)
+
+					dist_item, f = self.DistributePreparer(
+																data = data,
+																exterm_point_pred_final = exterm_point_pred_final,
+																distributions = distributions
+																)
+					Upper_Line, Mid_Line, Lower_Line, Power_Upper_Line, Power_Mid_Line, Power_Lower_Line = self.ValuesPreparer(
+																																dist_items = dist_item,
+																																f = f,
+																																data = data,
+																																exterm_point_pred_final = exterm_point_pred_final,
+																																alpha = self.elements[__class__.__name__ + '_alpha_high'],
+																																kmeans_f = kmeans_f,
+																																distributions = distributions
+																																)
+				else:
+					Upper_Line = 0
+					Lower_Line = 0
+					Mid_Line = 0
+					Power_Upper_Line = 0
+					Power_Lower_Line = 0
+					Power_Mid_Line = 0
 			
 		except Exception as ex:
 			#print(ex)

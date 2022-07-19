@@ -144,13 +144,11 @@ class ExtremePoints:
 											)
 		return exterm_point
 
-	@stTime
+	#@stTime
 	def get(self, timeframe):
 
 		#Finding Extremes From Time Frame
-		local_extreme = pd.DataFrame()
-		local_extreme['extreme'] = np.nan
-		local_extreme['power'] = np.nan
+		local_extreme = pd.DataFrame(columns=['extreme','power'])
 		
 		if (
 			self.cfg[__class__.__name__ + '_T_' + timeframe] == True and
@@ -167,14 +165,38 @@ class ExtremePoints:
 
 			local_extreme['power'] = np.ones(len(local_extreme)) * self.elements[__class__.__name__ + '_weight_' + timeframe]
 
+		else:
+			local_extreme = pd.DataFrame(np.nan, index = [0], columns=['extreme','power'])
+
 		return local_extreme
+
+	def runner(self, timeframe):
+
+		extreme_name = 'extreme_' + timeframe
+		if (
+			self.cfg[__class__.__name__ + '_T_' + timeframe] == True and
+			self.cfg[__class__.__name__ + '_status'] == True
+			):
+			try:
+				globals()[extreme_name] = self.get(timeframe = timeframe)
+			except Exception as ex:
+				globals()[extreme_name] = pd.DataFrame(np.nan, index=[0], columns=['extreme','power'])
+
+		else:
+			globals()[extreme_name] = pd.DataFrame(np.nan, index=[0], columns=['extreme','power'])
+
+		if timeframe == '5M':
+			return extreme_5M
+
+		if timeframe == '1H':
+			return extreme_1H
 
 	def ploter(self):
 
 		if self.cfg[__class__.__name__ + '_T_5M'] == True:
 			local_5M = self.get(timeframe='5M')
 
-			dataset = pd.DataFrame(self.elements['dataset_5M'])
+			dataset = self.elements['dataset_5M'].copy(deep = True)
 			dataset.index.name = 'Time'
 			dataset.index = self.elements['dataset_5M'].time
 			dataset.head(3)
@@ -204,7 +226,7 @@ class ExtremePoints:
 		if self.cfg[__class__.__name__ + '_T_1H'] == True:
 			local_1H = self.get(timeframe='1H')
 
-			dataset = pd.DataFrame(self.elements['dataset_1H'])
+			dataset = self.elements['dataset_1H'].copy(deep = True)
 			dataset.index.name = 'Time'
 			dataset.index = self.elements['dataset_1H'].time
 			dataset.head(3)

@@ -1,13 +1,15 @@
-import pandas as pd
-import pandas_ta as ind
-import numpy as np
 import matplotlib.pyplot as plt
-import math
-
-from pr_BestFinder import best_extreme_finder
+from timer import stTime
+import pandas as pd
+import numpy as np
+#import math
+import matplotlib.pyplot as plt
+from DataChanger import DataChanger
+from pr_BestFinder import BestFinder
 from pr_TrendLines import TrendLines
-from pr_FlatLinesIchimoku import flat_lines_ichimoko
+from pr_IchimokouFlatLines import IchimokouFlatLines
 from pr_ExtremePoints import ExtremePoints
+import mplfinance as mpf
 
 from pr_Parameters import Parameters
 from pr_Config import Config as config
@@ -53,8 +55,16 @@ class Runner:
 				):
 		self.elements = dict(
 							{
+							#Elemns For Runner Module:
+
+							__class__.__name__ + '_methode1_' + '_lenght_data_5M': parameters.elements[__class__.__name__ + '_methode1_' + '_lenght_data_5M'],
+							__class__.__name__ + '_methode1_' + '_lenght_data_1H': parameters.elements[__class__.__name__ + '_methode1_' + '_lenght_data_1H'],
+
+							#/////////////////////////////////
+
 
 							#Elemns For ExtremePoints Module:
+
 							'ExtremePoints_num_max_5M': parameters.elements['ExtremePoints_num_max_5M'],
 							'ExtremePoints_num_min_5M': parameters.elements['ExtremePoints_num_min_5M'],
 							'ExtremePoints_weight_5M': parameters.elements['ExtremePoints_weight_5M'],
@@ -62,56 +72,80 @@ class Runner:
 							'ExtremePoints_num_max_1H': parameters.elements['ExtremePoints_num_max_1H'],
 							'ExtremePoints_num_min_1H': parameters.elements['ExtremePoints_num_min_1H'],
 							'ExtremePoints_weight_1H': parameters.elements['ExtremePoints_weight_1H'],
+
 							#/////////////////////////////////
 
 
 							#Elemns For TrendingLines Module
-							'trend_short_length_1': parameters.elements['trend_short_length_1'],
-							'trend_short_length_2': parameters.elements['trend_short_length_2'],
-							'trend_mid_length': parameters.elements['trend_mid_length'],
-							'trend_long_length': parameters.elements['trend_long_length'],
 
-							'trend_num_max_short_1': parameters.elements['trend_num_max_short_1'],
-							'trend_num_min_short_1': parameters.elements['trend_num_min_short_1'],
+							'TrendLines_num_max_5M': parameters.elements['TrendLines_num_max_5M'],
+							'TrendLines_num_min_5M': parameters.elements['TrendLines_num_min_5M'],
+							'TrendLines_weight_5M': parameters.elements['TrendLines_weight_5M'],
 
-							'trend_num_max_short_2': parameters.elements['trend_num_max_short_2'],
-							'trend_num_min_short_2': parameters.elements['trend_num_min_short_2'],
+							'TrendLines_num_max_1H': parameters.elements['TrendLines_num_max_1H'],
+							'TrendLines_num_min_1H': parameters.elements['TrendLines_num_min_1H'],
+							'TrendLines_weight_1H': parameters.elements['TrendLines_weight_1H'],
 
-							'trend_num_max_mid': parameters.elements['trend_num_max_mid'],
-							'trend_num_min_mid': parameters.elements['trend_num_min_mid'],
-					
-							'trend_num_max_long': parameters.elements['trend_num_max_long'],
-							'trend_num_min_long': parameters.elements['trend_num_min_long'],
+							'TrendLines_length_long_5M': parameters.elements['TrendLines_length_long_5M'],
+							'TrendLines_length_mid_5M': parameters.elements['TrendLines_length_mid_5M'],
+							'TrendLines_length_short1_5M': parameters.elements['TrendLines_length_short1_5M'],
+							'TrendLines_length_short2_5M': parameters.elements['TrendLines_length_short2_5M'],
+							
+							'TrendLines_length_long_1H': parameters.elements['TrendLines_length_long_1H'],
+							'TrendLines_length_mid_1H': parameters.elements['TrendLines_length_mid_1H'],
+							'TrendLines_length_short1_1H': parameters.elements['TrendLines_length_short1_1H'],
+							'TrendLines_length_short2_1H': parameters.elements['TrendLines_length_short2_1H'],
+
+							'TrendLines_power_long_5M': parameters.elements['TrendLines_power_long_5M'],
+							'TrendLines_power_mid_5M': parameters.elements['TrendLines_power_mid_5M'],
+							'TrendLines_power_short1_5M': parameters.elements['TrendLines_power_short1_5M'],
+							'TrendLines_power_short2_5M': parameters.elements['TrendLines_power_short2_5M'],
+							
+							'TrendLines_power_long_1H': parameters.elements['TrendLines_power_long_1H'],
+							'TrendLines_power_mid_1H': parameters.elements['TrendLines_power_mid_1H'],
+							'TrendLines_power_short1_1H': parameters.elements['TrendLines_power_short1_1H'],
+							'TrendLines_power_short2_1H': parameters.elements['TrendLines_power_short2_1H'],
+
 							#/////////////////////////////////
 
 
-							#Elemns For FlatLinesIchimoku Module:
-							'tenkan_5M': parameters.elements['tenkan_5M'],
-							'kijun_5M': parameters.elements['kijun_5M'],
-							'senkou_5M': parameters.elements['senkou_5M'],
-							'culster_ichi_5M': parameters.elements['culster_ichi_5M'],
-							'weight_ichi_5M': parameters.elements['weight_ichi_5M'],
-
+							#Elemns For IchimokuFlatLines Module:
 							
-							'tenkan_1H': parameters.elements['tenkan_1H'],
-							'kijun_1H': parameters.elements['kijun_1H'],
-							'senkou_1H': parameters.elements['senkou_1H'],
-							'culster_ichi_1H': parameters.elements['culster_ichi_1H'],
-							'weight_ichi_1H': parameters.elements['weight_ichi_1H'],
+							'IchimokouFlatLines_tenkan_5M': parameters.elements['IchimokouFlatLines_tenkan_5M'],
+							'IchimokouFlatLines_kijun_5M': parameters.elements['IchimokouFlatLines_kijun_5M'],
+							'IchimokouFlatLines_senkou_5M': parameters.elements['IchimokouFlatLines_senkou_5M'],
+
+							'IchimokouFlatLines_n_cluster_5M': parameters.elements['IchimokouFlatLines_n_cluster_5M'],
+
+							'IchimokouFlatLines_weight_5M': parameters.elements['IchimokouFlatLines_weight_5M'],
+
+							'IchimokouFlatLines_tenkan_1H': parameters.elements['IchimokouFlatLines_tenkan_1H'],
+							'IchimokouFlatLines_kijun_1H': parameters.elements['IchimokouFlatLines_kijun_1H'],
+							'IchimokouFlatLines_senkou_1H': parameters.elements['IchimokouFlatLines_senkou_1H'],
+
+							'IchimokouFlatLines_n_cluster_1H': parameters.elements['IchimokouFlatLines_n_cluster_1H'],
+
+							'IchimokouFlatLines_weight_1H': parameters.elements['IchimokouFlatLines_weight_1H'],
+
 							#/////////////////////////////////
 
 
 							#Elemns For BestFinder Module:
-							'n_clusters_best_low': parameters.elements['n_clusters_best_low'],
-							'n_clusters_best_high': parameters.elements['n_clusters_best_high'],
-							'alpha_low': parameters.elements['alpha_low'],
-							'alpha_high': parameters.elements['alpha_high'],
+
+							'BestFinder_n_cluster_low': parameters.elements['BestFinder_n_cluster_low'],
+							'BestFinder_n_cluster_high': parameters.elements['BestFinder_n_cluster_high'],
+
+							'BestFinder_alpha_low': parameters.elements['BestFinder_alpha_low'],
+							'BestFinder_alpha_high': parameters.elements['BestFinder_alpha_high'],
+
 							#/////////////////////////////////
 
 
 							#Elemns For PrRunner and shared to pr Modules:
+
 							'dataset_5M' :  parameters.elements['dataset_5M'],
 							'dataset_1H' :  parameters.elements['dataset_1H'],
+
 							#/////////////////////////////////
 							}
 							)
@@ -124,6 +158,37 @@ class Runner:
 							'ExtremePoints_T_1H': config.cfg['ExtremePoints_T_1H'],
 							#/////////////////////////
 
+							#Config For TrendLines:
+							'TrendLines_status': config.cfg['TrendLines_status'],
+							
+							'TrendLines_T_5M': config.cfg['TrendLines_T_5M'],
+
+							'TrendLines_long_T_5M': config.cfg['TrendLines_long_T_5M'],
+							'TrendLines_mid_T_5M': config.cfg['TrendLines_mid_T_5M'],
+							'TrendLines_short1_T_5M': config.cfg['TrendLines_short1_T_5M'],
+							'TrendLines_short2_T_5M': config.cfg['TrendLines_short2_T_5M'],
+
+							'TrendLines_T_1H': config.cfg['TrendLines_T_1H'],
+
+							'TrendLines_long_T_1H': config.cfg['TrendLines_long_T_1H'],
+							'TrendLines_mid_T_1H': config.cfg['TrendLines_mid_T_1H'],
+							'TrendLines_short1_T_1H': config.cfg['TrendLines_short1_T_1H'],
+							'TrendLines_short2_T_1H': config.cfg['TrendLines_short2_T_1H'],
+
+							'TrendLines_plot': config.cfg['TrendLines_plot'],
+							#///////////////////////////
+
+							#Config For IchimokouFlatLines:
+
+							'IchimokouFlatLines_T_5M': config.cfg['IchimokouFlatLines_T_5M'],
+							'IchimokouFlatLines_T_1H': config.cfg['IchimokouFlatLines_T_1H'],
+							'IchimokouFlatLines_status': config.cfg['IchimokouFlatLines_status'],
+
+							'IchimokouFlatLines_plot': config.cfg['IchimokouFlatLines_plot'],
+
+							#//////////////////////////
+
+
 							
 							'plot': config.cfg['plot'],
 							}
@@ -132,94 +197,43 @@ class Runner:
 
 
 	#This Function Calculate Tp And St With Above Function And Out Best Tp And St With Best_Extreme_Finder:
-	def start(self):
+	@stTime
+	def start(self,dataset_5M,dataset_1H,loc_end_5M):
+
+		datachanger = DataChanger()
+		self.elements['dataset_' + '5M'], self.elements['dataset_' + '1H'] = datachanger.SpliterSyncPR(
+																							dataset_5M = dataset_5M,
+																							dataset_1H = dataset_1H,
+																							loc_end_5M = loc_end_5M,
+																							length_5M = self.elements[__class__.__name__ + '_methode1_' + '_lenght_data_5M'],
+																							length_1H = self.elements[__class__.__name__ + '_methode1_' + '_lenght_data_1H']
+																							)
+		
 
 		#****************** Extreme Points Finder Function: Finding Top Down Points *********************
 		extreme_points = ExtremePoints(parameters = self, config = self)
 		
-		if (
-			self.cfg['ExtremePoints_T_5M'] == True and
-			self.cfg['ExtremePoints_status'] == True
-			):
-			local_extreme_5M = extreme_points.get(timeframe = '5M')
-		else:
-			local_extreme_5M = pd.DataFrame(np.nan, index=[0], columns=['extreme','power'])
+		extreme_5M = extreme_points.runner(timeframe = '5M')
+		extreme_1H = extreme_points.runner(timeframe = '1H')
 
-		if (
-			self.cfg['ExtremePoints_T_1H'] == True and
-			self.cfg['ExtremePoints_status'] == True
-			):
-			local_extreme_1H = extreme_points.get(timeframe = '1H')
-		else:
-			local_extreme_1H = pd.DataFrame(np.nan, index=[0], columns=['extreme','power'])
 		#//////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 		#**************************** Trend Line Extreme Finder Function **************************************
-		if (pr_input.T_5M == True):
-			trend_local_extreme_5M_long = trend_line_get(
-														dataset_5M = dataset_5M,
-														length = 'long',
-														parameters = parameters
-														)
 
-			trend_local_extreme_5M_mid = trend_line_get(
-														dataset_5M = dataset_5M,
-														length = 'mid',
-														parameters = parameters
-														)
+		trendlines = TrendLines(parameters = self, config = self)
 
-			trend_local_extreme_5M_short_1 = trend_line_get(
-															dataset_5M = dataset_5M,
-															length = 'short_length_1',
-															parameters = parameters
-															)
-
-			trend_local_extreme_5M_short_1 = trend_line_get(
-															dataset_5M = dataset_5M,
-															length = 'short_length_2',
-															parameters = parameters
-															)
+		trend_5M_long, trend_5M_mid, trend_5M_short1, trend_5M_short2  = trendlines.runner(timeframe='5M')
+		trend_1H_long, trend_1H_mid, trend_1H_short1, trend_1H_short2  = trendlines.runner(timeframe='1H')
 
 		#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		#*************************************** ichi Extreme Finder Function ********************************************************
-		#flat_lines_ichi_get(
-
-							#)
-		#Finding From 5M TimeFrame:
-		ichi_local_extreme_5M = pd.DataFrame()
-		ichi_local_extreme_5M['extreme'] = np.nan
-		ichi_local_extreme_5M['power'] = np.nan
-		if (T_5M == True):
-			ichi_local_extreme_5M = Extreme_points_ichimoko(
-															dataset_5M['high'],
-															dataset_5M['low'],
-															dataset_5M['close'],
-															tenkan=parameters['tenkan_5m'][0],
-															kijun=parameters['kijun_5m'][0],
-															senkou=parameters['senkou_5m'][0],
-															n_clusters=parameters['culster_ichi_5m'][0],
-															weight=parameters['weight_ichi_5m'][0]
-															)
-
-		#Finding From 1H TimeFrame:
-		ichi_local_extreme_1H = pd.DataFrame()
-		ichi_local_extreme_1H['extreme'] = np.nan
-		ichi_local_extreme_1H['power'] = np.nan
-		if (T_1H == True):
-			ichi_local_extreme_1H = Extreme_points_ichimoko(
-															dataset_1H['high'],
-															dataset_1H['low'],
-															dataset_1H['close'],
-															tenkan=parameters['tenkan_1h'][0],
-															kijun=parameters['kijun_1h'][0],
-															senkou=parameters['senkou_1h'][0],
-															n_clusters=parameters['culster_ichi_1h'][0],
-															weight=parameters['weight_ichi_1h'][0]
-															)
-
+		
+		ichiflatlines = IchimokouFlatLines(parameters = self, config = self)
+		ichi_lines_5M = ichiflatlines.get(timeframe='5M')
+		ichi_lines_1H = ichiflatlines.get(timeframe='1H')
 		#//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		#***************** Concatenate All of Extremes That Finded **************************
@@ -227,18 +241,29 @@ class Runner:
 		exterm_point = pd.DataFrame(
 									np.concatenate(
 												(
-												local_extreme_5M['extreme'].to_numpy(), 
-												local_extreme_1H['extreme'].to_numpy(),
-												trend_local_extreme_5M_long['min'].to_numpy(),
-												trend_local_extreme_5M_long['max'].to_numpy(),
-												trend_local_extreme_5M_mid['min'].to_numpy(),
-												trend_local_extreme_5M_mid['max'].to_numpy(),
-												trend_local_extreme_5M_short_1['min'].to_numpy(),
-												trend_local_extreme_5M_short_1['max'].to_numpy(),
-												trend_local_extreme_5M_short_2['min'].to_numpy(),
-												trend_local_extreme_5M_short_2['max'].to_numpy(),
-												ichi_local_extreme_5M['extreme'].to_numpy(),
-												ichi_local_extreme_1H['extreme'].to_numpy(),
+												extreme_5M['extreme'].to_numpy(), 
+												extreme_1H['extreme'].to_numpy(),
+
+												trend_5M_long['min'].to_numpy(),
+												trend_5M_long['max'].to_numpy(),
+												trend_5M_mid['min'].to_numpy(),
+												trend_5M_mid['max'].to_numpy(),
+												trend_5M_short1['min'].to_numpy(),
+												trend_5M_short1['max'].to_numpy(),
+												trend_5M_short2['min'].to_numpy(),
+												trend_5M_short2['max'].to_numpy(),
+
+												trend_1H_long['min'].to_numpy(),
+												trend_1H_long['max'].to_numpy(),
+												trend_1H_mid['min'].to_numpy(),
+												trend_1H_mid['max'].to_numpy(),
+												trend_1H_short1['min'].to_numpy(),
+												trend_1H_short1['max'].to_numpy(),
+												trend_1H_short2['min'].to_numpy(),
+												trend_1H_short2['max'].to_numpy(),
+
+												ichi_lines_5M['extreme'].to_numpy(),
+												ichi_lines_1H['extreme'].to_numpy(),
 												), 
 												axis=None
 												),
@@ -247,18 +272,29 @@ class Runner:
 
 		exterm_point['power'] = np.concatenate(
 											(
-											local_extreme_5M['power'].to_numpy(), 
-											local_extreme_1H['power'].to_numpy(),
-											trend_local_extreme_5M_long['power'].to_numpy(),
-											trend_local_extreme_5M_long['power'].to_numpy(),
-											trend_local_extreme_5M_mid['power'].to_numpy(),
-											trend_local_extreme_5M_mid['power'].to_numpy(),
-											trend_local_extreme_5M_short_1['power'].to_numpy(),
-											trend_local_extreme_5M_short_1['power'].to_numpy(),
-											trend_local_extreme_5M_short_2['power'].to_numpy(),
-											trend_local_extreme_5M_short_2['power'].to_numpy(),
-											ichi_local_extreme_5M['power'].to_numpy(),
-											ichi_local_extreme_1H['power'].to_numpy(),
+											extreme_5M['power'].to_numpy(), 
+											extreme_1H['power'].to_numpy(),
+
+											trend_5M_long['power'].to_numpy(),
+											trend_5M_long['power'].to_numpy(),
+											trend_5M_mid['power'].to_numpy(),
+											trend_5M_mid['power'].to_numpy(),
+											trend_5M_short1['power'].to_numpy(),
+											trend_5M_short1['power'].to_numpy(),
+											trend_5M_short2['power'].to_numpy(),
+											trend_5M_short2['power'].to_numpy(),
+
+											trend_1H_long['power'].to_numpy(),
+											trend_1H_long['power'].to_numpy(),
+											trend_1H_mid['power'].to_numpy(),
+											trend_1H_mid['power'].to_numpy(),
+											trend_1H_short1['power'].to_numpy(),
+											trend_1H_short1['power'].to_numpy(),
+											trend_1H_short2['power'].to_numpy(),
+											trend_1H_short2['power'].to_numpy(),
+
+											ichi_lines_5M['power'].to_numpy(),
+											ichi_lines_1H['power'].to_numpy(),
 											), 
 											axis=None
 											)
@@ -266,66 +302,108 @@ class Runner:
 		exterm_point = exterm_point.dropna()
 
 		#Using Best Extreme Finder To Find Best Tp And St Points:
-		extereme = pd.DataFrame()
-		extereme = Best_Extreme_Finder(
-										exterm_point=exterm_point,
-										high=dataset_5M['high'],
-										low=dataset_5M['low'],
-										n_clusters_low=parameters['n_clusters_best_low'][0],
-										n_clusters_high=parameters['n_clusters_best_high'][0],
-										alpha_low=parameters['alpha_low'][0],
-										alpha_high=parameters['alpha_high'][0],
-										timeout_break=1
+		bestfinder = BestFinder(parameters = self, config = self)
+		
+		try:
+			extereme = bestfinder.finder(
+										extermpoint = exterm_point,
+										timeframe = '5M'
 										)
+		except Exception as ex:
+			extereme = pd.DataFrame()
+			extereme['high'] = [0, 0, 0]
+			extereme['power_high'] = [0, 0, 0]
+			extereme['low'] = [0, 0, 0]
+			extereme['power_low'] = [0, 0, 0]
+
 		#Add Name Of Trends To OutPut DataFrame:
-		if T_5M == True:
+		if self.cfg['TrendLines_long_T_5M'] == True:
 			extereme['trend_long'] = [
-									trend_local_extreme_5M_long['trend'][0],
-									trend_local_extreme_5M_long['trend'][0],
-									trend_local_extreme_5M_long['trend'][0]
+									trend_5M_long['trend'][0],
+									trend_5M_long['trend'][0],
+									trend_5M_long['trend'][0]
 									]
-
+		if self.cfg['TrendLines_mid_T_5M'] == True:
 			extereme['trend_mid'] = [
-									trend_local_extreme_5M_mid['trend'][0],
-									trend_local_extreme_5M_mid['trend'][0],
-									trend_local_extreme_5M_mid['trend'][0]
+									trend_5M_mid['trend'][0],
+									trend_5M_mid['trend'][0],
+									trend_5M_mid['trend'][0]
 									]
-
+		if self.cfg['TrendLines_short1_T_5M'] == True:
 			extereme['trend_short1'] = [
-										trend_local_extreme_5M_short_1['trend'][0],
-										trend_local_extreme_5M_short_1['trend'][0],
-										trend_local_extreme_5M_short_1['trend'][0]
+										trend_5M_short1['trend'][0],
+										trend_5M_short1['trend'][0],
+										trend_5M_short1['trend'][0]
 										]
-
+		if self.cfg['TrendLines_short2_T_5M'] == True:
 			extereme['trend_short2'] = [
-										trend_local_extreme_5M_short_2['trend'][0],
-										trend_local_extreme_5M_short_2['trend'][0],
-										trend_local_extreme_5M_short_2['trend'][0]
+										trend_5M_short2['trend'][0],
+										trend_5M_short2['trend'][0],
+										trend_5M_short2['trend'][0]
 										]
-
-
-		if (plot == True):
-			fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12, 6))
-			ax0.axhline(y = extereme['high'][0], color = 'r', linestyle = '-')
-			ax0.axhline(y = extereme['high'][1], color = 'g', linestyle = '-')
-			ax0.axhline(y = extereme['high'][2], color = 'r', linestyle = '-')
-
-			ax0.axhline(y = extereme['low'][0], color = 'g', linestyle = '-')
-			ax0.axhline(y = extereme['low'][1], color = 'b', linestyle = '-')
-			ax0.axhline(y = extereme['low'][2], color = 'g', linestyle = '-')
-
-			end = len(dataset_5M['close']) - 1
-
-			ax0.axvline(x = end, color = 'r', linestyle = '-')
-			ax1.axvline(x = end, color = 'r', linestyle = '-')
-
-			ax0.plot(dataset_5M['close'].index[end-100:end],dataset_5M['close'][end-100:end],'b')
-			ax1.plot(dataset_5M['close'].index[end-10:end+300],dataset_5M['close'][end-10:end+300],'b')
-			plt.show()
 
 		return extereme
-#///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	#/////////////////////////////
 
+
+	#************* Ploter
+	def ploter(self,dataset_5M,dataset_1H,loc_end_5M):
+		
+
+
+
+		if self.cfg['plot'] == True:
+
+			extereme = self.start(dataset_5M = dataset_5M, dataset_1H = dataset_1H, loc_end_5M = loc_end_5M)
+
+			dataset = self.elements['dataset_5M'].copy(deep = True)
+			dataset.index.name = 'Time'
+			dataset.index = self.elements['dataset_5M'].time
+			dataset.head(3)
+			dataset.tail(3)
+
+			mc = mpf.make_marketcolors(
+										base_mpf_style='yahoo',
+										up='green',
+										down='red',
+										vcdopcod = True,
+										alpha = 0.0001
+										)
+			mco = [mc]*len(dataset)
+
+			low_1 = float(extereme.low.values[0])
+			low_2 = float(extereme.low.values[1])
+			low_3 = float(extereme.low.values[2])
+
+			high_1 = float(extereme.high.values[0])
+			high_2 = float(extereme.high.values[1])
+			high_3 = float(extereme.high.values[2])
+
+			mpf.plot(
+					dataset,
+					type='candle',
+					volume=True,
+					style='yahoo',
+					figscale=1,
+					title='5M Protect Resist',
+					hlines=dict(hlines=[low_1,low_2,low_3,high_1,high_2,high_3],colors=['g', 'r', 'g', 'b', 'r', 'b'],linestyle='-.'),
+					#if config.savefig_5M savefig=dict(fname=config.path_5M,dpi=600,pad_inches=0.25) else None,
+					marketcolor_overrides=mco
+					)
+			#plt.axhline(y = extereme['high'][0], color = 'r', linestyle = '-')
+			#plt.axhline(y = extereme['high'][1], color = 'g', linestyle = '-')
+			#plt.axhline(y = extereme['high'][2], color = 'r', linestyle = '-')
+
+			# plt.axhline(y = extereme['low'][0], color = 'g', linestyle = '-')
+			# plt.axhline(y = extereme['low'][1], color = 'b', linestyle = '-')
+			# plt.axhline(y = extereme['low'][2], color = 'g', linestyle = '-')
+
+			# end = len(dataset_5M['close']) - 1
+
+			# #plt.axvline(x = end, color = 'r', linestyle = '-')
+
+			# plt.plot(dataset_5M['close'].index[end-100:end],dataset_5M['close'][end-100:end],'b')
+			# plt.show()
 #***************************** How To Use Functions **********************************************
 """
 from datetime import datetime

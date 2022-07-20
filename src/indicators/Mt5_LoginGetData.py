@@ -9,6 +9,9 @@ except Exception as ex:
 
 import pandas as pd
 import numpy as np
+import os
+import warnings
+warnings.filterwarnings("ignore")
 
 #********* Methodes:
 
@@ -29,7 +32,7 @@ class LoginGetData:
 	def __init__(self): self.account_name = ''
 
 	def getall(self, timeframe, number):
-		
+
 		symbols = self.get_symbols()
 		symbol_data = {}
 
@@ -117,19 +120,19 @@ class LoginGetData:
 
 		if os.path.exists(dataset_path):
 			rates_frame = pd.read_csv(dataset_path)
-			if timeframe == 5:
+			if timeframe == '5M':
 				symbol_data_5M[symbol] = pd.DataFrame({
 													symbol: symbol,
-													'open': rates_frame['open'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
-													'close': rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
-													'low': rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
-													'high': rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
-													'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/2),
-													'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/3),
-													'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/4),
-													'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True))/4),
-													'volume': rates_frame['volume'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True),
-													'time': rates_frame['time'][(len(rates_frame['open'])-num_5M-1):-1].reset_index(drop=True)
+													'open': rates_frame['open'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
+													'close': rates_frame['close'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
+													'low': rates_frame['low'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
+													'high': rates_frame['high'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
+													'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True))/2),
+													'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True))/3),
+													'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True))/4),
+													'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True))/4),
+													'volume': rates_frame['volume'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
+													'time': rates_frame['time'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)
 													})
 				time_counter = 0
 				for ti in symbol_data_5M[symbol]['time']:
@@ -138,19 +141,19 @@ class LoginGetData:
 
 				return symbol_data_5M
 			else:
-				rates_frame = pd.read_csv(dataset_path_1H)
+				rates_frame = pd.read_csv(dataset_path)
 				symbol_data_1H[symbol] = pd.DataFrame({
 														symbol: symbol,
-														'open': rates_frame['open'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
-														'close': rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
-														'low': rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
-														'high': rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
-														'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/2),
-														'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/3),
-														'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/4),
-														'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True))/4),
-														'volume': rates_frame['volume'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True),
-														'time': rates_frame['time'][(len(rates_frame['open'])-num_1H-1):-1].reset_index(drop=True)
+														'open': rates_frame['open'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
+														'close': rates_frame['close'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
+														'low': rates_frame['low'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
+														'high': rates_frame['high'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
+														'HL/2': ((rates_frame['high'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True))/2),
+														'HLC/3': ((rates_frame['high'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True))/3),
+														'HLCC/4': ((rates_frame['high'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True))/4),
+														'OHLC/4': ((rates_frame['high'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['low'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['close'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)+rates_frame['open'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True))/4),
+														'volume': rates_frame['volume'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
+														'time': rates_frame['time'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)
 														})
 
 				time_counter = 0
@@ -168,9 +171,9 @@ class LoginGetData:
 		symbol_data_5M = {}
 		symbol_data_1H = {}
 
-		symbol_data_5M[symbol] = self.readone(timeframe = mt5.TIMEFRAME_M5, symbol = symbol, number = number_5M)
+		symbol_data_5M[symbol] = self.readone(timeframe = '5M', symbol = symbol, number = number_5M)
 
-		symbol_data_1H[symbol] = self.readone(timeframe = mt5.TIMEFRAME_H1, symbol = symbol, number = number_1H)
+		symbol_data_1H[symbol] = self.readone(timeframe = '1H', symbol = symbol, number = number_1H)
 
 		return symbol_data_5M, symbol_data_1H
 

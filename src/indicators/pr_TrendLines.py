@@ -310,10 +310,7 @@ class TrendLines:
 		length_data = self.elements[__class__.__name__ + '_length_' + length + '_' + timeframe]
 
 
-		trend_local_extreme = pd.DataFrame()
-		trend_local_extreme['min'] = np.nan
-		trend_local_extreme['max'] = np.nan
-		trend_local_extreme['power'] = np.nan
+		trend_local_extreme = pd.DataFrame(np.nan, index = 0, columns = ['min', 'max', 'power'])
 
 		if (
 			self.cfg[__class__.__name__ + '_T_' + timeframe] == True and
@@ -326,9 +323,6 @@ class TrendLines:
 												data = self.elements['dataset_' + timeframe],
 												length = length_data
 												)
-
-			trend_local_extreme = pd.DataFrame()
-			trend_local_extreme = np.nan
 
 			trend_local_extreme = self.finder(
 												dataset = dataset_ramp,

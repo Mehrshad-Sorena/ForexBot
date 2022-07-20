@@ -1,7 +1,8 @@
-from sklearn.cluster import KMeans
 from pr_Parameters import Parameters
+from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 from pr_Config import Config
+from timer import stTime
 import pandas_ta as ind
 import pandas as pd
 import numpy as np
@@ -90,21 +91,26 @@ class IchimokouFlatLines:
 
 
 		#Define empty DataFrames:
-		Tenkan_train = pd.DataFrame()
-		Tenkan_train['flat'] = Tenkan.dropna()
-		Tenkan_train['power'] = np.ones(len(Tenkan_train))*1
 
-		Kijun_train = pd.DataFrame()
-		Kijun_train['flat'] = Kijun.dropna()
-		Kijun_train['power'] = np.ones(len(Kijun_train))*1
+		Tenkan_train = pd.DataFrame({
+									'flat': Tenkan.dropna().values.reshape(len(Tenkan.dropna())),
+									'power': np.ones(len(Tenkan.dropna()))*1
+									})
+		
+		Kijun_train = pd.DataFrame({
+									'flat': Kijun.dropna().values.reshape(len(Kijun.dropna())),
+									'power': np.ones(len(Kijun.dropna()))*1
+									})
 
-		SPANA_train = pd.DataFrame()
-		SPANA_train['flat'] = SPANA.dropna()
-		SPANA_train['power'] = np.ones(len(SPANA_train))*2
+		SPANA_train = pd.DataFrame({
+									'flat': SPANA.dropna().values.reshape(len(SPANA.dropna())),
+									'power': np.ones(len(SPANA.dropna()))*2
+									})
 
-		SPANB_train = pd.DataFrame()
-		SPANB_train['flat'] = SPANB.dropna()
-		SPANB_train['power'] = np.ones(len(SPANB_train))*2
+		SPANB_train = pd.DataFrame({
+									'flat': SPANB.dropna().values.reshape(len(SPANB.dropna())),
+									'power': np.ones(len(SPANB.dropna()))*2
+									})
 
 		#Define DataFrame for flating in Kijun, SPANA, SPANB:
 		Three_train_1 = pd.DataFrame(
@@ -158,6 +164,7 @@ class IchimokouFlatLines:
 	#///////////////////////////////
 
 	#************* ichi
+
 	def Ichimokou(
 				self,
 				timeframe
@@ -177,6 +184,7 @@ class IchimokouFlatLines:
 
 
 	#*************** Optimizer:
+
 	def optimizer(
 					self,
 					timeframe,
@@ -222,10 +230,7 @@ class IchimokouFlatLines:
 				timeframe
 				):
 
-		Tenkan_train, Kijun_train, SPANA_train, SPANB_train, Three_train_1, Three_train_2, Four_train = self.IchiPreparer(
-																															self.Ichimokou(
-																																			timeframe = timeframe
-																																			))
+		Tenkan_train, Kijun_train, SPANA_train, SPANB_train, Three_train_1, Three_train_2, Four_train = self.IchiPreparer(self.Ichimokou(timeframe = timeframe))
 		#Concatenate All DataFrames:
 		flat_lines = pd.DataFrame(
 									np.concatenate(
@@ -265,6 +270,7 @@ class IchimokouFlatLines:
 
 
 	#************ Get:
+	
 	def get(
 			self,
 			timeframe

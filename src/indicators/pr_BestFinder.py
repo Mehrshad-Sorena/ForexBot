@@ -3,6 +3,7 @@ from fitter import Fitter, get_common_distributions, get_distributions
 from pr_Parameters import Parameters
 from sklearn.cluster import KMeans
 from pr_Config import Config
+from timer import stTime
 from scipy import stats
 import pandas as pd
 import numpy as np
@@ -47,7 +48,9 @@ class BestFinder:
 							'plot': config.cfg['plot'],
 							}
 						)
-		pass
+
+
+	
 	def finder(
 				self,
 				extermpoint,
@@ -132,7 +135,7 @@ class BestFinder:
 	#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #*********************
-
+	
 	def clusterer(
 					self,
 					exterm_point,
@@ -272,7 +275,7 @@ class BestFinder:
 	#///////////////////
 
 #*********************
-
+	
 	def DistributePreparer(
 							self,
 							data,
@@ -315,7 +318,7 @@ class BestFinder:
 	#/////////////////////
 
 	#*********************
-
+	
 	def ValuesPreparer(
 						self,
 						dist_items,

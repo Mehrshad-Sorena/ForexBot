@@ -120,6 +120,7 @@ class LoginGetData:
 
 		if os.path.exists(dataset_path):
 			rates_frame = pd.read_csv(dataset_path)
+			rates_frame['time'] = pd.to_datetime(rates_frame['time'])
 			if timeframe == '5M':
 				symbol_data_5M[symbol] = pd.DataFrame({
 													symbol: symbol,
@@ -134,14 +135,15 @@ class LoginGetData:
 													'volume': rates_frame['volume'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
 													'time': rates_frame['time'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)
 													})
-				time_counter = 0
-				for ti in symbol_data_5M[symbol]['time']:
-					symbol_data_5M[symbol]['time'][time_counter] = datetime.strptime(symbol_data_5M[symbol]['time'][time_counter], "%Y-%m-%d %H:%M:%S")
-					time_counter += 1
+				#time_counter = 0
+				#for ti in symbol_data_5M[symbol]['time']:
+					#symbol_data_5M[symbol]['time'][time_counter] = datetime.strptime(symbol_data_5M[symbol]['time'][time_counter], "%Y-%m-%d %H:%M:%S")
+					#time_counter += 1
 
 				return symbol_data_5M
 			else:
 				rates_frame = pd.read_csv(dataset_path)
+				rates_frame['time'] = pd.to_datetime(rates_frame['time'])
 				symbol_data_1H[symbol] = pd.DataFrame({
 														symbol: symbol,
 														'open': rates_frame['open'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),
@@ -156,10 +158,10 @@ class LoginGetData:
 														'time': rates_frame['time'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True)
 														})
 
-				time_counter = 0
-				for ti in symbol_data_1H[symbol]['time']:
-					symbol_data_1H[symbol]['time'][time_counter] = datetime.strptime(symbol_data_1H[symbol]['time'][time_counter], "%Y-%m-%d %H:%M:%S")
-					time_counter += 1
+				#time_counter = 0
+				#for ti in symbol_data_1H[symbol]['time']:
+					#symbol_data_1H[symbol]['time'][time_counter] = datetime.strptime(symbol_data_1H[symbol]['time'][time_counter], "%Y-%m-%d %H:%M:%S")
+					#time_counter += 1
 
 				return symbol_data_1H
 		
@@ -168,12 +170,9 @@ class LoginGetData:
 		dataset_path_5M = 'dataset/5M/' + symbol + '.csv'
 		dataset_path_1H = 'dataset/1H/' + symbol + '.csv'
 
-		symbol_data_5M = {}
-		symbol_data_1H = {}
+		symbol_data_5M = self.readone(timeframe = '5M', symbol = symbol, number = number_5M)
 
-		symbol_data_5M[symbol] = self.readone(timeframe = '5M', symbol = symbol, number = number_5M)
-
-		symbol_data_1H[symbol] = self.readone(timeframe = '1H', symbol = symbol, number = number_1H)
+		symbol_data_1H = self.readone(timeframe = '1H', symbol = symbol, number = number_1H)
 
 		return symbol_data_5M, symbol_data_1H
 

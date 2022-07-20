@@ -60,11 +60,14 @@ class ExtremePoints:
 				number_max
 				):
 
-		extremes = pd.DataFrame(low, columns=['low'])
-		extremes['high'] = high
+		extremes = pd.DataFrame({
+								'low': low,
+								'high': high,
+								})
 
 		#Finding Extreme Points
 		#Finding Minimum Points:
+
 		extremes['min'] = extremes.iloc[
 										argrelextrema(
 														extremes.low.values, 

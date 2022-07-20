@@ -18,7 +18,7 @@ loging = getdata()
 # print(data['XAUUSD_i'])
 
 data_5M, data_1H = loging.readall(symbol = 'XAUUSD_i', number_5M = 500, number_1H = 500)
-print(data_5M)
+print(data_5M['XAUUSD_i'])
 
-data_5M = loging.readone(symbol = 'XAUUSD_i', number = 500, timeframe = '5M')
-print(data_5M)
+# data_5M = loging.readone(symbol = 'XAUUSD_i', number = 500, timeframe = '5M')
+# print(data_5M)

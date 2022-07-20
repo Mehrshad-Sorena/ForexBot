@@ -7,14 +7,18 @@ from pr_Config import Config
 import numpy as np
 from timer import stTime
 from pr_Runner import Runner
-from log_get_data import *
+import pandas as pd
+from Mt5_LoginGetData import LoginGetData as getdata
 import MetaTrader5 as mt5
 import sys
 
 import itertools as itter
 
-data_5M,money,_  = log_get_data_Genetic(mt5.TIMEFRAME_M5,0,600)
-data_1H,money,_  = log_get_data_Genetic(mt5.TIMEFRAME_H1,0,500)
+loging = getdata()
+loging.account_name = 'mehrshadpc'
+data_5M, data_1H = loging.readall(symbol = 'XAUUSD_i', number_5M = 500, number_1H = 500)
+#data_5M = loging.getone(timeframe = '5M', number = 500, symbol = 'XAUUSD_i')
+# data_1H = loging.getone(timeframe = '1H', number = 500, symbol = 'XAUUSD_i')
 
 parameters = Parameters()
 parameters.elements['ExtremePoints_num_max_5M'] = 5
@@ -74,5 +78,5 @@ print('start')
 
 #run()
 print('finish')
-pr_Runner.ploter(dataset_5M = pd.DataFrame(data_5M['XAUUSD_i']), dataset_1H = pd.DataFrame(data_1H['XAUUSD_i']),loc_end_5M=600)
+pr_Runner.ploter(dataset_5M = pd.DataFrame(data_5M['XAUUSD_i']), dataset_1H = pd.DataFrame(data_1H['XAUUSD_i']),loc_end_5M=400)
 

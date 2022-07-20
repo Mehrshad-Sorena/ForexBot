@@ -65,7 +65,7 @@ class Parameters:
 							'IchimokouFlatLines' + '_kijun_5M': 26,
 							'IchimokouFlatLines' + '_senkou_5M': 52,
 
-							'IchimokouFlatLines' + '_n_cluster_5M': 20,
+							'IchimokouFlatLines' + '_n_cluster_5M': 4,
 
 							'IchimokouFlatLines' + '_weight_5M': 200,
 
@@ -73,7 +73,7 @@ class Parameters:
 							'IchimokouFlatLines' + '_kijun_1H': 26,
 							'IchimokouFlatLines' + '_senkou_1H': 52,
 
-							'IchimokouFlatLines' + '_n_cluster_1H': 20,
+							'IchimokouFlatLines' + '_n_cluster_1H': 4,
 
 							'IchimokouFlatLines' + '_weight_1H': 400,
 

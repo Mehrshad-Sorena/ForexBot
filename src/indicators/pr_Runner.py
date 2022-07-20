@@ -310,37 +310,25 @@ class Runner:
 										timeframe = '5M'
 										)
 		except Exception as ex:
-			extereme = pd.DataFrame()
-			extereme['high'] = [0, 0, 0]
-			extereme['power_high'] = [0, 0, 0]
-			extereme['low'] = [0, 0, 0]
-			extereme['power_low'] = [0, 0, 0]
+			extereme = pd.DataFrame({
+									'high': [0, 0, 0],
+									'power_high': [0, 0, 0],
+									'low': [0, 0, 0],
+									'power_low': [0, 0, 0],
+									})
 
 		#Add Name Of Trends To OutPut DataFrame:
 		if self.cfg['TrendLines_long_T_5M'] == True:
-			extereme['trend_long'] = [
-									trend_5M_long['trend'][0],
-									trend_5M_long['trend'][0],
-									trend_5M_long['trend'][0]
-									]
+			extereme['trend_long'] = [trend_5M_long['trend'][0], trend_5M_long['trend'][0], trend_5M_long['trend'][0]]
+
 		if self.cfg['TrendLines_mid_T_5M'] == True:
-			extereme['trend_mid'] = [
-									trend_5M_mid['trend'][0],
-									trend_5M_mid['trend'][0],
-									trend_5M_mid['trend'][0]
-									]
+			extereme['trend_mid'] = [trend_5M_mid['trend'][0], trend_5M_mid['trend'][0], trend_5M_mid['trend'][0]]
+			
 		if self.cfg['TrendLines_short1_T_5M'] == True:
-			extereme['trend_short1'] = [
-										trend_5M_short1['trend'][0],
-										trend_5M_short1['trend'][0],
-										trend_5M_short1['trend'][0]
-										]
+			extereme['trend_short1'] = [trend_5M_short1['trend'][0], trend_5M_short1['trend'][0], trend_5M_short1['trend'][0]]
+
 		if self.cfg['TrendLines_short2_T_5M'] == True:
-			extereme['trend_short2'] = [
-										trend_5M_short2['trend'][0],
-										trend_5M_short2['trend'][0],
-										trend_5M_short2['trend'][0]
-										]
+			extereme['trend_short2'] = [trend_5M_short2['trend'][0], trend_5M_short2['trend'][0], trend_5M_short2['trend'][0]]
 
 		return extereme
 	#/////////////////////////////

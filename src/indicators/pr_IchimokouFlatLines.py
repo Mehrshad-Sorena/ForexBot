@@ -7,16 +7,13 @@ import pandas_ta as ind
 import numpy as np
 
 try:
-	import cudf as pd
+	import os
+	os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
+	import modin.pandas as pd
+	import ray
+	ray.init()
 except:
-	try:
-		import os
-		os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
-		import modin.pandas as pd
-		import ray
-		ray.init()
-	except:
-		import pandas as pd
+	import pandas as pd
 
 #**************************************************** Ichimoko Lines *******************************************************
 #This Function is Used for Finding Flat Lines in ichimoku:

@@ -5,11 +5,22 @@ from sklearn.cluster import KMeans
 from pr_Config import Config
 from timer import stTime
 from scipy import stats
-import pandas as pd
 import numpy as np
 import fitter
 import time
 import math
+
+try:
+	import cudf as pd
+except:
+	try:
+		import os
+		os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
+		import modin.pandas as pd
+		import ray
+		ray.init()
+	except:
+		import pandas as pd
 
 #**************************************************** Best Extreme Finder ***************************************************
 class BestFinder:
@@ -54,7 +65,8 @@ class BestFinder:
 	def finder(
 				self,
 				extermpoint,
-				timeframe
+				timeframe,
+				loc_end_5M
 				):
 
 		#************************ Help ***********************************************************
@@ -74,11 +86,23 @@ class BestFinder:
 			exterm_point_pred_final_low['X'][0] == '' or
 			exterm_point_pred_final_high['X'][0] == ''
 			):
-			best_extremes = pd.DataFrame()
-			best_extremes['high'] = [0, 0, 0]
-			best_extremes['power_high'] = [0, 0, 0]
-			best_extremes['low'] = [0, 0, 0]
-			best_extremes['power_low'] = [0, 0, 0]
+			best_extremes = pd.DataFrame(
+										{
+										'high_upper': 0,
+										'high_mid': 0,
+										'high_lower': 0,
+										'power_high_upper': 0,
+										'power_high_mid': 0,
+										'power_high_lower': 0,
+										'low_upper': 0,
+										'lowe_mid': 0,
+										'low_lower': 0,
+										'power_low_upper': 0,
+										'power_low_mid': 0,
+										'power_low_lower': 0,
+										},
+										index = [loc_end_5M]
+										)
 			return best_extremes
 
 		data_X_high = self.DataPreparer(exterm_point_pred_final = exterm_point_pred_final_high)
@@ -125,11 +149,27 @@ class BestFinder:
 
 		#Define DataFrame For OutPuts:
 		#Out Best High Point And Best Low Points With Powers:
-		best_extremes = pd.DataFrame()
-		best_extremes['high'] = [Upper_Line_high, Mid_Line_high, Lower_Line_high]
-		best_extremes['power_high'] = [Power_Upper_Line_high, Power_Mid_Line_high, Power_Lower_Line_high]
-		best_extremes['low'] = [Upper_Line_low, Mid_Line_low, Lower_Line_low]
-		best_extremes['power_low'] = [Power_Upper_Line_low, Power_Mid_Line_low, Power_Lower_Line_low]
+		best_extremes = pd.DataFrame(
+									{
+									'high_upper': Upper_Line_high,
+									'high_mid': Mid_Line_high,
+									'high_lower': Lower_Line_high,
+									'power_high_upper': Power_Upper_Line_high,
+									'power_high_mid': Power_Mid_Line_high,
+									'power_high_lower': Power_Lower_Line_high,
+									'low_upper': Upper_Line_low,
+									'lowe_mid': Mid_Line_low,
+									'low_lower': Lower_Line_low,
+									'power_low_upper': Power_Upper_Line_low,
+									'power_low_mid': Power_Mid_Line_low,
+									'power_low_lower': Power_Lower_Line_low,
+									},
+									index = [loc_end_5M]
+									)
+		# best_extremes['high'] = [Upper_Line_high, , ]
+		# best_extremes['power_high'] = [, , ]
+		# best_extremes['low'] = [, , ]
+		# best_extremes['power_low'] = [, , ]
 
 		return best_extremes
 	#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

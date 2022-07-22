@@ -8,7 +8,7 @@ import numpy as np
 from timer import stTime
 from pr_Runner import Runner
 from Mt5_LoginGetData import LoginGetData as getdata
-import MetaTrader5 as mt5
+#import MetaTrader5 as mt5
 import sys
 
 
@@ -17,18 +17,15 @@ import sys
 #os.environ["MODIN_ENGINE"] = "dask"  # Modin will use Dask
 
 try:
-	import cudf as pd
+	import os
+	os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
+	import modin.pandas as pd
+	import ray
+	ray.init()
 except:
-	try:
-		import os
-		os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
-		import modin.pandas as pd
-		import ray
-		ray.init()
-	except:
-		import pandas as pd
+	import pandas as pd
 
-import itertools as itter
+# import itertools as itter
 
 loging = getdata()
 loging.account_name = 'mehrshadpc'
@@ -195,7 +192,7 @@ print('start')
 # 	print(indexes)
 # print('finish')
 
-import swifter
+# import swifter
 
 @stTime
 def run3(indexes):

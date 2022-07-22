@@ -5,19 +5,12 @@ from sklearn.cluster import KMeans
 from pr_Config import Config
 from timer import stTime
 from scipy import stats
+import pandas as pd
 import numpy as np
 import fitter
 import time
 import math
 
-try:
-	import os
-	os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
-	import modin.pandas as pd
-	import ray
-	ray.init()
-except:
-	import pandas as pd
 
 #**************************************************** Best Extreme Finder ***************************************************
 class BestFinder:

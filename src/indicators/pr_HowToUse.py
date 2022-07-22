@@ -127,9 +127,9 @@ def run1():
 
 
 
-# print('start')
-# run1()
-# print('finish')
+print('start')
+run1()
+print('finish')
 
 # pr = pr_Runner.start(dataset_5M = pd.DataFrame(data_5M['XAUUSD_i']), dataset_1H = pd.DataFrame(data_1H['XAUUSD_i']),loc_end_5M=2000)
 
@@ -177,11 +177,11 @@ print('start')
 # 						)
 indexes = pd.DataFrame(range(2000,99700,100), index = range(2000,99700,100) , columns=['index'])
 indexes = run2(indexes)
-with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-	print(indexes)
+# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+# 	print(indexes)
 print('finish')
 
-import swifter
+#import swifter
 
 @stTime
 def run3(indexes):

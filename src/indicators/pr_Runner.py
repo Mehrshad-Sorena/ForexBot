@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from timer import stTime
-import pandas as pd
 import numpy as np
 #import math
 import matplotlib.pyplot as plt
@@ -8,11 +7,25 @@ from DataChanger import DataChanger
 from pr_BestFinder import BestFinder
 from pr_TrendLines import TrendLines
 from pr_IchimokouFlatLines import IchimokouFlatLines
-from pr_ExtremePoints import ExtremePoints
+from ExtremePoints import ExtremePoints
 import mplfinance as mpf
 
 from pr_Parameters import Parameters
 from pr_Config import Config as config
+
+import concurrent.futures
+
+try:
+	import cudf as pd
+except:
+	try:
+		import os
+		os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
+		import modin.pandas as pd
+		import ray
+		ray.init()
+	except:
+		import pandas as pd
 
 #from matplotlib.collections import LineCollection
 #from scipy.interpolate import interp1d
@@ -197,7 +210,7 @@ class Runner:
 
 
 	#This Function Calculate Tp And St With Above Function And Out Best Tp And St With Best_Extreme_Finder:
-	@stTime
+	#@stTime
 	def start(self,dataset_5M,dataset_1H,loc_end_5M):
 
 		datachanger = DataChanger()
@@ -234,6 +247,178 @@ class Runner:
 		ichiflatlines = IchimokouFlatLines(parameters = self, config = self)
 		ichi_lines_5M = ichiflatlines.get(timeframe='5M')
 		ichi_lines_1H = ichiflatlines.get(timeframe='1H')
+		#//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		#***************** Concatenate All of Extremes That Finded **************************
+
+		exterm_point = pd.DataFrame(
+									np.concatenate(
+												(
+												extreme_5M['extreme'].to_numpy(), 
+												extreme_1H['extreme'].to_numpy(),
+
+												trend_5M_long['min'].to_numpy(),
+												trend_5M_long['max'].to_numpy(),
+												trend_5M_mid['min'].to_numpy(),
+												trend_5M_mid['max'].to_numpy(),
+												trend_5M_short1['min'].to_numpy(),
+												trend_5M_short1['max'].to_numpy(),
+												trend_5M_short2['min'].to_numpy(),
+												trend_5M_short2['max'].to_numpy(),
+
+												trend_1H_long['min'].to_numpy(),
+												trend_1H_long['max'].to_numpy(),
+												trend_1H_mid['min'].to_numpy(),
+												trend_1H_mid['max'].to_numpy(),
+												trend_1H_short1['min'].to_numpy(),
+												trend_1H_short1['max'].to_numpy(),
+												trend_1H_short2['min'].to_numpy(),
+												trend_1H_short2['max'].to_numpy(),
+
+												ichi_lines_5M['extreme'].to_numpy(),
+												ichi_lines_1H['extreme'].to_numpy(),
+												), 
+												axis=None
+												),
+									columns=['extremes']
+									)
+
+		exterm_point['power'] = np.concatenate(
+											(
+											extreme_5M['power'].to_numpy(), 
+											extreme_1H['power'].to_numpy(),
+
+											trend_5M_long['power'].to_numpy(),
+											trend_5M_long['power'].to_numpy(),
+											trend_5M_mid['power'].to_numpy(),
+											trend_5M_mid['power'].to_numpy(),
+											trend_5M_short1['power'].to_numpy(),
+											trend_5M_short1['power'].to_numpy(),
+											trend_5M_short2['power'].to_numpy(),
+											trend_5M_short2['power'].to_numpy(),
+
+											trend_1H_long['power'].to_numpy(),
+											trend_1H_long['power'].to_numpy(),
+											trend_1H_mid['power'].to_numpy(),
+											trend_1H_mid['power'].to_numpy(),
+											trend_1H_short1['power'].to_numpy(),
+											trend_1H_short1['power'].to_numpy(),
+											trend_1H_short2['power'].to_numpy(),
+											trend_1H_short2['power'].to_numpy(),
+
+											ichi_lines_5M['power'].to_numpy(),
+											ichi_lines_1H['power'].to_numpy(),
+											), 
+											axis=None
+											)
+		#Delete Nan Data:
+		exterm_point = exterm_point.dropna()
+
+		#Using Best Extreme Finder To Find Best Tp And St Points:
+		bestfinder = BestFinder(parameters = self, config = self)
+		
+		try:
+			extereme = bestfinder.finder(
+										extermpoint = exterm_point,
+										timeframe = '5M',
+										loc_end_5M = loc_end_5M
+										)
+		except Exception as ex:
+			extereme = pd.DataFrame(
+									{
+									'high_upper': 0,
+									'high_mid': 0,
+									'high_lower': 0,
+									'power_high_upper': 0,
+									'power_high_mid': 0,
+									'power_high_lower': 0,
+									'low_upper': 0,
+									'lowe_mid': 0,
+									'low_lower': 0,
+									'power_low_upper': 0,
+									'power_low_mid': 0,
+									'power_low_lower': 0,
+									},
+									index = [loc_end_5M]
+									)
+
+		
+		#extereme = extereme.assign(index = loc_end_5M)
+
+		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		# 	print('hello = ', extereme.values)
+
+		#Add Name Of Trends To OutPut DataFrame:
+		# if self.cfg['TrendLines_long_T_5M'] == True:
+		# 	extereme['trend_long'] = [trend_5M_long['trend'][0]]
+
+		# if self.cfg['TrendLines_mid_T_5M'] == True:
+		# 	extereme['trend_mid'] = [trend_5M_mid['trend'][0]]
+			
+		# if self.cfg['TrendLines_short1_T_5M'] == True:
+		# 	extereme['trend_short1'] = [trend_5M_short1['trend'][0]]
+
+		# if self.cfg['TrendLines_short2_T_5M'] == True:
+		# 	extereme['trend_short2'] = [trend_5M_short2['trend'][0]]
+
+		return extereme.values[0]
+	#/////////////////////////////
+
+
+	@stTime
+	def startparallel(self,dataset_5M,dataset_1H,loc_end_5M):
+
+		datachanger = DataChanger()
+		self.elements['dataset_' + '5M'], self.elements['dataset_' + '1H'] = datachanger.SpliterSyncPR(
+																							dataset_5M = dataset_5M,
+																							dataset_1H = dataset_1H,
+																							loc_end_5M = loc_end_5M,
+																							length_5M = self.elements[__class__.__name__ + '_methode1_' + '_lenght_data_5M'],
+																							length_1H = self.elements[__class__.__name__ + '_methode1_' + '_lenght_data_1H']
+																							)
+		
+
+		#****************** Extreme Points Finder Function: Finding Top Down Points *********************
+		extreme_points = ExtremePoints(parameters = self, config = self)
+
+		with concurrent.futures.ThreadPoolExecutor() as executor:
+		    future = executor.submit(extreme_points.runner, '5M')
+		    extreme_5M = future.result()
+		
+		with concurrent.futures.ThreadPoolExecutor() as executor:
+		    future = executor.submit(extreme_points.runner, '1H')
+		    extreme_1H = future.result()
+
+		#//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+		#**************************** Trend Line Extreme Finder Function **************************************
+
+		trendlines = TrendLines(parameters = self, config = self)
+
+		with concurrent.futures.ThreadPoolExecutor() as executor:
+		    future = executor.submit(trendlines.runner, '5M')
+		    trend_5M_long, trend_5M_mid, trend_5M_short1, trend_5M_short2 = future.result()
+
+		with concurrent.futures.ThreadPoolExecutor() as executor:
+		    future = executor.submit(trendlines.runner, '1H')
+		    trend_1H_long, trend_1H_mid, trend_1H_short1, trend_1H_short2 = future.result()
+
+		#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		#*************************************** ichi Extreme Finder Function ********************************************************
+		
+		ichiflatlines = IchimokouFlatLines(parameters = self, config = self)
+
+		with concurrent.futures.ThreadPoolExecutor() as executor:
+		    future = executor.submit(ichiflatlines.get, '5M')
+		    ichi_lines_5M = future.result()
+
+		with concurrent.futures.ThreadPoolExecutor() as executor:
+		    future = executor.submit(ichiflatlines.get, '1H')
+		    ichi_lines_1H = future.result()
+		    
 		#//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		#***************** Concatenate All of Extremes That Finded **************************

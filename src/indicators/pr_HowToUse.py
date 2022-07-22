@@ -251,7 +251,8 @@ print('start')
 indexes = run4(indexes)
 print('finish')
 
-print(indexes)
+for elm in indexes['high_upper']:
+	print(elm)
 
 	
 

@@ -1,5 +1,11 @@
-import pandas as pd
 import numpy as np
+try:
+	import cudf as pd
+except:
+	try:
+		import modin.pandas as pd
+	except:
+		import pandas as pd
 
 class DataChanger:
 

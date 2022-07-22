@@ -4,16 +4,9 @@ import matplotlib.pyplot as plt
 from pr_Config import Config
 from timer import stTime
 import pandas_ta as ind
+import pandas as pd
 import numpy as np
 
-try:
-	import os
-	os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
-	import modin.pandas as pd
-	import ray
-	ray.init()
-except:
-	import pandas as pd
 
 #**************************************************** Ichimoko Lines *******************************************************
 #This Function is Used for Finding Flat Lines in ichimoku:

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from timer import stTime
+import pandas as pd
 import numpy as np
 #import math
 import matplotlib.pyplot as plt
@@ -15,17 +16,6 @@ from pr_Config import Config as config
 
 import concurrent.futures
 
-try:
-	import cudf as pd
-except:
-	try:
-		import os
-		os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
-		import modin.pandas as pd
-		import ray
-		ray.init()
-	except:
-		import pandas as pd
 
 #from matplotlib.collections import LineCollection
 #from scipy.interpolate import interp1d

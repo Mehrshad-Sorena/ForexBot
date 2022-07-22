@@ -10,20 +10,9 @@ from pr_Runner import Runner
 from Mt5_LoginGetData import LoginGetData as getdata
 #import MetaTrader5 as mt5
 import sys
+import pandas as pd
 
-
-
-
-#os.environ["MODIN_ENGINE"] = "dask"  # Modin will use Dask
-
-try:
-	import os
-	os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
-	import modin.pandas as pd
-	import ray
-	ray.init()
-except:
-	import pandas as pd
+	
 
 # import itertools as itter
 
@@ -186,13 +175,13 @@ print('start')
 # 						},
 # 						index = range(2000,3000,100)
 # 						)
-# indexes = pd.DataFrame(range(2000,99700,100), index = range(2000,99700,100) , columns=['index'])
-# indexes = run2(indexes)
-# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-# 	print(indexes)
-# print('finish')
+indexes = pd.DataFrame(range(2000,99700,100), index = range(2000,99700,100) , columns=['index'])
+indexes = run2(indexes)
+with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+	print(indexes)
+print('finish')
 
-# import swifter
+import swifter
 
 @stTime
 def run3(indexes):
@@ -246,13 +235,13 @@ def run4(indexes):
 		return indexes
 
 
-indexes = pd.DataFrame(range(2000,99700,100),columns=['index'])
-print('start')
-indexes = run4(indexes)
-print('finish')
+# indexes = pd.DataFrame(range(2000,99700,100),columns=['index'])
+# print('start')
+# indexes = run4(indexes)
+# print('finish')
 
-for elm in indexes['high_upper']:
-	print(elm)
+# for elm in indexes['high_upper']:
+# 	print(elm)
 
 	
 

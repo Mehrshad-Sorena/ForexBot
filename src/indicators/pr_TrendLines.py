@@ -1,6 +1,6 @@
 from sklearn.linear_model import LinearRegression
 from sklearn.isotonic import IsotonicRegression
-from pr_ExtremePoints import ExtremePoints
+from ExtremePoints import ExtremePoints
 from scipy.signal import argrelextrema
 from scipy.interpolate import interp1d
 from pr_Parameters import Parameters
@@ -8,10 +8,21 @@ from DataChanger import DataChanger
 import matplotlib.pyplot as plt
 from pr_Config import Config
 import mplfinance as mpf
-import pandas as pd
 import numpy as np
 
 from timer import stTime
+
+try:
+	import cudf as pd
+except:
+	try:
+		import os
+		os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
+		import modin.pandas as pd
+		import ray
+		ray.init()
+	except:
+		import pandas as pd
 
 #**************************************************** Ramp Lines *******************************************************
 class TrendLines:

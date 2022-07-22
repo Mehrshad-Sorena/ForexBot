@@ -7,18 +7,10 @@ from timer import stTime
 import matplotlib.pyplot as plt
 import warnings as warnings
 import mplfinance as mpf
+import pandas as pd
 import numpy as np
 import sys
 warnings.filterwarnings("ignore")
-
-try:
-	import os
-	os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
-	import modin.pandas as pd
-	import ray
-	ray.init()
-except:
-	import pandas as pd
 
 
 #getattr(self,'dataset_' + timeframe)

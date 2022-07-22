@@ -1,14 +1,11 @@
 try:
-	import cudf as pd
+	import os
+	os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
+	import modin.pandas as pd
+	import ray
+	ray.init()
 except:
-	try:
-		import os
-		os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
-		import modin.pandas as pd
-		import ray
-		ray.init()
-	except:
-		import pandas as pd
+	import pandas as pd
 
 
 class Parameters:

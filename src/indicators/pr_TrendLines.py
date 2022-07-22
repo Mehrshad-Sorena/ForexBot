@@ -8,18 +8,11 @@ from DataChanger import DataChanger
 import matplotlib.pyplot as plt
 from pr_Config import Config
 import mplfinance as mpf
+import pandas as pd
 import numpy as np
 
 from timer import stTime
 
-try:
-	import os
-	os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
-	import modin.pandas as pd
-	import ray
-	ray.init()
-except:
-	import pandas as pd
 
 #**************************************************** Ramp Lines *******************************************************
 class TrendLines:

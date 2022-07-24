@@ -57,6 +57,8 @@ class DataChanger:
 		except:
 			location_1H = 0
 
+		if location_1H <= 1: return pd.DataFrame(), pd.DataFrame()
+
 		cut_first_1H = 0
 		if location_1H >= length_1H:
 			cut_first_1H = location_1H - length_1H

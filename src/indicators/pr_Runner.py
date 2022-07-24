@@ -14,6 +14,8 @@ import mplfinance as mpf
 from pr_Parameters import Parameters
 from pr_Config import Config as config
 
+from pr_Tester import Tester
+
 import concurrent.futures
 
 
@@ -150,6 +152,26 @@ class Runner:
 							'dataset_1H' :  parameters.elements['dataset_1H'],
 
 							#/////////////////////////////////
+
+							#Elemns For Tester:
+
+							'Tester_money': parameters.elements['Tester_money'],
+							'Tester_coef_money': parameters.elements['Tester_coef_money'],
+							'Tester_spred': parameters.elements['Tester_spred'],
+							'Tester_index_tp': parameters.elements['Tester_index_tp'],
+							'Tester_index_st': parameters.elements['Tester_index_st'],
+
+							#////////////////////////////////
+
+							#Elemns Gloal:
+
+							'st_percent_min': parameters.elements['st_percent_min'],
+							'st_percent_max': parameters.elements['st_percent_max'],
+
+							'tp_percent_min': parameters.elements['tp_percent_min'],
+							'tp_percent_max': parameters.elements['tp_percent_max'],
+
+							#////////////////////////////////
 							}
 							)
 
@@ -192,6 +214,11 @@ class Runner:
 							#//////////////////////////
 
 
+							#Config For Tester:
+
+							'Tester_flag_realtest': config.cfg['Tester_flag_realtest'],
+
+							#/////////////////////////
 							
 							'plot': config.cfg['plot'],
 							}
@@ -201,7 +228,80 @@ class Runner:
 
 	#This Function Calculate Tp And St With Above Function And Out Best Tp And St With Best_Extreme_Finder:
 	#@stTime
-	def start(self,dataset_5M,dataset_1H,loc_end_5M):
+	def start(self,dataset_5M, dataset_1H, loc_end_5M, sigtype, flaglearn, flagtest):
+
+		if (
+			self.elements['Tester_money'] <= 4 and
+			flagtest == True and
+			flaglearn == True
+			):
+			extereme = pd.DataFrame(
+									{
+									'high_upper': np.nan,
+									'high_mid': np.nan,
+									'high_lower': np.nan,
+									'power_high_upper': np.nan,
+									'power_high_mid': np.nan,
+									'power_high_lower': np.nan,
+									'low_upper': np.nan,
+									'lowe_mid': np.nan,
+									'low_lower': np.nan,
+									'power_low_upper': np.nan,
+									'power_low_mid': np.nan,
+									'power_low_lower': np.nan,
+									},
+									index = [loc_end_5M]
+									)
+			if flagtest == True:
+				extereme = extereme.assign(
+									flag =  np.nan,
+									tp_pr = np.nan,
+									st_pr = np.nan,
+									index_tp = np.nan,
+									index_st = np.nan,
+									money = np.nan,
+									time = np.nan,
+									)
+			return extereme.values[0]
+
+		if (
+			flagtest == True and
+			self.cfg['Tester_flag_realtest'] == True
+			):
+			if (
+				loc_end_5M <= self.elements['Tester_index_tp'] or
+				loc_end_5M <= self.elements['Tester_index_st']
+				):
+				extereme = pd.DataFrame(
+										{
+										'high_upper': np.nan,
+										'high_mid': np.nan,
+										'high_lower': np.nan,
+										'power_high_upper': np.nan,
+										'power_high_mid': np.nan,
+										'power_high_lower': np.nan,
+										'low_upper': np.nan,
+										'lowe_mid': np.nan,
+										'low_lower': np.nan,
+										'power_low_upper': np.nan,
+										'power_low_mid': np.nan,
+										'power_low_lower': np.nan,
+										},
+										index = [loc_end_5M]
+										)
+				if flagtest == True:
+					extereme = extereme.assign(
+										flag =  np.nan,
+										tp_pr = np.nan,
+										st_pr = np.nan,
+										index_tp = np.nan,
+										index_st = np.nan,
+										money = np.nan,
+										time = np.nan,
+										)
+				return extereme.values[0]
+
+		loc_end_5M = int(loc_end_5M)
 
 		datachanger = DataChanger()
 		self.elements['dataset_' + '5M'], self.elements['dataset_' + '1H'] = datachanger.SpliterSyncPR(
@@ -211,6 +311,41 @@ class Runner:
 																							length_5M = self.elements[__class__.__name__ + '_methode1_' + '_lenght_data_5M'],
 																							length_1H = self.elements[__class__.__name__ + '_methode1_' + '_lenght_data_1H']
 																							)
+
+		if (
+			self.elements['dataset_' + '5M'].empty == True or
+			self.elements['dataset_' + '1H'].empty == True or
+			len(self.elements['dataset_' + '1H']) <= self.elements['IchimokouFlatLines_senkou_1H'] or
+			len(self.elements['dataset_' + '5M']) <= self.elements['IchimokouFlatLines_senkou_5M']
+			):
+			extereme = pd.DataFrame(
+									{
+									'high_upper': np.nan,
+									'high_mid': np.nan,
+									'high_lower': np.nan,
+									'power_high_upper': np.nan,
+									'power_high_mid': np.nan,
+									'power_high_lower': np.nan,
+									'low_upper': np.nan,
+									'lowe_mid': np.nan,
+									'low_lower': np.nan,
+									'power_low_upper': np.nan,
+									'power_low_mid': np.nan,
+									'power_low_lower': np.nan,
+									},
+									index = [loc_end_5M]
+									)
+			if flagtest == True:
+				extereme = extereme.assign(
+									flag =  np.nan,
+									tp_pr = np.nan,
+									st_pr = np.nan,
+									index_tp = np.nan,
+									index_st = np.nan,
+									money = np.nan,
+									time = np.nan,
+									)
+			return extereme.values[0]
 		
 
 		#****************** Extreme Points Finder Function: Finding Top Down Points *********************
@@ -316,27 +451,21 @@ class Runner:
 		except Exception as ex:
 			extereme = pd.DataFrame(
 									{
-									'high_upper': 0,
-									'high_mid': 0,
-									'high_lower': 0,
-									'power_high_upper': 0,
-									'power_high_mid': 0,
-									'power_high_lower': 0,
-									'low_upper': 0,
-									'lowe_mid': 0,
-									'low_lower': 0,
-									'power_low_upper': 0,
-									'power_low_mid': 0,
-									'power_low_lower': 0,
+									'high_upper': np.nan,
+									'high_mid': np.nan,
+									'high_lower': np.nan,
+									'power_high_upper': np.nan,
+									'power_high_mid': np.nan,
+									'power_high_lower': np.nan,
+									'low_upper': np.nan,
+									'lowe_mid': np.nan,
+									'low_lower': np.nan,
+									'power_low_upper': np.nan,
+									'power_low_mid': np.nan,
+									'power_low_lower': np.nan,
 									},
 									index = [loc_end_5M]
 									)
-
-		
-		#extereme = extereme.assign(index = loc_end_5M)
-
-		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-		# 	print('hello = ', extereme.values)
 
 		#Add Name Of Trends To OutPut DataFrame:
 		# if self.cfg['TrendLines_long_T_5M'] == True:
@@ -351,162 +480,105 @@ class Runner:
 		# if self.cfg['TrendLines_short2_T_5M'] == True:
 		# 	extereme['trend_short2'] = [trend_5M_short2['trend'][0]]
 
+		if (
+			sigtype == 'buy' and
+			flagtest == True
+			):
+			
+			tester = Tester(parameters = self, config = self)
+			extereme = tester.FlagFinderBuy(
+											dataset_5M = dataset_5M, 
+											extereme = extereme, 
+											flaglearn = flaglearn, 
+											loc_end_5M = loc_end_5M, 
+											money = self.elements['Tester_money']
+											)
+
+			self.elements['Tester_money'] = extereme['money'][loc_end_5M]
+
+
+
+			if extereme['flag'][loc_end_5M] == 'tp':
+				self.elements['Tester_index_tp'] = extereme['index_tp'][loc_end_5M]
+				self.elements['Tester_index_st'] = extereme['index_tp'][loc_end_5M]
+			elif extereme['flag'][loc_end_5M] == 'st':
+				self.elements['Tester_index_tp'] = extereme['index_st'][loc_end_5M]
+				self.elements['Tester_index_st'] = extereme['index_st'][loc_end_5M]
+
+		elif (
+			sigtype == 'sell' and
+			flagtest == True
+			):
+
+			tester = Tester(parameters = self, config = self)
+			extereme = tester.FlagFinderSell(
+											dataset_5M = dataset_5M, 
+											extereme = extereme, 
+											flaglearn = flaglearn, 
+											loc_end_5M = loc_end_5M, 
+											money = self.elements['Tester_money']
+											)
+
+			self.elements['Tester_money'] = extereme['money'][loc_end_5M]
+
+			if extereme['flag'][loc_end_5M] == 'tp':
+				self.elements['Tester_index_tp'] = extereme['index_tp'][loc_end_5M]
+				self.elements['Tester_index_st'] = extereme['index_tp'][loc_end_5M]
+			elif extereme['flag'][loc_end_5M] == 'st':
+				self.elements['Tester_index_tp'] = extereme['index_st'][loc_end_5M]
+				self.elements['Tester_index_st'] = extereme['index_st'][loc_end_5M]
+			
+
 		return extereme.values[0]
 	#/////////////////////////////
 
+	def run(self, signals, dataset_5M, dataset_1H, sigtype, flaglearn, flagtest):
 
-	@stTime
-	def startparallel(self,dataset_5M,dataset_1H,loc_end_5M):
+		if flagtest == False:
+			pr = signals.apply(
+								lambda x: pd.Series(
+													self.start(
+																dataset_5M = dataset_5M, 
+																dataset_1H = dataset_1H,
+																loc_end_5M = x['index'],
+																sigtype = sigtype,
+																flaglearn = flaglearn,
+																flagtest = flagtest
+																), 
+																index = ['high_upper', 'high_mid', 'high_lower', 'power_high_upper', 
+																		'power_high_mid', 'power_high_lower', 'low_upper', 'lowe_mid', 
+																		'low_lower','power_low_upper', 'power_low_mid', 'power_low_lower']
+													),
+								axis = 1,
+								result_type = 'expand'
+								)
 
-		datachanger = DataChanger()
-		self.elements['dataset_' + '5M'], self.elements['dataset_' + '1H'] = datachanger.SpliterSyncPR(
-																							dataset_5M = dataset_5M,
-																							dataset_1H = dataset_1H,
-																							loc_end_5M = loc_end_5M,
-																							length_5M = self.elements[__class__.__name__ + '_methode1_' + '_lenght_data_5M'],
-																							length_1H = self.elements[__class__.__name__ + '_methode1_' + '_lenght_data_1H']
-																							)
-		
+		else:
 
-		#****************** Extreme Points Finder Function: Finding Top Down Points *********************
-		extreme_points = ExtremePoints(parameters = self, config = self)
+			pr = signals.apply(
+								lambda x: pd.Series(
+													self.start(
+																dataset_5M = dataset_5M, 
+																dataset_1H = dataset_1H,
+																loc_end_5M = x['index'],
+																sigtype = sigtype,
+																flaglearn = flaglearn,
+																flagtest = flagtest
+																), 
+																index = ['high_upper', 'high_mid', 'high_lower', 'power_high_upper', 
+																		'power_high_mid', 'power_high_lower', 'low_upper', 'lowe_mid', 
+																		'low_lower','power_low_upper', 'power_low_mid', 'power_low_lower',
+																		'flag','tp_pr','st_pr','index_tp','index_st','money','time']
+													),
+								axis = 1,
+								result_type = 'expand'
+								)
 
-		with concurrent.futures.ThreadPoolExecutor() as executor:
-		    future = executor.submit(extreme_points.runner, '5M')
-		    extreme_5M = future.result()
-		
-		with concurrent.futures.ThreadPoolExecutor() as executor:
-		    future = executor.submit(extreme_points.runner, '1H')
-		    extreme_1H = future.result()
+		signals = signals.join(pr)
 
-		#//////////////////////////////////////////////////////////////////////////////////////////////////
+		return signals
 
-
-
-		#**************************** Trend Line Extreme Finder Function **************************************
-
-		trendlines = TrendLines(parameters = self, config = self)
-
-		with concurrent.futures.ThreadPoolExecutor() as executor:
-		    future = executor.submit(trendlines.runner, '5M')
-		    trend_5M_long, trend_5M_mid, trend_5M_short1, trend_5M_short2 = future.result()
-
-		with concurrent.futures.ThreadPoolExecutor() as executor:
-		    future = executor.submit(trendlines.runner, '1H')
-		    trend_1H_long, trend_1H_mid, trend_1H_short1, trend_1H_short2 = future.result()
-
-		#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		#*************************************** ichi Extreme Finder Function ********************************************************
-		
-		ichiflatlines = IchimokouFlatLines(parameters = self, config = self)
-
-		with concurrent.futures.ThreadPoolExecutor() as executor:
-		    future = executor.submit(ichiflatlines.get, '5M')
-		    ichi_lines_5M = future.result()
-
-		with concurrent.futures.ThreadPoolExecutor() as executor:
-		    future = executor.submit(ichiflatlines.get, '1H')
-		    ichi_lines_1H = future.result()
-		    
-		#//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		#***************** Concatenate All of Extremes That Finded **************************
-
-		exterm_point = pd.DataFrame(
-									np.concatenate(
-												(
-												extreme_5M['extreme'].to_numpy(), 
-												extreme_1H['extreme'].to_numpy(),
-
-												trend_5M_long['min'].to_numpy(),
-												trend_5M_long['max'].to_numpy(),
-												trend_5M_mid['min'].to_numpy(),
-												trend_5M_mid['max'].to_numpy(),
-												trend_5M_short1['min'].to_numpy(),
-												trend_5M_short1['max'].to_numpy(),
-												trend_5M_short2['min'].to_numpy(),
-												trend_5M_short2['max'].to_numpy(),
-
-												trend_1H_long['min'].to_numpy(),
-												trend_1H_long['max'].to_numpy(),
-												trend_1H_mid['min'].to_numpy(),
-												trend_1H_mid['max'].to_numpy(),
-												trend_1H_short1['min'].to_numpy(),
-												trend_1H_short1['max'].to_numpy(),
-												trend_1H_short2['min'].to_numpy(),
-												trend_1H_short2['max'].to_numpy(),
-
-												ichi_lines_5M['extreme'].to_numpy(),
-												ichi_lines_1H['extreme'].to_numpy(),
-												), 
-												axis=None
-												),
-									columns=['extremes']
-									)
-
-		exterm_point['power'] = np.concatenate(
-											(
-											extreme_5M['power'].to_numpy(), 
-											extreme_1H['power'].to_numpy(),
-
-											trend_5M_long['power'].to_numpy(),
-											trend_5M_long['power'].to_numpy(),
-											trend_5M_mid['power'].to_numpy(),
-											trend_5M_mid['power'].to_numpy(),
-											trend_5M_short1['power'].to_numpy(),
-											trend_5M_short1['power'].to_numpy(),
-											trend_5M_short2['power'].to_numpy(),
-											trend_5M_short2['power'].to_numpy(),
-
-											trend_1H_long['power'].to_numpy(),
-											trend_1H_long['power'].to_numpy(),
-											trend_1H_mid['power'].to_numpy(),
-											trend_1H_mid['power'].to_numpy(),
-											trend_1H_short1['power'].to_numpy(),
-											trend_1H_short1['power'].to_numpy(),
-											trend_1H_short2['power'].to_numpy(),
-											trend_1H_short2['power'].to_numpy(),
-
-											ichi_lines_5M['power'].to_numpy(),
-											ichi_lines_1H['power'].to_numpy(),
-											), 
-											axis=None
-											)
-		#Delete Nan Data:
-		exterm_point = exterm_point.dropna()
-
-		#Using Best Extreme Finder To Find Best Tp And St Points:
-		bestfinder = BestFinder(parameters = self, config = self)
-		
-		try:
-			extereme = bestfinder.finder(
-										extermpoint = exterm_point,
-										timeframe = '5M'
-										)
-		except Exception as ex:
-			extereme = pd.DataFrame({
-									'high': [0, 0, 0],
-									'power_high': [0, 0, 0],
-									'low': [0, 0, 0],
-									'power_low': [0, 0, 0],
-									})
-
-		#Add Name Of Trends To OutPut DataFrame:
-		if self.cfg['TrendLines_long_T_5M'] == True:
-			extereme['trend_long'] = [trend_5M_long['trend'][0], trend_5M_long['trend'][0], trend_5M_long['trend'][0]]
-
-		if self.cfg['TrendLines_mid_T_5M'] == True:
-			extereme['trend_mid'] = [trend_5M_mid['trend'][0], trend_5M_mid['trend'][0], trend_5M_mid['trend'][0]]
-			
-		if self.cfg['TrendLines_short1_T_5M'] == True:
-			extereme['trend_short1'] = [trend_5M_short1['trend'][0], trend_5M_short1['trend'][0], trend_5M_short1['trend'][0]]
-
-		if self.cfg['TrendLines_short2_T_5M'] == True:
-			extereme['trend_short2'] = [trend_5M_short2['trend'][0], trend_5M_short2['trend'][0], trend_5M_short2['trend'][0]]
-
-		return extereme
-	#/////////////////////////////
+	#////////////////////////////////////
 
 
 	#************* Ploter

@@ -78,18 +78,18 @@ class BestFinder:
 			):
 			best_extremes = pd.DataFrame(
 										{
-										'high_upper': 0,
-										'high_mid': 0,
-										'high_lower': 0,
-										'power_high_upper': 0,
-										'power_high_mid': 0,
-										'power_high_lower': 0,
-										'low_upper': 0,
-										'lowe_mid': 0,
-										'low_lower': 0,
-										'power_low_upper': 0,
-										'power_low_mid': 0,
-										'power_low_lower': 0,
+										'high_upper': np.nan,
+										'high_mid': np.nan,
+										'high_lower': np.nan,
+										'power_high_upper': np.nan,
+										'power_high_mid': np.nan,
+										'power_high_lower': np.nan,
+										'low_upper': np.nan,
+										'lowe_mid': np.nan,
+										'low_lower': np.nan,
+										'power_low_upper': np.nan,
+										'power_low_mid': np.nan,
+										'power_low_lower': np.nan,
 										},
 										index = [loc_end_5M]
 										)
@@ -156,10 +156,6 @@ class BestFinder:
 									},
 									index = [loc_end_5M]
 									)
-		# best_extremes['high'] = [Upper_Line_high, , ]
-		# best_extremes['power_high'] = [, , ]
-		# best_extremes['low'] = [, , ]
-		# best_extremes['power_low'] = [, , ]
 
 		return best_extremes
 	#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

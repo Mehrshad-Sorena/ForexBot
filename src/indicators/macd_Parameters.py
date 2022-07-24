@@ -14,7 +14,6 @@ class Parameters:
 							#*********** Divergence:
 
 							'Divergence' + '_apply_to': 'close',
-							'Divergence' + '_symbol': 'XAUUSD_i',
 							'Divergence' + '_out_before_buy': pd.DataFrame(),
 							'Divergence' + '_out_before_sell': pd.DataFrame(),
 							'Divergence' + '_macd_fast': 12,
@@ -40,6 +39,7 @@ class Parameters:
 
 							'dataset_5M': pd.DataFrame(),
 							'dataset_1H': pd.DataFrame(),
+							'symbol': 'XAUUSD_i',
 
 							#//////////////////
 							})

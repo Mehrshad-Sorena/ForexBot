@@ -97,9 +97,27 @@ class Parameters:
 
 
 							#Elemns For PrRunner and shared to pr Modules:
+
 							'dataset_5M' :  pd.DataFrame(),
 							'dataset_1H' :  pd.DataFrame(),
+
 							#/////////////////////////////////
+
+							#Elemns For Tester:
+
+							'Tester_money': 100,
+							'Tester_coef_money': 20,
+							'Tester_spred': 0.0004,
+							'Tester_index_tp': 0,
+							'Tester_index_st': 0,
+
+							'st_percent_min': 1,
+							'st_percent_max': 1,
+
+							'tp_percent_min': 1,
+							'tp_percent_max': 1,
+
+							#//////////////////
 							}
 							)
 

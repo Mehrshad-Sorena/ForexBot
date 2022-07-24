@@ -6,8 +6,8 @@ class Config:
 						{
 						#Config For ExtremePoints:
 						'ExtremePoints_status': True,
-						'ExtremePoints_T_5M': False,
-						'ExtremePoints_T_1H': False,
+						'ExtremePoints_T_5M': True,
+						'ExtremePoints_T_1H': True,
 						#///////////////////////////
 
 
@@ -40,6 +40,13 @@ class Config:
 						'IchimokouFlatLines_plot': True,
 
 						#//////////////////////////
+
+
+						#Config For Test:
+
+						'Tester_flag_realtest': False,
+
+						#/////////////////////////
 
 
 						#Config For

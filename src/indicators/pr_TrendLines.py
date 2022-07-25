@@ -3,23 +3,17 @@ from sklearn.isotonic import IsotonicRegression
 from ExtremePoints import ExtremePoints
 from scipy.signal import argrelextrema
 from scipy.interpolate import interp1d
-from pr_Parameters import Parameters
 from DataChanger import DataChanger
 import matplotlib.pyplot as plt
-from pr_Config import Config
+from timer import stTime
 import mplfinance as mpf
 import pandas as pd
 import numpy as np
-
-from timer import stTime
 
 
 #**************************************************** Ramp Lines *******************************************************
 class TrendLines:
 	#This Function Used For Finding Trending Lines and Protect Resist of Trending Lines:
-
-	parameters = Parameters()
-	config = Config()
 
 	def __init__(
 				self,

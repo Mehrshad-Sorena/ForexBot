@@ -8,6 +8,9 @@ import pandas as pd
 from indicator_Parameters import Parameters as indicator_parameters
 from indicator_Config import Config as indicator_config
 
+from pr_Parameters import Parameters as pr_Parameters
+from pr_Config import Config as pr_Config
+
 loging = getdata()
 
 
@@ -26,21 +29,36 @@ parameters.elements['MACD_apply_to'] = 'close'
 macd = MACD(parameters = parameters, config = config)
 macd_calc = macd.calculator_macd()
 
+
 macd = Divergence(parameters = ind_params, config = ind_config)
-signal, signaltype = macd.divergence(
-									sigtype = 'buy',
-									sigpriority = 'primary',
-									indicator = macd_calc,
-									column_div = 'macds',
-									ind_name = 'macd',
-									dataset_5M = parameters.elements['dataset_5M'],
-									dataset_1H = parameters.elements['dataset_1H'],
-									symbol = 'XAUUSD_i',
-									)
+signal, signaltype, indicator = macd.divergence(
+												sigtype = 'buy',
+												sigpriority = 'secondry',
+												indicator = macd_calc,
+												column_div = 'macds',
+												ind_name = 'macd',
+												dataset_5M = parameters.elements['dataset_5M'],
+												dataset_1H = parameters.elements['dataset_1H'],
+												symbol = 'XAUUSD_i',
+												flaglearn = True,
+												flagtest = True
+												)
 
-macd_tester = Tester(parameters = parameters, config = config)
+ind_params.elements['dataset_5M'] = parameters.elements['dataset_5M'] 
+ind_params.elements['dataset_1H'] = parameters.elements['dataset_1H']
 
-signal_out, score_out = macd_tester.RunGL(signal = signal, sigtype = signaltype, flaglearn = True, flagtest = True)
+macd_tester = Tester(parameters = ind_params, config = ind_config)
+
+signal_out, score_out = macd_tester.RunGL(
+											signal = signal, 
+											sigtype = signaltype, 
+											flaglearn = True, 
+											flagtest = True,
+											pr_parameters = pr_Parameters(),
+											pr_config = pr_Config(),
+											indicator = indicator,
+											flag_savepic = False
+											)
 
 with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 	print(signal_out)

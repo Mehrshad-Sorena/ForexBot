@@ -1,17 +1,20 @@
-import numpy as np
+from indicator_Parameters import Parameters as Divergence_Parameters
+from indicator_Config import Config as Divergence_Config
+from indicator_Divergence import Divergence
 import pandas as pd
-from pr_Parameters import Parameters
+import numpy as np
+
+
+
+
+
 
 class Tester:
 
-	parameters = Parameters()
-
 	def __init__(
 				self,
-				parameters,
-				config
+				parameters
 				):
-
 		self.elements = dict(
 							{
 
@@ -34,21 +37,9 @@ class Tester:
 							}
 							)
 
-		self.cfg = dict(
-							{
-
-							#Config For Tester:
-
-							__class__.__name__ + '_flag_realtest': config.cfg['Tester_flag_realtest'],
-
-							#/////////////////////////
-
-							}
-						)
-
 		#*****************************
 
-	def FlagFinderBuy(self, dataset_5M, extereme, flaglearn, loc_end_5M, money):
+	def FlagFinderBuy(self, dataset_5M, extereme, flaglearn, loc_end_5M, money, signals, indicator = '', flag_savepic = False):
 		
 		spred = self.elements['Tester_spred']
 
@@ -154,6 +145,8 @@ class Tester:
 			else:
 				lot = coef_money
 
+			if lot > 2000: lot = 2000
+
 			my_money = my_money + (lot * tp_pr)
 
 			money = my_money
@@ -182,6 +175,8 @@ class Tester:
 				lot = int(my_money/100) * coef_money
 			else:
 				lot = coef_money
+
+			if lot > 2000: lot = 2000
 
 			my_money = my_money + (lot * tp_pr)
 
@@ -212,6 +207,8 @@ class Tester:
 			else:
 				lot = coef_money
 
+			if lot > 2000: lot = 2000
+
 			my_money = my_money - (lot * st_pr)
 
 			money = my_money
@@ -241,6 +238,8 @@ class Tester:
 			else:
 				lot = coef_money
 
+			if lot > 2000: lot = 2000
+
 			my_money = my_money - (lot * st_pr)
 
 			money = my_money
@@ -269,6 +268,8 @@ class Tester:
 				else:
 					lot = coef_money
 
+				if lot > 2000: lot = 2000
+
 				my_money = my_money - (lot * st_pr)
 
 				money = my_money
@@ -292,6 +293,21 @@ class Tester:
 											money = money,
 											time = np.nan,
 											)
+		
+		if flag_savepic == True:
+			divergence_config = Divergence_Config()
+			divergence_parameters = Divergence_Parameters()
+			divergence = Divergence(parameters = divergence_parameters, config = divergence_config)
+			divergence.PlotSaver(
+								signals = signals,
+								extreme = extereme,
+								loc_end_5M = loc_end_5M,
+								indicator = indicator,
+								dataset_5M = dataset_5M,
+								res_pro_high = extereme['high_upper'][loc_end_5M],
+								res_pro_low = extereme['low_lower'][loc_end_5M],
+								flag_savepic = flag_savepic
+								)
 
 		return extereme
 
@@ -300,7 +316,7 @@ class Tester:
 
 	#******************************
 
-	def FlagFinderSell(self, dataset_5M, extereme, flaglearn, loc_end_5M, money):
+	def FlagFinderSell(self, dataset_5M, extereme, flaglearn, loc_end_5M, money, signals, indicator = '', flag_savepic = False):
 		
 		spred = self.elements['Tester_spred']
 
@@ -408,6 +424,8 @@ class Tester:
 			else:
 				lot = coef_money
 
+			if lot > 2000: lot = 2000
+
 			my_money = my_money + (lot * tp_pr)
 
 			money = my_money
@@ -436,6 +454,8 @@ class Tester:
 				lot = int(my_money/100) * coef_money
 			else:
 				lot = coef_money
+
+			if lot > 2000: lot = 2000
 
 			my_money = my_money + (lot * tp_pr)
 
@@ -466,6 +486,8 @@ class Tester:
 				lot = int(my_money/100) * coef_money
 			else:
 				lot = coef_money
+
+			if lot > 2000: lot = 2000
 
 			my_money = my_money - (lot * st_pr)
 
@@ -524,6 +546,8 @@ class Tester:
 				else:
 					lot = coef_money
 
+				if lot > 2000: lot = 2000
+
 				my_money = my_money - (lot * st_pr)
 
 				money = my_money
@@ -548,7 +572,24 @@ class Tester:
 											time = np.nan,
 											)
 
+		if flag_savepic == True:
+			divergence_config = Divergence_Config()
+			divergence_parameters = Divergence_Parameters()
+			divergence = Divergence(parameters = divergence_parameters, config = divergence_config)
+			divergence.PlotSaver(
+								signals = signals,
+								extreme = extereme,
+								loc_end_5M = loc_end_5M,
+								indicator = indicator,
+								dataset_5M = dataset_5M,
+								res_pro_high = extereme['high_upper'][loc_end_5M],
+								res_pro_low = extereme['low_lower'][loc_end_5M],
+								flag_savepic = flag_savepic
+								)
+
 		return extereme
 
 
 	#/////////////////////////////
+
+	

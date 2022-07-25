@@ -1,7 +1,5 @@
-from pr_Parameters import Parameters
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
-from pr_Config import Config
 from timer import stTime
 import pandas_ta as ind
 import pandas as pd
@@ -11,9 +9,6 @@ import numpy as np
 #**************************************************** Ichimoko Lines *******************************************************
 #This Function is Used for Finding Flat Lines in ichimoku:
 class IchimokouFlatLines:
-
-	parameters = Parameters()
-	config = Config()
 
 	def __init__(
 				self,

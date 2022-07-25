@@ -1,12 +1,8 @@
-from macd_Parameters import Parameters
-from macd_Config import Config
 import pandas_ta as ind
 import pandas as pd
 
 class MACD:
 
-	parameters = Parameters()
-	config = Config()
 	def __init__(
 				self,
 				parameters,

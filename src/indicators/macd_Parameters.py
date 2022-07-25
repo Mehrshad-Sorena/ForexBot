@@ -13,32 +13,17 @@ class Parameters:
 							
 							#*********** Divergence:
 
-							'Divergence' + '_apply_to': 'close',
-							'Divergence' + '_out_before_buy': pd.DataFrame(),
-							'Divergence' + '_out_before_sell': pd.DataFrame(),
-							'Divergence' + '_macd_fast': 12,
-							'Divergence' + '_macd_slow': 26,
-							'Divergence' + '_macd_signal': 9,
-							'Divergence' + '_st_percent_buy_max': 0,
-							'Divergence' + '_st_percent_buy_min': 0,
-							'Divergence' + '_st_percent_sell_max': 0,
-							'Divergence' + '_st_percent_sell_min': 0,
-							'Divergence' + '_tp_percent_buy_max':0,
-							'Divergence' + '_tp_percent_buy_min': 0,
-							'Divergence' + '_tp_percent_sell_max': 0,
-							'Divergence' + '_tp_percent_sell_min': 0,
-							'Divergence' + '_alpha': 0.1,
-							'Divergence' + '_num_exteremes_min': 5,
-							'Divergence' + '_num_exteremes_max': 5,
-							'Divergence' + '_diff_extereme': 6,
+							'MACD' + '_apply_to': 'close',
+
+							'MACD' + '_fast': 12,
+							'MACD' + '_slow': 26,
+							'MACD' + '_signal': 9,
 
 							#///////////////////////
 
 
 							#*********** Global:
 
-							'dataset_5M': pd.DataFrame(),
-							'dataset_1H': pd.DataFrame(),
 							'symbol': 'XAUUSD_i',
 
 							#//////////////////

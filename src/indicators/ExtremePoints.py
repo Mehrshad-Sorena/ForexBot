@@ -1,11 +1,7 @@
 from scipy.signal import argrelextrema
-from pr_Parameters import Parameters
-from pr_Config import Config
-
-from timer import stTime
-
 import matplotlib.pyplot as plt
 import warnings as warnings
+from timer import stTime
 import mplfinance as mpf
 import pandas as pd
 import numpy as np
@@ -17,9 +13,6 @@ warnings.filterwarnings("ignore")
 #**************************************************** extreme High Or Low Lines *******************************************************
 #This function is Used For Finding Extremes Top Downs in Candles:
 class ExtremePoints:
-
-	parameters = Parameters()
-	config = Config()
 
 	def __init__(
 				self,

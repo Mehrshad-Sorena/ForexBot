@@ -1,8 +1,6 @@
 from scipy.stats import foldnorm, dweibull, rayleigh, expon, nakagami, norm
 from fitter import Fitter, get_common_distributions, get_distributions
-from pr_Parameters import Parameters
 from sklearn.cluster import KMeans
-from pr_Config import Config
 from timer import stTime
 from scipy import stats
 import pandas as pd
@@ -17,8 +15,6 @@ class BestFinder:
 	#This Function is Calculating With Distribution Functions:
 	#Goal: Calculate Two Best Points Of Tp And St
 
-	parameters = Parameters()
-	config = Config()
 	def __init__(
 				self,
 				parameters,

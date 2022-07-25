@@ -46,6 +46,8 @@ class Config:
 
 						'Tester_flag_realtest': False,
 
+						'Tester_plot_save': True,
+
 						#/////////////////////////
 
 

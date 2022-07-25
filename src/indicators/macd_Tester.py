@@ -212,7 +212,7 @@ class Tester:
 		return scores_out
 
 
-	def Run_GL(self, signal, sigtype, flaglearn, flagtest):
+	def RunGL(self, signal, sigtype, flaglearn, flagtest):
 
 		signal = self.ProfitFlagFinder(signal = signal, sigtype = sigtype, flaglearn = flaglearn, flagtest = flagtest)
 

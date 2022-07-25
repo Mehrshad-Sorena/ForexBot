@@ -1,23 +1,15 @@
+from pr_IchimokouFlatLines import IchimokouFlatLines
+from ExtremePoints import ExtremePoints
+from pr_BestFinder import BestFinder
+from pr_TrendLines import TrendLines
+from DataChanger import DataChanger
 import matplotlib.pyplot as plt
+from pr_Tester import Tester
+import concurrent.futures
+import mplfinance as mpf
 from timer import stTime
 import pandas as pd
 import numpy as np
-#import math
-import matplotlib.pyplot as plt
-from DataChanger import DataChanger
-from pr_BestFinder import BestFinder
-from pr_TrendLines import TrendLines
-from pr_IchimokouFlatLines import IchimokouFlatLines
-from ExtremePoints import ExtremePoints
-import mplfinance as mpf
-
-from pr_Parameters import Parameters
-from pr_Config import Config as config
-
-from pr_Tester import Tester
-
-import concurrent.futures
-
 
 #from matplotlib.collections import LineCollection
 #from scipy.interpolate import interp1d
@@ -50,14 +42,12 @@ import concurrent.futures
 #***************************** Protect Resist Finder **************************************************************
 class Runner:
 
-	parameters = Parameters()
-	config = config()
-	#@stTime
 	def __init__(
 				self,
 				parameters,
 				config
 				):
+	
 		self.elements = dict(
 							{
 							#Elemns For Runner Module:
@@ -217,6 +207,7 @@ class Runner:
 							#Config For Tester:
 
 							'Tester_flag_realtest': config.cfg['Tester_flag_realtest'],
+							'Tester' + '_plot_save': config.cfg['Tester_plot_save'],
 
 							#/////////////////////////
 							
@@ -228,7 +219,7 @@ class Runner:
 
 	#This Function Calculate Tp And St With Above Function And Out Best Tp And St With Best_Extreme_Finder:
 	#@stTime
-	def start(self,dataset_5M, dataset_1H, loc_end_5M, sigtype, flaglearn, flagtest):
+	def start(self,dataset_5M, dataset_1H, loc_end_5M, sigtype, flaglearn, flagtest, signals, indicator = '', flag_savepic = False):
 
 		if (
 			self.elements['Tester_money'] <= 4 and
@@ -485,13 +476,16 @@ class Runner:
 			flagtest == True
 			):
 			
-			tester = Tester(parameters = self, config = self)
+			tester = Tester(parameters = self)
 			extereme = tester.FlagFinderBuy(
 											dataset_5M = dataset_5M, 
 											extereme = extereme, 
 											flaglearn = flaglearn, 
 											loc_end_5M = loc_end_5M, 
-											money = self.elements['Tester_money']
+											money = self.elements['Tester_money'],
+											signals = signals,
+											indicator = indicator,
+											flag_savepic = flag_savepic
 											)
 
 			self.elements['Tester_money'] = extereme['money'][loc_end_5M]
@@ -510,13 +504,16 @@ class Runner:
 			flagtest == True
 			):
 
-			tester = Tester(parameters = self, config = self)
+			tester = Tester(parameters = self)
 			extereme = tester.FlagFinderSell(
 											dataset_5M = dataset_5M, 
 											extereme = extereme, 
 											flaglearn = flaglearn, 
 											loc_end_5M = loc_end_5M, 
-											money = self.elements['Tester_money']
+											money = self.elements['Tester_money'],
+											signals = signals,
+											indicator = indicator,
+											flag_savepic = flag_savepic
 											)
 
 			self.elements['Tester_money'] = extereme['money'][loc_end_5M]
@@ -532,10 +529,9 @@ class Runner:
 		return extereme.values[0]
 	#/////////////////////////////
 
-	def run(self, signals, dataset_5M, dataset_1H, sigtype, flaglearn, flagtest):
-
+	def run(self, signals_index, dataset_5M, dataset_1H, sigtype, flaglearn, flagtest, signals , indicator = '', flag_savepic = False):
 		if flagtest == False:
-			pr = signals.apply(
+			pr = signals_index.apply(
 								lambda x: pd.Series(
 													self.start(
 																dataset_5M = dataset_5M, 
@@ -543,7 +539,8 @@ class Runner:
 																loc_end_5M = x['index'],
 																sigtype = sigtype,
 																flaglearn = flaglearn,
-																flagtest = flagtest
+																flagtest = flagtest,
+																signals = signals
 																), 
 																index = ['high_upper', 'high_mid', 'high_lower', 'power_high_upper', 
 																		'power_high_mid', 'power_high_lower', 'low_upper', 'lowe_mid', 
@@ -555,7 +552,7 @@ class Runner:
 
 		else:
 
-			pr = signals.apply(
+			pr = signals_index.apply(
 								lambda x: pd.Series(
 													self.start(
 																dataset_5M = dataset_5M, 
@@ -563,7 +560,10 @@ class Runner:
 																loc_end_5M = x['index'],
 																sigtype = sigtype,
 																flaglearn = flaglearn,
-																flagtest = flagtest
+																flagtest = flagtest,
+																signals = signals,
+																indicator = indicator,
+																flag_savepic = flag_savepic
 																), 
 																index = ['high_upper', 'high_mid', 'high_lower', 'power_high_upper', 
 																		'power_high_mid', 'power_high_lower', 'low_upper', 'lowe_mid', 
@@ -574,9 +574,9 @@ class Runner:
 								result_type = 'expand'
 								)
 
-		signals = signals.join(pr)
+		signals_index = signals_index.join(pr)
 
-		return signals
+		return signals_index
 
 	#////////////////////////////////////
 

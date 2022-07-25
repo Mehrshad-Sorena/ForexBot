@@ -1,10 +1,13 @@
-from indicator_Parameters import Parameters
-from indicator_Config import Config
-
-import pandas as pd
 import ExtremePoints as extremepoints
-import numpy as np
+import matplotlib as matplotlib
+import matplotlib.pyplot as plt
 from timer import stTime
+import mplfinance as mpf
+import pandas as pd
+import numpy as np
+import os
+
+
 
 #************ Functions:
 
@@ -22,8 +25,6 @@ from timer import stTime
 
 class Divergence:
 
-	parameters = Parameters()
-	config = Config()
 	def __init__(
 				self,
 				parameters,
@@ -60,7 +61,7 @@ class Divergence:
 
 	#Finding Divergences:
 	@stTime
-	def divergence(self, sigtype, sigpriority, indicator, column_div, ind_name, dataset_5M, dataset_1H, symbol):
+	def divergence(self, sigtype, sigpriority, indicator, column_div, ind_name, dataset_5M, dataset_1H, symbol, flagtest, flaglearn):
 
 		#*************** OutPuts:
 		#Four Panda DataFrams: signal_buy_primary, signal_buy_secondry, signal_sell_primary, signal_sell_secondry
@@ -97,7 +98,8 @@ class Divergence:
 		self.elements['dataset_1H'] = dataset_1H
 		self.elements['symbol'] = symbol
 
-		extreme_max, extreme_min = self.extreme_preparer(indicator = indicator, column_div = column_div)
+
+		extreme_max, extreme_min = self.extreme_preparer(indicator = indicator, column_div = column_div, sigpriority = sigpriority)
 
 		if sigtype == 'buy':
 
@@ -107,14 +109,26 @@ class Divergence:
 
 			signal = self.SignalFinder(extremes = extreme_max, sigtype = sigtype, sigpriority = sigpriority)
 		
-		
+
+		if (
+			flagtest == False or
+			flaglearn == True
+			):
+
+			signal = signal.drop(signal.index[signal['diff_extereme'] >= self.elements[__class__.__name__ + '_diff_extereme']])
+
 		signal = signal.drop_duplicates(subset = ['index'], keep='last', inplace=False, ignore_index=False).sort_values(by = ['index'])
 		signal = signal.set_index(signal['index'])
+		signal = signal.assign(
+								indicator_name = ind_name,
+								column_div = column_div,
+								symbol = symbol
+								)
 
-		return signal, sigtype
+		return signal, sigtype, indicator
 
 
-	def extreme_preparer(self, indicator, column_div):
+	def extreme_preparer(self, indicator, column_div, sigpriority):
 
 		extremes_points = extremepoints.finder(
 												high = indicator[column_div],
@@ -132,13 +146,25 @@ class Divergence:
 
 		extreme_min['index'] = extreme_min['index'].astype('int32')
 
+		if sigpriority == 'secondry':
+			coef = -1
+		else:
+			coef = 1
+
 		extreme_min = extreme_min.assign(
-										min_1 = extreme_min.shift(periods = 1, fill_value = np.inf)['min'],
-										min_2 = extreme_min.shift(periods = 2, fill_value = np.inf)['min'],
-										min_3 = extreme_min.shift(periods = 3, fill_value = np.inf)['min'],
-										min_4 = extreme_min.shift(periods = 4, fill_value = np.inf)['min'],
-										min_5 = extreme_min.shift(periods = 5, fill_value = np.inf)['min'],
-										min_6 = extreme_min.shift(periods = 6, fill_value = np.inf)['min'],
+										min_1 = extreme_min.shift(periods = 1, fill_value = coef * np.inf)['min'],
+										min_2 = extreme_min.shift(periods = 2, fill_value = coef * np.inf)['min'],
+										min_3 = extreme_min.shift(periods = 3, fill_value = coef * np.inf)['min'],
+										min_4 = extreme_min.shift(periods = 4, fill_value = coef * np.inf)['min'],
+										min_5 = extreme_min.shift(periods = 5, fill_value = coef * np.inf)['min'],
+										min_6 = extreme_min.shift(periods = 6, fill_value = coef * np.inf)['min'],
+
+										index_min_1 = extreme_min.shift(periods = 1, fill_value = np.inf)['index'],
+										index_min_2 = extreme_min.shift(periods = 2, fill_value = np.inf)['index'],
+										index_min_3 = extreme_min.shift(periods = 3, fill_value = np.inf)['index'],
+										index_min_4 = extreme_min.shift(periods = 4, fill_value = np.inf)['index'],
+										index_min_5 = extreme_min.shift(periods = 5, fill_value = np.inf)['index'],
+										index_min_6 = extreme_min.shift(periods = 6, fill_value = np.inf)['index'],
 										)
 
 		extreme_max = pd.DataFrame(
@@ -151,12 +177,19 @@ class Divergence:
 		extreme_max['index'] = extreme_max['index'].astype('int32')
 
 		extreme_max = extreme_max.assign(
-										max_1 = extreme_max.shift(periods = 1, fill_value = -np.inf)['max'],
-										max_2 = extreme_max.shift(periods = 2, fill_value = -np.inf)['max'],
-										max_3 = extreme_max.shift(periods = 3, fill_value = -np.inf)['max'],
-										max_4 = extreme_max.shift(periods = 4, fill_value = -np.inf)['max'],
-										max_5 = extreme_max.shift(periods = 5, fill_value = -np.inf)['max'],
-										max_6 = extreme_max.shift(periods = 6, fill_value = -np.inf)['max'],
+										max_1 = extreme_max.shift(periods = 1, fill_value = coef * -np.inf)['max'],
+										max_2 = extreme_max.shift(periods = 2, fill_value = coef * -np.inf)['max'],
+										max_3 = extreme_max.shift(periods = 3, fill_value = coef * -np.inf)['max'],
+										max_4 = extreme_max.shift(periods = 4, fill_value = coef * -np.inf)['max'],
+										max_5 = extreme_max.shift(periods = 5, fill_value = coef * -np.inf)['max'],
+										max_6 = extreme_max.shift(periods = 6, fill_value = coef * -np.inf)['max'],
+
+										index_max_1 = extreme_max.shift(periods = 1, fill_value = -np.inf)['index'],
+										index_max_2 = extreme_max.shift(periods = 2, fill_value = -np.inf)['index'],
+										index_max_3 = extreme_max.shift(periods = 3, fill_value = -np.inf)['index'],
+										index_max_4 = extreme_max.shift(periods = 4, fill_value = -np.inf)['index'],
+										index_max_5 = extreme_max.shift(periods = 5, fill_value = -np.inf)['index'],
+										index_max_6 = extreme_max.shift(periods = 6, fill_value = -np.inf)['index'],
 										)
 
 		return extreme_max, extreme_min
@@ -237,6 +270,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_1'],
+									'index_back': extremes['index_min_1'],
 									}
 								)
 		indicator_div_2 = pd.DataFrame(
@@ -245,6 +279,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_2'],
+									'index_back': extremes['index_min_2'],
 									}
 								)
 		indicator_div_3 = pd.DataFrame(
@@ -253,6 +288,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_3'],
+									'index_back': extremes['index_min_3'],
 									}
 								)
 		indicator_div_4 = pd.DataFrame(
@@ -261,6 +297,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_4'],
+									'index_back': extremes['index_min_4'],
 									}
 								)
 		indicator_div_5 = pd.DataFrame(
@@ -269,6 +306,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_5'],
+									'index_back': extremes['index_min_5'],
 									}
 								)
 		indicator_div_6 = pd.DataFrame(
@@ -277,6 +315,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_6'],
+									'index_back': extremes['index_min_6'],
 									}
 								)
 
@@ -356,6 +395,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_1'],
+									'index_back': extremes['index_min_1'],
 									}
 								)
 			
@@ -365,6 +405,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_2'],
+									'index_back': extremes['index_min_2'],
 									}
 								)
 		indicator_div_3 = pd.DataFrame(
@@ -373,6 +414,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_3'],
+									'index_back': extremes['index_min_3'],
 									}
 								)
 		indicator_div_4 = pd.DataFrame(
@@ -381,6 +423,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_4'],
+									'index_back': extremes['index_min_4'],
 									}
 								)
 		indicator_div_5 = pd.DataFrame(
@@ -389,6 +432,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_5'],
+									'index_back': extremes['index_min_5'],
 									}
 								)
 		indicator_div_6 = pd.DataFrame(
@@ -397,6 +441,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['min'],
 									'indicator_back': extremes['min_6'],
+									'index_back': extremes['index_min_6'],
 									}
 								)
 		
@@ -476,6 +521,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_1'],
+									'index_back': extremes['index_max_1'],
 									}
 								)
 			
@@ -485,6 +531,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_2'],
+									'index_back': extremes['index_max_2'],
 									}
 								)
 		indicator_div_3 = pd.DataFrame(
@@ -493,6 +540,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_3'],
+									'index_back': extremes['index_max_3'],
 									}
 								)
 		indicator_div_4 = pd.DataFrame(
@@ -501,6 +549,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_4'],
+									'index_back': extremes['index_max_4'],
 									}
 								)
 		indicator_div_5 = pd.DataFrame(
@@ -509,6 +558,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_5'],
+									'index_back': extremes['index_max_5'],
 									}
 								)
 		indicator_div_6 = pd.DataFrame(
@@ -517,6 +567,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_6'],
+									'index_back': extremes['index_max_6'],
 									}
 								)
 
@@ -596,6 +647,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_1'],
+									'index_back': extremes['index_max_1'],
 									}
 								)
 			
@@ -605,6 +657,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_2'],
+									'index_back': extremes['index_max_2'],
 									}
 								)
 		indicator_div_3 = pd.DataFrame(
@@ -613,6 +666,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_3'],
+									'index_back': extremes['index_max_3'],
 									}
 								)
 		indicator_div_4 = pd.DataFrame(
@@ -621,6 +675,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_4'],
+									'index_back': extremes['index_max_4'],
 									}
 								)
 		indicator_div_5 = pd.DataFrame(
@@ -629,6 +684,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_5'],
+									'index_back': extremes['index_max_5'],
 									}
 								)
 		indicator_div_6 = pd.DataFrame(
@@ -637,6 +693,7 @@ class Divergence:
 									'index': extremes['index'],
 									'indicator_front': extremes['max'],
 									'indicator_back': extremes['max_6'],
+									'index_back': extremes['index_max_6'],
 									}
 								)
 
@@ -706,3 +763,148 @@ class Divergence:
 																									)).dropna().reset_index(inplace = False, drop = True)
 
 		return divergences
+
+	def PlotSaver(
+					self,
+					signals,
+					extreme,
+					loc_end_5M,
+					indicator,
+					dataset_5M,
+					res_pro_high,
+					res_pro_low,
+					flag_savepic
+					):
+
+		if flag_savepic == False: return
+
+		if extreme['flag'][loc_end_5M] == 'no_flag': return
+		#Example: macd/candle/sell_secondry/symbol/tp/
+		path_candle = (
+						'pics/' + 
+						signals['indicator_name'][signals['index'].max()] +  '/' + 
+						signals['signal'][signals['index'].max()] + '/' + 
+						signals['symbol'][signals['index'].max()] + '/' +
+						extreme['flag'][loc_end_5M] + '/'
+						'/candle' + '/'
+						)
+
+		path_indicator = (
+						'pics/' +
+						signals['indicator_name'][signals['index'].max()] +  '/' + 
+						signals['signal'][signals['index'].max()] + '/' + 
+						signals['symbol'][signals['index'].max()] + '/' +
+						extreme['flag'][loc_end_5M] + '/' +
+						signals['indicator_name'][signals['index'].max()] + '/'
+						)
+
+		if not os.path.exists(path_candle):
+			os.makedirs(path_candle)
+			path_candle = path_candle + str(loc_end_5M)
+		else:
+			path_candle = path_candle + str(loc_end_5M)
+
+		if not os.path.exists(path_indicator):
+			os.makedirs(path_indicator)
+			path_indicator = path_indicator + str(loc_end_5M)
+		else:
+			path_indicator = path_indicator + str(loc_end_5M)
+
+		fig = plt.figure()
+		plt.figure().clear()
+		plt.close('all')
+		plt.cla()
+		plt.clf()
+
+		index_end = int(loc_end_5M)
+		index_start = int(signals['index_back'][loc_end_5M]) - 20
+
+		if extreme['flag'][loc_end_5M] == 'tp':
+			index_pos = extreme['index_tp'][loc_end_5M]
+
+		elif extreme['flag'][loc_end_5M] == 'st':
+			index_pos = extreme['index_st'][loc_end_5M]
+
+		index_pos = int(index_pos + 20)
+
+		plt.plot([signals['index_back'][loc_end_5M], signals['index'][loc_end_5M]], [signals['indicator_back'][loc_end_5M], signals['indicator_front'][loc_end_5M]], 'o',c='purple')
+
+		plt.plot(range(int(signals['index_back'][loc_end_5M]) - 20, index_pos), indicator[signals['column_div'][loc_end_5M]][range(int(signals['index_back'][loc_end_5M]) - 20, index_pos)],c='b')
+		plt.plot(range(int(signals['index_back'][loc_end_5M]) - 20, index_pos), indicator[signals['column_div'][loc_end_5M]][range(int(signals['index_back'][loc_end_5M]) - 20,index_pos)],c='yellow')
+		plt.bar(range(int(signals['index_back'][loc_end_5M]) - 20, index_pos), indicator[signals['column_div'][loc_end_5M]][range(int(signals['index_back'][loc_end_5M]) - 20,index_pos)],align='center',color='orange')
+
+		plt.plot([signals['index_back'][loc_end_5M], signals['index'][loc_end_5M]], [signals['indicator_back'][loc_end_5M], signals['indicator_front'][loc_end_5M]], c='r',linestyle="-")
+		plt.grid(linestyle = '--', linewidth = 0.5)
+
+		plt.savefig(path_indicator, dpi=600, bbox_inches='tight')
+
+		plt.figure().clear()
+		plt.close('all')
+		plt.cla()
+		plt.clf()
+										
+		#ax1.plot(dataset[symbol]['close'].index,dataset[symbol]['close'],c='b')
+
+		dataset_plot_candle = pd.DataFrame()
+		dataset_plot_candle['low'] = dataset_5M['low'][range(index_start,index_pos)].reset_index(drop=True)
+		dataset_plot_candle['high'] = dataset_5M['high'][range(index_start,index_pos)].reset_index(drop=True)
+		dataset_plot_candle['close'] = dataset_5M['close'][range(index_start,index_pos)].reset_index(drop=True)
+		dataset_plot_candle['open'] = dataset_5M['open'][range(index_start,index_pos)].reset_index(drop=True)
+		dataset_plot_candle['time'] = dataset_5M['time'][range(index_start,index_pos)].reset_index(drop=True)
+		dataset_plot_candle['volume'] = dataset_5M['volume'][range(index_start,index_pos)].reset_index(drop=True)
+
+		dataset_plot_candle_line = pd.DataFrame()
+		dataset_plot_candle_line['low'] = dataset_5M['low'][range(index_start + 20,index_end)].reset_index(drop=True)
+		dataset_plot_candle_line['high'] = dataset_5M['high'][range(index_start + 20,index_end)].reset_index(drop=True)
+		dataset_plot_candle_line['close'] = dataset_5M['close'][range(index_start + 20,index_end)].reset_index(drop=True)
+		dataset_plot_candle_line['open'] = dataset_5M['open'][range(index_start + 20,index_end)].reset_index(drop=True)
+		dataset_plot_candle_line['time'] = dataset_5M['time'][range(index_start + 20,index_end)].reset_index(drop=True)
+		dataset_plot_candle_line['volume'] = dataset_5M['volume'][range(index_start + 20,index_end)].reset_index(drop=True)
+
+		daily = pd.DataFrame(dataset_plot_candle)
+		daily.index.name = 'Time'
+		daily.index = dataset_plot_candle['time']
+		daily.head(3)
+		daily.tail(3)
+
+		mc = mpf.make_marketcolors(
+									base_mpf_style='yahoo',
+									up='green',
+									down='red',
+									#vcedge = {'up': 'green', 'down': 'red'}, 
+									vcdopcod = True,
+									alpha = 0.0001
+									)
+		mco = [mc]*len(daily)
+
+		if 'buy' in signals['signal'][loc_end_5M]:
+			two_points = [
+						(dataset_plot_candle_line['time'].iloc[-1],dataset_plot_candle_line['low'].iloc[-1]),
+						(dataset_plot_candle_line['time'][0],dataset_plot_candle_line['low'][0])
+						]
+		elif 'sell' in signals['signal'][loc_end_5M]:
+			two_points = [
+						(dataset_plot_candle_line['time'].iloc[-1],dataset_plot_candle_line['high'].iloc[-1]),
+						(dataset_plot_candle_line['time'][0],dataset_plot_candle_line['high'][0])
+						]
+
+		mpf.plot(
+				daily,
+				type='candle',
+				volume=True,
+				style='yahoo',
+				figscale=1,
+				hlines=dict(hlines=[res_pro_low,res_pro_high],colors=['black','purple'],linestyle='-.'),
+				savefig=dict(fname=path_candle,dpi=600,pad_inches=0.25),
+				marketcolor_overrides=mco,
+				alines=dict(alines=two_points,colors=['orange'],linestyle='-.'),
+				)#.savefig('plot.png', dpi=300, bbox_inches='tight')
+
+		mpf.figure().clear()
+		#mpf.close('all')
+		#mpf.cla()
+		#mpf.clf()
+
+		matplotlib.use("Agg")
+
+		#plt.show()

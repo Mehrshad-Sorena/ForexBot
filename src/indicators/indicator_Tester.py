@@ -4,8 +4,6 @@ from pr_Runner import Runner
 from timer import stTime
 import pandas as pd
 import numpy as np
-from pr_Parameters import Parameters as pr_parameters
-from pr_Config import Config as pr_config
 
 
 class Tester:
@@ -30,7 +28,7 @@ class Tester:
 
 							'BestFinder' + '_n_clusters': parameters.elements['BestFinder' + '_n_clusters'],
 							'BestFinder_alpha': parameters.elements['BestFinder_alpha'],
-							
+
 							#/////////////////////
 							})
 	@stTime

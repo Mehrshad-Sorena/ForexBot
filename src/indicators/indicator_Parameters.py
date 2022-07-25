@@ -20,6 +20,13 @@ class Parameters:
 
 							#///////////////////////
 
+							#BestFinder:
+
+							'BestFinder' + '_n_clusters': 5,
+							'BestFinder' + '_alpha': 0.1,
+
+							#//////////////////////
+
 
 							#*********** Global:
 

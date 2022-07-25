@@ -20,7 +20,7 @@ signal, signaltype = macd.divergence(sigtype = 'buy', sigpriority = 'primary')
 
 macd_tester = Tester(parameters = parameters, config = config)
 
-signal_out, score_out = macd_tester.Run_GL(signal = signal, sigtype = signaltype, flaglearn = True, flagtest = True)
+signal_out, score_out = macd_tester.RunGL(signal = signal, sigtype = signaltype, flaglearn = True, flagtest = True)
 
 with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 	print(signal_out)

@@ -31,7 +31,7 @@ class Tester:
 
 							#/////////////////////
 							})
-	@stTime
+	#@stTime
 	def RunGL(self, signal, sigtype, flaglearn, flagtest, pr_parameters, pr_config, indicator = '', flag_savepic = False):
 
 		signal = self.ProfitFlagFinder(
@@ -68,6 +68,8 @@ class Tester:
 								},
 								index = signal['index'].values
 								)
+
+		self.elements['symbol'] = signal['symbol'][signal.index[0]]
 
 		signals = pr_Runner.run(
 								dataset_5M = self.elements['dataset_5M'][self.elements['symbol']], 
@@ -127,24 +129,40 @@ class Tester:
 		#///////////////////////////
 
 		if scores_out['num_trade_pr'][0] != 0:
-			score_num_tp = ((scores_out['num_tp_pr'][0]-scores_out['num_st_pr'][0])/scores_out['num_trade_pr'][0]) * 100
+
+			if scores_out['num_trade_pr'][0] >= 20:
+				score_num_tp = ((scores_out['num_tp_pr'][0]-scores_out['num_st_pr'][0])/scores_out['num_trade_pr'][0]) * 100
+
+			else:
+				score_num_tp = ((scores_out['num_tp_pr'][0]-scores_out['num_st_pr'][0])/20) * 100
 		else:
 			score_num_tp = 1
+
+		if score_num_tp <= 0: score_num_tp = 1
+
 
 		if (scores_out['mean_tp_pr'][0]+scores_out['mean_st_pr'][0]) != 0:
 			score_mean_tp = ((scores_out['mean_tp_pr'][0]-scores_out['mean_st_pr'][0])/(scores_out['mean_tp_pr'][0]+scores_out['mean_st_pr'][0])) * 100
 		else:
 			score_mean_tp = 1
 
+		if score_mean_tp <= 0: score_mean_tp = 1
+
+
 		if (scores_out['max_tp_pr'][0]+scores_out['max_st_pr'][0]) != 0:
 			score_max_tp = ((scores_out['max_tp_pr'][0]-scores_out['max_st_pr'][0])/(scores_out['max_tp_pr'][0]+scores_out['max_st_pr'][0])) * 100
 		else:
 			score_max_tp = 1
 
+		if score_max_tp <= 0: score_max_tp = 1
+
+
 		if (scores_out['sum_tp_pr'][0]+scores_out['sum_st_pr'][0]) != 0:
 			score_sum_tp = ((scores_out['sum_tp_pr'][0]-scores_out['sum_st_pr'][0])/(scores_out['sum_tp_pr'][0]+scores_out['sum_st_pr'][0])) * 100
 		else:
 			score_sum_tp = 1
+
+		if score_sum_tp <= 0: score_sum_tp = 1
 
 
 		# Calculate Score Of Money:
@@ -154,6 +172,8 @@ class Tester:
 		score_money = ((ideal_money - signal['money'][np.max(signal['money'].index)])/ideal_money) * 100
 		score_money = 100 - score_money
 		scores_out['money'] = [signal['money'][np.max(signal['money'].index)]]
+
+		if score_money <= 0: score_money = 1
 
 		#//////////////////////////////
 
@@ -169,14 +189,12 @@ class Tester:
 
 		#////////////////////////////////
 
-		if score_money <= 0 : score_money = 100
-
 		normalizer = 100 * 100 * 100 * 100 * 100 * 100
 
-		scores_out['score_pr'] = [((score_num_tp*score_sum_tp*score_mean_tp*score_max_tp*score_money*score_drow_down)/normalizer) * 100]
+		scores_out['score'] = [((score_num_tp*score_sum_tp*score_mean_tp*score_max_tp*score_money*score_drow_down)/normalizer) * 100]
 			
 
-		if np.isnan(scores_out['score_pr'][0]) : scores_out['score_pr'][0] = 0
+		if np.isnan(scores_out['score'][0]) : scores_out['score'][0] = 0
 
 		scores_out['methode'] = ['pr']
 

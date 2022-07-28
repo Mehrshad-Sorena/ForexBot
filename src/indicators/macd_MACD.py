@@ -330,6 +330,16 @@ class MACD:
 					learning_output_before = learning_output_now
 
 					chromosome_output = chromosome_output.append(chromosome[chrom_counter], ignore_index=True)
+
+					chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
+																									work = 'graveyard',
+																									signaltype = signaltype,
+																									signalpriority = signalpriority,
+																									symbol = symbol,
+																									number_chromos = 0,
+																									Chromosome = chromosome,
+																									chrom_counter = chrom_counter
+																									)
 					chorm_reset_counter = 0
 
 					bad_score_counter_buy = 0
@@ -355,16 +365,6 @@ class MACD:
 					bad_flag = True
 					chromosome[chrom_counter]['islearned'] = True
 					score_for_reset = learning_output_now['score'][0]
-
-					chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
-																									work = 'graveyard',
-																									signaltype = signaltype,
-																									signalpriority = signalpriority,
-																									symbol = symbol,
-																									number_chromos = 0,
-																									Chromosome = chromosome,
-																									chrom_counter = chrom_counter
-																									)
 
 					chromosome[chrom_counter]['st_percent_max'] = learning_output_now['max_st'][0]
 					chromosome[chrom_counter]['st_percent_min'] = learning_output_now['min_st'][0]

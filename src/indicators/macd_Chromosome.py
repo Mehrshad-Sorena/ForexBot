@@ -447,7 +447,7 @@ class Chromosome:
 
 			return Chromosome
 
-		elif os.path.exists(path_graveyard + symbol + '.csv'):
+		if os.path.exists(path_graveyard + symbol + '.csv'):
 
 			GL_result = pd.read_csv(path_graveyard + symbol + '.csv').drop(columns = 'Unnamed: 0')
 

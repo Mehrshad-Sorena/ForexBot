@@ -28,5 +28,5 @@ macd_calc = macd.Genetic(
 						symbol = 'XAUUSD_i', 
 						signaltype = 'buy', 
 						signalpriority = 'primary', 
-						num_turn = 2000
+						num_turn = 500
 						)

@@ -26,7 +26,7 @@ macd_calc = macd.Genetic(
 						dataset_5M = parameters.elements['dataset_5M'], 
 						dataset_1H = parameters.elements['dataset_1H'], 
 						symbol = 'XAUUSD_i', 
-						signaltype = 'buy', 
+						signaltype = 'sell', 
 						signalpriority = 'primary', 
 						num_turn = 2000
 						)

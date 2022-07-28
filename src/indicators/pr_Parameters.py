@@ -91,8 +91,7 @@ class Parameters:
 
 							'n_clusters_best_low': 2,
 							'n_clusters_best_high': 2,
-							'alpha_low': 0.05,
-							'alpha_high': 0.05,
+
 							#/////////////////////////////////
 
 

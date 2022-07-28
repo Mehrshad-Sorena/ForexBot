@@ -20,6 +20,7 @@ import os
 #buy_secondryFinder()
 #sell_primaryFinder()
 #sell_secondryFinder()
+#PlotSaver()
 
 #//////////////////////
 
@@ -60,7 +61,7 @@ class Divergence:
 
 
 	#Finding Divergences:
-	@stTime
+	#@stTime
 	def divergence(self, sigtype, sigpriority, indicator, column_div, ind_name, dataset_5M, dataset_1H, symbol, flagtest, flaglearn):
 
 		#*************** OutPuts:

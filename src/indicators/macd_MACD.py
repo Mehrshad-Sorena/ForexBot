@@ -121,7 +121,8 @@ class MACD:
 
 		bar = Bar(signaltype + signalpriority, max = int(num_turn))
 
-		while chrom_counter < len(chromosome):
+
+		for i in range(len(chromosome)):
 
 			if chromosome[chrom_counter]['score'] != 0:
 				chrom_counter += 1

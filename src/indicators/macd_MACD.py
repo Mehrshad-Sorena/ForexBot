@@ -100,7 +100,7 @@ class MACD:
 			chromosome_output = pd.read_csv(path_elites + symbol + '_ChromosomeResults.csv').drop(columns='Unnamed: 0')
 
 			if num_turn <= len(learning_result['score']):
-				num_turn = len(learning_result['score']) + 1
+				num_turn = num_turn * (len(learning_result['score']))
 
 		else:
 			learning_result = pd.DataFrame()

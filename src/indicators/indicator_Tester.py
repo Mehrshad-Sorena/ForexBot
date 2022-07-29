@@ -30,6 +30,14 @@ class Tester:
 							'BestFinder_alpha': parameters.elements['BestFinder_alpha'],
 
 							#/////////////////////
+
+							#Tester:
+
+							'Tester_money': parameters.elements['Tester_money'],
+							'Tester_coef_money': parameters.elements['Tester_coef_money'],
+
+							#/////////////////////////
+							
 							})
 	#@stTime
 	def RunGL(self, signal, sigtype, flaglearn, flagtest, pr_parameters, pr_config, indicator = '', flag_savepic = False):
@@ -70,6 +78,9 @@ class Tester:
 								)
 
 		self.elements['symbol'] = signal['symbol'][signal.index[0]]
+
+		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		# 	print('sig1 = ',signal)
 
 		signals = pr_Runner.run(
 								dataset_5M = self.elements['dataset_5M'][self.elements['symbol']], 
@@ -238,8 +249,8 @@ class Tester:
 
 	def IdealMoneyCalc(self, scores_out):
 
-		my_money = 100
-		coef_money = 20
+		my_money = self.elements['Tester_money']
+		coef_money = self.elements['Tester_coef_money']
 
 		for i in range(0,scores_out['num_tp_pr'][0]):
 

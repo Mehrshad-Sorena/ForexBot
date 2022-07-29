@@ -1,5 +1,6 @@
 import pandas_ta as ind
 import pandas as pd
+import numpy as np
 from macd_Chromosome import Chromosome
 import os
 from macd_Config import Config as MACDConfig
@@ -56,9 +57,13 @@ class MACD:
 
 	def Genetic(self, dataset_5M, dataset_1H, symbol, signaltype, signalpriority, num_turn):
 
-		
+		if symbol == 'ETHUSD_i':
+			self.elements['st_percent_up'] = 1500
+			self.elements['st_percent_down'] = 100
+			self.elements['tp_percent_up'] = 1500
+			self.elements['tp_percent_down'] = 100
 
-		chrom = Chromosome()
+		chrom = Chromosome(parameters = self)
 		chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
 																							work = 'BigBang',
 																							signaltype = signaltype,
@@ -71,19 +76,34 @@ class MACD:
 
 		macd_config = MACDConfig()
 		path_superhuman = macd_config.cfg['path_superhuman'] + signalpriority + '/' + signaltype + '/'
+		path_elites = macd_config.cfg['path_elites'] + signalpriority + '/' + signaltype + '/'
 
 		if os.path.exists(path_superhuman + symbol + '.csv'):
 			max_score_gl = pd.read_csv(path_superhuman + symbol + '.csv')['score'][0]
 		else:
 			max_score_gl = 0
 
+		max_score_gl = 0
+
 
 		print('================================ START Genetic ',signaltype,' ===> ',symbol,' ',signalpriority)
 		print('\n')
 
-		learning_output_before = pd.DataFrame()			
-		learning_result = pd.DataFrame()
-		chromosome_output = pd.DataFrame()
+		learning_output_before = pd.DataFrame()
+
+		if (
+			os.path.exists(path_elites + symbol + '_LearningResults.csv') and
+			os.path.exists(path_elites + symbol + '_ChromosomeResults.csv')
+			):
+
+			learning_result = pd.read_csv(path_elites + symbol + '_LearningResults.csv').drop(columns='Unnamed: 0')
+			chromosome_output = pd.read_csv(path_elites + symbol + '_ChromosomeResults.csv').drop(columns='Unnamed: 0')
+		else:
+			learning_result = pd.DataFrame()
+			chromosome_output = pd.DataFrame()
+
+		if num_turn <= len(learning_result['score']):
+			num_turn = len(learning_result['score']) + 1
 
 		chrom_counter = 0
 		all_chorms = 0
@@ -157,7 +177,7 @@ class MACD:
 			self.elements = macd_parameters.elements
 			self.elements['dataset_5M'] = dataset_5M
 			self.elements['dataset_1H'] = dataset_1H
-			self.elements['MACD_symbol'] = symbol
+			self.elements['symbol'] = symbol
 
 			macd_calc = self.calculator_macd()
 
@@ -181,6 +201,7 @@ class MACD:
 				chromosome[chrom_counter]['isborn'] = False
 
 			except Exception as ex:
+				# print('Divergence Error: ',ex)
 				signal = pd.DataFrame()
 
 			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
@@ -232,7 +253,9 @@ class MACD:
 																	)
 
 			except Exception as ex:
-
+				# print('Learning Error: ',ex)
+				# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				# 	print(signal)
 				signal_output = pd.DataFrame()
 				learning_output_now = pd.DataFrame()
 
@@ -331,6 +354,23 @@ class MACD:
 
 					chromosome_output = chromosome_output.append(chromosome[chrom_counter], ignore_index=True)
 
+					#Saving Elites:
+
+					if not os.path.exists(path_elites):
+						os.makedirs(path_elites)
+
+					if os.path.exists(path_elites + symbol + '_LearningResults.csv'):
+						os.remove(path_elites + symbol + '_LearningResults.csv')
+
+					if os.path.exists(path_elites + symbol + '_ChromosomeResults.csv'):
+						os.remove(path_elites + symbol + '_ChromosomeResults.csv')
+
+					chromosome_output.to_csv(path_elites + symbol + '_ChromosomeResults.csv')
+					learning_result.to_csv(path_elites + symbol + '_LearningResults.csv')
+
+					#//////////////////////
+
+
 					chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
 																									work = 'graveyard',
 																									signaltype = signaltype,
@@ -354,10 +394,10 @@ class MACD:
 
 					chromosome[chrom_counter]['islearned'] = False
 
-					chromosome[chrom_counter]['st_percent_max'] = randint(80, 100)/100
-					chromosome[chrom_counter]['st_percent_min'] = randint(80, 100)/100
-					chromosome[chrom_counter]['tp_percent_max'] = randint(80, 100)/100
-					chromosome[chrom_counter]['tp_percent_min'] = randint(80, 100)/100
+					chromosome[chrom_counter]['st_percent_max'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
+					chromosome[chrom_counter]['st_percent_min'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
+					chromosome[chrom_counter]['tp_percent_max'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
+					chromosome[chrom_counter]['tp_percent_min'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 
 					bad_flag = False
 				else:
@@ -387,7 +427,7 @@ class MACD:
 
 				if (
 					learning_output_now['max_tp'][0] >= 0.1 and
-					learning_output_now['score_pr'][0] >= score_for_reset and
+					learning_output_now['score'][0] >= score_for_reset and
 					learning_output_now['max_tp'][0] > learning_output_now['min_st'][0] * 1.2
 					):
 					chromosome[chrom_counter]['tp_percent_max'] = learning_output_now['max_tp'][0]
@@ -419,7 +459,7 @@ class MACD:
 
 						else:
 
-							chromosome[chrom_counter]['tp_percent_max'] = randint(80, 100)/100
+							chromosome[chrom_counter]['tp_percent_max'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 
 							chromosome[chrom_counter]['islearned'] = False
 
@@ -446,7 +486,7 @@ class MACD:
 						chromosome[chrom_counter]['islearned'] = True
 					else:
 
-						chromosome[chrom_counter]['tp_percent_min'] = randint(80, 100)/100
+						chromosome[chrom_counter]['tp_percent_min'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 
 						chromosome[chrom_counter]['islearned'] = False
 
@@ -473,7 +513,7 @@ class MACD:
 
 					else:
 
-						chromosome[chrom_counter]['st_percent_max'] = randint(80, 100)/100
+						chromosome[chrom_counter]['st_percent_max'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
 
 						chromosome[chrom_counter]['islearned'] = False
 
@@ -497,7 +537,7 @@ class MACD:
 
 					else:
 
-						chromosome[chrom_counter]['st_percent_min'] = randint(80, 100)/100
+						chromosome[chrom_counter]['st_percent_min'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
 						chromosome[chrom_counter]['islearned'] = False
 
 						while chromosome[chrom_counter]['tp_percent_max'] < chromosome[chrom_counter]['st_percent_min']:
@@ -591,6 +631,18 @@ class MACD:
 		#************ Finded:
 		if len(chromosome_output) > 0:
 
+			if not os.path.exists(path_elites):
+				os.makedirs(path_elites)
+
+			if os.path.exists(path_elites + symbol + '_LearningResults.csv'):
+				os.remove(path_elites + symbol + '_LearningResults.csv')
+
+			if os.path.exists(path_elites + symbol + '_ChromosomeResults.csv'):
+				os.remove(path_elites + symbol + '_ChromosomeResults.csv')
+
+			chromosome_output.to_csv(path_elites + symbol + '_ChromosomeResults.csv')
+			learning_result.to_csv(path_elites + symbol + '_LearningResults.csv')
+
 			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 				print('=======> Chorme ===> ')
 				print()
@@ -620,30 +672,38 @@ class MACD:
 				for clm in best_chromosome.columns:
 					if clm == 'Unnamed: 0':
 						best_chromosome = best_chromosome.drop(columns='Unnamed: 0')
+
+			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				print(best_chromosome)
+
+			path_superhuman = macd_config.cfg['path_superhuman'] + signalpriority + '/' + signaltype + '/'
+			if not os.path.exists(path_superhuman):
+				os.makedirs(path_superhuman)
+
+			if os.path.exists(path_superhuman + symbol + '.csv'):
+				os.remove(path_superhuman + symbol + '.csv')
+
+			best_chromosome.to_csv(path_superhuman + symbol + '.csv')
 		#//////////////////////
 
 		# 	#*************************** Save to TXT File ***************************************************************
-			path_superhuman = macd_config.cfg['path_superhuman'] + signalpriority + '/' + signaltype + '/'
-			try:
-				if not os.path.exists(path_superhuman):
-					os.makedirs(path_superhuman)
+			
+			# try:
+				
 
-				if os.path.exists(path_superhuman + symbol + '.csv'):
-					os.remove(path_superhuman + symbol + '.csv')
-
-				with open(path_superhuman + symbol + '.csv', 'w', newline='') as myfile:
-					fields = best_chromosome.columns.to_list()
-					writer = csv.DictWriter(myfile, fieldnames=fields)
-					writer.writeheader()
+			# 	with open(path_superhuman + symbol + '.csv', 'w', newline='') as myfile:
+			# 		fields = best_chromosome.columns.to_list()
+			# 		writer = csv.DictWriter(myfile, fieldnames=fields)
+			# 		writer.writeheader()
 		
-					for idx in range(len(best_chromosome)):
-						rows = dict()
-						for clm in best_chromosome.columns:
-							rows.update({clm: best_chromosome[clm][idx]})
-						writer.writerow(rows)
+			# 		for idx in range(len(best_chromosome)):
+			# 			rows = dict()
+			# 			for clm in best_chromosome.columns:
+			# 				rows.update({clm: best_chromosome[clm][idx]})
+			# 			writer.writerow(rows)
 						
-			except Exception as ex:
-				print('Saving CSV Error: ', ex)
+			# except Exception as ex:
+			# 	print('Saving CSV Error: ', ex)
 
 	def calculator_macd(self):
 

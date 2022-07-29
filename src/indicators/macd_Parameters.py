@@ -22,6 +22,16 @@ class Parameters:
 							#///////////////////////
 
 
+							#ST TP Limits:
+
+							'st_percent_up': 100,
+							'st_percent_down': 80,
+							'tp_percent_up': 100,
+							'tp_percent_down': 80,
+
+							#////////////////////
+
+
 							#*********** Global:
 
 							'symbol': 'XAUUSD_i',

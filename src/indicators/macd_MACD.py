@@ -123,6 +123,12 @@ class MACD:
 
 		while chrom_counter < len(chromosome):
 
+			if chromosome[chrom_counter]['score'] != 0:
+				chrom_counter += 1
+				continue
+
+		while chrom_counter < len(chromosome):
+
 			chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
 																							work = 'graveyard',
 																							signaltype = signaltype,
@@ -133,9 +139,7 @@ class MACD:
 																							chrom_counter = chrom_counter
 																							)
 
-			if chromosome[chrom_counter]['score'] != 0:
-				chrom_counter += 1
-				continue
+			
 
 			if chromosome == 'End_of_Chromosomes':
 				# print(chromosome)

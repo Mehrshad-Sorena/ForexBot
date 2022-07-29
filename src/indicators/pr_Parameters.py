@@ -105,8 +105,9 @@ class Parameters:
 							#Elemns For Tester:
 
 							'Tester_money': 100,
-							'Tester_coef_money': 20,
-							'Tester_spred': 0.0004,
+							'Tester_coef_money': 2.5,
+							'Tester_spred': 0.005,
+							
 							'Tester_index_tp': 0,
 							'Tester_index_st': 0,
 

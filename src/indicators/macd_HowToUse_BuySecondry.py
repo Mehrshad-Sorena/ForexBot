@@ -18,7 +18,7 @@ config = Config()
 
 
 parameters.elements['dataset_5M'], parameters.elements['dataset_1H'] = loging.readall(symbol = 'ETHUSD_i', number_5M = 99800, number_1H = 8323)
-parameters.elements['MACD_symbol'] = 'ETHUSD_i'
+parameters.elements['symbol'] = 'ETHUSD_i'
 parameters.elements['MACD_apply_to'] = 'close'
 
 macd = MACD(parameters = parameters, config = config)

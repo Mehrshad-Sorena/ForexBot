@@ -1,4 +1,5 @@
 import pandas as pd
+from pr_Parameters import Parameters as pr_Parameters
 
 class Parameters:
 
@@ -7,6 +8,8 @@ class Parameters:
 		return obj
 
 	def __init__(self):
+
+		pr_parameters = pr_Parameters()
 
 		self.elements = dict(
 							{
@@ -26,6 +29,14 @@ class Parameters:
 							'BestFinder' + '_alpha': 0.1,
 
 							#//////////////////////
+
+
+							#Tester:
+
+							'Tester_money': pr_parameters.elements['Tester_money'],
+							'Tester_coef_money': pr_parameters.elements['Tester_coef_money'],
+
+							#/////////////////////////
 
 
 							#*********** Global:

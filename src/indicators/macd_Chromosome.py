@@ -115,6 +115,22 @@ Chromosome_Accepted_List = [
 
 class Chromosome:
 
+	def __init__(self, parameters):
+
+		self.elements = dict({
+
+							#ST TP Limits:
+
+							'st_percent_up': parameters.elements['st_percent_up'],
+							'st_percent_down': parameters.elements['st_percent_down'],
+							'tp_percent_up': parameters.elements['tp_percent_up'],
+							'tp_percent_down': parameters.elements['tp_percent_down'],
+
+							#////////////////////
+
+							})
+
+
 	def Get(
 			self,
 			work,
@@ -298,6 +314,10 @@ class Chromosome:
 				Chromosome_vares[i].update(macd_parameters.elements)
 
 				del Chromosome_vares[i]['symbol']
+				del Chromosome_vares[i]['st_percent_up']
+				del Chromosome_vares[i]['st_percent_down']
+				del Chromosome_vares[i]['tp_percent_up']
+				del Chromosome_vares[i]['tp_percent_down']
 
 
 				div_parameters = self.DivergenceChromosomeInitializer()
@@ -369,6 +389,10 @@ class Chromosome:
 		Chromosome_vares[chrom_counter].update(macd_parameters.elements)
 
 		del Chromosome_vares[chrom_counter]['symbol']
+		del Chromosome_vares[chrom_counter]['st_percent_up']
+		del Chromosome_vares[chrom_counter]['st_percent_down']
+		del Chromosome_vares[chrom_counter]['tp_percent_up']
+		del Chromosome_vares[chrom_counter]['tp_percent_down']
 
 
 		div_parameters = self.DivergenceChromosomeInitializer()
@@ -492,6 +516,10 @@ class Chromosome:
 				del chor['isborn']
 				del chor['islearned']
 				del chor['score']
+				del chor['st_percent_min']
+				del chor['st_percent_max']
+				del chor['tp_percent_min']
+				del chor['tp_percent_max']
 
 				check = np.where(GL_result_checking == chor)[0]
 				check_numbers = np.bincount(check)
@@ -679,10 +707,10 @@ class Chromosome:
 
 		#Elemns For Tester:
 
-		pr_parameters.elements['st_percent_min'] = randint(80, 99)/100
-		pr_parameters.elements['st_percent_max'] = randint(80, 99)/100
-		pr_parameters.elements['tp_percent_min'] = randint(80, 99)/100
-		pr_parameters.elements['tp_percent_max'] = randint(80, 99)/100			
+		pr_parameters.elements['st_percent_min'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
+		pr_parameters.elements['st_percent_max'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
+		pr_parameters.elements['tp_percent_min'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
+		pr_parameters.elements['tp_percent_max'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100		
 
 		#//////////////////
 
@@ -838,10 +866,10 @@ class Chromosome:
 				symbol
 				):
 
-		Chromosome[chrom_counter]['st_percent_min'] = randint(80, 100)/100
-		Chromosome[chrom_counter]['st_percent_max'] = randint(80, 100)/100
-		Chromosome[chrom_counter]['tp_percent_min'] = randint(80, 100)/100
-		Chromosome[chrom_counter]['tp_percent_max'] = randint(80, 100)/100
+		Chromosome[chrom_counter]['st_percent_min'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
+		Chromosome[chrom_counter]['st_percent_max'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
+		Chromosome[chrom_counter]['tp_percent_min'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
+		Chromosome[chrom_counter]['tp_percent_max'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 
 		fast_period = randint(int(12/4), 800)
 		while Chromosome[chrom_counter]['MACD_slow'] < fast_period:
@@ -882,10 +910,10 @@ class Chromosome:
 				):
 
 
-		Chromosome[chrom_counter]['st_percent_min'] = randint(80, 100)/100
-		Chromosome[chrom_counter]['st_percent_max'] = randint(80, 100)/100
-		Chromosome[chrom_counter]['tp_percent_min'] = randint(80, 100)/100
-		Chromosome[chrom_counter]['tp_percent_max'] = randint(80, 100)/100
+		Chromosome[chrom_counter]['st_percent_min'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
+		Chromosome[chrom_counter]['st_percent_max'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
+		Chromosome[chrom_counter]['tp_percent_min'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
+		Chromosome[chrom_counter]['tp_percent_max'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 
 		Chromosome[chrom_counter]['MACD_signal'] = randint(4, 50)
 		Chromosome[chrom_counter]['MACD_apply_to'] = random.choice(apply_to_list)
@@ -1006,11 +1034,10 @@ class Chromosome:
 
 			chor[re_counter] = self.LimitChecker(Chromosome = chor[re_counter])
 
-			
-			chor[re_counter]['st_percent_min'] = randint(80, 100)/100
-			chor[re_counter]['st_percent_max'] = randint(80, 100)/100
-			chor[re_counter]['tp_percent_min'] = randint(80, 100)/100
-			chor[re_counter]['tp_percent_max'] = randint(80, 100)/100
+			chor[re_counter]['st_percent_min'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
+			chor[re_counter]['st_percent_max'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
+			chor[re_counter]['tp_percent_min'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
+			chor[re_counter]['tp_percent_max'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 
 			chor[re_counter]['score'] = 0
 			chor[re_counter]['isborn'] = True
@@ -1133,41 +1160,41 @@ class Chromosome:
 		return chor
 
 
-chorom = Chromosome()
+# chorom = Chromosome()
 
-chromosomes = chorom.Initializer(
-								signaltype = 'buy',
-								signalpriority = 'primary',
-								symbol = 'XAUUSD_i',
-								number_chromos = 5
-								)
+# chromosomes = chorom.Initializer(
+# 								signaltype = 'buy',
+# 								signalpriority = 'primary',
+# 								symbol = 'XAUUSD_i',
+# 								number_chromos = 5
+# 								)
 
 
 
-chorom.SocietyRefresher(
-						Chromosome = chromosomes,
-						signaltype = 'buy',
-						signalpriority = 'primary',
-						symbol = 'XAUUSD_i'
-						)
-# print(chromosomes[1])
-# print()
+# chorom.SocietyRefresher(
+# 						Chromosome = chromosomes,
+# 						signaltype = 'buy',
+# 						signalpriority = 'primary',
+# 						symbol = 'XAUUSD_i'
+# 						)
+# # print(chromosomes[1])
+# # print()
 
-chromosomes = chorom.GraveyardCheker(
-									Chromosome = chromosomes,
-									chrom_counter = 3,
-									signaltype = 'buy',
-									signalpriority = 'primary',
-									symbol = 'XAUUSD_i'
-									)
+# chromosomes = chorom.GraveyardCheker(
+# 									Chromosome = chromosomes,
+# 									chrom_counter = 3,
+# 									signaltype = 'buy',
+# 									signalpriority = 'primary',
+# 									symbol = 'XAUUSD_i'
+# 									)
 
-chromosomes, macd_parameters, ind_parameters, pr_parameters, pr_config = chorom.Get(
-																					work = 'BigBang',
-																					signaltype = 'buy',
-																					signalpriority = 'primary',
-																					symbol = 'XAUUSD_i',
-																					number_chromos = 10,
-																					Chromosome = chromosomes,
-																					chrom_counter = 0
-																					)
+# chromosomes, macd_parameters, ind_parameters, pr_parameters, pr_config = chorom.Get(
+# 																					work = 'BigBang',
+# 																					signaltype = 'buy',
+# 																					signalpriority = 'primary',
+# 																					symbol = 'XAUUSD_i',
+# 																					number_chromos = 10,
+# 																					Chromosome = chromosomes,
+# 																					chrom_counter = 0
+# 																					)
 

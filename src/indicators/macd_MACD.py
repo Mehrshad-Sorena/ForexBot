@@ -355,13 +355,20 @@ class MACD:
 					learning_output_before['num_st_pr'] = [learning_output_now['num_st_pr'][0]]
 					learning_output_before['num_tp_pr'] = [learning_output_now['num_tp_pr'][0]]
 					learning_output_before['num_trade_pr'] = [learning_output_now['num_trade_pr'][0]]
+
 					learning_output_before['score'] = [learning_output_now['score'][0]]
+
 					learning_output_before['max_tp_pr'] = [learning_output_now['max_tp_pr'][0]]
+					learning_output_before['max_st_pr'] = [learning_output_now['max_st_pr'][0]]
+
 					learning_output_before['mean_tp_pr'] = [learning_output_now['mean_tp_pr'][0]]
 					learning_output_before['mean_st_pr'] = [learning_output_now['mean_st_pr'][0]]
+
 					learning_output_before['sum_st_pr'] = [learning_output_now['sum_st_pr'][0]]
 					learning_output_before['sum_tp_pr'] = [learning_output_now['sum_tp_pr'][0]]
+
 					learning_output_before['money'] = [learning_output_now['money'][0]]
+					learning_output_before['draw_down'] = [learning_output_now['draw_down'][0]]
 
 					learning_result = learning_result.append(learning_output_before, ignore_index=True)
 

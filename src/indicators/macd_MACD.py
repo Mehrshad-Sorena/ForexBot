@@ -354,6 +354,7 @@ class MACD:
 
 					learning_output_before['num_st_pr'] = [learning_output_now['num_st_pr'][0]]
 					learning_output_before['num_tp_pr'] = [learning_output_now['num_tp_pr'][0]]
+					learning_output_before['num_trade_pr'] = [learning_output_now['num_trade_pr'][0]]
 					learning_output_before['score'] = [learning_output_now['score'][0]]
 					learning_output_before['max_tp_pr'] = [learning_output_now['max_tp_pr'][0]]
 					learning_output_before['mean_tp_pr'] = [learning_output_now['mean_tp_pr'][0]]

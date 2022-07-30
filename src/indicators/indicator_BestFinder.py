@@ -28,8 +28,8 @@ class BestFinder:
 
 		alpha = self.elements[__class__.__name__ + '_alpha']
 		if (
-			apply_to == 'tp' or
-			apply_to == 'st' 
+			apply_to == 'tp_pr' or
+			apply_to == 'st_pr' 
 			):
 			signal_good = signals.copy(deep = True)
 		else:

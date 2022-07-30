@@ -102,6 +102,9 @@ class MACD:
 			if num_turn <= len(learning_result['score']):
 				num_turn = (len(learning_result['score'])) + 2
 
+				if len(chromosome_output) >= num_turn:
+					num_turn = len(chromosome_output) + 2
+
 		else:
 			learning_result = pd.DataFrame()
 			chromosome_output = pd.DataFrame()
@@ -124,9 +127,27 @@ class MACD:
 
 		for i in range(len(chromosome)):
 
-			if chromosome[chrom_counter]['score'] != 0:
+			if (
+				chromosome[chrom_counter]['score'] != 0 and
+				chromosome[chrom_counter]['islearned'] == True and
+				chromosome[chrom_counter]['isborn'] == False
+				):
 				chrom_counter += 1
 				continue
+
+		if chrom_counter >= len(chromosome):
+			chrom_counter = 0
+
+			chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
+																								work = 'group_sex',
+																								signaltype = signaltype,
+																								signalpriority = signalpriority,
+																								symbol = symbol,
+																								number_chromos = 0,
+																								Chromosome = chromosome,
+																								chrom_counter = chrom_counter
+																								)
+
 
 		while chrom_counter < len(chromosome):
 

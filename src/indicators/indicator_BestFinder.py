@@ -28,12 +28,12 @@ class BestFinder:
 
 		alpha = self.elements[__class__.__name__ + '_alpha']
 		if (
-			apply_to == 'tp_pr' or
-			apply_to == 'st_pr' 
+			apply_to == 'tp' or
+			apply_to == 'st' 
 			):
-			signal_good = signals
+			signal_good = signals.copy(deep = True)
 		else:
-			signal_good = signals.drop(signals['index'][signals['flag'] == 'st'])
+			signal_good = signals.copy(deep = True).drop(signals['index'][signals['flag'] == 'st'])
 
 		if (signal_good.empty == True): 
 			best_signals_interval = pd.DataFrame(

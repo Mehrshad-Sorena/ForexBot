@@ -37,7 +37,7 @@ class Tester:
 							'Tester_coef_money': parameters.elements['Tester_coef_money'],
 
 							#/////////////////////////
-							
+
 							})
 	#@stTime
 	def RunGL(self, signal, sigtype, flaglearn, flagtest, pr_parameters, pr_config, indicator = '', flag_savepic = False):
@@ -287,19 +287,19 @@ class Tester:
 
 
 		diff_top_pr = best_values.Finder(
-												signals=signal,
-												apply_to='tp_pr',
-												)
+										signals=signal,
+										apply_to='tp_pr',
+										)
 
 		diff_down_pr = best_values.Finder(
-												signals=signal,
-												apply_to='st_pr',
-												)
+										signals=signal,
+										apply_to='st_pr',
+										)
 
 		diff_extereme = best_values.Finder(
-												signals=signal,
-												apply_to='diff_extereme',
-												)
+										signals=signal,
+										apply_to='diff_extereme',
+										)
 
 
 		scores_out['max_st'] = [round(diff_down_pr['interval'][upper],2)]

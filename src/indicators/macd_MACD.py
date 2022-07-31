@@ -122,7 +122,7 @@ class MACD:
 		learning_interval_counter = 0
 		learn_counter = 1
 
-		bar = Bar(signaltype + signalpriority, max = int(num_turn))
+		bar = Bar(signaltype + ' ' + signalpriority, max = int(num_turn))
 
 
 		for i in range(len(chromosome)):
@@ -166,7 +166,7 @@ class MACD:
 			# print('===== bad score counter 2 ======> ',bad_score_counter_2)
 			# print()
 
-			bar.next()
+			bar.update(chrom_counter)
 
 			
 

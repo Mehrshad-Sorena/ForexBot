@@ -164,7 +164,7 @@ class MACD:
 			# print('===== bad score counter ========> ',bad_score_counter)
 			# print('===== bad score counter 2 ======> ',bad_score_counter_2)
 			# print()
-			bar.next(chrom_counter)
+			bar.next()
 
 			
 

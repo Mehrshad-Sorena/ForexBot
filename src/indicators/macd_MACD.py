@@ -124,7 +124,6 @@ class MACD:
 
 		bar = Bar(signaltype + ' ' + signalpriority, max = int(num_turn))
 
-
 		for i in range(len(chromosome)):
 
 			if (
@@ -165,8 +164,7 @@ class MACD:
 			# print('===== bad score counter ========> ',bad_score_counter)
 			# print('===== bad score counter 2 ======> ',bad_score_counter_2)
 			# print()
-
-			bar.update(chrom_counter)
+			bar.next(chrom_counter)
 
 			
 

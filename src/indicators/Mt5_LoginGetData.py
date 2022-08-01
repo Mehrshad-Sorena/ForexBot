@@ -46,6 +46,71 @@ class LoginGetData:
 				print("Get All Error: ", ex)
 		return symbol_data
 
+	def Update(self, timeframe, symbol, number):
+
+		dataset_path = 'dataset/' + timeframe + '/' + symbol + '.csv'
+		dataset_path_dir = 'dataset/' + timeframe + '/'
+
+		if not os.path.exists(dataset_path_dir):
+			os.makedirs(dataset_path_dir)
+			self.writer(symbol = symbol, timeframe = timeframe, number = number)
+
+		if os.path.exists(dataset_path):
+			dataset_before = self.readone(symbol = symbol, number = number, timeframe = timeframe)
+
+			
+			self.initilizer()
+			self.login()
+
+			if timeframe == '5M':
+				end = 99800
+			elif timeframe == '1H':
+				end = 8323
+
+			for counter in range(1,end):
+
+				dataset_now = self.getone(timeframe = timeframe, number = counter, symbol = symbol)
+
+				if timeframe == '5M':
+					if (
+						dataset_before[symbol]['time'].iloc[-1].year == dataset_now[symbol]['time'].iloc[0].year and
+						dataset_before[symbol]['time'].iloc[-1].month == dataset_now[symbol]['time'].iloc[0].month and
+						dataset_before[symbol]['time'].iloc[-1].day == dataset_now[symbol]['time'].iloc[0].day and
+						dataset_before[symbol]['time'].iloc[-1].hour == dataset_now[symbol]['time'].iloc[0].hour and
+						dataset_before[symbol]['time'].iloc[-1].minute + 5 == dataset_now[symbol]['time'].iloc[0].minute
+						):
+						dataset_before = pd.concat([dataset_before, dataset_now], ignore_index = True)
+
+						os.remove(dataset_path)
+						dataset_before.to_csv(dataset_path)
+						print('Finish Updating Dataset')
+
+					else:
+						continue
+
+				elif timeframe == '1H':
+					if (
+						dataset_before[symbol]['time'].iloc[-1].year == dataset_now[symbol]['time'].iloc[0].year and
+						dataset_before[symbol]['time'].iloc[-1].month == dataset_now[symbol]['time'].iloc[0].month and
+						dataset_before[symbol]['time'].iloc[-1].day == dataset_now[symbol]['time'].iloc[0].day and
+						dataset_before[symbol]['time'].iloc[-1].hour + 1 == dataset_now[symbol]['time'].iloc[0].hour
+						):
+						dataset_before = pd.concat([dataset_before, dataset_now], ignore_index = True)
+						os.remove(dataset_path)
+						dataset_before.to_csv(dataset_path)
+						print('Finish Updating Dataset')
+
+					else:
+						continue
+				#os.remove(dataset_path)
+
+		#data[symbol].to_csv(dataset_path)
+
+		
+
+		
+		
+
 
 	def getone(self, timeframe, number, symbol):
 

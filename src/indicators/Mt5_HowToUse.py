@@ -3,9 +3,9 @@ from Mt5_LoginGetData import LoginGetData as getdata
 loging = getdata()
 
 
-# loging.account_name = 'mehrshadpc'
-# loging.initilizer()
-# loging.login()
+loging.account_name = 'mehrshadpc'
+loging.initilizer()
+loging.login()
 
 # for sym in loging.get_symbols():
 #  	print(sym.name)
@@ -16,6 +16,7 @@ loging = getdata()
 
 # data = loging.getall(timeframe = '1H', number = 500)
 # print(data['XAUUSD_i'])
+loging.Update(symbol = 'XAUUSD_i', timeframe = '5M', number = 200)
 
 data_5M, data_1H = loging.readall(symbol = 'XAUUSD_i', number_5M = 500, number_1H = 500)
 print(data_5M['XAUUSD_i'])

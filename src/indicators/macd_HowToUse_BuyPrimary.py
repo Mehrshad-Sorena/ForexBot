@@ -13,8 +13,8 @@ loging = getdata()
 parameters = Parameters()
 config = Config()
 
-# ind_params = indicator_parameters()
-# ind_config = indicator_config()
+# # ind_params = indicator_parameters()
+# # ind_config = indicator_config()
 
 # signalpriority = 'primary'
 # signaltype = 'buy'
@@ -38,6 +38,9 @@ config = Config()
 # 		):
 # 		df['score'][elm] = df['score'][elm] / 5
 
+# 	if df_learn['sum_tp_pr'][elm] < 0:
+# 		df['score'][elm] = 0
+
 # os.remove(path_elites_chrom)
 # df.to_csv(path_elites_chrom)
 
@@ -55,6 +58,9 @@ config = Config()
 
 # 	df['num_trade_pr'][elm] = df['num_tp_pr'][elm] + df['num_st_pr'][elm]
 
+# 	if df['sum_tp_pr'][elm] < 0:
+# 		df['score'][elm] = 0
+
 # os.remove(path_elites_learn)
 # df.to_csv(path_elites_learn)
 
@@ -69,6 +75,9 @@ config = Config()
 # 		df['score'][elm] >= 10
 # 		):
 # 		df['score'][elm] = df['score'][elm] / 5
+
+# 	if df_learn['sum_tp_pr'][elm] < 0:
+# 		df['score'][elm] = 0
 
 # os.remove(path_elites_super)
 # df.to_csv(path_elites_super)

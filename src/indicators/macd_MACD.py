@@ -4,13 +4,19 @@ import numpy as np
 from macd_Chromosome import Chromosome
 import os
 from macd_Config import Config as MACDConfig
+from macd_Parameters import Parameters as MACDParameters
+
+from indicator_Parameters import Parameters as IndicatorParameters
+
 from progress.bar import Bar
 from random import randint
 from indicator_Parameters import Parameters as indicator_parameters
 from indicator_Config import Config as indicator_config
 
-from pr_Parameters import Parameters as pr_Parameters
-from pr_Config import Config as pr_Config
+from pr_Parameters import Parameters as PRParameters
+from pr_Config import Config as PRConfig
+
+
 
 from indicator_Divergence import Divergence
 from indicator_Tester import Tester
@@ -53,6 +59,143 @@ class MACD:
 		self.cfg = dict({
 
 						})
+
+
+	def ParameterReader(self, symbol, signaltype, signalpriority):
+
+		macd_config = MACDConfig()
+		path_superhuman = macd_config.cfg['path_superhuman'] + signalpriority + '/' + signaltype + '/'
+
+		macd_parameters = MACDParameters()
+
+		pr_parameters = PRParameters()
+		pr_config = PRConfig()
+
+		ind_parameters = IndicatorParameters()
+
+
+		if os.path.exists(path_superhuman + symbol + '.csv'):
+
+			GL_Results = pd.read_csv(path_superhuman + symbol + '.csv')
+
+			for elm in GL_Results.columns:
+
+				for pr_param_elm in pr_parameters.elements.keys():
+					if pr_param_elm == elm:
+
+						if (
+							elm == 'BestFinder_alpha_low' or
+							elm == 'BestFinder_alpha_high' or
+							elm == 'st_percent_min' or
+							elm == 'st_percent_max' or
+							elm == 'tp_percent_min' or
+							elm == 'tp_percent_max'
+							):
+							pr_parameters.elements[pr_param_elm] = GL_Results[elm][0]
+						else:
+							pr_parameters.elements[pr_param_elm] = int(GL_Results[elm][0])
+
+				for pr_conf_elm in pr_config.cfg.keys():
+					if pr_conf_elm == elm:
+						pr_config.cfg[pr_conf_elm] = GL_Results[elm][0]
+
+
+				for ind_elm in ind_parameters.elements.keys():
+					if ind_elm == elm:
+
+						if elm == 'BestFinder_alpha':
+							ind_parameters.elements[ind_elm] = GL_Results[elm][0]
+						else:
+							ind_parameters.elements[ind_elm] = int(GL_Results[elm][0])
+
+
+				for macd_elm in macd_parameters.elements.keys():
+					if macd_elm == elm:
+						if elm == 'MACD_apply_to':
+							macd_parameters.elements[macd_elm] = GL_Results[elm][0]
+						else:
+							macd_parameters.elements[macd_elm] = int(GL_Results[elm][0])
+
+			return GL_Results, path_superhuman, macd_parameters, ind_parameters, pr_parameters, pr_config
+
+
+
+
+	def GetPermit(self,dataset_5M, dataset_1H, symbol, signaltype, signalpriority, flag_savepic):
+
+		GL_Results, path_superhuman, macd_parameters, ind_parameters, pr_parameters, pr_config = self.ParameterReader(
+									 																				symbol = symbol, 
+									 																				signaltype = signaltype, 
+									 																				signalpriority = signalpriority
+									 																				)
+
+		ind_config = indicator_config()
+		macd = Divergence(parameters = ind_parameters, config = ind_config)
+
+		ind_parameters.elements['dataset_5M'] = dataset_5M
+		ind_parameters.elements['dataset_1H'] = dataset_1H
+		macd_tester = Tester(parameters = ind_parameters, config = ind_config)
+
+		macd_calc = self.calculator_macd()
+
+		if True:
+
+			signal, signaltype, indicator = macd.divergence(
+															sigtype = signaltype,
+															sigpriority = signalpriority,
+															indicator = macd_calc,
+															column_div = GL_Results['MACD_column_div'][0],
+															ind_name = 'macd',
+															dataset_5M = dataset_5M,
+															dataset_1H = dataset_1H,
+															symbol = symbol,
+															flaglearn = GL_Results['islearned'][0],
+															flagtest = True
+															)
+
+		
+
+			signal_output, learning_output = macd_tester.RunGL(
+																signal = signal, 
+																sigtype = signaltype, 
+																flaglearn = GL_Results['islearned'][0], 
+																flagtest = True,
+																pr_parameters = pr_parameters,
+																pr_config = pr_config,
+																indicator = indicator,
+																flag_savepic = flag_savepic
+																)
+		else:#except Exception as ex:
+			print('Permit Error: ', ex)
+
+			signal_output = pd.DataFrame()
+			learning_output = pd.DataFrame()
+
+		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			print('signals = ', signal_output)
+
+		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			print('learning = ', learning_output)
+
+		if learning_output.empty == False:
+
+			if learning_output['score'][0] >= GL_Results['score'][0] * 0.9:
+				GL_Results['permit'] = [True]
+
+			else:
+				GL_Results['permit'] = [False]
+
+		else:
+			GL_Results['permit'] = [False]
+
+		if os.path.exists(path_superhuman + symbol + '.csv'):
+			os.remove(path_superhuman + symbol + '.csv')
+
+		GL_Results.to_csv(path_superhuman + symbol + '.csv')
+
+
+
+		
 
 
 	def Genetic(self, dataset_5M, dataset_1H, symbol, signaltype, signalpriority, num_turn):
@@ -146,6 +289,8 @@ class MACD:
 																								Chromosome = chromosome,
 																								chrom_counter = chrom_counter
 																								)
+
+
 
 
 		while chrom_counter < len(chromosome):
@@ -708,25 +853,6 @@ class MACD:
 
 			best_chromosome.to_csv(path_superhuman + symbol + '.csv')
 		#//////////////////////
-
-		# 	#*************************** Save to TXT File ***************************************************************
-			
-			# try:
-				
-
-			# 	with open(path_superhuman + symbol + '.csv', 'w', newline='') as myfile:
-			# 		fields = best_chromosome.columns.to_list()
-			# 		writer = csv.DictWriter(myfile, fieldnames=fields)
-			# 		writer.writeheader()
-		
-			# 		for idx in range(len(best_chromosome)):
-			# 			rows = dict()
-			# 			for clm in best_chromosome.columns:
-			# 				rows.update({clm: best_chromosome[clm][idx]})
-			# 			writer.writerow(rows)
-						
-			# except Exception as ex:
-			# 	print('Saving CSV Error: ', ex)
 
 	def calculator_macd(self):
 

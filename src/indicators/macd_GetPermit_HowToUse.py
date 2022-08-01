@@ -7,6 +7,9 @@ import pandas as pd
 
 
 loging = getdata()
+loging.account_name = 'mehrshadpc'
+loging.initilizer()
+loging.login()
 
 
 parameters = Parameters()
@@ -17,7 +20,9 @@ config = Config()
 
 
 
-parameters.elements['dataset_5M'], parameters.elements['dataset_1H'] = loging.readall(symbol = 'ETHUSD_i', number_5M = 99800, number_1H = 8323)
+parameters.elements['dataset_5M'] = loging.getone(timeframe = '5M', number = 99800, symbol = 'ETHUSD_i')
+parameters.elements['dataset_1H'] = loging.getone(timeframe = '1H', number = 8323, symbol = 'ETHUSD_i')
+
 parameters.elements['symbol'] = 'ETHUSD_i'
 parameters.elements['MACD_apply_to'] = 'close'
 
@@ -28,5 +33,5 @@ macd_calc = macd.GetPermit(
 						symbol = 'ETHUSD_i',
 						signaltype = 'buy', 
 						signalpriority = 'secondry',
-						flag_savepic = False
+						flag_savepic = True
 						)

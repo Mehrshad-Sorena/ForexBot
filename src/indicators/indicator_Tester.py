@@ -181,6 +181,7 @@ class Tester:
 		ideal_money = self.IdealMoneyCalc(scores_out = scores_out)
 
 		score_money = ((ideal_money - signal['money'][np.max(signal['money'].index)])/ideal_money) * 100
+		if score_money < 0: score_money = 0
 		score_money = 100 - score_money
 		scores_out['money'] = [signal['money'][np.max(signal['money'].index)]]
 

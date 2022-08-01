@@ -141,11 +141,11 @@ class Tester:
 
 		if scores_out['num_trade_pr'][0] != 0:
 
-			if scores_out['num_trade_pr'][0] >= 20:
+			if scores_out['num_trade_pr'][0] >= 100:
 				score_num_tp = ((scores_out['num_tp_pr'][0]-scores_out['num_st_pr'][0])/scores_out['num_trade_pr'][0]) * 100
 
 			else:
-				score_num_tp = ((scores_out['num_tp_pr'][0]-scores_out['num_st_pr'][0])/20) * 100
+				score_num_tp = ((scores_out['num_tp_pr'][0]-scores_out['num_st_pr'][0])/100) * 100
 		else:
 			score_num_tp = 1
 

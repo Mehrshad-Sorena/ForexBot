@@ -828,6 +828,8 @@ class Divergence:
 
 		index_pos = int(index_pos + 20)
 
+		if index_pos > len(dataset_5M): index_pos = len(dataset_5M) - 1
+
 		plt.plot([signals['index_back'][loc_end_5M], signals['index'][loc_end_5M]], [signals['indicator_back'][loc_end_5M], signals['indicator_front'][loc_end_5M]], 'o',c='purple')
 
 		plt.plot(range(int(signals['index_back'][loc_end_5M]) - 20, index_pos), indicator[signals['column_div'][loc_end_5M]][range(int(signals['index_back'][loc_end_5M]) - 20, index_pos)],c='b')

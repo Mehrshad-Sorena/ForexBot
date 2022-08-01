@@ -16,10 +16,11 @@ loging.login()
 
 # data = loging.getall(timeframe = '1H', number = 500)
 # print(data['XAUUSD_i'])
-loging.Update(symbol = 'XAUUSD_i', timeframe = '5M', number = 200)
 
-data_5M, data_1H = loging.readall(symbol = 'XAUUSD_i', number_5M = 500, number_1H = 500)
-print(data_5M['XAUUSD_i'])
+#loging.Update(symbol = 'ETHUSD_i', timeframe = '1H', number = 200)
+
+data_5M, data_1H = loging.readall(symbol = 'XAUUSD_i', number_5M = 'all', number_1H = 'all')
+print(data_1H['XAUUSD_i'])
 
 # data_5M = loging.readone(symbol = 'XAUUSD_i', number = 500, timeframe = '5M')
 # print(data_5M)

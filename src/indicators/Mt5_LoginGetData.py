@@ -56,7 +56,7 @@ class LoginGetData:
 			self.writer(symbol = symbol, timeframe = timeframe, number = number)
 
 		if os.path.exists(dataset_path):
-			dataset_before = self.readone(symbol = symbol, number = number, timeframe = timeframe)
+			dataset_before = self.readone(symbol = symbol, number = 'all', timeframe = timeframe)
 
 			
 			self.initilizer()
@@ -67,41 +67,71 @@ class LoginGetData:
 			elif timeframe == '1H':
 				end = 8323
 
-			for counter in range(1,end):
+			dataset_now = self.getone(timeframe = timeframe, number = end, symbol = symbol)
 
-				dataset_now = self.getone(timeframe = timeframe, number = counter, symbol = symbol)
+			if timeframe == '5M':
 
-				if timeframe == '5M':
-					if (
-						dataset_before[symbol]['time'].iloc[-1].year == dataset_now[symbol]['time'].iloc[0].year and
-						dataset_before[symbol]['time'].iloc[-1].month == dataset_now[symbol]['time'].iloc[0].month and
-						dataset_before[symbol]['time'].iloc[-1].day == dataset_now[symbol]['time'].iloc[0].day and
-						dataset_before[symbol]['time'].iloc[-1].hour == dataset_now[symbol]['time'].iloc[0].hour and
-						dataset_before[symbol]['time'].iloc[-1].minute + 5 == dataset_now[symbol]['time'].iloc[0].minute
-						):
-						dataset_before = pd.concat([dataset_before, dataset_now], ignore_index = True)
+				where_data = np.where(
+										(dataset_before[symbol]['time'].iloc[-1].year == dataset_now[symbol]['time'].dt.year.to_numpy()) &
+										(dataset_before[symbol]['time'].iloc[-1].month == dataset_now[symbol]['time'].dt.month.to_numpy()) &
+										(dataset_before[symbol]['time'].iloc[-1].day == dataset_now[symbol]['time'].dt.day.to_numpy()) &
+										(dataset_before[symbol]['time'].iloc[-1].hour == dataset_now[symbol]['time'].dt.hour.to_numpy()) &
+										(dataset_before[symbol]['time'].iloc[-1].minute + 5 == dataset_now[symbol]['time'].dt.minute.to_numpy())
+										)[0]
 
-						os.remove(dataset_path)
-						dataset_before.to_csv(dataset_path)
-						print('Finish Updating Dataset')
+				dataset_before = pd.concat([dataset_before[symbol], dataset_now[symbol].iloc[where_data[0]:-1]], ignore_index = True)
 
-					else:
-						continue
+				os.remove(dataset_path)
+				dataset_before.to_csv(dataset_path)
+				print('Finish Updating Dataset')
 
-				elif timeframe == '1H':
-					if (
-						dataset_before[symbol]['time'].iloc[-1].year == dataset_now[symbol]['time'].iloc[0].year and
-						dataset_before[symbol]['time'].iloc[-1].month == dataset_now[symbol]['time'].iloc[0].month and
-						dataset_before[symbol]['time'].iloc[-1].day == dataset_now[symbol]['time'].iloc[0].day and
-						dataset_before[symbol]['time'].iloc[-1].hour + 1 == dataset_now[symbol]['time'].iloc[0].hour
-						):
-						dataset_before = pd.concat([dataset_before, dataset_now], ignore_index = True)
-						os.remove(dataset_path)
-						dataset_before.to_csv(dataset_path)
-						print('Finish Updating Dataset')
+			elif timeframe == '1H':
 
-					else:
-						continue
+				where_data = np.where(
+										(dataset_before[symbol]['time'].iloc[-1].year == dataset_now[symbol]['time'].dt.year.to_numpy()) &
+										(dataset_before[symbol]['time'].iloc[-1].month == dataset_now[symbol]['time'].dt.month.to_numpy()) &
+										(dataset_before[symbol]['time'].iloc[-1].day == dataset_now[symbol]['time'].dt.day.to_numpy()) &
+										(dataset_before[symbol]['time'].iloc[-1].hour + 1 == dataset_now[symbol]['time'].dt.hour.to_numpy())
+										)[0]
+
+				dataset_before = pd.concat([dataset_before[symbol], dataset_now[symbol].iloc[where_data[0]:-1]], ignore_index = True)
+
+				os.remove(dataset_path)
+				dataset_before.to_csv(dataset_path)
+				print('Finish Updating Dataset')
+
+
+			# for counter in range(1,end):
+
+				
+
+			# 	if timeframe == '5M':
+			# 		print(dataset_now[symbol]['time'].iloc[0])
+			# 		if (
+			# 			dataset_before[symbol]['time'].iloc[-1].year == dataset_now[symbol]['time'].iloc[0].year and
+			# 			dataset_before[symbol]['time'].iloc[-1].month == dataset_now[symbol]['time'].iloc[0].month and
+			# 			dataset_before[symbol]['time'].iloc[-1].day == dataset_now[symbol]['time'].iloc[0].day and
+			# 			dataset_before[symbol]['time'].iloc[-1].hour == dataset_now[symbol]['time'].iloc[0].hour and
+			# 			dataset_before[symbol]['time'].iloc[-1].minute + 5 == dataset_now[symbol]['time'].iloc[0].minute
+			# 			):
+						
+			# 			break
+
+			# 		else:
+			# 			continue
+
+			# 	elif timeframe == '1H':
+			# 		if (
+						
+			# 			):
+			# 			dataset_before = pd.concat([dataset_before[symbol], dataset_now[symbol]], ignore_index = True)
+			# 			os.remove(dataset_path)
+			# 			dataset_before.to_csv(dataset_path)
+			# 			print('Finish Updating Dataset')
+			# 			break
+
+			# 		else:
+			# 			continue
 				#os.remove(dataset_path)
 
 		#data[symbol].to_csv(dataset_path)
@@ -186,6 +216,9 @@ class LoginGetData:
 		if os.path.exists(dataset_path):
 			rates_frame = pd.read_csv(dataset_path)
 			rates_frame['time'] = pd.to_datetime(rates_frame['time'])
+
+			if number == 'all': number = len(rates_frame['open']) - 1
+
 			if timeframe == '5M':
 				symbol_data_5M[symbol] = pd.DataFrame({
 													symbol: symbol,
@@ -209,6 +242,9 @@ class LoginGetData:
 			else:
 				rates_frame = pd.read_csv(dataset_path)
 				rates_frame['time'] = pd.to_datetime(rates_frame['time'])
+
+				if number == 'all': number = len(rates_frame['open']) - 1
+
 				symbol_data_1H[symbol] = pd.DataFrame({
 														symbol: symbol,
 														'open': rates_frame['open'][(len(rates_frame['open'])-number-1):-1].reset_index(drop=True),

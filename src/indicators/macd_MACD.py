@@ -136,6 +136,11 @@ class MACD:
 		ind_parameters.elements['dataset_1H'] = dataset_1H
 		macd_tester = Tester(parameters = ind_parameters, config = ind_config)
 
+		self.elements = macd_parameters.elements
+		self.elements['dataset_5M'] = dataset_5M
+		self.elements['dataset_1H'] = dataset_1H
+		self.elements['symbol'] = symbol
+
 		macd_calc = self.calculator_macd()
 
 		if True:

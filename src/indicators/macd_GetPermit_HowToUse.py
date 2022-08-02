@@ -32,7 +32,7 @@ macd_calc = macd.GetPermit(
 						dataset_5M = parameters.elements['dataset_5M'],
 						dataset_1H = parameters.elements['dataset_1H'], 
 						symbol = 'ETHUSD_i',
-						signaltype = 'sell',
-						signalpriority = 'secondry',
+						signaltype = 'buy',
+						signalpriority = 'primary',
 						flag_savepic = False
 						)

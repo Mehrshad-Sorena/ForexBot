@@ -89,9 +89,6 @@ class Parameters:
 							'BestFinder' + '_alpha_low': 0.1,
 							'BestFinder' + '_alpha_high': 0.1,
 
-							'n_clusters_best_low': 2,
-							'n_clusters_best_high': 2,
-
 							#/////////////////////////////////
 
 

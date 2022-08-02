@@ -91,6 +91,52 @@ config = Config()
 # os.remove(path_elites_society)
 # df.to_csv(path_elites_society)
 
+# signalpriority = 'primary'
+# signaltype = 'sell'
+# symbol = 'ETHUSD_i'
+
+# path_elites_chrom = config.cfg['path_elites'] + signalpriority + '/' + signaltype + '/' + symbol + '_ChromosomeResults.csv'
+# path_elites_learn = config.cfg['path_elites'] + signalpriority + '/' + signaltype + '/' + symbol + '_LearningResults.csv'
+# path_elites_super = config.cfg['path_superhuman'] + signalpriority + '/' + signaltype + '/' + symbol + '.csv'
+# path_elites_society = config.cfg['path_society'] + signalpriority + '/' + signaltype + '/' + symbol + '.csv'
+
+# df = pd.read_csv(path_elites_chrom).drop(columns='Unnamed: 0')
+
+# df = df.drop(columns = 'n_clusters_best_low')
+# df = df.drop(columns = 'n_clusters_best_high')
+
+# os.remove(path_elites_chrom)
+# df.to_csv(path_elites_chrom)
+
+
+# df = pd.read_csv(path_elites_learn).drop(columns='Unnamed: 0')
+
+# df = df.drop(columns = 'n_clusters_best_low')
+# df = df.drop(columns = 'n_clusters_best_high')
+
+# os.remove(path_elites_learn)
+# df.to_csv(path_elites_learn)
+
+
+# df = pd.read_csv(path_elites_super).drop(columns='Unnamed: 0')
+
+# df = df.drop(columns = 'n_clusters_best_low')
+# df = df.drop(columns = 'n_clusters_best_high')
+
+# os.remove(path_elites_super)
+# df.to_csv(path_elites_super)
+
+
+# df = pd.read_csv(path_elites_society).drop(columns='Unnamed: 0')
+
+# df = df.drop(columns = 'n_clusters_best_low')
+# df = df.drop(columns = 'n_clusters_best_high')
+
+# os.remove(path_elites_society)
+# df.to_csv(path_elites_society)
+
+
+
 
 parameters.elements['dataset_5M'], parameters.elements['dataset_1H'] = loging.readall(symbol = 'ETHUSD_i', number_5M = 'all', number_1H = 'all')
 parameters.elements['symbol'] = 'ETHUSD_i'

@@ -258,7 +258,9 @@ class BestFinder:
 			exterm_point_pred_final_high = exterm_point_pred_final_high.sort_values(by = ['X'])
 
 		except Exception as ex:
-			#print(__class__.__name__ + 'ERROR: ', ex)
+			# print(__class__.__name__ + 'ERROR: ', ex)
+			# print('cluster high = ',self.elements[__class__.__name__ + '_n_cluster_high'])
+			# print('cluster low = ',self.elements[__class__.__name__ + '_n_cluster_low'])
 			kmeans_high, kmeans_low = '', ''
 			exterm_point_pred_final_low = pd.DataFrame('' , index = [0], columns=['X'])
 			exterm_point_pred_final_high = pd.DataFrame('' , index = [0], columns=['X'])

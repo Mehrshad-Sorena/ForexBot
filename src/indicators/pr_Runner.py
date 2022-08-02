@@ -440,6 +440,7 @@ class Runner:
 										loc_end_5M = loc_end_5M
 										)
 		except Exception as ex:
+			#print('PR Runner Error: ', ex)
 			extereme = pd.DataFrame(
 									{
 									'high_upper': np.nan,

@@ -699,6 +699,9 @@ class Chromosome:
 		pr_parameters.elements['BestFinder' + '_alpha_low'] = randint(1, 99)/100
 		pr_parameters.elements['BestFinder' + '_alpha_high'] = randint(1, 99)/100
 
+		pr_parameters.elements['n_clusters_best_low'] = randint(1, 50)
+		pr_parameters.elements['n_clusters_best_high'] = randint(1, 50)
+
 		#/////////////////////////////////
 
 

@@ -368,6 +368,9 @@ class MACD:
 			except Exception as ex:
 				# print('Divergence Error: ',ex)
 				signal = pd.DataFrame()
+				signal_output = pd.DataFrame()
+				learning_output_now = pd.DataFrame()
+				learning_output_before = pd.DataFrame()
 
 			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 			# 	print(signal)
@@ -423,6 +426,7 @@ class MACD:
 				# 	print(signal)
 				signal_output = pd.DataFrame()
 				learning_output_now = pd.DataFrame()
+				learning_output_before = pd.DataFrame()
 
 			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 			# 	print(learning_output_now)
@@ -488,12 +492,9 @@ class MACD:
 				else:
 					chromosome[chrom_counter]['st_percent_min'] = learning_output_now['mean_st_pr'][0]
 
+
+
 				if chromosome[chrom_counter]['islearned'] == True:
-
-					# print(chromosome)
-
-					# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-					# 	print(learning_output_now)
 
 					learning_output_now['max_tp'][0] = max_tp_last_buy
 					learning_output_now['max_st'][0] = max_st_last_buy
@@ -522,8 +523,6 @@ class MACD:
 
 					score = (learning_output_now['score'][0])
 					chromosome[chrom_counter]['score'] = learning_output_now['score'][0]
-
-					learning_output_before = learning_output_now
 
 					chromosome_output = chromosome_output.append(chromosome[chrom_counter], ignore_index=True)
 
@@ -560,10 +559,8 @@ class MACD:
 					score_for_reset = 0
 
 
-					if learning_output_now['diff_extereme'][0] != 0:
-						diff_extereme = learning_output_now['diff_extereme'][0]
-					else:
-						diff_extereme = randint(1,6)
+					learning_output_before = pd.DataFrame()
+					learning_output_now = pd.DataFrame()
 
 					chromosome[chrom_counter]['islearned'] = False
 

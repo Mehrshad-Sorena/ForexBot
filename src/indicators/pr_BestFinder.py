@@ -190,20 +190,28 @@ class BestFinder:
 
 			#Defining Kmeans Algo For Points that Lower Of Latest Low Price Candle:
 			kmeans_low = KMeans(
+								algorithm='auto',
 								n_clusters = self.elements[__class__.__name__ + '_n_cluster_low'], 
+								copy_x=True,
 								random_state = 0,
 								init = 'k-means++',
-								n_init = 2,
-								max_iter = 3
+								verbose=0,
+								n_init = 10,
+								max_iter = 300,
+								tol=0.0001
 								)
 
 			#Defining Kmeans Algo For Points that Higher Of Latest High Price Candle:
 			kmeans_high = KMeans(
+								algorithm='auto',
 								n_clusters = self.elements[__class__.__name__ + '_n_cluster_high'], 
+								copy_x=True,
 								random_state = 0,
 								init = 'k-means++',
-								n_init = 2,
-								max_iter = 3
+								verbose=0,
+								n_init = 10,
+								max_iter = 300,
+								tol=0.0001
 								)
 
 

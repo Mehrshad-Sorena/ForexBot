@@ -179,8 +179,8 @@ class MACD:
 		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 		# 	print('signals = ', signal_output)
 
-		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-		# 	print('learning = ', learning_output)
+		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			print('learning = ', learning_output)
 
 		if learning_output.empty == False:
 
@@ -810,13 +810,13 @@ class MACD:
 			chromosome_output.to_csv(path_elites + symbol + '_ChromosomeResults.csv')
 			learning_result.to_csv(path_elites + symbol + '_LearningResults.csv')
 
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				print('=======> Chorme ===> ')
-				print()
-				print('........................................................')
-				print(chromosome_output)
-				print('........................................................')
-				print()
+			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			# 	print('=======> Chorme ===> ')
+			# 	print()
+			# 	print('........................................................')
+			# 	print(chromosome_output)
+			# 	print('........................................................')
+			# 	print()
 
 			best_chromosome = pd.DataFrame()
 			max_score_output = np.max(learning_result['score'].dropna())
@@ -840,8 +840,8 @@ class MACD:
 					if clm == 'Unnamed: 0':
 						best_chromosome = best_chromosome.drop(columns='Unnamed: 0')
 
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				print(best_chromosome)
+			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			# 	print(best_chromosome)
 
 			path_superhuman = macd_config.cfg['path_superhuman'] + signalpriority + '/' + signaltype + '/'
 			if not os.path.exists(path_superhuman):

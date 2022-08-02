@@ -143,7 +143,7 @@ class MACD:
 
 		macd_calc = self.calculator_macd()
 
-		if True:
+		try:
 
 			signal, signaltype, indicator = macd.divergence(
 															sigtype = signaltype,
@@ -157,8 +157,8 @@ class MACD:
 															flaglearn = GL_Results['islearned'][0],
 															flagtest = True
 															)
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				print(signal)
+			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			# 	print(signal)
 
 			signal_output, learning_output = macd_tester.RunGL(
 																signal = signal, 
@@ -170,28 +170,31 @@ class MACD:
 																indicator = indicator,
 																flag_savepic = flag_savepic
 																)
-		else:#except Exception as ex:
+		except Exception as ex:
 			print('Permit Error: ', ex)
 
 			signal_output = pd.DataFrame()
 			learning_output = pd.DataFrame()
 
-		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-			print('signals = ', signal_output)
+		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		# 	print('signals = ', signal_output)
 
-		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-			print('learning = ', learning_output)
+		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		# 	print('learning = ', learning_output)
 
 		if learning_output.empty == False:
 
 			if learning_output['score'][0] >= GL_Results['score'][0] * 0.9:
 				GL_Results['permit'] = [True]
+				GL_Results['score'][0] = learning_output['score'][0]
 
 			else:
 				GL_Results['permit'] = [False]
+				GL_Results['score'][0] = learning_output['score'][0]
 
 		else:
 			GL_Results['permit'] = [False]
+			GL_Results['score'][0] = 0
 
 		if os.path.exists(path_superhuman + symbol + '.csv'):
 			os.remove(path_superhuman + symbol + '.csv')
@@ -372,9 +375,6 @@ class MACD:
 				learning_output_now = pd.DataFrame()
 				learning_output_before = pd.DataFrame()
 
-			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-			# 	print(signal)
-
 			#print('siiiiiiignaaaaaal ====> ', len(signal['index']))
 
 			if signal.empty == True:
@@ -427,9 +427,6 @@ class MACD:
 				signal_output = pd.DataFrame()
 				learning_output_now = pd.DataFrame()
 				learning_output_before = pd.DataFrame()
-
-			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-			# 	print(learning_output_now)
 
 			if (
 				signal_output.empty == True or

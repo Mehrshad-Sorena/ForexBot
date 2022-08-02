@@ -157,8 +157,8 @@ class MACD:
 															flaglearn = GL_Results['islearned'][0],
 															flagtest = True
 															)
-
-		
+			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			# 	print(signal)
 
 			signal_output, learning_output = macd_tester.RunGL(
 																signal = signal, 

@@ -77,8 +77,6 @@ Chromosome_Accepted_List = [
 							'BestFinder_n_cluster_high',
 							'BestFinder_alpha_low',
 							'BestFinder_alpha_high',
-							'n_clusters_best_low',
-							'n_clusters_best_high',
 							'st_percent_min',
 							'st_percent_max',
 							'tp_percent_min',
@@ -698,9 +696,6 @@ class Chromosome:
 
 		pr_parameters.elements['BestFinder' + '_alpha_low'] = randint(1, 99)/100
 		pr_parameters.elements['BestFinder' + '_alpha_high'] = randint(1, 99)/100
-
-		pr_parameters.elements['n_clusters_best_low'] = randint(1, 50)
-		pr_parameters.elements['n_clusters_best_high'] = randint(1, 50)
 
 		#/////////////////////////////////
 

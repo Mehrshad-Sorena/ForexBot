@@ -91,7 +91,7 @@ config = Config()
 # os.remove(path_elites_society)
 # df.to_csv(path_elites_society)
 
-# signalpriority = 'primary'
+# signalpriority = 'secondry'
 # signaltype = 'sell'
 # symbol = 'ETHUSD_i'
 
@@ -99,14 +99,15 @@ config = Config()
 # path_elites_learn = config.cfg['path_elites'] + signalpriority + '/' + signaltype + '/' + symbol + '_LearningResults.csv'
 # path_elites_super = config.cfg['path_superhuman'] + signalpriority + '/' + signaltype + '/' + symbol + '.csv'
 # path_elites_society = config.cfg['path_society'] + signalpriority + '/' + signaltype + '/' + symbol + '.csv'
+# path_graveyard = config.cfg['path_graveyard'] + signalpriority + '/' + signaltype + '/' + symbol + '.csv'
 
-# df = pd.read_csv(path_elites_chrom).drop(columns='Unnamed: 0')
+# df = pd.read_csv(path_graveyard).drop(columns='Unnamed: 0')
 
 # df = df.drop(columns = 'n_clusters_best_low')
 # df = df.drop(columns = 'n_clusters_best_high')
 
-# os.remove(path_elites_chrom)
-# df.to_csv(path_elites_chrom)
+# os.remove(path_graveyard)
+# df.to_csv(path_graveyard)
 
 
 # df = pd.read_csv(path_elites_learn).drop(columns='Unnamed: 0')

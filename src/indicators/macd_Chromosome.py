@@ -291,7 +291,7 @@ class Chromosome:
 
 				check = 0
 				for key in Chromosome_vares.keys():
-					check = np.where(pd.read_csv(path_superhuman + symbol + '.csv').drop(columns='Unnamed: 0').to_dict('index')[0] == Chromosome_vares[key])
+					check = np.where(pd.read_csv(path_superhuman + symbol + '.csv').drop(columns=['Unnamed: 0','permit']).to_dict('index')[0] == Chromosome_vares[key])
 					if len(check) > 0:
 						check = 1
 

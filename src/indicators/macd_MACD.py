@@ -209,10 +209,10 @@ class MACD:
 	def Genetic(self, dataset_5M, dataset_1H, symbol, signaltype, signalpriority, num_turn):
 
 		if symbol == 'ETHUSD_i':
-			self.elements['st_percent_up'] = 1500
-			self.elements['st_percent_down'] = 100
-			self.elements['tp_percent_up'] = 1500
-			self.elements['tp_percent_down'] = 100
+			self.elements['st_percent_up'] = 2000
+			self.elements['st_percent_down'] = 1500
+			self.elements['tp_percent_up'] = 2000
+			self.elements['tp_percent_down'] = 1500
 
 		chrom = Chromosome(parameters = self)
 		chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
@@ -232,9 +232,9 @@ class MACD:
 		if os.path.exists(path_superhuman + symbol + '.csv'):
 			max_score_gl = pd.read_csv(path_superhuman + symbol + '.csv')['score'][0]
 		else:
-			max_score_gl = 0
+			max_score_gl = 0.00001
 
-		max_score_gl = 0
+		max_score_gl = 0.00001
 
 
 		print('================================ START Genetic ',signaltype,' ===> ',symbol,' ',signalpriority)
@@ -310,13 +310,14 @@ class MACD:
 			# print()
 			# print('================== Num Symbol ==>',symbol, ' ' , signaltype, ' ',signalpriority)
 			# print()
-			# print('================== Num =========> ',len(chromosome_output))
-			# print('================== Num Chroms ======> ',chrom_counter)
-			# print('================== All Chorms ======> ',all_chorms)
+			print('================== Num =========> ', len(chromosome_output))
+			print('================== Num Chroms ======> ', chrom_counter)
+			print('================== All Chorms ======> ', all_chorms)
+			print('================== Flag Learn ======> ', chromosome[chrom_counter]['islearned'])
 			# print('================== Chorm Reseter ===> ',chorm_reset_counter)
 			# print('===== bad score counter ========> ',bad_score_counter)
 			# print('===== bad score counter 2 ======> ',bad_score_counter_2)
-			# print()
+			print()
 			bar.next()
 
 			
@@ -458,138 +459,18 @@ class MACD:
 																							)
 				continue
 
+			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				print(learning_output_now)
+
+			print()
+
 			#print(' max score ========> ', max_score_gl)
-			if ( learning_output_now['score'][0] >= max_score_gl * 0.99 ):
+			if (
+				chromosome[chrom_counter]['islearned'] == False
+				):
 
-				max_st_last_buy = chromosome[chrom_counter]['st_percent_max']
-				min_st_last_buy = chromosome[chrom_counter]['st_percent_min']
-				max_tp_last_buy = chromosome[chrom_counter]['tp_percent_max']
-				min_tp_last_buy = chromosome[chrom_counter]['tp_percent_min']
-
-				if learning_output_now['max_tp'][0] >= 0.1:
-					chromosome[chrom_counter]['tp_percent_max'] = learning_output_now['max_tp'][0]
-				else:
-					chromosome[chrom_counter]['tp_percent_max'] = learning_output_now['max_tp_pr'][0]
-
-				if learning_output_now['min_tp'][0] != 0:
-					chromosome[chrom_counter]['tp_percent_min'] = learning_output_now['min_tp'][0]
-				else:
-					chromosome[chrom_counter]['tp_percent_min'] = learning_output_now['mean_tp_pr'][0]
-
-
-				if learning_output_now['max_st'][0] >= 0.1:
-					chromosome[chrom_counter]['st_percent_max'] = learning_output_now['max_st'][0]
-
-				else:
-					chromosome[chrom_counter]['st_percent_max'] = learning_output_now['max_st_pr'][0]
-
-				if learning_output_now['min_st'][0] != 0:
-					chromosome[chrom_counter]['st_percent_min'] = learning_output_now['min_st'][0]
-
-				else:
-					chromosome[chrom_counter]['st_percent_min'] = learning_output_now['mean_st_pr'][0]
-
-
-
-				if chromosome[chrom_counter]['islearned'] == True:
-
-					learning_output_now['max_tp'][0] = max_tp_last_buy
-					learning_output_now['max_st'][0] = max_st_last_buy
-					learning_output_now['min_st'][0] = min_st_last_buy
-					learning_output_now['min_tp'][0] = min_tp_last_buy
-
-					learning_output_before['num_st_pr'] = [learning_output_now['num_st_pr'][0]]
-					learning_output_before['num_tp_pr'] = [learning_output_now['num_tp_pr'][0]]
-					learning_output_before['num_trade_pr'] = [learning_output_now['num_trade_pr'][0]]
-
-					learning_output_before['score'] = [learning_output_now['score'][0]]
-
-					learning_output_before['max_tp_pr'] = [learning_output_now['max_tp_pr'][0]]
-					learning_output_before['max_st_pr'] = [learning_output_now['max_st_pr'][0]]
-
-					learning_output_before['mean_tp_pr'] = [learning_output_now['mean_tp_pr'][0]]
-					learning_output_before['mean_st_pr'] = [learning_output_now['mean_st_pr'][0]]
-
-					learning_output_before['sum_st_pr'] = [learning_output_now['sum_st_pr'][0]]
-					learning_output_before['sum_tp_pr'] = [learning_output_now['sum_tp_pr'][0]]
-
-					learning_output_before['money'] = [learning_output_now['money'][0]]
-					learning_output_before['draw_down'] = [learning_output_now['draw_down'][0]]
-
-					learning_result = learning_result.append(learning_output_before, ignore_index=True)
-
-					score = (learning_output_now['score'][0])
-					chromosome[chrom_counter]['score'] = learning_output_now['score'][0]
-
-					chromosome_output = chromosome_output.append(chromosome[chrom_counter], ignore_index=True)
-
-					#Saving Elites:
-
-					if not os.path.exists(path_elites):
-						os.makedirs(path_elites)
-
-					if os.path.exists(path_elites + symbol + '_LearningResults.csv'):
-						os.remove(path_elites + symbol + '_LearningResults.csv')
-
-					if os.path.exists(path_elites + symbol + '_ChromosomeResults.csv'):
-						os.remove(path_elites + symbol + '_ChromosomeResults.csv')
-
-					chromosome_output.to_csv(path_elites + symbol + '_ChromosomeResults.csv')
-					learning_result.to_csv(path_elites + symbol + '_LearningResults.csv')
-
-					#//////////////////////
-
-
-					chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
-																									work = 'graveyard',
-																									signaltype = signaltype,
-																									signalpriority = signalpriority,
-																									symbol = symbol,
-																									number_chromos = 0,
-																									Chromosome = chromosome,
-																									chrom_counter = chrom_counter
-																									)
-					chorm_reset_counter = 0
-
-					bad_score_counter_buy = 0
-
-					score_for_reset = 0
-
-
-					learning_output_before = pd.DataFrame()
-					learning_output_now = pd.DataFrame()
-
-					chromosome[chrom_counter]['islearned'] = False
-
-					chromosome[chrom_counter]['st_percent_max'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
-					chromosome[chrom_counter]['st_percent_min'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
-					chromosome[chrom_counter]['tp_percent_max'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
-					chromosome[chrom_counter]['tp_percent_min'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
-
-					bad_flag = False
-				else:
-					bad_score_counter += 1
-					bad_flag = True
-					chromosome[chrom_counter]['islearned'] = True
-					score_for_reset = learning_output_now['score'][0]
-
-					chromosome[chrom_counter]['st_percent_max'] = learning_output_now['max_st'][0]
-					chromosome[chrom_counter]['st_percent_min'] = learning_output_now['min_st'][0]
-					chromosome[chrom_counter]['tp_percent_max'] = learning_output_now['max_tp'][0]
-					chromosome[chrom_counter]['tp_percent_min'] = learning_output_now['min_tp'][0]
-
-					learning_output_before = learning_output_now
-
-					if learning_output_now['diff_extereme'][0] != 0:
-						diff_extereme = learning_output_now['diff_extereme'][0]
-					else:
-						diff_extereme = randint(1,6)
-
-			else:
 				bad_flag = True
-
 				bad_score_counter += 1
-
 				learning_output_before = learning_output_now
 
 				if (
@@ -598,7 +479,7 @@ class MACD:
 					learning_output_now['max_tp'][0] > learning_output_now['min_st'][0] * 1.2
 					):
 					chromosome[chrom_counter]['tp_percent_max'] = learning_output_now['max_tp'][0]
-					chromosome[chrom_counter]['islearned'] = True
+					flag_learn_tp_percent_max = True
 
 					#********************************************************************************************************************************
 				else:
@@ -612,7 +493,7 @@ class MACD:
 						while chromosome[chrom_counter]['tp_percent_max'] <= learning_output_now['min_st'][0]:
 							chromosome[chrom_counter]['tp_percent_max'] = randint(int((learning_output_now['max_st'][0]/2)*100), int(learning_output_now['max_st'][0]*100)*2)/100
 
-						chromosome[chrom_counter]['islearned'] = True
+						flag_learn_tp_percent_max = True
 					else:
 						if (
 							learning_output_now['max_tp'][0] == 0 and
@@ -622,13 +503,13 @@ class MACD:
 							):
 							chromosome[chrom_counter]['tp_percent_max'] = learning_output_now['max_tp_pr'][0]
 
-							chromosome[chrom_counter]['islearned'] = True
+							flag_learn_tp_percent_max = True
 
 						else:
 
 							chromosome[chrom_counter]['tp_percent_max'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 
-							chromosome[chrom_counter]['islearned'] = False
+							flag_learn_tp_percent_max = False
 
 
 				if (
@@ -638,7 +519,7 @@ class MACD:
 
 					chromosome[chrom_counter]['tp_percent_min'] = learning_output_now['min_tp'][0]
 
-					chromosome[chrom_counter]['islearned'] = True
+					flag_learn_tp_percent_min = True
 
 				else:
 					if (
@@ -650,12 +531,12 @@ class MACD:
 
 						chromosome[chrom_counter]['tp_percent_min'] = learning_output_now['mean_tp_pr'][0]
 
-						chromosome[chrom_counter]['islearned'] = True
+						flag_learn_tp_percent_min = True
 					else:
 
 						chromosome[chrom_counter]['tp_percent_min'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 
-						chromosome[chrom_counter]['islearned'] = False
+						flag_learn_tp_percent_min = False
 
 				if (
 					learning_output_now['score'][0] >= score_for_reset and
@@ -664,7 +545,7 @@ class MACD:
 
 					chromosome[chrom_counter]['st_percent_max'] = learning_output_now['max_st'][0]
 
-					chromosome[chrom_counter]['islearned'] = True
+					flag_learn_st_percent_max = True
 
 				else:
 					if (
@@ -676,20 +557,20 @@ class MACD:
 
 						chromosome[chrom_counter]['st_percent_max'] = learning_output_now['max_st_pr'][0]
 
-						chromosome[chrom_counter]['islearned'] = True
+						flag_learn_st_percent_max = True
 
 					else:
 
 						chromosome[chrom_counter]['st_percent_max'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
 
-						chromosome[chrom_counter]['islearned'] = False
+						flag_learn_st_percent_max = False
 
 				if (
 					learning_output_now['score'][0] >= score_for_reset and
 					learning_output_now['min_st'][0] != 0
 					):
 					chromosome[chrom_counter]['st_percent_min'] = learning_output_now['min_st'][0]
-					chromosome[chrom_counter]['islearned'] = True
+					flag_learn_st_percent_min = True
 
 				else:
 					if (
@@ -700,12 +581,12 @@ class MACD:
 						):
 
 						chromosome[chrom_counter]['st_percent_min'] = learning_output_now['mean_st_pr'][0]
-						chromosome[chrom_counter]['islearned'] = True
+						flag_learn_st_percent_min = True
 
 					else:
 
 						chromosome[chrom_counter]['st_percent_min'] = randint(self.elements['st_percent_down'], self.elements['st_percent_up'])/100
-						chromosome[chrom_counter]['islearned'] = False
+						flag_learn_st_percent_min = False
 
 						while chromosome[chrom_counter]['tp_percent_max'] < chromosome[chrom_counter]['st_percent_min']:
 							chromosome[chrom_counter]['st_percent_min'] = randint(int((chromosome[chrom_counter]['tp_percent_max']/2)*100), 100)/100
@@ -719,6 +600,105 @@ class MACD:
 					diff_extereme = randint(1,6)
 
 				score_for_reset = learning_output_now['score'][0]
+				chromosome[chrom_counter]['islearned'] = (flag_learn_tp_percent_max & flag_learn_tp_percent_min & flag_learn_st_percent_max & flag_learn_st_percent_min)
+
+
+			elif (
+				learning_output_now['score'][0] >= max_score_gl * 0.99 and
+				chromosome[chrom_counter]['islearned'] == True
+				):
+
+				learning_output_before['num_st_pr'] = [learning_output_now['num_st_pr'][0]]
+				learning_output_before['num_tp_pr'] = [learning_output_now['num_tp_pr'][0]]
+				learning_output_before['num_trade_pr'] = [learning_output_now['num_trade_pr'][0]]
+
+				learning_output_before['score'] = [learning_output_now['score'][0]]
+
+				learning_output_before['max_tp_pr'] = [learning_output_now['max_tp_pr'][0]]
+				learning_output_before['max_st_pr'] = [learning_output_now['max_st_pr'][0]]
+
+				learning_output_before['mean_tp_pr'] = [learning_output_now['mean_tp_pr'][0]]
+				learning_output_before['mean_st_pr'] = [learning_output_now['mean_st_pr'][0]]
+
+				learning_output_before['sum_st_pr'] = [learning_output_now['sum_st_pr'][0]]
+				learning_output_before['sum_tp_pr'] = [learning_output_now['sum_tp_pr'][0]]
+
+				learning_output_before['money'] = [learning_output_now['money'][0]]
+				learning_output_before['draw_down'] = [learning_output_now['draw_down'][0]]
+
+				learning_result = learning_result.append(learning_output_before, ignore_index=True)
+
+				score = (learning_output_now['score'][0])
+				chromosome[chrom_counter]['score'] = learning_output_now['score'][0]
+
+				chromosome_output = chromosome_output.append(chromosome[chrom_counter], ignore_index=True)
+
+				#Saving Elites:
+
+				if not os.path.exists(path_elites):
+					os.makedirs(path_elites)
+
+				if os.path.exists(path_elites + symbol + '_LearningResults.csv'):
+					os.remove(path_elites + symbol + '_LearningResults.csv')
+
+				if os.path.exists(path_elites + symbol + '_ChromosomeResults.csv'):
+					os.remove(path_elites + symbol + '_ChromosomeResults.csv')
+
+				chromosome_output.to_csv(path_elites + symbol + '_ChromosomeResults.csv')
+				learning_result.to_csv(path_elites + symbol + '_LearningResults.csv')
+
+				#//////////////////////
+
+
+				_, _, _, _, _ = chrom.Get(
+											work = 'graveyard',
+											signaltype = signaltype,
+											signalpriority = signalpriority,
+											symbol = symbol,
+											number_chromos = 0,
+											Chromosome = chromosome,
+											chrom_counter = chrom_counter
+											)
+
+				chorm_reset_counter = 0
+				bad_score_counter_buy = 0
+				score_for_reset = 0
+
+
+				learning_output_before = pd.DataFrame()
+				learning_output_now = pd.DataFrame()
+
+				bad_flag = False
+
+			elif (
+				learning_output_now['score'][0] < max_score_gl * 0.99 and
+				chromosome[chrom_counter]['islearned'] == True
+				):
+
+				chromosome[chrom_counter]['isborn'] = False
+				chromosome[chrom_counter]['islearned'] = True
+				chromosome[chrom_counter]['score'] = -1
+
+				_, _, _, _, _ = chrom.Get(
+											work = 'graveyard',
+											signaltype = signaltype,
+											signalpriority = signalpriority,
+											symbol = symbol,
+											number_chromos = 0,
+											Chromosome = chromosome,
+											chrom_counter = chrom_counter
+											)
+
+				chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
+																							work = 'fucker_0',
+																							signaltype = signaltype,
+																							signalpriority = signalpriority,
+																							symbol = symbol,
+																							number_chromos = 0,
+																							Chromosome = chromosome,
+																							chrom_counter = chrom_counter
+																							)
+				continue
 
 			if (
 				len(chromosome_output) >= int(num_turn)

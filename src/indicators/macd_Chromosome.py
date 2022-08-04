@@ -991,7 +991,7 @@ class Chromosome:
 			res_1 = list(chor[Chromosome_selector_1].keys())
 			res_2 = list(chor[Chromosome_selector_2].keys())
 
-			Chromosome_Cutter = randint(0, len(chor[0].keys()) - 1)
+			Chromosome_Cutter = randint(0, len(chor[0].keys()))#****************************** -1
 
 			change_chrom_counter = 0
 

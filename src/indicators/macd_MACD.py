@@ -310,14 +310,14 @@ class MACD:
 			# print()
 			# print('================== Num Symbol ==>',symbol, ' ' , signaltype, ' ',signalpriority)
 			# print()
-			print('================== Num =========> ', len(chromosome_output))
-			print('================== Num Chroms ======> ', chrom_counter)
-			print('================== All Chorms ======> ', all_chorms)
-			print('================== Flag Learn ======> ', chromosome[chrom_counter]['islearned'])
+			# print('================== Num =========> ', len(chromosome_output))
+			# print('================== Num Chroms ======> ', chrom_counter)
+			# print('================== All Chorms ======> ', all_chorms)
+			# print('================== Flag Learn ======> ', chromosome[chrom_counter]['islearned'])
 			# print('================== Chorm Reseter ===> ',chorm_reset_counter)
 			# print('===== bad score counter ========> ',bad_score_counter)
 			# print('===== bad score counter 2 ======> ',bad_score_counter_2)
-			print()
+			# print()
 			bar.next()
 
 			
@@ -459,10 +459,10 @@ class MACD:
 																							)
 				continue
 
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				print(learning_output_now)
+			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			# 	print(learning_output_now)
 
-			print()
+			# print()
 
 			#print(' max score ========> ', max_score_gl)
 			if (

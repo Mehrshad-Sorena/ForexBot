@@ -247,7 +247,7 @@ class Divergence:
 		index = index.dropna(inplace = False).reset_index(drop=True)
 
 		div_index_list_fron = list((index['index'].where(index['div'] == True)).dropna(inplace = False).index)
-		div_index_list_front = list(filter(lambda x: x != 0, div_index_list_fron))
+		div_index_list_front = div_index_list_fron#list(filter(lambda x: x != 0, div_index_list_fron))
 
 		div_index_list_bac = list((index['index_back'].where(index['div'] == True)).dropna(inplace = False).index)
 		div_index_list_back = list(filter(lambda x: x >= 0, div_index_list_bac))

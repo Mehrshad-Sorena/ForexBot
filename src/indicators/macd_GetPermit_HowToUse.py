@@ -33,6 +33,6 @@ macd_calc = macd.GetPermit(
 						dataset_1H = parameters.elements['dataset_1H'], 
 						symbol = 'ETHUSD_i',
 						signaltype = 'buy',
-						signalpriority = 'secondry',
+						signalpriority = 'primary',
 						flag_savepic = False
 						)

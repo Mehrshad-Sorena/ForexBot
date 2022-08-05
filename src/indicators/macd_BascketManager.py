@@ -213,7 +213,10 @@ def basket_manager_macd_div(symbols,symbol,my_money,signal, account_name):
 
 				vol_traded += vol_position
 
-	if symbol == 'ETHUSD_i': risk_lot_now = risk_lot_now * 4
+	if symbol == 'ETHUSD_i': 
+		risk_lot_now = 0.02 * 4
+	else:
+		risk_lot_now = 0.02
 
 	lot, vol_traded_max = lot_checker(my_money=my_money,symbol=symbol,signal=signal,risk_lot=risk_lot_now,levrage=levrage_now, account_name = account_name)
 	symbol_position = position_checker(signal=signal,symbol=symbol)

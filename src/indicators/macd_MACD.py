@@ -153,6 +153,8 @@ class MACD:
 
 		macd_calc = self.calculator_macd()
 
+		signal_buy_primary = pd.DataFrame()
+
 		try:
 
 			if GL_Results['permit'][0] == True:
@@ -205,6 +207,8 @@ class MACD:
 		self.elements['symbol'] = symbol
 
 		macd_calc = self.calculator_macd()
+
+		signal_buy_secondry = pd.DataFrame()
 
 		try:
 
@@ -259,7 +263,9 @@ class MACD:
 
 		macd_calc = self.calculator_macd()
 
-		try:
+		signal_sell_primary = pd.DataFrame()
+
+		if True:
 			if GL_Results['permit'][0] == True:
 
 				signal_sell_primary, _, _ = macd.divergence(
@@ -277,7 +283,7 @@ class MACD:
 			else:
 				lst_idx_sell_primary = 0
 
-		except Exception as ex:
+		else:#except Exception as ex:
 			print(f"LastSignal {signaltype} {signalpriority}: {ex}")
 			signal_sell_primary = pd.DataFrame()
 
@@ -310,6 +316,8 @@ class MACD:
 		self.elements['symbol'] = symbol
 
 		macd_calc = self.calculator_macd()
+
+		signal_sell_secondry = pd.DataFrame()
 
 		try:
 			if GL_Results['permit'][0] == True:
@@ -698,7 +706,7 @@ class MACD:
 
 		macd_calc = self.calculator_macd()
 
-		try:
+		if True:
 
 			signal, signaltype, indicator = macd.divergence(
 															sigtype = signaltype,
@@ -725,7 +733,7 @@ class MACD:
 																indicator = indicator,
 																flag_savepic = flag_savepic
 																)
-		except Exception as ex:
+		else:#except Exception as ex:
 			print('Permit Error: ', ex)
 
 			signal_output = pd.DataFrame()

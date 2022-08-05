@@ -698,7 +698,7 @@ class MACD:
 
 		macd_calc = self.calculator_macd()
 
-		if True:
+		try:
 
 			signal, signaltype, indicator = macd.divergence(
 															sigtype = signaltype,
@@ -725,7 +725,7 @@ class MACD:
 																indicator = indicator,
 																flag_savepic = flag_savepic
 																)
-		else:#except Exception as ex:
+		except Exception as ex:
 			print('Permit Error: ', ex)
 
 			signal_output = pd.DataFrame()

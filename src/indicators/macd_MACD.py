@@ -16,10 +16,12 @@ from indicator_Config import Config as indicator_config
 from pr_Parameters import Parameters as PRParameters
 from pr_Config import Config as PRConfig
 
-
+from timer import stTime
 
 from indicator_Divergence import Divergence
 from indicator_Tester import Tester
+
+from pr_Runner import Runner
 
 #Functions Used:
 
@@ -117,6 +119,559 @@ class MACD:
 							macd_parameters.elements[macd_elm] = int(GL_Results[elm][0])
 
 			return GL_Results, path_superhuman, macd_parameters, ind_parameters, pr_parameters, pr_config
+
+		else:
+			return pd.DataFrame(), '', '', '', '', ''
+
+
+	@stTime
+	def LastSignal(self,dataset_5M, dataset_1H, symbol):
+
+		#BUY Primary:
+
+		signaltype = 'buy'
+		signalpriority = 'primary'
+
+		macd_config = MACDConfig()
+		path_superhuman = macd_config.cfg['path_superhuman'] + signalpriority + '/' + signaltype + '/'
+
+		if not os.path.exists(path_superhuman + symbol + '.csv'): return 'no_trade', 0, 0
+
+		GL_Results, path_superhuman, macd_parameters, ind_parameters, pr_parameters_buy_primary, pr_config_buy_primary = self.ParameterReader(
+												 																				symbol = symbol, 
+												 																				signaltype = signaltype, 
+												 																				signalpriority = signalpriority
+												 																				)
+
+		ind_config = indicator_config()
+		macd = Divergence(parameters = ind_parameters, config = ind_config)
+
+		self.elements = macd_parameters.elements
+		self.elements['dataset_5M'] = dataset_5M
+		self.elements['dataset_1H'] = dataset_1H
+		self.elements['symbol'] = symbol
+
+		macd_calc = self.calculator_macd()
+
+		try:
+
+			if GL_Results['permit'][0] == True:
+
+				signal_buy_primary, _, _ = macd.divergence(
+															sigtype = signaltype,
+															sigpriority = signalpriority,
+															indicator = macd_calc,
+															column_div = GL_Results['MACD_column_div'][0],
+															ind_name = 'macd',
+															dataset_5M = dataset_5M,
+															dataset_1H = dataset_1H,
+															symbol = symbol,
+															flaglearn = GL_Results['islearned'][0],
+															flagtest = True
+															)
+			else:
+				lst_idx_buy_primary = 0
+
+		except Exception as ex:
+			print(f"LastSignal {signaltype} {signalpriority}: {ex}")
+			signal_buy_primary = pd.DataFrame()
+
+		if signal_buy_primary.empty == False:
+			lst_idx_buy_primary = int(signal_buy_primary['index'].iloc[-1])
+
+		else:
+			lst_idx_buy_primary = 0
+
+		#*****************************
+
+
+		#BUY Secondry:
+
+		signaltype = 'buy'
+		signalpriority = 'secondry'
+
+		GL_Results, path_superhuman, macd_parameters, ind_parameters, pr_parameters_buy_secondry, pr_config_buy_secondry = self.ParameterReader(
+													 																				symbol = symbol, 
+													 																				signaltype = signaltype, 
+													 																				signalpriority = signalpriority
+													 																				)
+
+		ind_config = indicator_config()
+		macd = Divergence(parameters = ind_parameters, config = ind_config)
+
+		self.elements = macd_parameters.elements
+		self.elements['dataset_5M'] = dataset_5M
+		self.elements['dataset_1H'] = dataset_1H
+		self.elements['symbol'] = symbol
+
+		macd_calc = self.calculator_macd()
+
+		try:
+
+			if GL_Results['permit'][0] == True:
+				
+				signal_buy_secondry, _, _ = macd.divergence(
+															sigtype = signaltype,
+															sigpriority = signalpriority,
+															indicator = macd_calc,
+															column_div = GL_Results['MACD_column_div'][0],
+															ind_name = 'macd',
+															dataset_5M = dataset_5M,
+															dataset_1H = dataset_1H,
+															symbol = symbol,
+															flaglearn = GL_Results['islearned'][0],
+															flagtest = True
+															)
+			else:
+				signal_buy_secondry = 0
+
+		except Exception as ex:
+			print(f"LastSignal {signaltype} {signalpriority}: {ex}")
+			signal_buy_secondry = pd.DataFrame()
+
+		if signal_buy_secondry.empty == False:
+			lst_idx_buy_secondry = int(signal_buy_secondry['index'].iloc[-1])
+
+		else:
+			signal_buy_secondry = 0
+
+		#*****************************
+
+
+		#SELL Primary:
+
+		signaltype = 'sell'
+		signalpriority = 'primary'
+
+		GL_Results, path_superhuman, macd_parameters, ind_parameters, pr_parameters_sell_primary, pr_config_sell_primary = self.ParameterReader(
+													 																				symbol = symbol, 
+													 																				signaltype = signaltype, 
+													 																				signalpriority = signalpriority
+													 																				)
+
+		ind_config = indicator_config()
+		macd = Divergence(parameters = ind_parameters, config = ind_config)
+
+		self.elements = macd_parameters.elements
+		self.elements['dataset_5M'] = dataset_5M
+		self.elements['dataset_1H'] = dataset_1H
+		self.elements['symbol'] = symbol
+
+		macd_calc = self.calculator_macd()
+
+		try:
+			if GL_Results['permit'][0] == True:
+
+				signal_sell_primary, _, _ = macd.divergence(
+															sigtype = signaltype,
+															sigpriority = signalpriority,
+															indicator = macd_calc,
+															column_div = GL_Results['MACD_column_div'][0],
+															ind_name = 'macd',
+															dataset_5M = dataset_5M,
+															dataset_1H = dataset_1H,
+															symbol = symbol,
+															flaglearn = GL_Results['islearned'][0],
+															flagtest = True
+															)
+			else:
+				lst_idx_sell_primary = 0
+
+		except Exception as ex:
+			print(f"LastSignal {signaltype} {signalpriority}: {ex}")
+			signal_sell_primary = pd.DataFrame()
+
+		if signal_sell_primary.empty == False:
+			lst_idx_sell_primary = int(signal_sell_primary['index'].iloc[-1])
+
+		else:
+			lst_idx_sell_primary = 0
+
+		#*****************************
+
+
+		#SELL Secondry:
+
+		signaltype = 'sell'
+		signalpriority = 'secondry'
+
+		GL_Results, path_superhuman, macd_parameters, ind_parameters, pr_parameters_sell_secondry, pr_config_sell_secondry = self.ParameterReader(
+													 																				symbol = symbol, 
+													 																				signaltype = signaltype, 
+													 																				signalpriority = signalpriority
+													 																				)
+
+		ind_config = indicator_config()
+		macd = Divergence(parameters = ind_parameters, config = ind_config)
+
+		self.elements = macd_parameters.elements
+		self.elements['dataset_5M'] = dataset_5M
+		self.elements['dataset_1H'] = dataset_1H
+		self.elements['symbol'] = symbol
+
+		macd_calc = self.calculator_macd()
+
+		try:
+			if GL_Results['permit'][0] == True:
+
+				signal_sell_secondry, _, _ = macd.divergence(
+															sigtype = signaltype,
+															sigpriority = signalpriority,
+															indicator = macd_calc,
+															column_div = GL_Results['MACD_column_div'][0],
+															ind_name = 'macd',
+															dataset_5M = dataset_5M,
+															dataset_1H = dataset_1H,
+															symbol = symbol,
+															flaglearn = GL_Results['islearned'][0],
+															flagtest = True
+															)
+			else:
+				lst_idx_sell_secondry = 0
+
+		except Exception as ex:
+			print(f"LastSignal {signaltype} {signalpriority}: {ex}")
+			signal_sell_secondry = pd.DataFrame()
+
+
+		if signal_sell_secondry.empty == False:
+			lst_idx_sell_secondry = int(signal_sell_secondry['index'].iloc[-1])
+
+		else:
+			lst_idx_sell_secondry = 0
+
+		#*****************************
+
+		print('lst_idx_buy_primary = ', lst_idx_buy_primary)
+		print('lst_idx_buy_secondry = ', lst_idx_buy_secondry)
+		print('lst_idx_sell_primary = ', lst_idx_sell_primary)
+		print('lst_idx_sell_secondry = ', lst_idx_sell_secondry)
+		print('len data = ', len(dataset_5M[symbol]['close']) - 1)
+
+		#***** Last Signal:
+
+		if (
+			lst_idx_buy_primary > lst_idx_sell_primary and
+			lst_idx_buy_primary > lst_idx_sell_secondry and
+			lst_idx_buy_primary >= lst_idx_buy_secondry and
+			(len(dataset_5M[symbol]['close']) - 1 - lst_idx_buy_primary) <= 6
+			):
+
+			print('======> last signal buy primary ',symbol)
+			print('dataset length: ',len(dataset_5M[symbol]['close']))
+			print('last index: ',lst_idx_buy_primary)
+			
+
+			if lst_idx_buy_primary != 0:
+
+				res_pro_buy_primary = pd.DataFrame()
+				try:
+					res_pro_buy_primary = self.ProfitFinder(
+															dataset_5M = dataset_5M,
+															dataset_1H = dataset_1H,
+															symbol = symbol,
+															signal = signal_buy_primary, 
+															sigtype = 'buy', 
+															pr_parameters = pr_parameters_buy_primary, 
+															pr_config = pr_config_buy_primary
+															)
+				except Exception as ex:
+					print('ERROR PR Last Signal: ',ex)
+					res_pro_buy_primary = pd.DataFrame()
+
+
+				if (res_pro_buy_primary.empty == False):
+
+					diff_pr_top_buy_primary = (((res_pro_buy_primary['high_upper'][int(lst_idx_buy_primary)]) - dataset_5M[symbol]['high'][int(lst_idx_buy_primary)])/dataset_5M[symbol]['high'][int(lst_idx_buy_primary)]) * 100
+					diff_pr_down_buy_primary = ((dataset_5M[symbol]['low'][int(lst_idx_buy_primary)] - (res_pro_buy_primary['low_lower'][int(lst_idx_buy_primary)]))/dataset_5M[symbol]['low'][int(lst_idx_buy_primary)]) * 100
+
+					# if type(diff_pr_down_buy_primary) is np.ndarray:
+					# 	res_pro_buy_primary['low_lower'][int(lst_idx_buy_primary)] = dataset_5M[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary[0]/100))
+					# else:
+					# 	res_pro_buy_primary['low_lower'][int(lst_idx_buy_primary)] = dataset_5M[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary/100))
+
+					if diff_pr_top_buy_primary > pr_parameters_buy_primary.elements['tp_percent_max']:
+						diff_pr_top_buy_primary = pr_parameters_buy_primary.elements['tp_percent_max']
+						res_pro_buy_primary['high_upper'][int(lst_idx_buy_primary)] = dataset_5M[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary/100))
+
+					if diff_pr_down_buy_primary > pr_parameters_buy_primary.elements['st_percent_max']:
+						diff_pr_down_buy_primary = pr_parameters_buy_primary.elements['st_percent_max']
+						res_pro_buy_primary['low_lower'][int(lst_idx_buy_primary)] = dataset_5M[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary/100))
+
+
+					resist_buy = (res_pro_buy_primary['high_upper'][int(lst_idx_buy_primary)])
+					protect_buy = (res_pro_buy_primary['low_lower'][int(lst_idx_buy_primary)])
+
+					signal = 'buy_primary'
+
+				else:
+					diff_pr_top_buy = 0
+					diff_pr_down_buy = 0
+					diff_pr_top_buy_power = 0
+					diff_pr_down_buy_power = 0
+
+					resist_buy = 0
+					protect_buy = 0
+
+					signal = 'no_trade'		
+
+			print('================================')\
+
+		elif (
+			lst_idx_buy_secondry > lst_idx_sell_primary and
+			lst_idx_buy_secondry > lst_idx_sell_secondry and
+			lst_idx_buy_secondry > lst_idx_buy_primary and
+			(len(dataset_5M[symbol]['close']) - 1 - lst_idx_buy_secondry) <= 6
+			):
+
+			print('======> last signal buy secondry ',symbol)
+			print('dataset length: ',len(dataset_5M[symbol]['close']))
+			print('last index: ',lst_idx_buy_secondry)
+			
+
+
+			if lst_idx_buy_secondry != 0:
+
+				res_pro_buy_secondry = pd.DataFrame()
+				try:
+					res_pro_buy_secondry = self.ProfitFinder(
+															dataset_5M = dataset_5M,
+															dataset_1H = dataset_1H,
+															symbol = symbol,
+															signal = signal_buy_secondry, 
+															sigtype = 'buy', 
+															pr_parameters = pr_parameters_buy_secondry, 
+															pr_config = pr_config_buy_secondry
+															)
+				except Exception as ex:
+					print('ERROR PR Last Signal: ',ex)
+					res_pro_buy_secondry = pd.DataFrame()
+
+				if (res_pro_buy_secondry.empty == False):
+
+					diff_pr_top_buy_secondry = (((res_pro_buy_secondry['high_upper'][int(lst_idx_buy_secondry)]) - dataset_5M[symbol]['high'][int(lst_idx_buy_secondry)])/dataset_5M[symbol]['high'][int(lst_idx_buy_secondry)]) * 100
+					diff_pr_down_buy_secondry = ((dataset_5M[symbol]['low'][int(lst_idx_buy_secondry)] - (res_pro_buy_secondry['low_lower'][int(lst_idx_buy_secondry)]))/dataset_5M[symbol]['low'][int(lst_idx_buy_secondry)]) * 100
+
+					# if type(diff_pr_down_buy_primary) is np.ndarray:
+					# 	res_pro_buy_primary['low_lower'][int(lst_idx_buy_primary)] = dataset_5M[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary[0]/100))
+					# else:
+					# 	res_pro_buy_primary['low_lower'][int(lst_idx_buy_primary)] = dataset_5M[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary/100))
+
+					if diff_pr_top_buy_secondry > pr_parameters_buy_secondry.elements['tp_percent_max']:
+						diff_pr_top_buy_secondry = pr_parameters_buy_secondry.elements['tp_percent_max']
+						res_pro_buy_secondry['high_upper'][int(lst_idx_buy_secondry)] = dataset_5M[symbol]['high'][int(lst_idx_buy_secondry)]*(1+(diff_pr_top_buy_secondry/100))
+
+					if diff_pr_down_buy_secondry > pr_parameters_buy_secondry.elements['st_percent_max']:
+						diff_pr_down_buy_secondry = pr_parameters_buy_secondry.elements['st_percent_max']
+						res_pro_buy_secondry['low_lower'][int(lst_idx_buy_secondry)] = dataset_5M[symbol]['low'][int(lst_idx_buy_secondry)]*(1-(diff_pr_down_buy_secondry/100))
+
+
+					resist_buy = (res_pro_buy_secondry['high_upper'][int(lst_idx_buy_secondry)])
+					protect_buy = (res_pro_buy_secondry['low_lower'][int(lst_idx_buy_secondry)])
+
+					signal = 'buy_secondry'
+
+				else:
+					diff_pr_top_buy = 0
+					diff_pr_down_buy = 0
+					diff_pr_top_buy_power = 0
+					diff_pr_down_buy_power = 0
+
+					resist_buy = 0
+					protect_buy = 0
+
+					signal = 'no_trade'	
+
+		elif (
+			lst_idx_sell_primary > lst_idx_buy_primary and
+			lst_idx_sell_primary >= lst_idx_sell_secondry and
+			lst_idx_sell_primary > lst_idx_buy_secondry and
+			(len(dataset_5M[symbol]['close']) - 1 - lst_idx_sell_primary) <= 6
+			):
+
+			print('======> last signal sell primary ',symbol)
+			print('dataset length: ',len(dataset_5M[symbol]['close']))
+			print('last index: ',lst_idx_sell_primary)
+			
+
+			if lst_idx_sell_primary != 0:
+
+				res_pro_sell_primary = pd.DataFrame()
+				try:
+					res_pro_sell_primary = self.ProfitFinder(
+															dataset_5M = dataset_5M,
+															dataset_1H = dataset_1H,
+															symbol = symbol,
+															signal = signal_sell_primary, 
+															sigtype = 'sell', 
+															pr_parameters = pr_parameters_sell_primary, 
+															pr_config = pr_config_sell_primary
+															)
+				except Exception as ex:
+					print('ERROR PR Last Signal: ',ex)
+					res_pro_sell_primary = pd.DataFrame()
+
+
+				if (res_pro_sell_primary.empty == False):
+
+					diff_pr_top_sell_primary = (((res_pro_sell_primary['high_upper'][int(lst_idx_sell_primary)]) - dataset_5M[symbol]['high'][int(lst_idx_sell_primary)])/dataset_5M[symbol]['high'][int(lst_idx_sell_primary)]) * 100
+					diff_pr_down_sell_primary = ((dataset_5M[symbol]['low'][int(lst_idx_sell_primary)] - (res_pro_sell_primary['low_lower'][int(lst_idx_sell_primary)]))/dataset_5M[symbol]['low'][int(lst_idx_sell_primary)]) * 100
+
+
+					if diff_pr_top_sell_primary > pr_parameters_sell_primary.elements['st_percent_max']:
+						diff_pr_top_sell_primary = pr_parameters_sell_primary.elements['st_percent_max']
+						(res_pro_sell_primary['high_upper'][int(lst_idx_sell_primary)]) = dataset_5M[symbol]['high'][int(lst_idx_sell_primary)]*(1+(diff_pr_top_sell_primary/100))
+
+					if diff_pr_down_sell_primary > pr_parameters_sell_primary.elements['tp_percent_max']:
+						diff_pr_down_sell_primary = pr_parameters_sell_primary.elements['tp_percent_max']
+						(res_pro_sell_primary['low_lower'][int(lst_idx_sell_primary)]) = dataset_5M[symbol]['low'][int(lst_idx_sell_primary)]*(1-(diff_pr_down_sell_primary/100))
+						
+
+					resist_sell = (res_pro_sell_primary['high_upper'][int(lst_idx_sell_primary)])
+					protect_sell = (res_pro_sell_primary['low_lower'][int(lst_idx_sell_primary)])
+
+					signal = 'sell_primary'
+
+				else:
+					diff_pr_top_sell_primary = 0
+					diff_pr_down_sell_primary = 0
+
+					resist_sell = 0
+					protect_sell = 0
+
+					signal = 'no_trade'
+
+		
+		elif (
+			lst_idx_sell_secondry > lst_idx_buy_primary and
+			lst_idx_sell_secondry > lst_idx_sell_primary and
+			lst_idx_sell_secondry > lst_idx_buy_secondry and
+			(len(dataset_5M[symbol]['close']) - 1 - lst_idx_sell_secondry) <= 6
+			):
+
+			print('======> last signal sell secondry ',symbol)
+			print('dataset length: ',len(dataset_5M[symbol]['close']))
+			print('last index: ',lst_idx_sell_secondry)
+
+			if lst_idx_sell_secondry != 0:
+
+				res_pro_sell_secondry = pd.DataFrame()
+				try:
+					res_pro_sell_secondry = self.ProfitFinder(
+															dataset_5M = dataset_5M,
+															dataset_1H = dataset_1H,
+															symbol = symbol,
+															signal = signal_sell_secondry, 
+															sigtype = 'sell', 
+															pr_parameters = pr_parameters_sell_secondry, 
+															pr_config = pr_config_sell_secondry
+															)
+				except Exception as ex:
+					print('ERROR PR Last Signal: ',ex)
+					res_pro_sell_secondry = pd.DataFrame()
+
+
+				if (res_pro_sell_secondry.empty == False):
+
+					diff_pr_top_sell_secondry = (((res_pro_sell_secondry['high_upper'][int(lst_idx_sell_secondry)]) - dataset_5M[symbol]['high'][int(lst_idx_sell_secondry)])/dataset_5M[symbol]['high'][int(lst_idx_sell_secondry)]) * 100
+					diff_pr_down_sell_secondry = ((dataset_5M[symbol]['low'][int(lst_idx_sell_secondry)] - (res_pro_sell_secondry['low_lower'][int(lst_idx_sell_secondry)]))/dataset_5M[symbol]['low'][int(lst_idx_sell_secondry)]) * 100
+
+
+					if diff_pr_top_sell_secondry > pr_parameters_sell_secondry.elements['st_percent_max']:
+						diff_pr_top_sell_secondry = pr_parameters_sell_secondry.elements['st_percent_max']
+						(res_pro_sell_secondry['high_upper'][int(lst_idx_sell_secondry)]) = dataset_5M[symbol]['high'][int(lst_idx_sell_secondry)]*(1+(diff_pr_top_sell_secondry/100))
+
+					if diff_pr_down_sell_secondry > pr_parameters_sell_secondry.elements['tp_percent_max']:
+						diff_pr_down_sell_secondry = pr_parameters_sell_secondry.elements['tp_percent_max']
+						(res_pro_sell_secondry['low_lower'][int(lst_idx_sell_secondry)]) = dataset_5M[symbol]['low'][int(lst_idx_sell_secondry)]*(1-(diff_pr_down_sell_secondry/100))
+						
+
+					resist_sell = (res_pro_sell_secondry['high_upper'][int(lst_idx_sell_secondry)])
+					protect_sell = (res_pro_sell_secondry['low_lower'][int(lst_idx_sell_secondry)])
+					
+					signal = 'sell_secondry'
+
+				else:
+					diff_pr_top_sell_secondry = 0
+					diff_pr_down_sell_secondry = 0
+
+					resist_sell = 0
+					protect_sell = 0
+
+					signal = 'no_trade'			
+
+			print('================================')
+		else:
+			resist_sell = 0
+			protect_sell = 0
+
+			signal = 'no_trade'	
+
+		if (
+			signal == 'buy_primary' or
+			signal == 'buy_secondry'
+			):
+			return signal, resist_buy, protect_buy
+		elif (
+			signal == 'sell_primary' or
+			signal == 'sell_secondry'
+			):
+			return signal, protect_sell, resist_sell
+		else:
+			return signal, 0, 0
+
+
+	#ProfitFinder For Last Signal:
+
+	def ProfitFinder(self, dataset_5M,dataset_1H, symbol, signal, sigtype, pr_parameters, pr_config):
+
+		#*************************************************************
+		# Bayad Maghadir Baraye Params Va Config As func baraye PR dar GA , Learner daryaft beshan
+
+		#/////////////////////////////////////////////////////////////
+
+		pr_Runner = Runner(parameters = pr_parameters, config = pr_config)
+
+		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		# 	print('sig1 = ',signal['index'].iloc[-1])
+
+		signals = pd.DataFrame(
+								{
+									'index': signal['index'].iloc[-1], 
+								},
+								index = [signal['index'].iloc[-1]]
+								)
+
+		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		# 	print('sig1 = ',signals)
+
+		signals = pr_Runner.run(
+								dataset_5M = dataset_5M[symbol], 
+								dataset_1H = dataset_1H[symbol],
+								signals_index = signals,
+								sigtype = sigtype,
+								flaglearn = True,
+								flagtest = False,
+								indicator = 'macd',
+								signals = signal,
+								flag_savepic = False
+								)
+
+		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		# 	print('sig2 = ',signal)
+
+		signal = signal.drop(columns = ['index'], inplace = False)
+
+		signal = signal.join(signals).dropna(inplace = False)
+
+		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		# 	print('sig2 = ',signal)
+
+		return signal
+
+
+	#/////////////////////////////
+
 
 
 

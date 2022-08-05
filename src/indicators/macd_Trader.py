@@ -50,7 +50,8 @@ def trader_macd_div(
 					symbol_data_5M,
 					symbol_data_1H,
 					symbol,
-					money
+					money,
+					account_name
 					):
 	forexnews_path = 'forexnews.json'
 	time_last = time.time()
@@ -126,7 +127,7 @@ def trader_macd_div(
 										symbol = sym.name,
 										)
 
-		lot = basket_manager_macd_div(symbols=symbol,symbol=sym.name,my_money=money,signal=signal)
+		lot = basket_manager_macd_div(symbols=symbol,symbol=sym.name,my_money=money,signal=signal, account_name = account_name)
 
 		if lot > 0.09: lot = 0.09
 		if 0 < lot < 0.01: lot = 0.01
@@ -177,7 +178,8 @@ def trader_task_macd_div(symbol, account_name):
 						symbol_data_5M = symbol_data_5M,
 						symbol_data_1H = symbol_data_1H,
 						symbol = symbol,
-						money = money
+						money = money,
+						account_name = account_name
 						)
 		print('****************** Finish *************************')
 	else:#except Exception as ex:

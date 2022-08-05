@@ -243,24 +243,28 @@ class Divergence:
 		symbol = self.elements['symbol']
 		dataset_5M_ = self.elements['dataset_5M'][symbol].loc[:, ['high', 'low', 'time']].copy(deep = True)
 
+		index = index.replace([np.inf, -np.inf], np.nan)
+		index = index.dropna(inplace = False).reset_index(drop=True)
 
 		div_index_list_fron = list((index['index'].where(index['div'] == True)).dropna(inplace = False).index)
 		div_index_list_front = list(filter(lambda x: x != 0, div_index_list_fron))
 
-		div_index_list_bac = list((index['index'].where(index['div'] == True)).dropna(inplace = False).index - 1)
+		div_index_list_bac = list((index['index_back'].where(index['div'] == True)).dropna(inplace = False).index)
 		div_index_list_back = list(filter(lambda x: x >= 0, div_index_list_bac))
-		
 
 		dataset_5M_div = pd.DataFrame(
 									{
 										'low_front': dataset_5M_['low'][index['index'][div_index_list_front]].values,
-										'low_back': dataset_5M_['low'][index['index'][div_index_list_back]].values,
+										'low_back': dataset_5M_['low'][index['index_back'][div_index_list_back]].values,
+
 										'high_front': dataset_5M_['high'][index['index'][div_index_list_front]].values,
-										'high_back': dataset_5M_['high'][index['index'][div_index_list_back]].values,
+										'high_back': dataset_5M_['high'][index['index_back'][div_index_list_back]].values,
+
 										'time_low_front':  dataset_5M_['time'][index['index'][div_index_list_front]].values,
-										'time_low_back': dataset_5M_['time'][index['index'][div_index_list_back]].values,
+										'time_low_back': dataset_5M_['time'][index['index_back'][div_index_list_back]].values,
+
 										'time_high_front': dataset_5M_['time'][index['index'][div_index_list_front]].values,
-										'time_high_back': dataset_5M_['time'][index['index'][div_index_list_back]].values,
+										'time_high_back': dataset_5M_['time'][index['index_back'][div_index_list_back]].values,
 									}
 									)
 

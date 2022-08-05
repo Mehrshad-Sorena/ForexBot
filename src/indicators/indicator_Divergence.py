@@ -241,7 +241,7 @@ class Divergence:
 	def dataset_preparer(self, index):
 
 		symbol = self.elements['symbol']
-		dataset_5M_ = self.elements['dataset_5M'][symbol].loc[:, ['high', 'low']].copy(deep = True)
+		dataset_5M_ = self.elements['dataset_5M'][symbol].loc[:, ['high', 'low', 'time']].copy(deep = True)
 
 
 		div_index_list_fron = list((index['index'].where(index['div'] == True)).dropna(inplace = False).index)
@@ -255,8 +255,12 @@ class Divergence:
 									{
 										'low_front': dataset_5M_['low'][index['index'][div_index_list_front]].values,
 										'low_back': dataset_5M_['low'][index['index'][div_index_list_back]].values,
-										'high_front': dataset_5M_['low'][index['index'][div_index_list_front]].values,
-										'high_back': dataset_5M_['low'][index['index'][div_index_list_back]].values,
+										'high_front': dataset_5M_['high'][index['index'][div_index_list_front]].values,
+										'high_back': dataset_5M_['high'][index['index'][div_index_list_back]].values,
+										'time_low_front':  dataset_5M_['time'][index['index'][div_index_list_front]].values,
+										'time_low_back': dataset_5M_['time'][index['index'][div_index_list_back]].values,
+										'time_high_front': dataset_5M_['time'][index['index'][div_index_list_front]].values,
+										'time_high_back': dataset_5M_['time'][index['index'][div_index_list_back]].values,
 									}
 									)
 
@@ -856,14 +860,6 @@ class Divergence:
 		dataset_plot_candle['time'] = dataset_5M['time'][range(index_start,index_pos)].reset_index(drop=True)
 		dataset_plot_candle['volume'] = dataset_5M['volume'][range(index_start,index_pos)].reset_index(drop=True)
 
-		dataset_plot_candle_line = pd.DataFrame()
-		dataset_plot_candle_line['low'] = dataset_5M['low'][range(index_start + 20,index_end)].reset_index(drop=True)
-		dataset_plot_candle_line['high'] = dataset_5M['high'][range(index_start + 20,index_end)].reset_index(drop=True)
-		dataset_plot_candle_line['close'] = dataset_5M['close'][range(index_start + 20,index_end)].reset_index(drop=True)
-		dataset_plot_candle_line['open'] = dataset_5M['open'][range(index_start + 20,index_end)].reset_index(drop=True)
-		dataset_plot_candle_line['time'] = dataset_5M['time'][range(index_start + 20,index_end)].reset_index(drop=True)
-		dataset_plot_candle_line['volume'] = dataset_5M['volume'][range(index_start + 20,index_end)].reset_index(drop=True)
-
 		daily = pd.DataFrame(dataset_plot_candle)
 		daily.index.name = 'Time'
 		daily.index = dataset_plot_candle['time']
@@ -880,15 +876,18 @@ class Divergence:
 									)
 		mco = [mc]*len(daily)
 
+		# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+		# 	print(signals)
+
 		if 'buy' in signals['signal'][loc_end_5M]:
 			two_points = [
-						(dataset_plot_candle_line['time'].iloc[-1],dataset_plot_candle_line['low'].iloc[-1]),
-						(dataset_plot_candle_line['time'][0],dataset_plot_candle_line['low'][0])
+						(signals['time_low_back'][loc_end_5M], signals['low_back'][loc_end_5M]),
+						(signals['time_low_front'][loc_end_5M], signals['low_front'][loc_end_5M])
 						]
 		elif 'sell' in signals['signal'][loc_end_5M]:
 			two_points = [
-						(dataset_plot_candle_line['time'].iloc[-1],dataset_plot_candle_line['high'].iloc[-1]),
-						(dataset_plot_candle_line['time'][0],dataset_plot_candle_line['high'][0])
+						(signals['time_high_back'][loc_end_5M], signals['high_back'][loc_end_5M]),
+						(signals['time_high_front'][loc_end_5M], signals['high_front'][loc_end_5M])
 						]
 
 		mpf.plot(
@@ -901,13 +900,7 @@ class Divergence:
 				savefig=dict(fname=path_candle,dpi=600,pad_inches=0.25),
 				marketcolor_overrides=mco,
 				alines=dict(alines=two_points,colors=['orange'],linestyle='-.'),
-				)#.savefig('plot.png', dpi=300, bbox_inches='tight')
+				)
 
 		mpf.figure().clear()
-		#mpf.close('all')
-		#mpf.cla()
-		#mpf.clf()
-
 		matplotlib.use("Agg")
-
-		#plt.show()

@@ -10,9 +10,12 @@ risk_lot_now = 0.02
 
 #******************************** Find Max Score ********************************************
 
-def find_max_score():
+def find_max_score(account_name):
 
 	loging = getdata()
+	loging.account_name = account_name
+	loging.initilizer()
+	loging.login()
 	symbols = loging.get_symbols()
 
 	macd_config = MACDConfig()
@@ -49,7 +52,7 @@ def find_max_score():
 
 #************************** Lot Checker **************************************************************
 
-def lot_checker(my_money,symbol,signal,risk_lot=0.02,levrage=100):
+def lot_checker(my_money,symbol,signal, account_name,risk_lot=0.02,levrage=100):
 
 	macd_config = MACDConfig()
 
@@ -68,10 +71,10 @@ def lot_checker(my_money,symbol,signal,risk_lot=0.02,levrage=100):
 			""" Calculate Lots """
 			if ga_buy_primary['permit'][0] == True:
 				if ga_buy_primary['methode'][0] == 'pr':
-					lot = (((ga_buy_primary['score'][0]/find_max_score())*my_money)/levrage)*risk_lot
+					lot = (((ga_buy_primary['score'][0]/find_max_score(account_name))*my_money)/levrage)*risk_lot
 
 				elif ga_buy_primary['methode'][0] == 'min_max':
-					lot = (((ga_buy_primary['score_min_max'][0]/find_max_score())*my_money)/levrage)*risk_lot
+					lot = (((ga_buy_primary['score_min_max'][0]/find_max_score(account_name))*my_money)/levrage)*risk_lot
 			else:
 				lot = 0
 
@@ -82,10 +85,10 @@ def lot_checker(my_money,symbol,signal,risk_lot=0.02,levrage=100):
 			""" Calculate Lots """
 			if ga_buy_secondry['permit'][0] == True:
 				if ga_buy_secondry['methode'][0] == 'pr':
-					lot = (((ga_buy_secondry['score'][0]/find_max_score())*my_money)/levrage)*risk_lot
+					lot = (((ga_buy_secondry['score'][0]/find_max_score(account_name))*my_money)/levrage)*risk_lot
 
 				elif ga_buy_secondry['methode'][0] == 'min_max':
-					lot = (((ga_buy_secondry['score_min_max'][0]/find_max_score())*my_money)/levrage)*risk_lot
+					lot = (((ga_buy_secondry['score_min_max'][0]/find_max_score(account_name))*my_money)/levrage)*risk_lot
 			else:
 				lot = 0
 
@@ -96,10 +99,10 @@ def lot_checker(my_money,symbol,signal,risk_lot=0.02,levrage=100):
 			""" Calculate Lots """
 			if ga_sell_primary['permit'][0] == True:
 				if ga_sell_primary['methode'][0] == 'pr':
-					lot = (((ga_sell_primary['score'][0]/find_max_score())*my_money)/levrage)*risk_lot
+					lot = (((ga_sell_primary['score'][0]/find_max_score(account_name))*my_money)/levrage)*risk_lot
 
 				elif ga_sell_primary['methode'][0] == 'min_max':
-					lot = (((ga_sell_primary['score_min_max'][0]/find_max_score())*my_money)/levrage)*risk_lot
+					lot = (((ga_sell_primary['score_min_max'][0]/find_max_score(account_name))*my_money)/levrage)*risk_lot
 			else:
 				lot = 0
 
@@ -110,10 +113,10 @@ def lot_checker(my_money,symbol,signal,risk_lot=0.02,levrage=100):
 			""" Calculate Lots """
 			if ga_sell_secondry['permit'][0] == True:
 				if ga_sell_secondry['methode'][0] == 'pr':
-					lot = (((ga_sell_secondry['score'][0]/find_max_score())*my_money)/levrage)*risk_lot
+					lot = (((ga_sell_secondry['score'][0]/find_max_score(account_name))*my_money)/levrage)*risk_lot
 
 				elif ga_sell_secondry['methode'][0] == 'min_max':
-					lot = (((ga_sell_secondry['score_min_max'][0]/find_max_score())*my_money)/levrage)*risk_lot
+					lot = (((ga_sell_secondry['score_min_max'][0]/find_max_score(account_name))*my_money)/levrage)*risk_lot
 			else:
 				lot = 0
 
@@ -191,7 +194,7 @@ def position_checker(signal,symbol):
 
 #********************************* Basket Manager *****************************************************
 
-def basket_manager_macd_div(symbols,symbol,my_money,signal):
+def basket_manager_macd_div(symbols,symbol,my_money,signal, account_name):
 
 	vol_traded = 0
 
@@ -210,7 +213,7 @@ def basket_manager_macd_div(symbols,symbol,my_money,signal):
 
 				vol_traded += vol_position
 
-	lot,vol_traded_max = lot_checker(my_money=my_money,symbol=symbol,signal=signal,risk_lot=risk_lot_now,levrage=levrage_now)
+	lot, vol_traded_max = lot_checker(my_money=my_money,symbol=symbol,signal=signal,risk_lot=risk_lot_now,levrage=levrage_now, account_name = account_name)
 	symbol_position = position_checker(signal=signal,symbol=symbol)
 
 	#print(lot)

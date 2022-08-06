@@ -213,6 +213,7 @@ class MACD:
 										]]
 
 				output = pd.concat([output , sig], ignore_index = True)
+				print('lst_idx = ', lst_idx)
 
 		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 			print(output)
@@ -236,11 +237,6 @@ class MACD:
 			print('ERROR PR Last Signal: ',ex)
 			signal_output = pd.DataFrame()
 			learning_output = pd.DataFrame()
-
-		try:
-			scores = macd_tester.Scoring(signal = output)
-		except:
-			scores = pd.DataFrame()
 
 		return signal_output, learning_output
 

@@ -351,7 +351,8 @@ class Tester:
 
 		if (
 			dataset_5M['high'][loc_end_5M] * (1 + spred) >= extereme['high_upper'][loc_end_5M] or
-			dataset_5M['low'][loc_end_5M] <= extereme['low_lower'][loc_end_5M]
+			dataset_5M['low'][loc_end_5M] <= extereme['low_lower'][loc_end_5M] or
+			extereme.dropna().empty == True
 			):
 			extereme = extereme.assign(
 										flag =  'no_flag',

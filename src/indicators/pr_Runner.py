@@ -295,6 +295,7 @@ class Runner:
 		loc_end_5M = int(loc_end_5M)
 
 		datachanger = DataChanger()
+
 		self.elements['dataset_' + '5M'], self.elements['dataset_' + '1H'] = datachanger.SpliterSyncPR(
 																							dataset_5M = dataset_5M,
 																							dataset_1H = dataset_1H,

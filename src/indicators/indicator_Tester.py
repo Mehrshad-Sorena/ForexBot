@@ -53,6 +53,8 @@ class Tester:
 										flag_savepic = flag_savepic
 										)
 
+		#print(signal)
+
 		scores = self.Scoring(signal = signal)
 
 		return signal, scores

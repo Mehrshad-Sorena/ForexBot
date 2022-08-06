@@ -124,6 +124,127 @@ class MACD:
 			return pd.DataFrame(), '', '', '', '', ''
 
 
+
+	@stTime
+	def Simulator(self, dataset_5M, dataset_1H, symbol, signaltype, signalpriority, flag_savepic):
+
+
+		GL_Results, path_superhuman, macd_parameters, ind_parameters, pr_parameters, pr_config = self.ParameterReader(
+										 																				symbol = symbol, 
+										 																				signaltype = signaltype, 
+										 																				signalpriority = signalpriority
+										 																				)
+
+		ind_parameters.elements['dataset_5M'] = dataset_5M
+		ind_parameters.elements['dataset_1H'] = dataset_1H
+		ind_config = indicator_config()
+		macd_tester = Tester(parameters = ind_parameters, config = ind_config)
+
+		self.elements = macd_parameters.elements
+		self.elements['dataset_1H'] = dataset_1H
+		self.elements['symbol'] = symbol
+
+		cut_first = 0
+
+		output = pd.DataFrame()
+
+		for candle_counter in range(17999, len(dataset_5M[symbol]['close'])):
+
+			if candle_counter >= 17999:
+				cut_first = candle_counter - 17999
+
+			self.elements['dataset_5M'] = {
+											symbol:	dataset_5M[symbol].loc[cut_first:candle_counter,['close', 'open', 'high', 'low', 'HL/2', 'HLC/3', 'HLCC/4', 'OHLC/4', 'time']],
+											}
+
+			macd = Divergence(parameters = ind_parameters, config = ind_config)
+
+			
+
+			signal = pd.DataFrame()
+
+			try:	
+
+				macd_calc = self.calculator_macd()
+
+				signal, _, indicator = macd.divergence(
+												sigtype = signaltype,
+												sigpriority = signalpriority,
+												indicator = macd_calc,
+												column_div = GL_Results['MACD_column_div'][0],
+												ind_name = 'macd',
+												dataset_5M = self.elements['dataset_5M'],
+												dataset_1H = dataset_1H,
+												symbol = symbol,
+												flaglearn = GL_Results['islearned'][0],
+												flagtest = True
+												)
+			except Exception as ex:
+				#print(f"LastSignal {signaltype} {signalpriority}: {ex}")
+				signal = pd.DataFrame()
+			
+			if signal.empty == False:
+				lst_idx = signal['index'].iloc[-1]
+			else:
+				lst_idx = 0
+
+			if np.max(self.elements['dataset_5M'][symbol]['close'].index) - 1 - lst_idx <= 6:
+
+				sig = signal.loc[[lst_idx], 
+										[
+										'index', 
+										'indicator_front', 
+										'indicator_back', 
+										'index_back', 
+										'low_front', 
+										'low_back', 
+										'high_front', 
+										'high_back',
+										'time_low_front',
+										'time_low_back',
+										'time_high_front',
+										'time_high_back',
+										'div',
+										'diff_extereme',
+										'signal',
+										'indicator_name',
+										'column_div',
+										'symbol'
+										]]
+
+				output = pd.concat([output , sig], ignore_index = True)
+
+		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			print(output)
+
+		signal_output = pd.DataFrame()
+		learning_output = pd.DataFrame()
+
+		try:
+			signal_output, learning_output = macd_tester.RunGL(
+															signal = output, 
+															sigtype = signaltype, 
+															flaglearn = GL_Results['islearned'][0], 
+															flagtest = True,
+															pr_parameters = pr_parameters,
+															pr_config = pr_config,
+															indicator = indicator,
+															flag_savepic = flag_savepic
+															)
+
+		except Exception as ex:
+			print('ERROR PR Last Signal: ',ex)
+			signal_output = pd.DataFrame()
+			learning_output = pd.DataFrame()
+
+		try:
+			scores = macd_tester.Scoring(signal = output)
+		except:
+			scores = pd.DataFrame()
+
+		return signal_output, learning_output
+
+
 	@stTime
 	def LastSignal(self,dataset_5M, dataset_1H, symbol):
 

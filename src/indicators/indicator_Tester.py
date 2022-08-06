@@ -207,7 +207,9 @@ class Tester:
 
 		normalizer = 100 * 100 * 100 * 100 * 100 * 100
 
-		scores_out['score'] = [((score_num_tp*score_sum_tp*score_mean_tp*score_max_tp*score_money*score_drow_down)/normalizer) * 100]
+		#scores_out['score'] = [((score_num_tp*score_sum_tp*score_mean_tp*score_max_tp*score_money*score_drow_down)/normalizer) * 100]
+
+		scores_out['score'] = [((score_num_tp*score_sum_tp*score_mean_tp*score_max_tp*score_money*score_drow_down) ** (1/6))]
 			
 
 		if np.isnan(scores_out['score'][0]) : scores_out['score'][0] = 0

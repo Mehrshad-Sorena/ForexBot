@@ -882,10 +882,6 @@ class MACD:
 		GL_Results.to_csv(path_superhuman + symbol + '.csv')
 
 
-
-		
-
-
 	def Genetic(self, dataset_5M, dataset_1H, symbol, signaltype, signalpriority, num_turn):
 
 		if symbol == 'ETHUSD_i':
@@ -895,6 +891,22 @@ class MACD:
 			self.elements['tp_percent_down'] = 1500
 
 		chrom = Chromosome(parameters = self)
+		macd_config = MACDConfig()
+		path_elites_chromosome = macd_config.cfg['path_elites'] + signalpriority + '/' + signaltype + '/' + symbol + '_ChromosomeResults.csv'
+		
+		while not chrom.Get(
+							work = 'Optimize',
+							signaltype = signaltype,
+							signalpriority = signalpriority,
+							symbol = symbol,
+							number_chromos = 10,
+							Chromosome = '',
+							chrom_counter = 0,
+							path_elites_chromosome = path_elites_chromosome,
+							alpha = 0.4
+							):
+			pass
+
 		chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
 																							work = 'BigBang',
 																							signaltype = signaltype,

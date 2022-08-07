@@ -1,14 +1,22 @@
 from macd_Config import Config as MACDConfig
 from indicator_Parameters import Parameters as IndicatorParameters
+from scipy.stats import foldnorm, dweibull, rayleigh, expon, nakagami, norm
+from fitter import Fitter, get_common_distributions, get_distributions
+from sklearn.cluster import KMeans
 from pr_Parameters import Parameters as PRParameters
 from pr_Config import Config as PRConfig
 from macd_Parameters import Parameters as MACDParameters
+from macd_ParameterLimits import ParameterLimits as Limits
 from random import randint
 import random
 import pandas as pd
 import os
 import sys
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
+
+limits = Limits()
 
 
 apply_to_list = [
@@ -138,7 +146,9 @@ class Chromosome:
 			number_chromos,
 			Chromosome,
 			chrom_counter,
-			scoresdataframe = ''
+			scoresdataframe = '',
+			path_elites_chromosome = '',
+			alpha = 0.4
 			):
 
 		macd_parameters = MACDParameters()
@@ -149,6 +159,14 @@ class Chromosome:
 		ind_parameters = IndicatorParameters()
 
 		#Select Which Work is Be Done:
+
+		if work == 'Optimize':
+			self.ParameterOptimizer(
+									path_elites_chromosome = path_elites_chromosome,
+									alpha = alpha
+									)
+
+			return True
 
 		if work == 'BigBang':
 
@@ -559,143 +577,143 @@ class Chromosome:
 		#Parameters:
 		#Elemns For Runner Module:
 
-		pr_parameters.elements['Runner' + '_methode1_' + '_lenght_data_5M'] = randint(20, 3000)
-		pr_parameters.elements['Runner' + '_methode1_' + '_lenght_data_1H'] = randint(20, 1000)
+		pr_parameters.elements['Runner' + '_methode1_' + '_lenght_data_5M'] = randint(limits.elements['Runner_methode1__lenght_data_5M_lower'], limits.elements['Runner_methode1__lenght_data_5M_upper'])
+		pr_parameters.elements['Runner' + '_methode1_' + '_lenght_data_1H'] = randint(limits.elements['Runner_methode1__lenght_data_1H_lower'], limits.elements['Runner_methode1__lenght_data_1H_upper'])
 
 		#//////////////////////////////
 
 
 		#Elemns For ExtremePoints Module:
 
-		pr_parameters.elements['ExtremePoints_num_max_5M'] = randint(2, 250)
-		pr_parameters.elements['ExtremePoints_num_min_5M'] = randint(2, 250)
-		pr_parameters.elements['ExtremePoints_weight_5M'] = randint(2, 1000)
+		pr_parameters.elements['ExtremePoints_num_max_5M'] = randint(limits.elements['ExtremePoints_num_max_5M_lower'], limits.elements['ExtremePoints_num_max_5M_upper'])
+		pr_parameters.elements['ExtremePoints_num_min_5M'] = randint(limits.elements['ExtremePoints_num_min_5M_lower'], limits.elements['ExtremePoints_num_min_5M_upper'])
+		pr_parameters.elements['ExtremePoints_weight_5M'] = randint(limits.elements['ExtremePoints_weight_5M_lower'], limits.elements['ExtremePoints_weight_5M_upper'])
 
-		pr_parameters.elements['ExtremePoints_num_max_1H'] = randint(2, 250)
-		pr_parameters.elements['ExtremePoints_num_min_1H'] = randint(2, 250)
-		pr_parameters.elements['ExtremePoints_weight_1H'] = randint(2, 1000)
+		pr_parameters.elements['ExtremePoints_num_max_1H'] = randint(limits.elements['ExtremePoints_num_max_1H_lower'], limits.elements['ExtremePoints_num_max_1H_upper'])
+		pr_parameters.elements['ExtremePoints_num_min_1H'] = randint(limits.elements['ExtremePoints_num_min_1H_lower'], limits.elements['ExtremePoints_num_min_1H_upper'])
+		pr_parameters.elements['ExtremePoints_weight_1H'] = randint(limits.elements['ExtremePoints_weight_1H_lower'], limits.elements['ExtremePoints_weight_1H_upper'])
 
 		#/////////////////////////////////
 
 
 		#Elemns For TrendingLines Module:
 
-		pr_parameters.elements['TrendLines_num_max_5M'] = randint(2, 250)
-		pr_parameters.elements['TrendLines_num_min_5M'] = randint(2, 250)
-		pr_parameters.elements['TrendLines_weight_5M'] = randint(2, 1000)
+		pr_parameters.elements['TrendLines_num_max_5M'] = randint(limits.elements['TrendLines_num_max_5M_lower'], limits.elements['TrendLines_num_max_5M_upper'])
+		pr_parameters.elements['TrendLines_num_min_5M'] = randint(limits.elements['TrendLines_num_min_5M_lower'], limits.elements['TrendLines_num_min_5M_upper'])
+		pr_parameters.elements['TrendLines_weight_5M'] = randint(limits.elements['TrendLines_weight_5M_lower'], limits.elements['TrendLines_weight_5M_upper'])
 
-		pr_parameters.elements['TrendLines_num_max_1H'] = randint(2, 250)
-		pr_parameters.elements['TrendLines_num_min_1H'] = randint(2, 250)
-		pr_parameters.elements['TrendLines_weight_1H'] = randint(2, 1000)
+		pr_parameters.elements['TrendLines_num_max_1H'] = randint(limits.elements['TrendLines_num_max_1H_lower'], limits.elements['TrendLines_num_max_1H_upper'])
+		pr_parameters.elements['TrendLines_num_min_1H'] = randint(limits.elements['TrendLines_num_min_1H_lower'], limits.elements['TrendLines_num_min_1H_upper'])
+		pr_parameters.elements['TrendLines_weight_1H'] = randint(limits.elements['TrendLines_weight_1H_lower'], limits.elements['TrendLines_weight_1H_upper'])
 
-		pr_parameters.elements['TrendLines' + '_length_long_5M'] = randint(10, 1000)
-		pr_parameters.elements['TrendLines' + '_length_mid_5M'] = randint(10, 1000)
-		pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(5, 500)
-		pr_parameters.elements['TrendLines' + '_length_short2_5M'] = randint(5, 500)
+		pr_parameters.elements['TrendLines' + '_length_long_5M'] = randint(limits.elements['TrendLines_length_long_5M_lower'], limits.elements['TrendLines_length_long_5M_upper'])
+		pr_parameters.elements['TrendLines' + '_length_mid_5M'] = randint(limits.elements['TrendLines_length_mid_5M_lower'], limits.elements['TrendLines_length_mid_5M_upper'])
+		pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(limits.elements['TrendLines_length_short1_5M_lower'], limits.elements['TrendLines_length_short1_5M_upper'])
+		pr_parameters.elements['TrendLines' + '_length_short2_5M'] = randint(limits.elements['TrendLines_length_short2_5M_lower'], limits.elements['TrendLines_length_short2_5M_upper'])
 
 		while pr_parameters.elements['TrendLines' + '_length_mid_5M'] >= pr_parameters.elements['TrendLines' + '_length_long_5M']:
-			pr_parameters.elements['TrendLines' + '_length_long_5M'] = randint(10, 1000)
-			pr_parameters.elements['TrendLines' + '_length_mid_5M'] = randint(10, 1000)
+			pr_parameters.elements['TrendLines' + '_length_long_5M'] = randint(limits.elements['TrendLines_length_long_5M_lower'], limits.elements['TrendLines_length_long_5M_upper'])
+			pr_parameters.elements['TrendLines' + '_length_mid_5M'] = randint(limits.elements['TrendLines_length_mid_5M_lower'], limits.elements['TrendLines_length_mid_5M_upper'])
 
 			while pr_parameters.elements['TrendLines' + '_length_short1_5M'] >= pr_parameters.elements['TrendLines' + '_length_mid_5M']:
-				pr_parameters.elements['TrendLines' + '_length_mid_5M'] = randint(10, 1000)
-				pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(5, 500)
+				pr_parameters.elements['TrendLines' + '_length_mid_5M'] = randint(limits.elements['TrendLines_length_mid_5M_lower'], limits.elements['TrendLines_length_mid_5M_upper'])
+				pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(limits.elements['TrendLines_length_short1_5M_lower'], limits.elements['TrendLines_length_short1_5M_upper'])
 
 				while pr_parameters.elements['TrendLines' + '_length_short2_5M'] >= pr_parameters.elements['TrendLines' + '_length_short1_5M']:
-					pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(5, 500)
-					pr_parameters.elements['TrendLines' + '_length_short2_5M'] = randint(5, 500)
+					pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(limits.elements['TrendLines_length_short1_5M_lower'], limits.elements['TrendLines_length_short1_5M_upper'])
+					pr_parameters.elements['TrendLines' + '_length_short2_5M'] = randint(limits.elements['TrendLines_length_short2_5M_lower'], limits.elements['TrendLines_length_short2_5M_upper'])
 
 		while pr_parameters.elements['TrendLines' + '_length_short1_5M'] >= pr_parameters.elements['TrendLines' + '_length_mid_5M']:
-			pr_parameters.elements['TrendLines' + '_length_mid_5M'] = randint(10, 1000)
-			pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(5, 500)
+			pr_parameters.elements['TrendLines' + '_length_mid_5M'] = randint(limits.elements['TrendLines_length_long_5M_lower'], limits.elements['TrendLines_length_long_5M_upper'])
+			pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(limits.elements['TrendLines_length_short1_5M_lower'], limits.elements['TrendLines_length_short1_5M_upper'])
 
 			while pr_parameters.elements['TrendLines' + '_length_short2_5M'] >= pr_parameters.elements['TrendLines' + '_length_short1_5M']:
-				pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(5, 500)
-				pr_parameters.elements['TrendLines' + '_length_short2_5M'] = randint(5, 500)
+				pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(limits.elements['TrendLines_length_short1_5M_lower'], limits.elements['TrendLines_length_short1_5M_upper'])
+				pr_parameters.elements['TrendLines' + '_length_short2_5M'] = randint(limits.elements['TrendLines_length_short2_5M_lower'], limits.elements['TrendLines_length_short2_5M_upper'])
 
 		while pr_parameters.elements['TrendLines' + '_length_short2_5M'] >= pr_parameters.elements['TrendLines' + '_length_short1_5M']:
-			pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(5, 500)
-			pr_parameters.elements['TrendLines' + '_length_short2_5M'] = randint(5, 500)
+			pr_parameters.elements['TrendLines' + '_length_short1_5M'] = randint(limits.elements['TrendLines_length_short1_5M_lower'], limits.elements['TrendLines_length_short1_5M_upper'])
+			pr_parameters.elements['TrendLines' + '_length_short2_5M'] = randint(limits.elements['TrendLines_length_short2_5M_lower'], limits.elements['TrendLines_length_short2_5M_upper'])
 
 
-		pr_parameters.elements['TrendLines' + '_length_long_1H'] = randint(2, 250)
-		pr_parameters.elements['TrendLines' + '_length_mid_1H'] = randint(2, 250)
-		pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(2, 250)
-		pr_parameters.elements['TrendLines' + '_length_short2_1H'] = randint(2, 250)
+		pr_parameters.elements['TrendLines' + '_length_long_1H'] = randint(limits.elements['TrendLines_length_long_1H_lower'], limits.elements['TrendLines_length_long_1H_upper'])
+		pr_parameters.elements['TrendLines' + '_length_mid_1H'] = randint(limits.elements['TrendLines_length_mid_1H_lower'], limits.elements['TrendLines_length_mid_1H_upper'])
+		pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(limits.elements['TrendLines_length_short1_1H_lower'], limits.elements['TrendLines_length_short1_1H_upper'])
+		pr_parameters.elements['TrendLines' + '_length_short2_1H'] = randint(limits.elements['TrendLines_length_short2_1H_lower'], limits.elements['TrendLines_length_short2_1H_upper'])
 
 		while pr_parameters.elements['TrendLines' + '_length_mid_1H'] >= pr_parameters.elements['TrendLines' + '_length_long_1H']:
-			pr_parameters.elements['TrendLines' + '_length_long_1H'] = randint(10, 1000)
-			pr_parameters.elements['TrendLines' + '_length_mid_1H'] = randint(10, 1000)
+			pr_parameters.elements['TrendLines' + '_length_long_1H'] = randint(limits.elements['TrendLines_length_long_1H_lower'], limits.elements['TrendLines_length_long_1H_upper'])
+			pr_parameters.elements['TrendLines' + '_length_mid_1H'] = randint(limits.elements['TrendLines_length_mid_1H_lower'], limits.elements['TrendLines_length_mid_1H_upper'])
 
 			while pr_parameters.elements['TrendLines' + '_length_short1_1H'] >= pr_parameters.elements['TrendLines' + '_length_mid_1H']:
-				pr_parameters.elements['TrendLines' + '_length_mid_1H'] = randint(10, 1000)
-				pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(5, 500)
+				pr_parameters.elements['TrendLines' + '_length_mid_1H'] = randint(limits.elements['TrendLines_length_mid_1H_lower'], limits.elements['TrendLines_length_mid_1H_upper'])
+				pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(limits.elements['TrendLines_length_short1_1H_lower'], limits.elements['TrendLines_length_short1_1H_upper'])
 
 				while pr_parameters.elements['TrendLines' + '_length_short2_1H'] >= pr_parameters.elements['TrendLines' + '_length_short1_1H']:
-					pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(5, 500)
-					pr_parameters.elements['TrendLines' + '_length_short2_1H'] = randint(5, 500)
+					pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(limits.elements['TrendLines_length_short1_1H_lower'], limits.elements['TrendLines_length_short1_1H_upper'])
+					pr_parameters.elements['TrendLines' + '_length_short2_1H'] = randint(limits.elements['TrendLines_length_short2_1H_lower'], limits.elements['TrendLines_length_short2_1H_upper'])
 
 		while pr_parameters.elements['TrendLines' + '_length_short1_1H'] >= pr_parameters.elements['TrendLines' + '_length_mid_1H']:
-			pr_parameters.elements['TrendLines' + '_length_mid_1H'] = randint(10, 1000)
-			pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(5, 500)
+			pr_parameters.elements['TrendLines' + '_length_mid_1H'] = randint(limits.elements['TrendLines_length_mid_1H_lower'], limits.elements['TrendLines_length_mid_1H_upper'])
+			pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(limits.elements['TrendLines_length_short1_1H_lower'], limits.elements['TrendLines_length_short1_1H_upper'])
 
 			while pr_parameters.elements['TrendLines' + '_length_short2_1H'] >= pr_parameters.elements['TrendLines' + '_length_short1_1H']:
-				pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(5, 500)
-				pr_parameters.elements['TrendLines' + '_length_short2_1H'] = randint(5, 500)
+				pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(limits.elements['TrendLines_length_short1_1H_lower'], limits.elements['TrendLines_length_short1_1H_upper'])
+				pr_parameters.elements['TrendLines' + '_length_short2_1H'] = randint(limits.elements['TrendLines_length_short2_1H_lower'], limits.elements['TrendLines_length_short2_1H_upper'])
 
 		while pr_parameters.elements['TrendLines' + '_length_short2_1H'] >= pr_parameters.elements['TrendLines' + '_length_short1_1H']:
-			pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(5, 500)
-			pr_parameters.elements['TrendLines' + '_length_short2_1H'] = randint(5, 500)
+			pr_parameters.elements['TrendLines' + '_length_short1_1H'] = randint(limits.elements['TrendLines_length_short1_1H_lower'], limits.elements['TrendLines_length_short1_1H_upper'])
+			pr_parameters.elements['TrendLines' + '_length_short2_1H'] = randint(limits.elements['TrendLines_length_short2_1H_lower'], limits.elements['TrendLines_length_short2_1H_upper'])
 
-		pr_parameters.elements['TrendLines' + '_power_long_5M'] = randint(2, 1000)
-		pr_parameters.elements['TrendLines' + '_power_mid_5M'] = randint(2, 1000)
-		pr_parameters.elements['TrendLines' + '_power_short1_5M'] = randint(2, 1000)
-		pr_parameters.elements['TrendLines' + '_power_short2_5M'] = randint(2, 1000)
+		pr_parameters.elements['TrendLines' + '_power_long_5M'] = randint(limits.elements['TrendLines_power_long_5M_lower'], limits.elements['TrendLines_power_long_5M_upper'])
+		pr_parameters.elements['TrendLines' + '_power_mid_5M'] = randint(limits.elements['TrendLines_power_mid_5M_lower'], limits.elements['TrendLines_power_mid_5M_upper'])
+		pr_parameters.elements['TrendLines' + '_power_short1_5M'] = randint(limits.elements['TrendLines_power_short1_5M_lower'], limits.elements['TrendLines_power_short1_5M_upper'])
+		pr_parameters.elements['TrendLines' + '_power_short2_5M'] = randint(limits.elements['TrendLines_power_short2_5M_lower'], limits.elements['TrendLines_power_short2_5M_upper'])
 
-		pr_parameters.elements['TrendLines' + '_power_long_1H'] = randint(2, 1000)
-		pr_parameters.elements['TrendLines' + '_power_mid_1H'] = randint(2, 1000)
-		pr_parameters.elements['TrendLines' + '_power_short1_1H'] = randint(2, 1000)
-		pr_parameters.elements['TrendLines' + '_power_short2_1H'] = randint(2, 1000)
+		pr_parameters.elements['TrendLines' + '_power_long_1H'] = randint(limits.elements['TrendLines_power_long_1H_lower'], limits.elements['TrendLines_power_long_1H_upper'])
+		pr_parameters.elements['TrendLines' + '_power_mid_1H'] = randint(limits.elements['TrendLines_power_mid_1H_lower'], limits.elements['TrendLines_power_mid_1H_upper'])
+		pr_parameters.elements['TrendLines' + '_power_short1_1H'] = randint(limits.elements['TrendLines_power_short1_1H_lower'], limits.elements['TrendLines_power_short1_1H_upper'])
+		pr_parameters.elements['TrendLines' + '_power_short2_1H'] = randint(limits.elements['TrendLines_power_short2_1H_lower'], limits.elements['TrendLines_power_short2_1H_upper'])
 
 		#/////////////////////////////////
 
 
 		#Elemns For FlatLinesIchimoku Module:
 
-		pr_parameters.elements['IchimokouFlatLines' + '_tenkan_5M'] = randint(2, 500)
-		pr_parameters.elements['IchimokouFlatLines' + '_kijun_5M'] = randint(2, 1400)
-		pr_parameters.elements['IchimokouFlatLines' + '_senkou_5M'] = randint(2, 2500)
+		pr_parameters.elements['IchimokouFlatLines' + '_tenkan_5M'] = randint(limits.elements['IchimokouFlatLines_tenkan_5M_lower'], limits.elements['IchimokouFlatLines_tenkan_5M_upper'])
+		pr_parameters.elements['IchimokouFlatLines' + '_kijun_5M'] = randint(limits.elements['IchimokouFlatLines_kijun_5M_lower'], limits.elements['IchimokouFlatLines_kijun_5M_upper'])
+		pr_parameters.elements['IchimokouFlatLines' + '_senkou_5M'] = randint(limits.elements['IchimokouFlatLines_senkou_5M_lower'], limits.elements['IchimokouFlatLines_senkou_5M_upper'])
 
 		while pr_parameters.elements['IchimokouFlatLines' + '_tenkan_5M'] >= pr_parameters.elements['IchimokouFlatLines' + '_kijun_5M']:
-			pr_parameters.elements['IchimokouFlatLines' + '_tenkan_5M'] = randint(2, 500)
-			pr_parameters.elements['IchimokouFlatLines' + '_kijun_5M'] = randint(2, 1400)
+			pr_parameters.elements['IchimokouFlatLines' + '_tenkan_5M'] = randint(limits.elements['IchimokouFlatLines_tenkan_5M_lower'], limits.elements['IchimokouFlatLines_tenkan_5M_upper'])
+			pr_parameters.elements['IchimokouFlatLines' + '_kijun_5M'] = randint(limits.elements['IchimokouFlatLines_kijun_5M_lower'], limits.elements['IchimokouFlatLines_kijun_5M_upper'])
 
-		pr_parameters.elements['IchimokouFlatLines' + '_n_cluster_5M'] = randint(1, 50)
-		pr_parameters.elements['IchimokouFlatLines' + '_weight_5M'] = randint(2, 1000)
+		pr_parameters.elements['IchimokouFlatLines' + '_n_cluster_5M'] = randint(limits.elements['IchimokouFlatLines' + '_n_cluster_5M_lower'], limits.elements['IchimokouFlatLines' + '_n_cluster_5M_upper'])
+		pr_parameters.elements['IchimokouFlatLines' + '_weight_5M'] = randint(limits.elements['IchimokouFlatLines' + '_weight_5M_lower'], limits.elements['IchimokouFlatLines' + '_weight_5M_upper'])
 
 
-		pr_parameters.elements['IchimokouFlatLines' + '_tenkan_1H'] = randint(2, 50)
-		pr_parameters.elements['IchimokouFlatLines' + '_kijun_1H'] = randint(2, 110)
-		pr_parameters.elements['IchimokouFlatLines' + '_senkou_1H'] = randint(2, 210)
+		pr_parameters.elements['IchimokouFlatLines' + '_tenkan_1H'] = randint(limits.elements['IchimokouFlatLines_tenkan_1H_lower'], limits.elements['IchimokouFlatLines_tenkan_1H_upper'])
+		pr_parameters.elements['IchimokouFlatLines' + '_kijun_1H'] = randint(limits.elements['IchimokouFlatLines_kijun_1H_lower'], limits.elements['IchimokouFlatLines_kijun_1H_upper'])
+		pr_parameters.elements['IchimokouFlatLines' + '_senkou_1H'] = randint(limits.elements['IchimokouFlatLines_senkou_1H_lower'], limits.elements['IchimokouFlatLines_senkou_1H_upper'])
 
 		while pr_parameters.elements['IchimokouFlatLines' + '_tenkan_1H'] >= pr_parameters.elements['IchimokouFlatLines' + '_kijun_1H']:
-			pr_parameters.elements['IchimokouFlatLines' + '_tenkan_1H'] = randint(2, 500)
-			pr_parameters.elements['IchimokouFlatLines' + '_kijun_1H'] = randint(2, 1400)
+			pr_parameters.elements['IchimokouFlatLines' + '_tenkan_1H'] = randint(limits.elements['IchimokouFlatLines_tenkan_1H_lower'], limits.elements['IchimokouFlatLines_tenkan_1H_upper'])
+			pr_parameters.elements['IchimokouFlatLines' + '_kijun_1H'] = randint(limits.elements['IchimokouFlatLines_kijun_1H_lower'], limits.elements['IchimokouFlatLines_kijun_1H_upper'])
 
 
-		pr_parameters.elements['IchimokouFlatLines' + '_n_cluster_1H'] = randint(1, 50)
-		pr_parameters.elements['IchimokouFlatLines' + '_weight_1H'] = randint(2, 1000)
+		pr_parameters.elements['IchimokouFlatLines' + '_n_cluster_1H'] = randint(limits.elements['IchimokouFlatLines_n_cluster_1H_lower'], limits.elements['IchimokouFlatLines_n_cluster_1H_upper'])
+		pr_parameters.elements['IchimokouFlatLines' + '_weight_1H'] = randint(limits.elements['IchimokouFlatLines_weight_1H_lower'], limits.elements['IchimokouFlatLines_weight_1H_upper'])
 
 		#/////////////////////////////////
 
 
 		#Elemns For BestFinder Module:
 
-		pr_parameters.elements['BestFinder' + '_n_cluster_low'] = randint(1, 50)
-		pr_parameters.elements['BestFinder' + '_n_cluster_high'] = randint(1, 50)
+		pr_parameters.elements['BestFinder' + '_n_cluster_low'] = randint(limits.elements['BestFinder_n_cluster_low_lower'], limits.elements['BestFinder_n_cluster_low_upper'])
+		pr_parameters.elements['BestFinder' + '_n_cluster_high'] = randint(limits.elements['BestFinder_n_cluster_high_lower'], limits.elements['BestFinder_n_cluster_high_upper'])
 
-		pr_parameters.elements['BestFinder' + '_alpha_low'] = randint(1, 99)/100
-		pr_parameters.elements['BestFinder' + '_alpha_high'] = randint(1, 99)/100
+		pr_parameters.elements['BestFinder' + '_alpha_low'] = randint(limits.elements['BestFinder_alpha_low_lower'], limits.elements['BestFinder_alpha_low_upper'])/100
+		pr_parameters.elements['BestFinder' + '_alpha_high'] = randint(limits.elements['BestFinder_alpha_high_lower'], limits.elements['BestFinder_alpha_high_upper'])/100
 
 		#/////////////////////////////////
 
@@ -756,8 +774,8 @@ class Chromosome:
 
 		#*********** Divergence:
 
-		ind_parameters.elements['Divergence' + '_num_exteremes_min'] = randint(2, 250)
-		ind_parameters.elements['Divergence' + '_num_exteremes_max'] = randint(2, 250)
+		ind_parameters.elements['Divergence' + '_num_exteremes_min'] = randint(limits.elements['Divergence_num_exteremes_min_lower'], limits.elements['Divergence_num_exteremes_min_upper'])
+		ind_parameters.elements['Divergence' + '_num_exteremes_max'] = randint(limits.elements['Divergence_num_exteremes_max_lower'], limits.elements['Divergence_num_exteremes_max_upper'])
 
 		ind_parameters.elements['Divergence' + '_diff_extereme'] = 6
 
@@ -765,8 +783,8 @@ class Chromosome:
 
 		#BestFinder:
 
-		ind_parameters.elements['BestFinder' + '_n_clusters'] = randint(1, 50)
-		ind_parameters.elements['BestFinder' + '_alpha'] = randint(1, 99)/100
+		ind_parameters.elements['BestFinder' + '_n_clusters'] = randint(limits.elements['BestFinder_n_clusters_lower'], limits.elements['BestFinder_n_clusters_upper'])
+		ind_parameters.elements['BestFinder' + '_alpha'] = randint(limits.elements['BestFinder_alpha_lower'], limits.elements['BestFinder_alpha_upper'])/100
 
 		#//////////////////////
 
@@ -779,15 +797,15 @@ class Chromosome:
 
 		macd_parameters.elements['MACD' + '_apply_to'] = random.choice(apply_to_list)
 
-		macd_parameters.elements['MACD' + '_fast'] = randint(4, 800)
-		macd_parameters.elements['MACD' + '_slow'] = randint(4, 1500)
+		macd_parameters.elements['MACD' + '_fast'] = randint(limits.elements['MACD' + '_fast_lower'], limits.elements['MACD' + '_fast_upper'])
+		macd_parameters.elements['MACD' + '_slow'] = randint(limits.elements['MACD' + '_slow_lower'], limits.elements['MACD' + '_slow_upper'])
 
 		while macd_parameters.elements['MACD' + '_fast'] >= macd_parameters.elements['MACD' + '_slow']:
-			macd_parameters.elements['MACD' + '_fast'] = randint(4, 800)
-			macd_parameters.elements['MACD' + '_slow'] = randint(4, 1500)
+			macd_parameters.elements['MACD' + '_fast'] = randint(limits.elements['MACD' + '_fast_lower'], limits.elements['MACD' + '_fast_upper'])
+			macd_parameters.elements['MACD' + '_slow'] = randint(limits.elements['MACD' + '_slow_lower'], limits.elements['MACD' + '_slow_upper'])
 
 
-		macd_parameters.elements['MACD' + '_signal'] = randint(4, 50)
+		macd_parameters.elements['MACD' + '_signal'] = randint(limits.elements['MACD' + '_signal_lower'], limits.elements['MACD' + '_signal_upper'])
 
 		macd_parameters.elements['MACD' + '_column_div'] = random.choice(['macd', 'macds', 'macdh'])
 
@@ -1155,7 +1173,516 @@ class Chromosome:
 		return chor
 
 
-# chorom = Chromosome()
+	def ParameterOptimizer(self, path_elites_chromosome, alpha):
+
+		macd_config = MACDConfig()
+
+		if os.path.exists(path_elites_chromosome):
+
+			chromosome = pd.read_csv(path_elites_chromosome).drop(columns='Unnamed: 0')
+
+		upper = 0
+		lower = 2
+
+		MACD_fast = self.Finder(chromosome = chromosome, apply_to = 'MACD_fast', alpha = alpha)
+		limits.elements['MACD_fast_upper'] = round(MACD_fast['interval'][upper])
+		limits.elements['MACD_fast_lower'] = int(MACD_fast['interval'][lower])
+
+		MACD_slow = self.Finder(chromosome = chromosome, apply_to = 'MACD_slow', alpha = alpha)
+		limits.elements['MACD_slow_upper'] = round(MACD_slow['interval'][upper])
+		limits.elements['MACD_slow_lower'] = int(MACD_slow['interval'][lower])
+
+		MACD_signal = self.Finder(chromosome = chromosome, apply_to = 'MACD_signal', alpha = alpha)
+		limits.elements['MACD_signal_upper'] = round(MACD_signal['interval'][upper])
+		limits.elements['MACD_signal_lower'] = int(MACD_signal['interval'][lower])
+
+		Divergence_num_exteremes_min = self.Finder(chromosome = chromosome, apply_to = 'Divergence_num_exteremes_min', alpha = alpha)
+		limits.elements['Divergence_num_exteremes_min_upper'] = round(Divergence_num_exteremes_min['interval'][upper])
+		limits.elements['Divergence_num_exteremes_min_lower'] = int(Divergence_num_exteremes_min['interval'][lower])
+
+		Divergence_num_exteremes_max = self.Finder(chromosome = chromosome, apply_to = 'Divergence_num_exteremes_max', alpha = alpha)
+		limits.elements['Divergence_num_exteremes_max_upper'] = round(Divergence_num_exteremes_max['interval'][upper])
+		limits.elements['Divergence_num_exteremes_max_lower'] = int(Divergence_num_exteremes_max['interval'][lower])
+
+		BestFinder_n_clusters = self.Finder(chromosome = chromosome, apply_to = 'BestFinder_n_clusters', alpha = alpha)
+		limits.elements['BestFinder_n_clusters_upper'] = round(BestFinder_n_clusters['interval'][upper])
+		limits.elements['BestFinder_n_clusters_lower'] = int(BestFinder_n_clusters['interval'][lower])
+
+		BestFinder_alpha = self.Finder(chromosome = chromosome, apply_to = 'BestFinder_alpha', alpha = alpha)
+		limits.elements['BestFinder_alpha_upper'] = round(BestFinder_alpha['interval'][upper])
+		limits.elements['BestFinder_alpha_lower'] = int(BestFinder_alpha['interval'][lower])
+
+		Runner_methode1__lenght_data_5M = self.Finder(chromosome = chromosome, apply_to = 'Runner_methode1__lenght_data_5M', alpha = alpha)
+		limits.elements['Runner_methode1__lenght_data_5M_upper'] = round(Runner_methode1__lenght_data_5M['interval'][upper])
+		limits.elements['Runner_methode1__lenght_data_5M_lower'] = int(Runner_methode1__lenght_data_5M['interval'][lower])
+
+		Runner_methode1__lenght_data_1H = self.Finder(chromosome = chromosome, apply_to = 'Runner_methode1__lenght_data_1H', alpha = alpha)
+		limits.elements['Runner_methode1__lenght_data_1H_upper'] = round(Runner_methode1__lenght_data_1H['interval'][upper])
+		limits.elements['Runner_methode1__lenght_data_1H_lower'] = int(Runner_methode1__lenght_data_1H['interval'][lower])
+
+		ExtremePoints_num_max_5M = self.Finder(chromosome = chromosome, apply_to = 'ExtremePoints_num_max_5M', alpha = alpha)
+		limits.elements['ExtremePoints_num_max_5M_upper'] = round(ExtremePoints_num_max_5M['interval'][upper])
+		limits.elements['ExtremePoints_num_max_5M_lower'] = int(ExtremePoints_num_max_5M['interval'][lower])
+
+		ExtremePoints_num_min_5M = self.Finder(chromosome = chromosome, apply_to = 'ExtremePoints_num_min_5M', alpha = alpha)
+		limits.elements['ExtremePoints_num_min_5M_upper'] = round(ExtremePoints_num_min_5M['interval'][upper])
+		limits.elements['ExtremePoints_num_min_5M_lower'] = int(ExtremePoints_num_min_5M['interval'][lower])
+
+		ExtremePoints_weight_5M = self.Finder(chromosome = chromosome, apply_to = 'ExtremePoints_weight_5M', alpha = alpha)
+		limits.elements['ExtremePoints_weight_5M_upper'] = round(ExtremePoints_weight_5M['interval'][upper])
+		limits.elements['ExtremePoints_weight_5M_lower'] = int(ExtremePoints_weight_5M['interval'][lower])
+
+		ExtremePoints_num_max_1H = self.Finder(chromosome = chromosome, apply_to = 'ExtremePoints_num_max_1H', alpha = alpha)
+		limits.elements['ExtremePoints_num_max_1H_upper'] = round(ExtremePoints_num_max_1H['interval'][upper])
+		limits.elements['ExtremePoints_num_max_1H_lower'] = int(ExtremePoints_num_max_1H['interval'][lower])
+
+		ExtremePoints_num_min_1H = self.Finder(chromosome = chromosome, apply_to = 'ExtremePoints_num_min_1H', alpha = alpha)
+		limits.elements['ExtremePoints_num_min_1H_upper'] = round(ExtremePoints_num_min_1H['interval'][upper])
+		limits.elements['ExtremePoints_num_min_1H_lower'] = int(ExtremePoints_num_min_1H['interval'][lower])
+
+		ExtremePoints_weight_1H = self.Finder(chromosome = chromosome, apply_to = 'ExtremePoints_weight_1H', alpha = alpha)
+		limits.elements['ExtremePoints_weight_1H_upper'] = round(ExtremePoints_weight_1H['interval'][upper])
+		limits.elements['ExtremePoints_weight_1H_lower'] = int(ExtremePoints_weight_1H['interval'][lower])
+
+		TrendLines_num_max_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_num_max_5M', alpha = alpha)
+		limits.elements['TrendLines_num_max_5M_upper'] = round(TrendLines_num_max_5M['interval'][upper])
+		limits.elements['TrendLines_num_max_5M_lower'] = int(TrendLines_num_max_5M['interval'][lower])
+
+		TrendLines_num_max_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_num_max_5M', alpha = alpha)
+		limits.elements['TrendLines_num_max_5M_upper'] = round(TrendLines_num_max_5M['interval'][upper])
+		limits.elements['TrendLines_num_max_5M_lower'] = int(TrendLines_num_max_5M['interval'][lower])
+
+		TrendLines_num_min_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_num_min_5M', alpha = alpha)
+		limits.elements['TrendLines_num_min_5M_upper'] = round(TrendLines_num_min_5M['interval'][upper])
+		limits.elements['TrendLines_num_min_5M_lower'] = int(TrendLines_num_min_5M['interval'][lower])
+
+		TrendLines_weight_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_weight_5M', alpha = alpha)
+		limits.elements['TrendLines_weight_5M_upper'] = round(TrendLines_weight_5M['interval'][upper])
+		limits.elements['TrendLines_weight_5M_lower'] = int(TrendLines_weight_5M['interval'][lower])
+
+		TrendLines_num_max_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_num_max_1H', alpha = alpha)
+		limits.elements['TrendLines_num_max_1H_upper'] = round(TrendLines_num_max_1H['interval'][upper])
+		limits.elements['TrendLines_num_max_1H_lower'] = int(TrendLines_num_max_1H['interval'][lower])
+
+		TrendLines_num_min_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_num_min_1H', alpha = alpha)
+		limits.elements['TrendLines_num_min_1H_upper'] = round(TrendLines_num_min_1H['interval'][upper])
+		limits.elements['TrendLines_num_min_1H_lower'] = int(TrendLines_num_min_1H['interval'][lower])
+
+		TrendLines_weight_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_weight_1H', alpha = alpha)
+		limits.elements['TrendLines_weight_1H_upper'] = round(TrendLines_weight_1H['interval'][upper])
+		limits.elements['TrendLines_weight_1H_lower'] = int(TrendLines_weight_1H['interval'][lower])
+
+		TrendLines_length_long_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_length_long_5M', alpha = alpha)
+		limits.elements['TrendLines_length_long_5M_upper'] = round(TrendLines_length_long_5M['interval'][upper])
+		limits.elements['TrendLines_length_long_5M_lower'] = int(TrendLines_length_long_5M['interval'][lower])
+
+		TrendLines_length_mid_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_length_mid_5M', alpha = alpha)
+		limits.elements['TrendLines_length_mid_5M_upper'] = round(TrendLines_length_mid_5M['interval'][upper])
+		limits.elements['TrendLines_length_mid_5M_lower'] = int(TrendLines_length_mid_5M['interval'][lower])
+
+		TrendLines_length_short1_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_length_short1_5M', alpha = alpha)
+		limits.elements['TrendLines_length_short1_5M_upper'] = round(TrendLines_length_short1_5M['interval'][upper])
+		limits.elements['TrendLines_length_short1_5M_lower'] = int(TrendLines_length_short1_5M['interval'][lower])
+
+		TrendLines_length_short2_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_length_short2_5M', alpha = alpha)
+		limits.elements['TrendLines_length_short2_5M_upper'] = round(TrendLines_length_short2_5M['interval'][upper])
+		limits.elements['TrendLines_length_short2_5M_lower'] = int(TrendLines_length_short2_5M['interval'][lower])
+
+		TrendLines_length_long_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_length_long_1H', alpha = alpha)
+		limits.elements['TrendLines_length_long_1H_upper'] = round(TrendLines_length_long_1H['interval'][upper])
+		limits.elements['TrendLines_length_long_1H_lower'] = int(TrendLines_length_long_1H['interval'][lower])
+
+		TrendLines_length_mid_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_length_mid_1H', alpha = alpha)
+		limits.elements['TrendLines_length_mid_1H_upper'] = round(TrendLines_length_mid_1H['interval'][upper])
+		limits.elements['TrendLines_length_mid_1H_lower'] = int(TrendLines_length_mid_1H['interval'][lower])
+
+		TrendLines_length_short1_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_length_short1_1H', alpha = alpha)
+		limits.elements['TrendLines_length_short1_1H_upper'] = round(TrendLines_length_short1_1H['interval'][upper])
+		limits.elements['TrendLines_length_short1_1H_lower'] = int(TrendLines_length_short1_1H['interval'][lower])
+
+		TrendLines_length_short2_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_length_short2_1H', alpha = alpha)
+		limits.elements['TrendLines_length_short2_1H_upper'] = round(TrendLines_length_short2_1H['interval'][upper])
+		limits.elements['TrendLines_length_short2_1H_lower'] = int(TrendLines_length_short2_1H['interval'][lower])
+
+		TrendLines_power_long_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_power_long_5M', alpha = alpha)
+		limits.elements['TrendLines_power_long_5M_upper'] = round(TrendLines_power_long_5M['interval'][upper])
+		limits.elements['TrendLines_power_long_5M_lower'] = int(TrendLines_power_long_5M['interval'][lower])
+
+		TrendLines_power_mid_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_power_mid_5M', alpha = alpha)
+		limits.elements['TrendLines_power_mid_5M_upper'] = round(TrendLines_power_mid_5M['interval'][upper])
+		limits.elements['TrendLines_power_mid_5M_lower'] = int(TrendLines_power_mid_5M['interval'][lower])
+
+		TrendLines_power_short1 = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_power_short1_5M', alpha = alpha)
+		limits.elements['TrendLines_power_short1_5M_upper'] = round(TrendLines_power_short1['interval'][upper])
+		limits.elements['TrendLines_power_short1_5M_lower'] = int(TrendLines_power_short1['interval'][lower])
+
+		TrendLines_power_short2_5M = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_power_short2_5M', alpha = alpha)
+		limits.elements['TrendLines_power_short2_5M_upper'] = round(TrendLines_power_short2_5M['interval'][upper])
+		limits.elements['TrendLines_power_short2_5M_lower'] = int(TrendLines_power_short2_5M['interval'][lower])
+
+		TrendLines_power_long_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_power_long_1H', alpha = alpha)
+		limits.elements['TrendLines_power_long_1H_upper'] = round(TrendLines_power_long_1H['interval'][upper])
+		limits.elements['TrendLines_power_long_1H_lower'] = int(TrendLines_power_long_1H['interval'][lower])
+
+		TrendLines_power_mid_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_power_mid_1H', alpha = alpha)
+		limits.elements['TrendLines_power_mid_1H_upper'] = round(TrendLines_power_mid_1H['interval'][upper])
+		limits.elements['TrendLines_power_mid_1H_lower'] = int(TrendLines_power_mid_1H['interval'][lower])
+
+		TrendLines_power_short1_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_power_short1_1H', alpha = alpha)
+		limits.elements['TrendLines_power_short1_1H_upper'] = round(TrendLines_power_short1_1H['interval'][upper])
+		limits.elements['TrendLines_power_short1_1H_lower'] = int(TrendLines_power_short1_1H['interval'][lower])
+
+		TrendLines_power_short2_1H = self.Finder(chromosome = chromosome, apply_to = 'TrendLines_power_short2_1H', alpha = alpha)
+		limits.elements['TrendLines_power_short2_1H_upper'] = round(TrendLines_power_short2_1H['interval'][upper])
+		limits.elements['TrendLines_power_short2_1H_lower'] = int(TrendLines_power_short2_1H['interval'][lower])
+
+		IchimokouFlatLines_tenkan_5M = self.Finder(chromosome = chromosome, apply_to = 'IchimokouFlatLines_tenkan_5M', alpha = alpha)
+		limits.elements['IchimokouFlatLines_tenkan_5M_upper'] = round(IchimokouFlatLines_tenkan_5M['interval'][upper])
+		limits.elements['IchimokouFlatLines_tenkan_5M_lower'] = int(IchimokouFlatLines_tenkan_5M['interval'][lower])
+
+		IchimokouFlatLines_kijun_5M = self.Finder(chromosome = chromosome, apply_to = 'IchimokouFlatLines_kijun_5M', alpha = alpha)
+		limits.elements['IchimokouFlatLines_kijun_5M_upper'] = round(IchimokouFlatLines_kijun_5M['interval'][upper])
+		limits.elements['IchimokouFlatLines_kijun_5M_lower'] = int(IchimokouFlatLines_kijun_5M['interval'][lower])
+
+		IchimokouFlatLines_senkou_5M = self.Finder(chromosome = chromosome, apply_to = 'IchimokouFlatLines_senkou_5M', alpha = alpha)
+		limits.elements['IchimokouFlatLines_senkou_5M_upper'] = round(IchimokouFlatLines_senkou_5M['interval'][upper])
+		limits.elements['IchimokouFlatLines_senkou_5M_lower'] = int(IchimokouFlatLines_senkou_5M['interval'][lower])
+
+		IchimokouFlatLines_n_cluster_5M = self.Finder(chromosome = chromosome, apply_to = 'IchimokouFlatLines_n_cluster_5M', alpha = alpha)
+		limits.elements['IchimokouFlatLines_n_cluster_5M_upper'] = round(IchimokouFlatLines_n_cluster_5M['interval'][upper])
+		limits.elements['IchimokouFlatLines_n_cluster_5M_lower'] = int(IchimokouFlatLines_n_cluster_5M['interval'][lower])
+
+		IchimokouFlatLines_weight_5M = self.Finder(chromosome = chromosome, apply_to = 'IchimokouFlatLines_weight_5M', alpha = alpha)
+		limits.elements['IchimokouFlatLines_weight_5M_upper'] = round(IchimokouFlatLines_weight_5M['interval'][upper])
+		limits.elements['IchimokouFlatLines_weight_5M_lower'] = int(IchimokouFlatLines_weight_5M['interval'][lower])
+
+		IchimokouFlatLines_tenkan_1H = self.Finder(chromosome = chromosome, apply_to = 'IchimokouFlatLines_tenkan_1H', alpha = alpha)
+		limits.elements['IchimokouFlatLines_tenkan_1H_upper'] = round(IchimokouFlatLines_tenkan_1H['interval'][upper])
+		limits.elements['IchimokouFlatLines_tenkan_1H_lower'] = int(IchimokouFlatLines_tenkan_1H['interval'][lower])
+
+		IchimokouFlatLines_kijun_1H = self.Finder(chromosome = chromosome, apply_to = 'IchimokouFlatLines_kijun_1H', alpha = alpha)
+		limits.elements['IchimokouFlatLines_kijun_1H_upper'] = round(IchimokouFlatLines_kijun_1H['interval'][upper])
+		limits.elements['IchimokouFlatLines_kijun_1H_lower'] = int(IchimokouFlatLines_kijun_1H['interval'][lower])
+
+		IchimokouFlatLines_senkou_1H = self.Finder(chromosome = chromosome, apply_to = 'IchimokouFlatLines_senkou_1H', alpha = alpha)
+		limits.elements['IchimokouFlatLines_senkou_1H_upper'] = round(IchimokouFlatLines_senkou_1H['interval'][upper])
+		limits.elements['IchimokouFlatLines_senkou_1H_lower'] = int(IchimokouFlatLines_senkou_1H['interval'][lower])
+
+		IchimokouFlatLines_n_cluster_1H = self.Finder(chromosome = chromosome, apply_to = 'IchimokouFlatLines_n_cluster_1H', alpha = alpha)
+		limits.elements['IchimokouFlatLines_n_cluster_1H_upper'] = round(IchimokouFlatLines_n_cluster_1H['interval'][upper])
+		limits.elements['IchimokouFlatLines_n_cluster_1H_lower'] = int(IchimokouFlatLines_n_cluster_1H['interval'][lower])
+
+		IchimokouFlatLines_weight_1H = self.Finder(chromosome = chromosome, apply_to = 'IchimokouFlatLines_weight_1H', alpha = alpha)
+		limits.elements['IchimokouFlatLines_weight_1H_upper'] = round(IchimokouFlatLines_weight_1H['interval'][upper])
+		limits.elements['IchimokouFlatLines_weight_1H_lower'] = int(IchimokouFlatLines_weight_1H['interval'][lower])
+
+		BestFinder_n_cluster_low = self.Finder(chromosome = chromosome, apply_to = 'BestFinder_n_cluster_low', alpha = alpha)
+		limits.elements['BestFinder_n_cluster_low_upper'] = round(BestFinder_n_cluster_low['interval'][upper])
+		limits.elements['BestFinder_n_cluster_low_lower'] = int(BestFinder_n_cluster_low['interval'][lower])
+
+		BestFinder_n_cluster_high = self.Finder(chromosome = chromosome, apply_to = 'BestFinder_n_cluster_high', alpha = alpha)
+		limits.elements['BestFinder_n_cluster_high_upper'] = round(BestFinder_n_cluster_high['interval'][upper])
+		limits.elements['BestFinder_n_cluster_high_lower'] = int(BestFinder_n_cluster_high['interval'][lower])
+
+		BestFinder_alpha_low = self.Finder(chromosome = chromosome, apply_to = 'BestFinder_alpha_low', alpha = alpha)
+		limits.elements['BestFinder_alpha_low_upper'] = round(BestFinder_alpha_low['interval'][upper])
+		limits.elements['BestFinder_alpha_low_lower'] = int(BestFinder_alpha_low['interval'][lower])
+
+		BestFinder_alpha_high = self.Finder(chromosome = chromosome, apply_to = 'BestFinder_alpha_high', alpha = alpha)
+		limits.elements['BestFinder_alpha_high_upper'] = round(BestFinder_alpha_high['interval'][upper])
+		limits.elements['BestFinder_alpha_high_lower'] = int(BestFinder_alpha_high['interval'][lower])
+
+
+	def Finder(self, chromosome, apply_to, alpha):
+
+		signal_good = chromosome.copy(deep = True)
+
+		if (signal_good.empty == True): 
+			best_signals_interval = pd.DataFrame(
+											{
+											'interval': [0,0,0],
+											'power': [0,0,0],
+											'alpha': [alpha,alpha,alpha],
+											}
+											)
+			return best_signals_interval
+
+		#signal_good = signal_good.replace([np.inf, -np.inf], np.nan, inplace=False)
+		#signal_good = signal_good.drop(columns = ['index'])
+		#signal_good = signal_good.sort_values()
+		signal_good = signal_good.reset_index(drop = True)
+
+		try:
+
+			signal_final, kmeans = self.Clustere(signal_good = signal_good, apply_to = apply_to)
+
+		except Exception as ex:
+			#print('Kmeans Error  = ',ex)
+			best_signals_interval = pd.DataFrame(
+											{
+											'interval': [0,0,0],
+											'power': [0,0,0],
+											'alpha': [alpha,alpha,alpha],
+											}
+											)
+			return best_signals_interval
+
+
+
+
+
+		#Fitting Model Finding ****************************
+		data_X = self.DataPreparer(signal_pred_final = signal_final)
+
+		#************************************ Finding Sell's ****************************
+
+		dist_item, f = self.DistributePreparer(
+												data = data_X,
+												signal_pred_final = signal_final,
+												distributions = ['expon', 'norm']
+												)
+
+		if dist_item != '':
+			Upper_Line, Mid_Line, Lower_Line, Power_Upper_Line, Power_Mid_Line, Power_Lower_Line = self.ValuesPreparer(
+																														dist_items = dist_item,
+																														f = f,
+																														data = data_X,
+																														signal_pred_final = signal_final,
+																														alpha = alpha,
+																														kmeans_f = kmeans,
+																														distributions = ['expon', 'norm']
+																														)
+		best_signals_interval = pd.DataFrame(
+										{
+										'interval': [Upper_Line,Mid_Line,Lower_Line],
+										'power': [Power_Upper_Line,Power_Mid_Line,Power_Lower_Line],
+										'alpha': [alpha,alpha,alpha],
+										}
+										)
+
+		return best_signals_interval
+
+		#//////////////////////////////////////////////////////////////////////////////////////
+
+	def Clustere(self, signal_good, apply_to):
+
+		kmeans = KMeans(
+						#n_clusters = 5, 
+						random_state=0,
+						init='k-means++',
+						n_init=5,
+						max_iter=5,
+
+						)
+		signal_good_kmeans = signal_good[apply_to]
+		signal_good_kmeans = signal_good_kmeans.dropna()
+		#Model Fitting
+		kmeans = kmeans.fit(signal_good_kmeans.to_numpy().reshape(-1,1), sample_weight = signal_good['score'].dropna().to_numpy())
+
+		Y = kmeans.cluster_centers_
+		Power = kmeans.labels_
+		Power = np.bincount(Power)
+
+		signal_final = pd.DataFrame(Y, columns=['Y'])
+		signal_final['power'] = Power
+		signal_final = signal_final.sort_values(by = ['Y'])
+
+		return signal_final, kmeans
+
+	def DataPreparer(
+					self,
+					signal_pred_final
+					):
+
+		#Fitting Model Finding ****************************
+		#Make To DataFrame With Extreme Points And Num Of Itteration For Distribution Functions:
+		data_X = np.zeros(np.sum(signal_pred_final['power']))
+
+		j = 0
+		z = 0
+		for elm in signal_pred_final['Y']:
+			k = 0
+			while k < signal_pred_final['power'].to_numpy()[j]:
+				data_X[z] = elm
+				k += 1
+				z += 1
+			j += 1
+
+		data_X = np.sort(data_X)
+
+		return data_X
+
+	def DistributePreparer(
+							self,
+							data,
+							signal_pred_final,
+							distributions
+							):
+		#'rayleigh','nakagami','expon','foldnorm','dweibull',
+
+		#Define Name Of Distributions that We Want To Use:
+		#distributions = 
+
+		#************************************ Finding Low Distribution Functions ****************************
+
+		try:
+			#Fitter Finding Best Function That Can Distribute Or Low Extremes:
+			f = Fitter(
+						data = data,
+						xmin = np.min(data),
+						xmax = np.max(data),
+						bins = len(signal_pred_final['Y'])-1,
+						distributions = distributions,
+						timeout = 1,
+						density = True
+						)
+
+			f.fit(
+				amp = 1, 
+				progress = False, 
+				n_jobs = -1
+				)
+
+			#Getting the Name of Best Destributer Functions and that Parameters:
+			dist_items = list(f.get_best(method = 'sumsquare_error').items())
+
+		except Exception as ex:
+			print('DistP Error = ',ex)
+			dist_items = ''
+
+		return dist_items, f
+
+
+	def ValuesPreparer(
+						self,
+						dist_items,
+						f,
+						data,
+						signal_pred_final,
+						alpha,
+						kmeans_f,
+						distributions
+						):
+
+
+		#************************************ Finding Low Distribution Functions ****************************
+
+		try:
+			#Getting the Name of Best Destributer Functions and that Parameters:
+			dist_name = dist_items[0][0]
+			dist_parameters = dist_items[0][1]
+			#Finding Best Points Of Low Extremes With Best Distributed Function and That Parameters:
+			if dist_name == 'expon':
+
+
+				Y = f.fitted_pdf['expon']
+				#Using Probability Distribution Function From Scipy Library:
+				Y = expon.pdf(
+								x=data, 
+								loc=dist_parameters['loc'], 
+								scale=dist_parameters['scale']
+								)
+				#Finding Best Interval Low Points:
+				Extereme = expon.interval(
+										alpha=alpha, 
+										loc=dist_parameters['loc'], 
+										scale=dist_parameters['scale']
+										)
+
+				Upper_Line = Extereme[1]
+				Lower_Line = Extereme[0]
+				Mid_Line = np.array(dist_parameters['loc'])
+
+				Power_Upper_Line = signal_pred_final['power'][
+																		kmeans_f.predict(Upper_Line.reshape(1,-1))
+																		].to_numpy()/np.max(signal_pred_final['power'])
+
+				Power_Lower_Line = signal_pred_final['power'][
+																		kmeans_f.predict(Lower_Line.reshape(1,-1))
+																		].to_numpy()/np.max(signal_pred_final['power'])
+				Power_Mid_Line = signal_pred_final['power'][
+																		kmeans_f.predict(Mid_Line.reshape(1,-1))
+																		].to_numpy()/np.max(signal_pred_final['power'])
+			
+			elif dist_name == 'norm':
+
+				Y = f.fitted_pdf['norm']
+
+				Y = norm.pdf(
+							x=data, 
+							loc=dist_parameters['loc'], 
+							scale=dist_parameters['scale']
+							)
+
+				Extereme = norm.interval(
+										alpha=alpha, 
+										loc=dist_parameters['loc'], 
+										scale=dist_parameters['scale']
+										)
+
+				Upper_Line = Extereme[1]
+				Lower_Line = Extereme[0]
+				Mid_Line = np.array(dist_parameters['loc'])
+				Power_Upper_Line = signal_pred_final['power'][
+																	kmeans_f.predict(Upper_Line.reshape(1,-1))
+																	].to_numpy()/np.max(signal_pred_final['power'])
+				Power_Lower_Line = signal_pred_final['power'][
+																	kmeans_f.predict(Lower_Line.reshape(1,-1))
+																	].to_numpy()/np.max(signal_pred_final['power'])
+				Power_Mid_Line = signal_pred_final['power'][
+																	kmeans_f.predict(Mid_Line.reshape(1,-1))
+																	].to_numpy()/np.max(signal_pred_final['power'])
+			if (
+				Mid_Line >= Upper_Line or
+				Mid_Line <= Lower_Line
+				):
+				if len(distributions) > 0:
+
+					distributions.remove(dist_name)
+
+					dist_item, f = self.DistributePreparer(
+																data = data,
+																signal_pred_final = signal_pred_final,
+																distributions = distributions
+																)
+					Upper_Line, Mid_Line, Lower_Line, Power_Upper_Line, Power_Mid_Line, Power_Lower_Line = self.ValuesPreparer(
+																																dist_items = dist_item,
+																																f = f,
+																																data = data,
+																																signal_pred_final = signal_pred_final,
+																																alpha = alpha,
+																																kmeans_f = kmeans_f,
+																																distributions = distributions
+																																)
+				else:
+					Upper_Line = 0
+					Lower_Line = 0
+					Mid_Line = 0
+					Power_Upper_Line = 0
+					Power_Lower_Line = 0
+					Power_Mid_Line = 0
+			
+		except Exception as ex:
+			print(ex)
+			Upper_Line = 0
+			Lower_Line = 0
+			Mid_Line = 0
+			Power_Upper_Line = 0
+			Power_Lower_Line = 0
+			Power_Mid_Line = 0
+
+		return Upper_Line, Mid_Line, Lower_Line, Power_Upper_Line, Power_Mid_Line, Power_Lower_Line
+
+
+
+# parameters = MACDParameters()
+# chorom = Chromosome(parameters)
+
+
+# chorom.ParameterOptimizer(
+# 						path_elites_chromosome = 'GeneticLearning_DB/elites/' + 'primary' + '/' + 'buy' + '/' + 'ETHUSD_i' + '_ChromosomeResults.csv',
+# 						alpha = 0.4
+# 						)
 
 # chromosomes = chorom.Initializer(
 # 								signaltype = 'buy',

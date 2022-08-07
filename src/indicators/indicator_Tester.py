@@ -141,7 +141,7 @@ class Tester:
 
 		#///////////////////////////
 
-		if scores_out['num_trade_pr'][0] != 0:
+		if scores_out['num_tp_pr'][0] != 0:
 
 			if scores_out['num_trade_pr'][0] >= 100:
 				score_num_tp = ((scores_out['num_tp_pr'][0]-scores_out['num_st_pr'][0])/scores_out['num_tp_pr'][0]) * 100
@@ -154,7 +154,7 @@ class Tester:
 		if score_num_tp <= 0: score_num_tp = 1
 
 
-		if (scores_out['mean_tp_pr'][0]+scores_out['mean_st_pr'][0]) != 0:
+		if (scores_out['mean_tp_pr'][0]) != 0:
 			score_mean_tp = ((scores_out['mean_tp_pr'][0]-scores_out['mean_st_pr'][0])/(scores_out['mean_tp_pr'][0])) * 100
 		else:
 			score_mean_tp = 1
@@ -162,7 +162,7 @@ class Tester:
 		if score_mean_tp <= 0: score_mean_tp = 1
 
 
-		if (scores_out['max_tp_pr'][0]+scores_out['max_st_pr'][0]) != 0:
+		if (scores_out['max_tp_pr'][0]) != 0:
 			score_max_tp = ((scores_out['max_tp_pr'][0]-scores_out['max_st_pr'][0])/(scores_out['max_tp_pr'][0])) * 100
 		else:
 			score_max_tp = 1
@@ -170,8 +170,14 @@ class Tester:
 		if score_max_tp <= 0: score_max_tp = 1
 
 
-		if (scores_out['sum_tp_pr'][0]+scores_out['sum_st_pr'][0]) != 0:
-			score_sum_tp = ((scores_out['sum_tp_pr'][0]-scores_out['sum_st_pr'][0])/(scores_out['sum_tp_pr'][0])) * 100
+		if (scores_out['sum_tp_pr'][0]) != 0:
+
+			if scores_out['sum_tp_pr'][0] >= 100:
+				score_sum_tp = ((scores_out['sum_tp_pr'][0]-scores_out['sum_st_pr'][0])/(scores_out['sum_tp_pr'][0])) * 100
+
+			else:
+				score_sum_tp = ((scores_out['sum_tp_pr'][0]-scores_out['sum_st_pr'][0])/ 100) * 100
+
 		else:
 			score_sum_tp = 1
 
@@ -187,6 +193,13 @@ class Tester:
 		score_money = ((ideal_money - signal['money'][np.max(signal['money'].index)])/ideal_money) * 100
 		if score_money < 0: score_money = 0
 		score_money = 100 - score_money
+
+		if signal['money'][np.max(signal['money'].index)] >= 1200:
+			score_money = score_money
+
+		else:
+			score_money = score_money/10
+			
 		scores_out['money'] = [signal['money'][np.max(signal['money'].index)]]
 
 		if score_money <= 0: score_money = 1

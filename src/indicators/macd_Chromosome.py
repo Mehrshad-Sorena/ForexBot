@@ -846,9 +846,9 @@ class Chromosome:
 				):
 
 		Chromosome[chrom_counter]['MACD_apply_to'] = random.choice(apply_to_list)
-		Chromosome[chrom_counter]['BestFinder_alpha'] = randint(1, 99)/100
-		Chromosome[chrom_counter]['BestFinder_alpha_low'] = randint(1, 99)/100
-		Chromosome[chrom_counter]['BestFinder_alpha_high'] = randint(1, 99)/100
+		Chromosome[chrom_counter]['BestFinder_alpha'] = randint(limits.elements['BestFinder_alpha_lower'], limits.elements['BestFinder_alpha_upper'])/100
+		Chromosome[chrom_counter]['BestFinder_alpha_low'] = randint(limits.elements['BestFinder_alpha_low_lower'], limits.elements['BestFinder_alpha_low_upper'])/100
+		Chromosome[chrom_counter]['BestFinder_alpha_high'] = randint(limits.elements['BestFinder_alpha_high_lower'], limits.elements['BestFinder_alpha_high_upper'])/100
 
 		if scoresdataframe['diff_extereme'][0] != 0:
 			Chromosome[chrom_counter]['Divergence_diff_extereme'] = scoresdataframe['diff_extereme'][0]
@@ -884,20 +884,20 @@ class Chromosome:
 		Chromosome[chrom_counter]['tp_percent_min'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 		Chromosome[chrom_counter]['tp_percent_max'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 
-		fast_period = randint(int(12/4), 800)
+		fast_period = randint(limits.elements['MACD_fast_lower'], limits.elements['MACD_fast_upper'])
 		while Chromosome[chrom_counter]['MACD_slow'] < fast_period:
-			fast_period = randint(4, 800)
+			fast_period = randint(limits.elements['MACD_fast_lower'], limits.elements['MACD_fast_upper'])
 			
 		
 		Chromosome[chrom_counter]['MACD_apply_to'] = random.choice(apply_to_list)
 		Chromosome[chrom_counter]['MACD_fast'] = fast_period
-		Chromosome[chrom_counter]['MACD_signal'] = randint(4, 50)
-		Chromosome[chrom_counter]['BestFinder_alpha'] = randint(1, 99)/100
-		Chromosome[chrom_counter]['BestFinder_alpha_low'] = randint(1, 99)/100
-		Chromosome[chrom_counter]['BestFinder_alpha_high'] = randint(1, 99)/100
+		Chromosome[chrom_counter]['MACD_signal'] = randint(limits.elements['MACD_signal_lower'], limits.elements['MACD_signal_upper'])
+		Chromosome[chrom_counter]['BestFinder_alpha'] = randint(limits.elements['BestFinder_alpha_lower'], limits.elements['BestFinder_alpha_upper'])/100
+		Chromosome[chrom_counter]['BestFinder_alpha_low'] = randint(limits.elements['BestFinder_alpha_low_lower'], limits.elements['BestFinder_alpha_low_upper'])/100
+		Chromosome[chrom_counter]['BestFinder_alpha_high'] = randint(limits.elements['BestFinder_alpha_high_lower'], limits.elements['BestFinder_alpha_high_upper'])/100
 		Chromosome[chrom_counter]['Divergence_diff_extereme'] = 6
-		Chromosome[chrom_counter]['Divergence_num_exteremes_max'] = randint(2, 250)
-		Chromosome[chrom_counter]['Divergence_num_exteremes_min'] = randint(2, 250)
+		Chromosome[chrom_counter]['Divergence_num_exteremes_max'] = randint(limits.elements['Divergence_num_exteremes_max_lower'], limits.elements['Divergence_num_exteremes_max_upper'])
+		Chromosome[chrom_counter]['Divergence_num_exteremes_min'] = randint(limits.elements['Divergence_num_exteremes_min_lower'], limits.elements['Divergence_num_exteremes_min_upper'])
 
 		Chromosome[chrom_counter]['score'] = 0
 		Chromosome[chrom_counter]['islearned'] = False
@@ -928,15 +928,15 @@ class Chromosome:
 		Chromosome[chrom_counter]['tp_percent_min'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 		Chromosome[chrom_counter]['tp_percent_max'] = randint(self.elements['tp_percent_down'], self.elements['tp_percent_up'])/100
 
-		Chromosome[chrom_counter]['MACD_signal'] = randint(4, 50)
+		Chromosome[chrom_counter]['MACD_signal'] = randint(limits.elements['MACD_signal_lower'], limits.elements['MACD_signal_upper'])
 		Chromosome[chrom_counter]['MACD_apply_to'] = random.choice(apply_to_list)
 
-		Chromosome[chrom_counter]['BestFinder_alpha'] = randint(1, 99)/100
-		Chromosome[chrom_counter]['BestFinder_alpha_low'] = randint(1, 99)/100
-		Chromosome[chrom_counter]['BestFinder_alpha_high'] = randint(1, 99)/100
+		Chromosome[chrom_counter]['BestFinder_alpha'] = randint(limits.elements['BestFinder_alpha_lower'], limits.elements['BestFinder_alpha_upper'])/100
+		Chromosome[chrom_counter]['BestFinder_alpha_low'] = randint(limits.elements['BestFinder_alpha_low_lower'], limits.elements['BestFinder_alpha_low_upper'])/100
+		Chromosome[chrom_counter]['BestFinder_alpha_high'] = randint(limits.elements['BestFinder_alpha_high_lower'], limits.elements['BestFinder_alpha_high_upper'])/100
 
-		Chromosome[chrom_counter]['Divergence_num_exteremes_max'] = randint(2, 250)
-		Chromosome[chrom_counter]['Divergence_num_exteremes_min'] = randint(2, 250)
+		Chromosome[chrom_counter]['Divergence_num_exteremes_max'] = randint(limits.elements['Divergence_num_exteremes_max_lower'], limits.elements['Divergence_num_exteremes_max_upper'])
+		Chromosome[chrom_counter]['Divergence_num_exteremes_min'] = randint(limits.elements['Divergence_num_exteremes_min_lower'], limits.elements['Divergence_num_exteremes_min_upper'])
 
 		Chromosome[chrom_counter]['Divergence_diff_extereme'] = 6
 

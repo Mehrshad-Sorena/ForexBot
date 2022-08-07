@@ -142,12 +142,13 @@ class Tester:
 		#///////////////////////////
 
 		if scores_out['num_tp_pr'][0] != 0:
+			score_num_tp = ((scores_out['num_tp_pr'][0]-scores_out['num_st_pr'][0])/scores_out['num_tp_pr'][0]) * 100
 
 			if scores_out['num_trade_pr'][0] >= 100:
-				score_num_tp = ((scores_out['num_tp_pr'][0]-scores_out['num_st_pr'][0])/scores_out['num_tp_pr'][0]) * 100
+				score_num_tp = score_num_tp
 
 			else:
-				score_num_tp = ((scores_out['num_tp_pr'][0]-scores_out['num_st_pr'][0])/100) * 100
+				score_num_tp = score_num_tp / 10
 		else:
 			score_num_tp = 1
 
@@ -172,11 +173,13 @@ class Tester:
 
 		if (scores_out['sum_tp_pr'][0]) != 0:
 
+			score_sum_tp = ((scores_out['sum_tp_pr'][0]-scores_out['sum_st_pr'][0])/(scores_out['sum_tp_pr'][0])) * 100
+
 			if scores_out['sum_tp_pr'][0] >= 100:
-				score_sum_tp = ((scores_out['sum_tp_pr'][0]-scores_out['sum_st_pr'][0])/(scores_out['sum_tp_pr'][0])) * 100
+				score_sum_tp = score_sum_tp
 
 			else:
-				score_sum_tp = ((scores_out['sum_tp_pr'][0]-scores_out['sum_st_pr'][0])/ 100) * 100
+				score_sum_tp = score_sum_tp / 10
 
 		else:
 			score_sum_tp = 1
@@ -199,7 +202,7 @@ class Tester:
 
 		else:
 			score_money = score_money/10
-			
+
 		scores_out['money'] = [signal['money'][np.max(signal['money'].index)]]
 
 		if score_money <= 0: score_money = 1

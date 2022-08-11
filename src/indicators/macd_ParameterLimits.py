@@ -23,8 +23,8 @@ class ParameterLimits:
 							'Divergence_num_exteremes_min_upper': 250,
 							'Divergence_num_exteremes_min_lower': 2,
 
-							'Divergence_num_exteremes_max_upper': 2,
-							'Divergence_num_exteremes_max_lower': 250,
+							'Divergence_num_exteremes_max_upper': 250,
+							'Divergence_num_exteremes_max_lower': 2,
 
 							'BestFinder_n_clusters_upper': 50,
 							'BestFinder_n_clusters_lower': 1,
@@ -143,8 +143,8 @@ class ParameterLimits:
 							'IchimokouFlatLines_kijun_1H_upper': 110,
 							'IchimokouFlatLines_kijun_1H_lower': 2,
 
-							'IchimokouFlatLines_senkou_1H_upper': 2,
-							'IchimokouFlatLines_senkou_1H_lower': 210,
+							'IchimokouFlatLines_senkou_1H_upper': 210,
+							'IchimokouFlatLines_senkou_1H_lower': 2,
 
 							'IchimokouFlatLines_n_cluster_1H_upper': 50,
 							'IchimokouFlatLines_n_cluster_1H_lower': 1,

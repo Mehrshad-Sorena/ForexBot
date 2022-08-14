@@ -13,6 +13,7 @@ import pandas as pd
 import os
 import sys
 import numpy as np
+from timer import stTime
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -445,6 +446,7 @@ class Chromosome:
 												)
 		return Chromosome_vares[chrom_counter]
 
+	#@stTime
 	def GraveyardCheker(
 						self,
 						Chromosome,
@@ -811,6 +813,8 @@ class Chromosome:
 
 		return macd_parameters
 
+
+	#@stTime
 	def SocietyRefresher(
 						self,
 						Chromosome,
@@ -835,6 +839,7 @@ class Chromosome:
 
 			Chor_DataFrame.to_csv(path_society + symbol + '.csv')
 
+	#@stTime
 	def fucker_1(
 				self,
 				scoresdataframe,
@@ -957,7 +962,7 @@ class Chromosome:
 	def takeSecond(self, elem):
 		return elem[1]
 
-
+	@stTime
 	def GroupSex(
 				self,
 				Chromosome,
@@ -1068,22 +1073,21 @@ class Chromosome:
 				check = np.where(chor[key] == chor[i])
 
 				if len(check) > 0:
-					chor[i] = self.Creator(
-											chrom_counter = i,
+					chor[key] = self.Creator(
+											chrom_counter = key,
 											signaltype = signaltype,
 											signalpriority = signalpriority,
 											symbol = symbol,
 											)
 
-				chor = self.GraveyardCheker(	
-											Chromosome = chor,
-											chrom_counter = i,
-											signaltype = signaltype,
-											signalpriority = signalpriority,
-											symbol = symbol
-											)
-
 				i += 1
+			chor = self.GraveyardCheker(	
+										Chromosome = chor,
+										chrom_counter = key,
+										signaltype = signaltype,
+										signalpriority = signalpriority,
+										symbol = symbol
+										)
 
 		return chor
 

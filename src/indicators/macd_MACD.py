@@ -943,10 +943,10 @@ class MACD:
 			chromosome_output = pd.read_csv(path_elites + symbol + '_ChromosomeResults.csv').drop(columns='Unnamed: 0')
 
 			if num_turn <= len(learning_result['score']):
-				num_turn = (len(learning_result['score'])) + 4
+				num_turn = (len(learning_result['score'])) + 2
 
 				if len(chromosome_output) >= num_turn:
-					num_turn = len(chromosome_output) + 4
+					num_turn = len(chromosome_output) + 2
 
 		else:
 			learning_result = pd.DataFrame()
@@ -1003,17 +1003,17 @@ class MACD:
 				# print(chromosome)
 				break
 
-			print()
-			print('================== Num Symbol ==>',symbol, ' ' , signaltype, ' ',signalpriority)
-			print()
-			print('================== Num =========> ', len(chromosome_output))
-			print('================== Num Chroms ======> ', chrom_counter)
-			print('================== All Chorms ======> ', all_chorms)
-			print('================== Flag Learn ======> ', chromosome[chrom_counter]['islearned'])
-			print('================== Chorm Reseter ===> ',chorm_reset_counter)
-			print('===== bad score counter ========> ',bad_score_counter)
-			print('===== bad score counter 2 ======> ',bad_score_counter_2)
-			print()
+			# print()
+			# print('================== Num Symbol ==>',symbol, ' ' , signaltype, ' ',signalpriority)
+			# print()
+			# print('================== Num =========> ', len(chromosome_output))
+			# print('================== Num Chroms ======> ', chrom_counter)
+			# print('================== All Chorms ======> ', all_chorms)
+			# print('================== Flag Learn ======> ', chromosome[chrom_counter]['islearned'])
+			# print('================== Chorm Reseter ===> ',chorm_reset_counter)
+			# print('===== bad score counter ========> ',bad_score_counter)
+			# print('===== bad score counter 2 ======> ',bad_score_counter_2)
+			# print()
 			bar.next()
 
 			

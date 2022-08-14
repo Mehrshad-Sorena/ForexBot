@@ -992,7 +992,7 @@ class MACD:
 																								)
 			print("Group Sex Finish")
 
-		print(chrom_counter)
+		#print(chrom_counter)
 
 
 
@@ -1463,6 +1463,8 @@ class MACD:
 
 				chrom_counter = 0
 
+				print('Group Sex Start')
+
 				chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
 																									work = 'group_sex',
 																									signaltype = signaltype,
@@ -1472,6 +1474,8 @@ class MACD:
 																									Chromosome = chromosome,
 																									chrom_counter = chrom_counter
 																									)
+
+				print('Group Sex Finish')
 				continue
 
 		#**************************** Best Find *********************************************************

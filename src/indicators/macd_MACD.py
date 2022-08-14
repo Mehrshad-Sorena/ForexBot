@@ -977,9 +977,10 @@ class MACD:
 				chrom_counter += 1
 				continue
 
+
 		if chrom_counter >= len(chromosome):
 			chrom_counter = 0
-
+			print("Group Sex Start")
 			chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
 																								work = 'group_sex',
 																								signaltype = signaltype,
@@ -989,6 +990,9 @@ class MACD:
 																								Chromosome = chromosome,
 																								chrom_counter = chrom_counter
 																								)
+			print("Group Sex Finish")
+
+		print(chrom_counter)
 
 
 
@@ -999,17 +1003,17 @@ class MACD:
 				# print(chromosome)
 				break
 
-			# print()
-			# print('================== Num Symbol ==>',symbol, ' ' , signaltype, ' ',signalpriority)
-			# print()
-			# print('================== Num =========> ', len(chromosome_output))
-			# print('================== Num Chroms ======> ', chrom_counter)
-			# print('================== All Chorms ======> ', all_chorms)
-			# print('================== Flag Learn ======> ', chromosome[chrom_counter]['islearned'])
-			# print('================== Chorm Reseter ===> ',chorm_reset_counter)
-			# print('===== bad score counter ========> ',bad_score_counter)
-			# print('===== bad score counter 2 ======> ',bad_score_counter_2)
-			# print()
+			print()
+			print('================== Num Symbol ==>',symbol, ' ' , signaltype, ' ',signalpriority)
+			print()
+			print('================== Num =========> ', len(chromosome_output))
+			print('================== Num Chroms ======> ', chrom_counter)
+			print('================== All Chorms ======> ', all_chorms)
+			print('================== Flag Learn ======> ', chromosome[chrom_counter]['islearned'])
+			print('================== Chorm Reseter ===> ',chorm_reset_counter)
+			print('===== bad score counter ========> ',bad_score_counter)
+			print('===== bad score counter 2 ======> ',bad_score_counter_2)
+			print()
 			bar.next()
 
 			
@@ -1353,7 +1357,7 @@ class MACD:
 											)
 
 				chorm_reset_counter = 0
-				bad_score_counter_buy = 0
+				bad_score_counter = 0
 				score_for_reset = 0
 
 
@@ -1390,6 +1394,10 @@ class MACD:
 																							Chromosome = chromosome,
 																							chrom_counter = chrom_counter
 																							)
+
+				score_for_reset = 0
+				bad_score_counter = 0
+				bad_score_counter_2 = 0
 				continue
 
 			if (

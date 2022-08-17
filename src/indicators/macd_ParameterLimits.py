@@ -11,10 +11,10 @@ class ParameterLimits:
 
 							#Chromosome Limit Parameters:
 
-							'MACD_fast_upper': 800,
+							'MACD_fast_upper': 144,#800,
 							'MACD_fast_lower': 4,
 
-							'MACD_slow_upper': 1500,
+							'MACD_slow_upper': 312,#1500,
 							'MACD_slow_lower': 4,
 
 							'MACD_signal_upper': 50,
@@ -122,13 +122,13 @@ class ParameterLimits:
 							'TrendLines_power_short2_1H_upper': 1000,
 							'TrendLines_power_short2_1H_lower': 2,
 
-							'IchimokouFlatLines_tenkan_5M_upper': 500,
+							'IchimokouFlatLines_tenkan_5M_upper': 108,#500,
 							'IchimokouFlatLines_tenkan_5M_lower': 2,
 
-							'IchimokouFlatLines_kijun_5M_upper': 1400,
+							'IchimokouFlatLines_kijun_5M_upper': 312,#1400,
 							'IchimokouFlatLines_kijun_5M_lower': 2,
 
-							'IchimokouFlatLines_senkou_5M_upper': 2500,
+							'IchimokouFlatLines_senkou_5M_upper': 624,#2500,
 							'IchimokouFlatLines_senkou_5M_lower': 2,
 
 							'IchimokouFlatLines_n_cluster_5M_upper': 50,

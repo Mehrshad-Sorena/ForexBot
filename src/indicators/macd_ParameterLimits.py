@@ -68,7 +68,7 @@ class ParameterLimits:
 							'TrendLines_num_max_1H_upper': 100,#250,
 							'TrendLines_num_max_1H_lower': 2,
 
-							'TrendLines_num_min_1H_upper': 100#,250,
+							'TrendLines_num_min_1H_upper': 100,#,250,
 							'TrendLines_num_min_1H_lower': 2,
 
 							'TrendLines_weight_1H_upper': 1000,

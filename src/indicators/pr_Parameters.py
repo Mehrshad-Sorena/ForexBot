@@ -102,7 +102,7 @@ class Parameters:
 							#Elemns For Tester:
 
 							'Tester_money': 100,
-							'Tester_coef_money': 2.5,
+							'Tester_coef_money': 20,
 							'Tester_spred': 0.00045,
 							
 							'Tester_index_tp': 0,

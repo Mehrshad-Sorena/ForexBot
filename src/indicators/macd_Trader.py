@@ -88,8 +88,8 @@ def trader_macd_div(
 			# sym.name == 'LTCUSD_i' or
 			# sym.name == 'XRPUSD_i' or
 			# sym.name == 'BTCUSD_i' or
-			sym.name == 'ETHUSD_i'
-			# sym.name == 'XAUUSD_i'
+			#sym.name == 'ETHUSD_i'
+			sym.name == 'XAUUSD_i'
 			): continue
 
 		if os.path.exists(forexnews_path):

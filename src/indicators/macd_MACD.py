@@ -889,6 +889,11 @@ class MACD:
 			self.elements['st_percent_down'] = 1500
 			self.elements['tp_percent_up'] = 2000
 			self.elements['tp_percent_down'] = 1500
+		else:
+			self.elements['st_percent_up'] = 120
+			self.elements['st_percent_down'] = 90
+			self.elements['tp_percent_up'] = 120
+			self.elements['tp_percent_down'] = 90
 
 		chrom = Chromosome(parameters = self)
 		macd_config = MACDConfig()

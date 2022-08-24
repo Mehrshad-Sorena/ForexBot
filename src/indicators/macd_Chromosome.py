@@ -1213,8 +1213,8 @@ class Chromosome:
 		limits.elements['BestFinder_n_clusters_lower'] = int(BestFinder_n_clusters['interval'][lower])
 
 		BestFinder_alpha = self.Finder(chromosome = chromosome, apply_to = 'BestFinder_alpha', alpha = 0.9)
-		limits.elements['BestFinder_alpha_upper'] = round(BestFinder_alpha['interval'][upper], 3) * 100
-		limits.elements['BestFinder_alpha_lower'] = round(BestFinder_alpha['interval'][lower], 3) * 100
+		limits.elements['BestFinder_alpha_upper'] = int(round(BestFinder_alpha['interval'][upper], 3) * 100)
+		limits.elements['BestFinder_alpha_lower'] = int(round(BestFinder_alpha['interval'][lower], 3) * 100)
 
 		Runner_methode1__lenght_data_5M = self.Finder(chromosome = chromosome, apply_to = 'Runner_methode1__lenght_data_5M', alpha = alpha)
 		limits.elements['Runner_methode1__lenght_data_5M_upper'] = round(Runner_methode1__lenght_data_5M['interval'][upper])
@@ -1389,12 +1389,12 @@ class Chromosome:
 		limits.elements['BestFinder_n_cluster_high_lower'] = int(BestFinder_n_cluster_high['interval'][lower])
 
 		BestFinder_alpha_low = self.Finder(chromosome = chromosome, apply_to = 'BestFinder_alpha_low', alpha = alpha)
-		limits.elements['BestFinder_alpha_low_upper'] = round(BestFinder_alpha_low['interval'][upper], 3) * 100
-		limits.elements['BestFinder_alpha_low_lower'] = round(BestFinder_alpha_low['interval'][lower], 3) * 100
+		limits.elements['BestFinder_alpha_low_upper'] = int(round(BestFinder_alpha_low['interval'][upper], 3) * 100)
+		limits.elements['BestFinder_alpha_low_lower'] = int(round(BestFinder_alpha_low['interval'][lower], 3) * 100)
 
 		BestFinder_alpha_high = self.Finder(chromosome = chromosome, apply_to = 'BestFinder_alpha_high', alpha = alpha)
-		limits.elements['BestFinder_alpha_high_upper'] = round(BestFinder_alpha_high['interval'][upper], 3) * 100
-		limits.elements['BestFinder_alpha_high_lower'] = round(BestFinder_alpha_high['interval'][lower], 3) * 100
+		limits.elements['BestFinder_alpha_high_upper'] = int(round(BestFinder_alpha_high['interval'][upper], 3) * 100)
+		limits.elements['BestFinder_alpha_high_lower'] = int(round(BestFinder_alpha_high['interval'][lower], 3) * 100)
 
 
 	def Finder(self, chromosome, apply_to, alpha):

@@ -953,6 +953,8 @@ class MACD:
 				if len(chromosome_output) >= num_turn:
 					num_turn = len(chromosome_output) + 2
 
+			num_turn = 10
+
 		else:
 			learning_result = pd.DataFrame()
 			chromosome_output = pd.DataFrame()

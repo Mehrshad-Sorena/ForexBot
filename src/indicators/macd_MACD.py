@@ -899,18 +899,18 @@ class MACD:
 		macd_config = MACDConfig()
 		path_elites_chromosome = macd_config.cfg['path_elites'] + signalpriority + '/' + signaltype + '/' + symbol + '_ChromosomeResults.csv'
 		
-		# while not chrom.Get(
-		# 					work = 'Optimize',
-		# 					signaltype = signaltype,
-		# 					signalpriority = signalpriority,
-		# 					symbol = symbol,
-		# 					number_chromos = 10,
-		# 					Chromosome = '',
-		# 					chrom_counter = 0,
-		# 					path_elites_chromosome = path_elites_chromosome,
-		# 					alpha = 0.4
-		# 					):
-		# 	pass
+		while not chrom.Get(
+							work = 'Optimize',
+							signaltype = signaltype,
+							signalpriority = signalpriority,
+							symbol = symbol,
+							number_chromos = 10,
+							Chromosome = '',
+							chrom_counter = 0,
+							path_elites_chromosome = path_elites_chromosome,
+							alpha = 0.2
+							):
+			pass
 
 		chromosome, macd_parameters, ind_parameters, pr_parameters, pr_config = chrom.Get(
 																							work = 'BigBang',

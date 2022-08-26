@@ -18,7 +18,7 @@ import pandas as pd
 
 loging = getdata()
 loging.account_name = 'mehrshadpc'
-data_5M, data_1H = loging.readall(symbol = 'XAUUSD_i', number_5M = 99800, number_1H = 8323)
+data_5M, data_1H = loging.readall(symbol = 'XAUUSD_i', number_5M = 'all', number_1H = 'all')
 #print(data_1H['XAUUSD_i'])
 #data_5M = loging.getone(timeframe = '5M', number = 500, symbol = 'XAUUSD_i')
 # data_1H = loging.getone(timeframe = '1H', number = 500, symbol = 'XAUUSD_i')
@@ -75,6 +75,12 @@ pr_Runner = Runner(parameters = parameters, config = config)
 # 				dataset_1H = data_1H['XAUUSD_i'],
 # 				loc_end_5M = 10
 # 				))
+for i in range(4000, 50000, 100):
+	pr_Runner.ploter(
+					dataset_5M = data_5M['XAUUSD_i'], 
+					dataset_1H = data_1H['XAUUSD_i'],
+					loc_end_5M = i
+					)
 
 print('start')
 

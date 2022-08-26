@@ -591,11 +591,21 @@ class Runner:
 
 		if self.cfg['plot'] == True:
 
-			extereme = self.start(dataset_5M = dataset_5M, dataset_1H = dataset_1H, loc_end_5M = loc_end_5M)
+			extereme = self.start(
+									dataset_5M = dataset_5M, 
+									dataset_1H = dataset_1H,
+									loc_end_5M = loc_end_5M,
+									sigtype = '',
+									flaglearn = True,
+									flagtest = False,
+									signals = '',
+									indicator = 'macd',
+									flag_savepic = False
+									)
 
-			dataset = self.elements['dataset_5M'].copy(deep = True)
+			dataset = dataset_5M.iloc[loc_end_5M - 200 : loc_end_5M + 600].copy(deep = True)
 			dataset.index.name = 'Time'
-			dataset.index = self.elements['dataset_5M'].time
+			dataset.index = dataset_5M.iloc[loc_end_5M - 200 : loc_end_5M + 600].time
 			dataset.head(3)
 			dataset.tail(3)
 
@@ -608,13 +618,13 @@ class Runner:
 										)
 			mco = [mc]*len(dataset)
 
-			low_1 = float(extereme.low.values[0])
-			low_2 = float(extereme.low.values[1])
-			low_3 = float(extereme.low.values[2])
+			low_1 = float(extereme[6])
+			low_2 = float(extereme[7])
+			low_3 = float(extereme[8])
 
-			high_1 = float(extereme.high.values[0])
-			high_2 = float(extereme.high.values[1])
-			high_3 = float(extereme.high.values[2])
+			high_1 = float(extereme[0])
+			high_2 = float(extereme[1])
+			high_3 = float(extereme[2])
 
 			mpf.plot(
 					dataset,
@@ -623,7 +633,8 @@ class Runner:
 					style='yahoo',
 					figscale=1,
 					title='5M Protect Resist',
-					hlines=dict(hlines=[low_1,low_2,low_3,high_1,high_2,high_3],colors=['g', 'r', 'g', 'b', 'r', 'b'],linestyle='-.'),
+					vlines=dict(vlines=[dataset_5M['time'][loc_end_5M]],colors=['r'],linestyle='-.'),
+					hlines=dict(hlines=[low_1,low_2,low_3,high_1,high_2,high_3],colors=['b', 'g', 'b', 'b', 'r', 'b'],linestyle='-.'),
 					#if config.savefig_5M savefig=dict(fname=config.path_5M,dpi=600,pad_inches=0.25) else None,
 					marketcolor_overrides=mco
 					)

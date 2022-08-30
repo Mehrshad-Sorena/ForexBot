@@ -52,6 +52,13 @@ class Tester:
 		tp_percent_min = self.elements['tp_percent_min']
 		tp_percent_max = self.elements['tp_percent_max']
 
+		if extereme.dropna().empty == True:
+			diff_pr_down = st_percent_min
+			extereme['low_lower'][loc_end_5M] = dataset_5M['low'][loc_end_5M] * (1-(st_percent_min/100))
+
+			diff_pr_top = tp_percent_min
+			extereme['high_upper'][loc_end_5M] = dataset_5M['high'][loc_end_5M] * (1+(tp_percent_min/100))
+
 		if flaglearn == False:
 			if diff_pr_down < st_percent_min:
 				diff_pr_down = st_percent_min
@@ -72,8 +79,8 @@ class Tester:
 
 		if (
 			dataset_5M['high'][loc_end_5M] * (1 + spred) >= extereme['high_upper'][loc_end_5M] or
-			dataset_5M['low'][loc_end_5M] <= extereme['low_lower'][loc_end_5M] or
-			extereme.dropna().empty == True
+			dataset_5M['low'][loc_end_5M] <= extereme['low_lower'][loc_end_5M] #or
+			#extereme.dropna().empty == True
 			):
 			extereme = extereme.assign(
 										flag =  'no_flag',
@@ -139,6 +146,8 @@ class Tester:
 			st_pr = ((dataset_5M['low'][loc_end_5M] - np.min(dataset_5M['low'][loc_end_5M:index_tp]))/dataset_5M['low'][loc_end_5M]) * 100
 			tp_pr = ((dataset_5M['high'][index_tp] - dataset_5M['high'][loc_end_5M]*(1 + spred))/(dataset_5M['high'][loc_end_5M] * (1 + spred))) * 100
 
+			if tp_pr > tp_percent_max: tp_pr = tp_percent_max
+
 			my_money = money
 			coef_money = self.elements['Tester_coef_money']
 
@@ -169,6 +178,9 @@ class Tester:
 			):
 			st_pr = ((dataset_5M['low'][loc_end_5M] - np.min(dataset_5M['low'][loc_end_5M:index_tp]))/dataset_5M['low'][loc_end_5M]) * 100
 			tp_pr = ((dataset_5M['high'][index_tp] - dataset_5M['high'][loc_end_5M]*(1 + spred))/(dataset_5M['high'][loc_end_5M] * (1 + spred))) * 100
+
+			if tp_pr > tp_percent_max: tp_pr = tp_percent_max
+
 
 			my_money = money
 			coef_money = self.elements['Tester_coef_money']
@@ -201,6 +213,8 @@ class Tester:
 			st_pr = ((dataset_5M['low'][loc_end_5M] - dataset_5M['low'][index_st])/dataset_5M['low'][loc_end_5M]) * 100
 			tp_pr = ((np.max(dataset_5M['high'][loc_end_5M:index_st]) - dataset_5M['high'][loc_end_5M]*(1 + spred))/(dataset_5M['high'][loc_end_5M] * (1 + spred))) * 100
 
+			if st_pr > st_percent_max: st_pr = st_percent_max
+
 			my_money = money
 			coef_money = self.elements['Tester_coef_money']
 
@@ -232,6 +246,8 @@ class Tester:
 			st_pr = ((dataset_5M['low'][loc_end_5M] - dataset_5M['low'][index_st])/dataset_5M['low'][loc_end_5M]) * 100
 			tp_pr = ((np.max(dataset_5M['high'][loc_end_5M:index_st]) - dataset_5M['high'][loc_end_5M]*(1 + spred))/(dataset_5M['high'][loc_end_5M] * (1 + spred))) * 100
 			
+			if st_pr > st_percent_max: st_pr = st_percent_max
+
 			my_money = money
 			coef_money = self.elements['Tester_coef_money']
 
@@ -262,6 +278,8 @@ class Tester:
 				st_pr = ((dataset_5M['low'][loc_end_5M] - dataset_5M['low'][index_st])/dataset_5M['low'][loc_end_5M]) * 100
 				tp_pr = ((np.max(dataset_5M['high'][loc_end_5M:index_st]) - dataset_5M['high'][loc_end_5M]*(1 + spred))/(dataset_5M['high'][loc_end_5M] * (1 + spred))) * 100
 				
+				if st_pr > st_percent_max: st_pr = st_percent_max
+
 				my_money = money
 				coef_money = self.elements['Tester_coef_money']
 
@@ -329,7 +347,17 @@ class Tester:
 
 		tp_percent_min = self.elements['tp_percent_min']
 		tp_percent_max = self.elements['tp_percent_max']
-			
+		
+
+		if extereme.dropna().empty == True:
+			if diff_pr_top < st_percent_min:
+				diff_pr_top = st_percent_min
+				extereme['high_upper'][loc_end_5M] = dataset_5M['high'][loc_end_5M] * (1+(st_percent_min/100))
+
+			if diff_pr_down < tp_percent_min:
+				diff_pr_down = tp_percent_min
+				extereme['low_lower'][loc_end_5M] = dataset_5M['low'][loc_end_5M] * (1-(tp_percent_min/100))
+
 
 		if flaglearn == False:
 			if diff_pr_top < st_percent_min:
@@ -351,8 +379,8 @@ class Tester:
 
 		if (
 			dataset_5M['high'][loc_end_5M] * (1 + spred) >= extereme['high_upper'][loc_end_5M] or
-			dataset_5M['low'][loc_end_5M] <= extereme['low_lower'][loc_end_5M] or
-			extereme.dropna().empty == True
+			dataset_5M['low'][loc_end_5M] <= extereme['low_lower'][loc_end_5M] #or
+			#extereme.dropna().empty == True
 			):
 			extereme = extereme.assign(
 										flag =  'no_flag',
@@ -418,6 +446,8 @@ class Tester:
 			st_pr = ((np.max(dataset_5M['high'][loc_end_5M:index_tp]) - dataset_5M['high'][loc_end_5M])/dataset_5M['high'][loc_end_5M]) * 100
 			tp_pr = ((dataset_5M['low'][loc_end_5M] - dataset_5M['low'][index_tp] * (1 + spred))/(dataset_5M['low'][loc_end_5M])) * 100
 
+			if tp_pr > tp_percent_max: tp_pr = tp_percent_max
+
 			my_money = money
 			coef_money = self.elements['Tester_coef_money']
 
@@ -448,6 +478,8 @@ class Tester:
 			):
 			st_pr = ((np.max(dataset_5M['high'][loc_end_5M:index_tp]) - dataset_5M['high'][loc_end_5M])/dataset_5M['high'][loc_end_5M]) * 100
 			tp_pr = ((dataset_5M['low'][loc_end_5M] - dataset_5M['low'][index_tp] * (1 + spred))/(dataset_5M['low'][loc_end_5M])) * 100
+
+			if tp_pr > tp_percent_max: tp_pr = tp_percent_max
 
 			my_money = money
 			coef_money = self.elements['Tester_coef_money']
@@ -480,6 +512,7 @@ class Tester:
 			st_pr = ((dataset_5M['high'][index_st] - dataset_5M['high'][loc_end_5M])/dataset_5M['high'][loc_end_5M]) * 100
 			tp_pr = ((dataset_5M['low'][loc_end_5M] - np.min(dataset_5M['low'][loc_end_5M:index_st]) * (1 + spred))/(dataset_5M['low'][loc_end_5M])) * 100
 			
+			if st_pr > st_percent_max: st_pr = st_percent_max
 
 			my_money = money
 			coef_money = self.elements['Tester_coef_money']
@@ -512,6 +545,8 @@ class Tester:
 			st_pr = ((dataset_5M['high'][index_st] - dataset_5M['high'][loc_end_5M])/dataset_5M['high'][loc_end_5M]) * 100
 			tp_pr = ((dataset_5M['low'][loc_end_5M] - np.min(dataset_5M['low'][loc_end_5M:index_st]) * (1 + spred))/(dataset_5M['low'][loc_end_5M])) * 100
 			
+			if st_pr > st_percent_max: st_pr = st_percent_max
+
 			my_money = money
 			coef_money = self.elements['Tester_coef_money']
 
@@ -539,6 +574,8 @@ class Tester:
 			if index_st != -1:
 				st_pr = ((dataset_5M['high'][index_st] - dataset_5M['high'][loc_end_5M])/dataset_5M['high'][loc_end_5M]) * 100
 				tp_pr = ((dataset_5M['low'][loc_end_5M] - np.min(dataset_5M['low'][loc_end_5M:index_st]) * (1 + spred))/(dataset_5M['low'][loc_end_5M])) * 100
+				
+				if st_pr > st_percent_max: st_pr = st_percent_max
 				
 				my_money = money
 				coef_money = self.elements['Tester_coef_money']

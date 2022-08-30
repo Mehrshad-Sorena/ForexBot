@@ -350,13 +350,12 @@ class Tester:
 		
 
 		if extereme.dropna().empty == True:
-			if diff_pr_top < st_percent_min:
-				diff_pr_top = st_percent_min
-				extereme['high_upper'][loc_end_5M] = dataset_5M['high'][loc_end_5M] * (1+(st_percent_min/100))
 
-			if diff_pr_down < tp_percent_min:
-				diff_pr_down = tp_percent_min
-				extereme['low_lower'][loc_end_5M] = dataset_5M['low'][loc_end_5M] * (1-(tp_percent_min/100))
+			diff_pr_top = st_percent_min
+			extereme['high_upper'][loc_end_5M] = dataset_5M['high'][loc_end_5M] * (1+(st_percent_min/100))
+
+			diff_pr_down = tp_percent_min
+			extereme['low_lower'][loc_end_5M] = dataset_5M['low'][loc_end_5M] * (1-(tp_percent_min/100))
 
 
 		if flaglearn == False:

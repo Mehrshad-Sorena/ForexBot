@@ -20,10 +20,10 @@ class ParameterLimits:
 							'MACD_signal_upper': 50,
 							'MACD_signal_lower': 4,
 							
-							'Divergence_num_exteremes_min_upper': 100,#250,
+							'Divergence_num_exteremes_min_upper': 20,#250,
 							'Divergence_num_exteremes_min_lower': 2,
 
-							'Divergence_num_exteremes_max_upper': 100,#250,
+							'Divergence_num_exteremes_max_upper': 20,#250,
 							'Divergence_num_exteremes_max_lower': 2,
 
 							'BestFinder_n_clusters_upper': 20,#50,
@@ -38,65 +38,65 @@ class ParameterLimits:
 							'Runner_methode1__lenght_data_1H_upper': 1000,
 							'Runner_methode1__lenght_data_1H_lower': 200,#20,
 							
-							'ExtremePoints_num_max_5M_upper': 100,#250,
+							'ExtremePoints_num_max_5M_upper': 25,#250,
 							'ExtremePoints_num_max_5M_lower': 2,
 
-							'ExtremePoints_num_min_5M_upper': 100,#250,
+							'ExtremePoints_num_min_5M_upper': 25,#250,
 							'ExtremePoints_num_min_5M_lower': 2,
 
 							'ExtremePoints_weight_5M_upper': 1000,
 							'ExtremePoints_weight_5M_lower': 2,
 
-							'ExtremePoints_num_max_1H_upper': 100,#250,
+							'ExtremePoints_num_max_1H_upper': 25,#250,
 							'ExtremePoints_num_max_1H_lower': 2,
 
-							'ExtremePoints_num_min_1H_upper': 100,#250,
+							'ExtremePoints_num_min_1H_upper': 25,#250,
 							'ExtremePoints_num_min_1H_lower': 2,
 
 							'ExtremePoints_weight_1H_upper': 1000,
 							'ExtremePoints_weight_1H_lower': 2,
 
-							'TrendLines_num_max_5M_upper': 100,#250,
+							'TrendLines_num_max_5M_upper': 25,#250,
 							'TrendLines_num_max_5M_lower': 2,
 
-							'TrendLines_num_min_5M_upper': 100,#250,
+							'TrendLines_num_min_5M_upper': 25,#250,
 							'TrendLines_num_min_5M_lower': 2,
 
 							'TrendLines_weight_5M_upper': 1000,
 							'TrendLines_weight_5M_lower': 2,
 
-							'TrendLines_num_max_1H_upper': 100,#250,
+							'TrendLines_num_max_1H_upper': 25,#250,
 							'TrendLines_num_max_1H_lower': 2,
 
-							'TrendLines_num_min_1H_upper': 100,#,250,
+							'TrendLines_num_min_1H_upper': 25,#,250,
 							'TrendLines_num_min_1H_lower': 2,
 
 							'TrendLines_weight_1H_upper': 1000,
 							'TrendLines_weight_1H_lower': 2,
 
 							'TrendLines_length_long_5M_upper': 1000,
-							'TrendLines_length_long_5M_lower': 10,
+							'TrendLines_length_long_5M_lower': 500,
 
 							'TrendLines_length_mid_5M_upper': 1000,
-							'TrendLines_length_mid_5M_lower': 10,
+							'TrendLines_length_mid_5M_lower': 500,
 
 							'TrendLines_length_short1_5M_upper': 500,
-							'TrendLines_length_short1_5M_lower': 5,
+							'TrendLines_length_short1_5M_lower': 250,
 
 							'TrendLines_length_short2_5M_upper': 500,
-							'TrendLines_length_short2_5M_lower': 5,
+							'TrendLines_length_short2_5M_lower': 250,
 
 							'TrendLines_length_long_1H_upper': 1000,
-							'TrendLines_length_long_1H_lower': 10,
+							'TrendLines_length_long_1H_lower': 500,
 
 							'TrendLines_length_mid_1H_upper': 1000,
-							'TrendLines_length_mid_1H_lower': 10,
+							'TrendLines_length_mid_1H_lower': 500,
 
 							'TrendLines_length_short1_1H_upper': 500,
-							'TrendLines_length_short1_1H_lower': 5,
+							'TrendLines_length_short1_1H_lower': 250,
 
 							'TrendLines_length_short2_1H_upper': 500,
-							'TrendLines_length_short2_1H_lower': 5,
+							'TrendLines_length_short2_1H_lower': 250,
 
 							'TrendLines_power_long_5M_upper': 1000,
 							'TrendLines_power_long_5M_lower': 2,

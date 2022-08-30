@@ -530,15 +530,26 @@ class MACD:
 					signal = 'buy_primary'
 
 				else:
-					diff_pr_top_buy = 0
-					diff_pr_down_buy = 0
-					diff_pr_top_buy_power = 0
-					diff_pr_down_buy_power = 0
+					diff_pr_top_buy_primary = pr_parameters_buy_primary.elements['tp_percent_min']
+					res_pro_buy_primary['high_upper'][int(lst_idx_buy_primary)] = dataset_5M[symbol]['high'][int(lst_idx_buy_primary)]*(1+(diff_pr_top_buy_primary/100))
 
-					resist_buy = 0
-					protect_buy = 0
+					diff_pr_down_buy_primary = pr_parameters_buy_primary.elements['st_percent_min']
+					res_pro_buy_primary['low_lower'][int(lst_idx_buy_primary)] = dataset_5M[symbol]['low'][int(lst_idx_buy_primary)]*(1-(diff_pr_down_buy_primary/100))
 
-					signal = 'no_trade'		
+					resist_buy = (res_pro_buy_primary['high_upper'][int(lst_idx_buy_primary)])
+					protect_buy = (res_pro_buy_primary['low_lower'][int(lst_idx_buy_primary)])
+
+					signal = 'buy_primary'
+
+					# diff_pr_top_buy = 0
+					# diff_pr_down_buy = 0
+					# diff_pr_top_buy_power = 0
+					# diff_pr_down_buy_power = 0
+
+					# resist_buy = 0
+					# protect_buy = 0
+
+					# signal = 'no_trade'		
 
 			print('================================')\
 
@@ -597,15 +608,27 @@ class MACD:
 					signal = 'buy_secondry'
 
 				else:
-					diff_pr_top_buy = 0
-					diff_pr_down_buy = 0
-					diff_pr_top_buy_power = 0
-					diff_pr_down_buy_power = 0
+					diff_pr_top_buy_secondry = pr_parameters_buy_secondry.elements['tp_percent_min']
+					res_pro_buy_secondry['high_upper'][int(lst_idx_buy_secondry)] = dataset_5M[symbol]['high'][int(lst_idx_buy_secondry)]*(1+(diff_pr_top_buy_secondry/100))
 
-					resist_buy = 0
-					protect_buy = 0
+					diff_pr_down_buy_secondry = pr_parameters_buy_secondry.elements['st_percent_min']
+					res_pro_buy_secondry['low_lower'][int(lst_idx_buy_secondry)] = dataset_5M[symbol]['low'][int(lst_idx_buy_secondry)]*(1-(diff_pr_down_buy_secondry/100))
 
-					signal = 'no_trade'	
+
+					resist_buy = (res_pro_buy_secondry['high_upper'][int(lst_idx_buy_secondry)])
+					protect_buy = (res_pro_buy_secondry['low_lower'][int(lst_idx_buy_secondry)])
+
+					signal = 'buy_secondry'
+
+					# diff_pr_top_buy = 0
+					# diff_pr_down_buy = 0
+					# diff_pr_top_buy_power = 0
+					# diff_pr_down_buy_power = 0
+
+					# resist_buy = 0
+					# protect_buy = 0
+
+					# signal = 'no_trade'	
 
 		elif (
 			lst_idx_sell_primary > lst_idx_buy_primary and
@@ -658,13 +681,25 @@ class MACD:
 					signal = 'sell_primary'
 
 				else:
-					diff_pr_top_sell_primary = 0
-					diff_pr_down_sell_primary = 0
 
-					resist_sell = 0
-					protect_sell = 0
+					diff_pr_top_sell_primary = pr_parameters_sell_primary.elements['st_percent_min']
+					(res_pro_sell_primary['high_upper'][int(lst_idx_sell_primary)]) = dataset_5M[symbol]['high'][int(lst_idx_sell_primary)]*(1+(diff_pr_top_sell_primary/100))
 
-					signal = 'no_trade'
+					diff_pr_down_sell_primary = pr_parameters_sell_primary.elements['tp_percent_min']
+					(res_pro_sell_primary['low_lower'][int(lst_idx_sell_primary)]) = dataset_5M[symbol]['low'][int(lst_idx_sell_primary)]*(1-(diff_pr_down_sell_primary/100))
+						
+					resist_sell = (res_pro_sell_primary['high_upper'][int(lst_idx_sell_primary)])
+					protect_sell = (res_pro_sell_primary['low_lower'][int(lst_idx_sell_primary)])
+
+					signal = 'sell_primary'
+
+					# diff_pr_top_sell_primary = 0
+					# diff_pr_down_sell_primary = 0
+
+					# resist_sell = 0
+					# protect_sell = 0
+
+					# signal = 'no_trade'
 
 		
 		elif (
@@ -717,13 +752,25 @@ class MACD:
 					signal = 'sell_secondry'
 
 				else:
-					diff_pr_top_sell_secondry = 0
-					diff_pr_down_sell_secondry = 0
 
-					resist_sell = 0
-					protect_sell = 0
+					diff_pr_top_sell_secondry = pr_parameters_sell_secondry.elements['st_percent_min']
+					(res_pro_sell_secondry['high_upper'][int(lst_idx_sell_secondry)]) = dataset_5M[symbol]['high'][int(lst_idx_sell_secondry)]*(1+(diff_pr_top_sell_secondry/100))
 
-					signal = 'no_trade'			
+					diff_pr_down_sell_secondry = pr_parameters_sell_secondry.elements['tp_percent_min']
+					(res_pro_sell_secondry['low_lower'][int(lst_idx_sell_secondry)]) = dataset_5M[symbol]['low'][int(lst_idx_sell_secondry)]*(1-(diff_pr_down_sell_secondry/100))
+						
+					resist_sell = (res_pro_sell_secondry['high_upper'][int(lst_idx_sell_secondry)])
+					protect_sell = (res_pro_sell_secondry['low_lower'][int(lst_idx_sell_secondry)])
+					
+					signal = 'sell_secondry'
+
+					# diff_pr_top_sell_secondry = 0
+					# diff_pr_down_sell_secondry = 0
+
+					# resist_sell = 0
+					# protect_sell = 0
+
+					# signal = 'no_trade'			
 
 			print('================================')
 		else:

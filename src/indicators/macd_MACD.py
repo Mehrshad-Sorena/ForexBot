@@ -938,9 +938,9 @@ class MACD:
 			self.elements['tp_percent_down'] = 1500
 		else:
 			self.elements['st_percent_up'] = 120
-			self.elements['st_percent_down'] = 90
+			self.elements['st_percent_down'] = 100
 			self.elements['tp_percent_up'] = 120
-			self.elements['tp_percent_down'] = 90
+			self.elements['tp_percent_down'] = 100
 
 		chrom = Chromosome(parameters = self)
 		macd_config = MACDConfig()
@@ -976,9 +976,9 @@ class MACD:
 		if os.path.exists(path_superhuman + symbol + '.csv'):
 			max_score_gl = pd.read_csv(path_superhuman + symbol + '.csv')['score'][0]
 		else:
-			max_score_gl = 0.00001
+			max_score_gl = 5
 
-		max_score_gl = 0.00001
+		max_score_gl = 5
 
 
 		print('================================ START Genetic ',signaltype,' ===> ',symbol,' ',signalpriority)
@@ -1420,7 +1420,8 @@ class MACD:
 
 			elif (
 				learning_output_now['score'][0] < max_score_gl * 0.99 and
-				chromosome[chrom_counter]['islearned'] == True
+				chromosome[chrom_counter]['islearned'] == True and
+				bad_score_counter >= 4
 				):
 
 				chromosome[chrom_counter]['isborn'] = False

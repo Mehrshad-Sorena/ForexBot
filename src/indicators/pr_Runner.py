@@ -303,162 +303,181 @@ class Runner:
 																							length_5M = self.elements[__class__.__name__ + '_methode1_' + '_lenght_data_5M'],
 																							length_1H = self.elements[__class__.__name__ + '_methode1_' + '_lenght_data_1H']
 																							)
+		if flaglearn == True:
+			if (
+				self.elements['dataset_' + '5M'].empty == True or
+				self.elements['dataset_' + '1H'].empty == True or
+				len(self.elements['dataset_' + '1H']) <= self.elements['IchimokouFlatLines_senkou_1H'] or
+				len(self.elements['dataset_' + '5M']) <= self.elements['IchimokouFlatLines_senkou_5M']
+				):
+				extereme = pd.DataFrame(
+										{
+										'high_upper': np.nan,
+										'high_mid': np.nan,
+										'high_lower': np.nan,
+										'power_high_upper': np.nan,
+										'power_high_mid': np.nan,
+										'power_high_lower': np.nan,
+										'low_upper': np.nan,
+										'lowe_mid': np.nan,
+										'low_lower': np.nan,
+										'power_low_upper': np.nan,
+										'power_low_mid': np.nan,
+										'power_low_lower': np.nan,
+										},
+										index = [loc_end_5M]
+										)
+				if flagtest == True:
+					extereme = extereme.assign(
+										flag =  np.nan,
+										tp_pr = np.nan,
+										st_pr = np.nan,
+										index_tp = np.nan,
+										index_st = np.nan,
+										money = np.nan,
+										time = np.nan,
+										)
+				return extereme.values[0]
+			
 
-		if (
-			self.elements['dataset_' + '5M'].empty == True or
-			self.elements['dataset_' + '1H'].empty == True or
-			len(self.elements['dataset_' + '1H']) <= self.elements['IchimokouFlatLines_senkou_1H'] or
-			len(self.elements['dataset_' + '5M']) <= self.elements['IchimokouFlatLines_senkou_5M']
-			):
-			extereme = pd.DataFrame(
-									{
-									'high_upper': np.nan,
-									'high_mid': np.nan,
-									'high_lower': np.nan,
-									'power_high_upper': np.nan,
-									'power_high_mid': np.nan,
-									'power_high_lower': np.nan,
-									'low_upper': np.nan,
-									'lowe_mid': np.nan,
-									'low_lower': np.nan,
-									'power_low_upper': np.nan,
-									'power_low_mid': np.nan,
-									'power_low_lower': np.nan,
-									},
-									index = [loc_end_5M]
-									)
-			if flagtest == True:
-				extereme = extereme.assign(
-									flag =  np.nan,
-									tp_pr = np.nan,
-									st_pr = np.nan,
-									index_tp = np.nan,
-									index_st = np.nan,
-									money = np.nan,
-									time = np.nan,
-									)
-			return extereme.values[0]
-		
+			#****************** Extreme Points Finder Function: Finding Top Down Points *********************
+			extreme_points = ExtremePoints(parameters = self, config = self)
+			
+			extreme_5M = extreme_points.runner(timeframe = '5M')
+			extreme_1H = extreme_points.runner(timeframe = '1H')
 
-		#****************** Extreme Points Finder Function: Finding Top Down Points *********************
-		extreme_points = ExtremePoints(parameters = self, config = self)
-		
-		extreme_5M = extreme_points.runner(timeframe = '5M')
-		extreme_1H = extreme_points.runner(timeframe = '1H')
-
-		#//////////////////////////////////////////////////////////////////////////////////////////////////
+			#//////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-		#**************************** Trend Line Extreme Finder Function **************************************
+			#**************************** Trend Line Extreme Finder Function **************************************
 
-		trendlines = TrendLines(parameters = self, config = self)
+			trendlines = TrendLines(parameters = self, config = self)
 
-		trend_5M_long, trend_5M_mid, trend_5M_short1, trend_5M_short2  = trendlines.runner(timeframe='5M')
-		trend_1H_long, trend_1H_mid, trend_1H_short1, trend_1H_short2  = trendlines.runner(timeframe='1H')
+			trend_5M_long, trend_5M_mid, trend_5M_short1, trend_5M_short2  = trendlines.runner(timeframe='5M')
+			trend_1H_long, trend_1H_mid, trend_1H_short1, trend_1H_short2  = trendlines.runner(timeframe='1H')
 
-		#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		#*************************************** ichi Extreme Finder Function ********************************************************
-		
-		ichiflatlines = IchimokouFlatLines(parameters = self, config = self)
-		ichi_lines_5M = ichiflatlines.get(timeframe='5M')
-		ichi_lines_1H = ichiflatlines.get(timeframe='1H')
-		#//////////////////////////////////////////////////////////////////////////////////////////////////////////
+			#*************************************** ichi Extreme Finder Function ********************************************************
+			
+			ichiflatlines = IchimokouFlatLines(parameters = self, config = self)
+			ichi_lines_5M = ichiflatlines.get(timeframe='5M')
+			ichi_lines_1H = ichiflatlines.get(timeframe='1H')
+			#//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		#***************** Concatenate All of Extremes That Finded **************************
+			#***************** Concatenate All of Extremes That Finded **************************
 
-		exterm_point = pd.DataFrame(
-									np.concatenate(
+			exterm_point = pd.DataFrame(
+										np.concatenate(
+													(
+													extreme_5M['extreme'].to_numpy(), 
+													extreme_1H['extreme'].to_numpy(),
+
+													trend_5M_long['min'].to_numpy(),
+													trend_5M_long['max'].to_numpy(),
+													trend_5M_mid['min'].to_numpy(),
+													trend_5M_mid['max'].to_numpy(),
+													trend_5M_short1['min'].to_numpy(),
+													trend_5M_short1['max'].to_numpy(),
+													trend_5M_short2['min'].to_numpy(),
+													trend_5M_short2['max'].to_numpy(),
+
+													trend_1H_long['min'].to_numpy(),
+													trend_1H_long['max'].to_numpy(),
+													trend_1H_mid['min'].to_numpy(),
+													trend_1H_mid['max'].to_numpy(),
+													trend_1H_short1['min'].to_numpy(),
+													trend_1H_short1['max'].to_numpy(),
+													trend_1H_short2['min'].to_numpy(),
+													trend_1H_short2['max'].to_numpy(),
+
+													ichi_lines_5M['extreme'].to_numpy(),
+													ichi_lines_1H['extreme'].to_numpy(),
+													), 
+													axis=None
+													),
+										columns=['extremes']
+										)
+
+			exterm_point['power'] = np.concatenate(
 												(
-												extreme_5M['extreme'].to_numpy(), 
-												extreme_1H['extreme'].to_numpy(),
+												extreme_5M['power'].to_numpy(), 
+												extreme_1H['power'].to_numpy(),
 
-												trend_5M_long['min'].to_numpy(),
-												trend_5M_long['max'].to_numpy(),
-												trend_5M_mid['min'].to_numpy(),
-												trend_5M_mid['max'].to_numpy(),
-												trend_5M_short1['min'].to_numpy(),
-												trend_5M_short1['max'].to_numpy(),
-												trend_5M_short2['min'].to_numpy(),
-												trend_5M_short2['max'].to_numpy(),
+												trend_5M_long['power'].to_numpy(),
+												trend_5M_long['power'].to_numpy(),
+												trend_5M_mid['power'].to_numpy(),
+												trend_5M_mid['power'].to_numpy(),
+												trend_5M_short1['power'].to_numpy(),
+												trend_5M_short1['power'].to_numpy(),
+												trend_5M_short2['power'].to_numpy(),
+												trend_5M_short2['power'].to_numpy(),
 
-												trend_1H_long['min'].to_numpy(),
-												trend_1H_long['max'].to_numpy(),
-												trend_1H_mid['min'].to_numpy(),
-												trend_1H_mid['max'].to_numpy(),
-												trend_1H_short1['min'].to_numpy(),
-												trend_1H_short1['max'].to_numpy(),
-												trend_1H_short2['min'].to_numpy(),
-												trend_1H_short2['max'].to_numpy(),
+												trend_1H_long['power'].to_numpy(),
+												trend_1H_long['power'].to_numpy(),
+												trend_1H_mid['power'].to_numpy(),
+												trend_1H_mid['power'].to_numpy(),
+												trend_1H_short1['power'].to_numpy(),
+												trend_1H_short1['power'].to_numpy(),
+												trend_1H_short2['power'].to_numpy(),
+												trend_1H_short2['power'].to_numpy(),
 
-												ichi_lines_5M['extreme'].to_numpy(),
-												ichi_lines_1H['extreme'].to_numpy(),
+												ichi_lines_5M['power'].to_numpy(),
+												ichi_lines_1H['power'].to_numpy(),
 												), 
 												axis=None
-												),
-									columns=['extremes']
-									)
+												)
+			#Delete Nan Data:
+			exterm_point = exterm_point.dropna()
 
-		exterm_point['power'] = np.concatenate(
-											(
-											extreme_5M['power'].to_numpy(), 
-											extreme_1H['power'].to_numpy(),
-
-											trend_5M_long['power'].to_numpy(),
-											trend_5M_long['power'].to_numpy(),
-											trend_5M_mid['power'].to_numpy(),
-											trend_5M_mid['power'].to_numpy(),
-											trend_5M_short1['power'].to_numpy(),
-											trend_5M_short1['power'].to_numpy(),
-											trend_5M_short2['power'].to_numpy(),
-											trend_5M_short2['power'].to_numpy(),
-
-											trend_1H_long['power'].to_numpy(),
-											trend_1H_long['power'].to_numpy(),
-											trend_1H_mid['power'].to_numpy(),
-											trend_1H_mid['power'].to_numpy(),
-											trend_1H_short1['power'].to_numpy(),
-											trend_1H_short1['power'].to_numpy(),
-											trend_1H_short2['power'].to_numpy(),
-											trend_1H_short2['power'].to_numpy(),
-
-											ichi_lines_5M['power'].to_numpy(),
-											ichi_lines_1H['power'].to_numpy(),
-											), 
-											axis=None
+			#Using Best Extreme Finder To Find Best Tp And St Points:
+			bestfinder = BestFinder(parameters = self, config = self)
+			
+			try:
+				extereme = bestfinder.finder(
+											extermpoint = exterm_point,
+											timeframe = '5M',
+											loc_end_5M = loc_end_5M
 											)
-		#Delete Nan Data:
-		exterm_point = exterm_point.dropna()
-
-		#Using Best Extreme Finder To Find Best Tp And St Points:
-		bestfinder = BestFinder(parameters = self, config = self)
-		
-		try:
-			extereme = bestfinder.finder(
-										extermpoint = exterm_point,
-										timeframe = '5M',
-										loc_end_5M = loc_end_5M
+			except Exception as ex:
+				#print('PR Runner Error: ', ex)
+				extereme = pd.DataFrame(
+										{
+										'high_upper': np.nan,
+										'high_mid': np.nan,
+										'high_lower': np.nan,
+										'power_high_upper': np.nan,
+										'power_high_mid': np.nan,
+										'power_high_lower': np.nan,
+										'low_upper': np.nan,
+										'lowe_mid': np.nan,
+										'low_lower': np.nan,
+										'power_low_upper': np.nan,
+										'power_low_mid': np.nan,
+										'power_low_lower': np.nan,
+										},
+										index = [loc_end_5M]
 										)
-		except Exception as ex:
-			#print('PR Runner Error: ', ex)
+
+		else:
 			extereme = pd.DataFrame(
-									{
-									'high_upper': np.nan,
-									'high_mid': np.nan,
-									'high_lower': np.nan,
-									'power_high_upper': np.nan,
-									'power_high_mid': np.nan,
-									'power_high_lower': np.nan,
-									'low_upper': np.nan,
-									'lowe_mid': np.nan,
-									'low_lower': np.nan,
-									'power_low_upper': np.nan,
-									'power_low_mid': np.nan,
-									'power_low_lower': np.nan,
-									},
-									index = [loc_end_5M]
-									)
+										{
+										'high_upper': np.nan,
+										'high_mid': np.nan,
+										'high_lower': np.nan,
+										'power_high_upper': np.nan,
+										'power_high_mid': np.nan,
+										'power_high_lower': np.nan,
+										'low_upper': np.nan,
+										'lowe_mid': np.nan,
+										'low_lower': np.nan,
+										'power_low_upper': np.nan,
+										'power_low_mid': np.nan,
+										'power_low_lower': np.nan,
+										},
+										index = [loc_end_5M]
+										)
 
 		#Add Name Of Trends To OutPut DataFrame:
 		# if self.cfg['TrendLines_long_T_5M'] == True:

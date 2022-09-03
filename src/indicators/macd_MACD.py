@@ -1115,10 +1115,61 @@ class MACD:
 																flaglearn = chromosome[chrom_counter]['islearned'],
 																flagtest = True
 																)
+
+				if chromosome[chrom_counter]['isborn'] == True:
+					divergence_out_corr = pd.DataFrame(np.ones(signal.index[-1]))
+					divergence_out_corr['macd'] = np.nan
+					divergence_out_corr['low'] = np.nan
+					divergence_out_corr['high'] = np.nan
+
+					counter_corr = 0
+					for corr_idx in signal.index:
+						divergence_out_corr['macd'][counter_corr] = signal.indicator_front[corr_idx]
+						divergence_out_corr['macd'][counter_corr + 1] = signal.indicator_back[corr_idx]
+
+						divergence_out_corr['low'][counter_corr] = signal.low_front[corr_idx]
+						divergence_out_corr['low'][counter_corr + 1] = signal.low_back[corr_idx]
+
+						divergence_out_corr['high'][counter_corr] = signal.high_front[corr_idx]
+						divergence_out_corr['high'][counter_corr + 1] = signal.high_back[corr_idx]
+
+						counter_corr += 2
+
+					divergence_out_corr = divergence_out_corr.dropna()
+					divergence_out_corr = divergence_out_corr.drop(columns = [0])
+
+					number_divergence = len(divergence_out_corr.index)/1000
+
+					divergence_out_corr = divergence_out_corr.corr()
+
+					chromosome[chrom_counter].update(
+													{
+														'corr': -((divergence_out_corr['macd'][2] * divergence_out_corr['macd'][1] * number_divergence) ** (1/3)),
+													}
+													)
+					if (
+						divergence_out_corr['macd'][2] > 0 and
+						divergence_out_corr['macd'][1] > 0
+						):
+						chromosome[chrom_counter]['corr'] = -chromosome[chrom_counter]['corr']
+
+					chromosome[chrom_counter].update(
+													{
+														'corr_low': divergence_out_corr['macd'][1],
+														'corr_high': divergence_out_corr['macd'][2],
+													}
+													)
+
+					if chromosome[chrom_counter]['corr'] >= 0:
+						signal = pd.DataFrame()
+						signal_output = pd.DataFrame()
+						learning_output_now = pd.DataFrame()
+						learning_output_before = pd.DataFrame()
+
 				chromosome[chrom_counter]['isborn'] = False
 
 			except Exception as ex:
-				# print('Divergence Error: ',ex)
+				print('Divergence Error: ',ex)
 				signal = pd.DataFrame()
 				signal_output = pd.DataFrame()
 				learning_output_now = pd.DataFrame()

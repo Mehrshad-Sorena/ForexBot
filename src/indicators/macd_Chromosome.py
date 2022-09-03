@@ -501,6 +501,13 @@ class Chromosome:
 																				]
 																	)
 
+			if (
+				'corr' in GL_result.columns and
+				'corr_low' in GL_result.columns and
+				'corr_high' in GL_result.columns
+				):
+				GL_result_checking = GL_result.copy(deep = True).drop(columns = ['corr', 'corr_low', 'corr_high'])
+
 			dead_counter = 0
 
 			chor = dict(Chromosome[chrom_counter])
@@ -511,6 +518,10 @@ class Chromosome:
 			del chor['st_percent_max']
 			del chor['tp_percent_min']
 			del chor['tp_percent_max']
+			del chor['corr']
+			del chor['corr_high']
+			del chor['corr_low']
+
 
 
 			check = np.where(GL_result_checking == chor)[0]
@@ -538,6 +549,9 @@ class Chromosome:
 				del chor['st_percent_max']
 				del chor['tp_percent_min']
 				del chor['tp_percent_max']
+				del chor['corr']
+				del chor['corr_high']
+				del chor['corr_low']
 
 				check = np.where(GL_result_checking == chor)[0]
 				check_numbers = np.bincount(check)
@@ -989,6 +1003,9 @@ class Chromosome:
 			del chor[key]['st_percent_max']
 			del chor[key]['tp_percent_min']
 			del chor[key]['tp_percent_max']
+			del chor[key]['corr']
+			del chor[key]['corr_low']
+			del chor[key]['corr_high']
 
 		baby = {}
 

@@ -110,6 +110,9 @@ Chromosome_Accepted_List = [
 							'score',
 							'islearned',
 							'isborn',
+							'corr',
+							'corr_low',
+							'corr_high',
 							]
 
 #Functions:

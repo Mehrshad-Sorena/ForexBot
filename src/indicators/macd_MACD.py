@@ -1171,7 +1171,7 @@ class MACD:
 				chromosome[chrom_counter]['isborn'] = False
 
 			except Exception as ex:
-				print('Divergence Error: ',ex)
+				# print('Divergence Error: ',ex)
 				signal = pd.DataFrame()
 				signal_output = pd.DataFrame()
 				learning_output_now = pd.DataFrame()

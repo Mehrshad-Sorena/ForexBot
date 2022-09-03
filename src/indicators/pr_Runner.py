@@ -235,7 +235,7 @@ class Runner:
 									'power_high_mid': np.nan,
 									'power_high_lower': np.nan,
 									'low_upper': np.nan,
-									'lowe_mid': np.nan,
+									'low_mid': np.nan,
 									'low_lower': np.nan,
 									'power_low_upper': np.nan,
 									'power_low_mid': np.nan,
@@ -272,7 +272,7 @@ class Runner:
 										'power_high_mid': np.nan,
 										'power_high_lower': np.nan,
 										'low_upper': np.nan,
-										'lowe_mid': np.nan,
+										'low_mid': np.nan,
 										'low_lower': np.nan,
 										'power_low_upper': np.nan,
 										'power_low_mid': np.nan,
@@ -319,7 +319,7 @@ class Runner:
 										'power_high_mid': np.nan,
 										'power_high_lower': np.nan,
 										'low_upper': np.nan,
-										'lowe_mid': np.nan,
+										'low_mid': np.nan,
 										'low_lower': np.nan,
 										'power_low_upper': np.nan,
 										'power_low_mid': np.nan,
@@ -451,7 +451,7 @@ class Runner:
 										'power_high_mid': np.nan,
 										'power_high_lower': np.nan,
 										'low_upper': np.nan,
-										'lowe_mid': np.nan,
+										'low_mid': np.nan,
 										'low_lower': np.nan,
 										'power_low_upper': np.nan,
 										'power_low_mid': np.nan,
@@ -470,7 +470,7 @@ class Runner:
 										'power_high_mid': np.nan,
 										'power_high_lower': np.nan,
 										'low_upper': np.nan,
-										'lowe_mid': np.nan,
+										'low_mid': np.nan,
 										'low_lower': np.nan,
 										'power_low_upper': np.nan,
 										'power_low_mid': np.nan,
@@ -496,7 +496,6 @@ class Runner:
 			sigtype == 'buy' and
 			flagtest == True
 			):
-			
 			tester = Tester(parameters = self)
 			extereme = tester.FlagFinderBuy(
 											dataset_5M = dataset_5M, 
@@ -564,7 +563,7 @@ class Runner:
 																signals = signals
 																), 
 																index = ['high_upper', 'high_mid', 'high_lower', 'power_high_upper', 
-																		'power_high_mid', 'power_high_lower', 'low_upper', 'lowe_mid', 
+																		'power_high_mid', 'power_high_lower', 'low_upper', 'low_mid', 
 																		'low_lower','power_low_upper', 'power_low_mid', 'power_low_lower']
 													),
 								axis = 1,
@@ -587,7 +586,7 @@ class Runner:
 																flag_savepic = flag_savepic
 																), 
 																index = ['high_upper', 'high_mid', 'high_lower', 'power_high_upper', 
-																		'power_high_mid', 'power_high_lower', 'low_upper', 'lowe_mid', 
+																		'power_high_mid', 'power_high_lower', 'low_upper', 'low_mid', 
 																		'low_lower','power_low_upper', 'power_low_mid', 'power_low_lower',
 																		'flag','tp_pr','st_pr','index_tp','index_st','money','time']
 													),

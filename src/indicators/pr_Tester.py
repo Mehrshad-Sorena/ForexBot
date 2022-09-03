@@ -367,9 +367,22 @@ class Tester:
 
 			diff_pr_top = st_percent_min
 			extereme['high_upper'][loc_end_5M] = dataset_5M['high'][loc_end_5M] * (1+(st_percent_min/100))
+			extereme['high_mid'][loc_end_5M] = dataset_5M['high'][loc_end_5M] * (1+(st_percent_min/100))
+			extereme['high_lower'][loc_end_5M] = dataset_5M['high'][loc_end_5M] * (1+(st_percent_min/100))
+
+			extereme['power_high_upper'][loc_end_5M] = 0
+			extereme['power_high_mid'][loc_end_5M] = 0
+			extereme['power_high_lower'][loc_end_5M] = 0
+
 
 			diff_pr_down = tp_percent_min
 			extereme['low_lower'][loc_end_5M] = dataset_5M['low'][loc_end_5M] * (1-(tp_percent_min/100))
+			extereme['low_mid'][loc_end_5M] = dataset_5M['low'][loc_end_5M] * (1-(tp_percent_min/100))
+			extereme['low_upper'][loc_end_5M] = dataset_5M['low'][loc_end_5M] * (1-(tp_percent_min/100))
+
+			extereme['power_low_upper'][loc_end_5M] = 0
+			extereme['power_low_mid'][loc_end_5M] = 0
+			extereme['power_low_lower'][loc_end_5M] = 0
 
 
 		if flaglearn == False:

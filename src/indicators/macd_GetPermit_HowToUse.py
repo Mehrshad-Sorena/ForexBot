@@ -20,9 +20,9 @@ config = Config()
 
 
 
-parameters.elements['dataset_5M'], parameters.elements['dataset_1H'] = loging.readall(symbol = 'ETHUSD_i', number_5M = 'all', number_1H = 'all')
+parameters.elements['dataset_5M'], parameters.elements['dataset_1H'] = loging.readall(symbol = 'XAUUSD_i', number_5M = 'all', number_1H = 'all')
 
-parameters.elements['symbol'] = 'ETHUSD_i'
+parameters.elements['symbol'] = 'XAUUSD_i'
 parameters.elements['MACD_apply_to'] = 'close'
 
 #print(parameters.elements['dataset_1H']['ETHUSD_i'])
@@ -31,8 +31,8 @@ macd = MACD(parameters = parameters, config = config)
 macd_calc = macd.GetPermit(
 						dataset_5M = parameters.elements['dataset_5M'],
 						dataset_1H = parameters.elements['dataset_1H'], 
-						symbol = 'ETHUSD_i',
-						signaltype = 'buy',
+						symbol = 'XAUUSD_i',
+						signaltype = 'sell',
 						signalpriority = 'primary',
 						flag_savepic = False
 						)

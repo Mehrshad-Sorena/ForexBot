@@ -1224,15 +1224,15 @@ class MACD:
 																	)
 
 			except Exception as ex:
-				print('Learning Error: ',ex)
+				# print('Learning Error: ',ex)
 				# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 				# 	print(signal)
 				signal_output = pd.DataFrame()
 				learning_output_now = pd.DataFrame()
 				learning_output_before = pd.DataFrame()
 
-			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-				print(learning_output_now)
+			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			# 	print(learning_output_now)
 
 			if (
 				signal_output.empty == True or

@@ -367,6 +367,9 @@ class Chromosome:
 												'score': 0,
 												'islearned': False,
 												'isborn': True,
+												'corr': 0,
+												'corr_low': 0,
+												'corr_high': 0,
 											}
 											)
 
@@ -442,6 +445,9 @@ class Chromosome:
 													'score': 0,
 													'islearned': False,
 													'isborn': True,
+													'corr': 0,
+													'corr_low': 0,
+													'corr_high': 0,
 												}
 												)
 		return Chromosome_vares[chrom_counter]
@@ -1077,6 +1083,10 @@ class Chromosome:
 			chor[re_counter]['score'] = 0
 			chor[re_counter]['isborn'] = True
 			chor[re_counter]['islearned'] = False
+
+			chor[re_counter]['corr'] = 0
+			chor[re_counter]['corr_low'] = 0
+			chor[re_counter]['corr_high'] = 0
 			
 			re_counter += 1
 

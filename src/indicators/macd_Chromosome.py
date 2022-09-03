@@ -506,16 +506,10 @@ class Chromosome:
 																	columns = [
 																				'isborn', 'islearned', 'score', 
 																				'st_percent_min', 'st_percent_max', 
-																				'tp_percent_min', 'tp_percent_max'
+																				'tp_percent_min', 'tp_percent_max',
+																				'corr', 'corr_low', 'corr_high'
 																				]
 																	)
-
-			if (
-				'corr' in GL_result.columns and
-				'corr_low' in GL_result.columns and
-				'corr_high' in GL_result.columns
-				):
-				GL_result_checking = GL_result.copy(deep = True).drop(columns = ['corr', 'corr_low', 'corr_high'])
 
 			dead_counter = 0
 

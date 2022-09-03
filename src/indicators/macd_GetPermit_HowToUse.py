@@ -33,6 +33,6 @@ macd_calc = macd.GetPermit(
 						dataset_1H = parameters.elements['dataset_1H'], 
 						symbol = 'XAUUSD_i',
 						signaltype = 'sell',
-						signalpriority = 'primary',
+						signalpriority = 'secondry',
 						flag_savepic = False
 						)

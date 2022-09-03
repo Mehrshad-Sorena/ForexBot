@@ -11,11 +11,11 @@ class ParameterLimits:
 
 							#Chromosome Limit Parameters:
 
-							'MACD_fast_upper': 15,#144,#800,
-							'MACD_fast_lower': 9,
+							'MACD_fast_upper': 500,#144,#800,
+							'MACD_fast_lower': 2,
 
 							'MACD_slow_upper': 500,#312,#1500,
-							'MACD_slow_lower': 200,
+							'MACD_slow_lower': 2,
 
 							'MACD_signal_upper': 50,
 							'MACD_signal_lower': 2,

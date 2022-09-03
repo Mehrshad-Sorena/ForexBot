@@ -997,10 +997,10 @@ class MACD:
 			max_corr = chromosome_output['corr'].min()/3
 
 			if num_turn <= len(learning_result['score']):
-				num_turn = (len(learning_result['score'])) + 2
+				num_turn = (len(learning_result['score'])) + 4
 
 				if len(chromosome_output) >= num_turn:
-					num_turn = len(chromosome_output) + 2
+					num_turn = len(chromosome_output) + 4
 
 		else:
 			learning_result = pd.DataFrame()
@@ -1171,7 +1171,7 @@ class MACD:
 				chromosome[chrom_counter]['isborn'] = False
 
 			except Exception as ex:
-				print('Divergence Error: ',ex)
+				# print('Divergence Error: ',ex)
 				signal = pd.DataFrame()
 				signal_output = pd.DataFrame()
 				learning_output_now = pd.DataFrame()

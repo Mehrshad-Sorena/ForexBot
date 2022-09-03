@@ -29,10 +29,10 @@ parameters.elements['MACD_apply_to'] = 'close'
 
 macd = MACD(parameters = parameters, config = config)
 macd_calc = macd.GetPermit(
-						dataset_5M = parameters.elements['dataset_5M'],
-						dataset_1H = parameters.elements['dataset_1H'], 
-						symbol = 'XAUUSD_i',
-						signaltype = 'sell',
-						signalpriority = 'secondry',
-						flag_savepic = False
+							dataset_5M = parameters.elements['dataset_5M'],
+							dataset_1H = parameters.elements['dataset_1H'], 
+							symbol = 'XAUUSD_i',
+							signaltype = 'sell',
+							signalpriority = 'secondry',
+							flag_savepic = False
 						)

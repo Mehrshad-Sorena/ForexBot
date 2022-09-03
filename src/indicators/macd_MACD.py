@@ -994,15 +994,18 @@ class MACD:
 			learning_result = pd.read_csv(path_elites + symbol + '_LearningResults.csv').drop(columns='Unnamed: 0')
 			chromosome_output = pd.read_csv(path_elites + symbol + '_ChromosomeResults.csv').drop(columns='Unnamed: 0')
 
+			max_corr = chromosome_output['corr'].min()/3
+
 			if num_turn <= len(learning_result['score']):
-				num_turn = (len(learning_result['score'])) + 2
+				num_turn = (len(learning_result['score'])) + 0
 
 				if len(chromosome_output) >= num_turn:
-					num_turn = len(chromosome_output) + 2
+					num_turn = len(chromosome_output) + 0
 
 		else:
 			learning_result = pd.DataFrame()
 			chromosome_output = pd.DataFrame()
+			max_corr = 0
 
 		
 
@@ -1160,7 +1163,7 @@ class MACD:
 													}
 													)
 
-					if chromosome[chrom_counter]['corr'] >= 0:
+					if chromosome[chrom_counter]['corr'] >= max_corr:
 						signal = pd.DataFrame()
 						signal_output = pd.DataFrame()
 						learning_output_now = pd.DataFrame()
@@ -1221,12 +1224,15 @@ class MACD:
 																	)
 
 			except Exception as ex:
-				# print('Learning Error: ',ex)
+				print('Learning Error: ',ex)
 				# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 				# 	print(signal)
 				signal_output = pd.DataFrame()
 				learning_output_now = pd.DataFrame()
 				learning_output_before = pd.DataFrame()
+
+			with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+				print(learning_output_now)
 
 			if (
 				signal_output.empty == True or

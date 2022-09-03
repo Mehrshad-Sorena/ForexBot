@@ -1007,7 +1007,6 @@ class MACD:
 			chromosome_output = pd.DataFrame()
 			max_corr = 0
 
-		
 
 		chrom_counter = 0
 		all_chorms = 0

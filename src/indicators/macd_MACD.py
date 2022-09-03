@@ -80,11 +80,16 @@ class MACD:
 
 			GL_Results = pd.read_csv(path_superhuman + symbol + '.csv')
 
+			if 'Unnamed: 0' in GL_Results.columns:
+				GL_Results = GL_Results.drop(columns = ['Unnamed: 0'])
+
+			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+			# 	print(GL_Results)
+
 			for elm in GL_Results.columns:
 
 				for pr_param_elm in pr_parameters.elements.keys():
 					if pr_param_elm == elm:
-
 						if (
 							elm == 'BestFinder_alpha_low' or
 							elm == 'BestFinder_alpha_high' or
@@ -887,6 +892,12 @@ class MACD:
 			# with pd.option_context('display.max_rows', None, 'display.max_columns', None):
 			# 	print(signal)
 
+			# pr_parameters.elements['st_percent_min'] = 0.09
+			# pr_parameters.elements['st_percent_max'] = 0.12
+
+			# pr_parameters.elements['tp_percent_min'] = 0.26
+			# pr_parameters.elements['tp_percent_max'] = 0.3
+
 			signal_output, learning_output = macd_tester.RunGL(
 																signal = signal, 
 																sigtype = signaltype, 
@@ -907,17 +918,34 @@ class MACD:
 		# 	print('signals = ', signal_output)
 
 		with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-			print('learning = ', learning_output)
+			print(learning_output)
 
 		if learning_output.empty == False:
 
 			if learning_output['score'][0] >= GL_Results['score'][0] * 0.9:
 				GL_Results['permit'] = [True]
-				GL_Results['score'][0] = learning_output['score'][0]
 
 			else:
 				GL_Results['permit'] = [False]
-				GL_Results['score'][0] = learning_output['score'][0]
+			
+			GL_Results['score'][0] = learning_output['score'][0]
+			GL_Results['mean_tp_pr'][0] = learning_output['mean_tp_pr'][0]
+			GL_Results['mean_st_pr'][0] = learning_output['mean_st_pr'][0]
+			GL_Results['max_tp_pr'][0] = learning_output['max_tp_pr'][0]
+			GL_Results['max_st_pr'][0] = learning_output['max_st_pr'][0]
+			GL_Results['sum_st_pr'][0] = learning_output['sum_st_pr'][0]
+			GL_Results['sum_tp_pr'][0] = learning_output['sum_tp_pr'][0]
+
+			GL_Results['num_tp_pr'][0] = learning_output['num_tp_pr'][0]
+			GL_Results['num_st_pr'][0] = learning_output['num_st_pr'][0]
+			GL_Results['num_trade_pr'][0] = learning_output['num_trade_pr'][0]
+			GL_Results['money'][0] = learning_output['money'][0]
+			GL_Results['draw_down'][0] = learning_output['draw_down'][0]
+
+			if learning_output['max_st'][0] > 0.09: GL_Results['st_percent_max'][0] = learning_output['max_st'][0]
+			if learning_output['min_st'][0] > 0.08: GL_Results['st_percent_min'][0] = learning_output['min_st'][0]
+			if learning_output['max_tp'][0] > 0.27: GL_Results['tp_percent_max'][0] = learning_output['max_tp'][0]
+			if learning_output['min_tp'][0] > 0.24: GL_Results['tp_percent_min'][0] = learning_output['min_tp'][0]
 
 		else:
 			GL_Results['permit'] = [False]

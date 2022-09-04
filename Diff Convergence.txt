@@ -1,0 +1,180 @@
+diff_1 = macd.diff()
+diff_2 = diff_1.diff()
+
+count_nan = diff_1.isnull().sum() # count number of nans
+count_nan_diff2 = diff_2.isnull().sum() # count number of nans
+
+diff_1 = diff_1.dropna() # delete nan values
+
+max_diff_1 = max(diff_1)
+min_diff_1 = min(diff_1)
+
+diff_2 = diff_2.dropna() # delete nan values
+
+max_diff_2 = max(diff_2)
+min_diff_2 = min(diff_2)
+
+diff_1 = macd.diff()
+diff_2 = diff_1.diff()
+
+max_diff_1 = max(max_diff_1,abs(min_diff_1))
+diff_1 = ((diff_1/max_diff_1)*100)
+
+
+max_diff_2 = max(max_diff_2,abs(min_diff_2))
+diff_2 = ((diff_2/max_diff_2)*100)
+
+count = 0
+
+signal_data_macd = {}
+j = 0
+
+for i in diff_1:
+	#print("i = ",i)
+	if ((i >= -10) & (i <= 10)):
+		if diff_2[count] >= 0:
+			signal_data_macd[j] = {
+			'ex_value': macd[count],
+			'exterm': 'min',
+			'number': count,
+			'symbol': ""
+			}
+			j += 1
+		if (diff_2[count] < 0):
+			signal_data_macd[j] = {
+			'ex_value': macd[count],
+			'exterm': 'max',
+			'number': count,
+			'symbol': ""
+			}
+			j += 1
+		
+	count += 1
+
+ma = ind.sma(symbol_data['EURUSD']['open'],length=3)
+
+ma_diff_1 = ma.diff()
+ma_diff_2 = ma_diff_1.diff()
+
+count_nan = ma_diff_1.isnull().sum() # count number of nans
+count_nan_diff2 = ma_diff_2.isnull().sum()
+
+ma_diff_1 = ma_diff_1.dropna() # delete nan values
+ma_diff_2 = ma_diff_2.dropna() # delete nan values
+
+max_ma_diff_1 = max(ma_diff_1)
+min_ma_diff_1 = min(ma_diff_1)
+
+max_ma_diff_2 = max(ma_diff_2)
+min_ma_diff_2 = min(ma_diff_2)
+
+ma_diff_1 = ma.diff()
+ma_diff_2 = ma_diff_1.diff()
+
+max_ma_diff_1 = max(max_ma_diff_1,abs(min_ma_diff_1))
+ma_diff_1 = ((ma_diff_1/max_ma_diff_1)*100)
+
+max_ma_diff_2 = max(max_ma_diff_2,abs(min_ma_diff_2))
+ma_diff_2 = ((ma_diff_2/max_ma_diff_2)*100)
+
+signal_data_ma = {}
+count = 0
+j = 0
+
+for i in ma_diff_1:
+	#print("i = ",i)
+	if ((i >= -10) & (i <= 10)):
+		if (ma_diff_2[count] >= 0):
+			signal_data_ma[j] = {
+			'ex_value': ma[count],
+			'exterm': 'min',
+			'number': count,
+			'symbol': ""
+			}
+			j += 1
+		if (ma_diff_2[count] < 0):
+			signal_data_ma[j] = {
+			'ex_value': ma[count],
+			'exterm': 'max',
+			'number': count,
+			'symbol': ""
+			}
+			j += 1
+		
+	count += 1
+
+Diff_min_max = 1 #1~100
+i = len(signal_data_macd)-1
+
+while i>=len(signal_data_macd)-100:
+	#print(signal_data_macd[i],i)
+	if (signal_data_macd[i]['exterm'] == 'max'):
+		if(signal_data_macd[i-1]['exterm'] == 'min'):
+			if(signal_data_macd[i-2]['exterm'] == 'max'):
+				E1 = signal_data_macd[i]['ex_value']
+				E2 = signal_data_macd[i-1]['ex_value']
+				E3 = signal_data_macd[i-2]['ex_value']
+				if ((E2<E1) & (E2<E3) & (Diff_min_max<(abs((E1/E2)-1)*100))):
+					j = 0
+					while j<len(signal_data_ma):
+						#print(signal_data_ma[j]['number'])
+						if (signal_data_ma[j]['number'] == signal_data_macd[i]['number']):
+							if (signal_data_ma[j]['exterm'] == 'max'):
+								E4 = signal_data_ma[j]['ex_value']
+								ma_find_flag = 1
+						else:
+							ma_find_flag = 0
+						if (signal_data_ma[j]['number'] == signal_data_macd[i-2]['number']):
+							if (signal_data_ma[j]['exterm'] == 'max'):
+								E5 = signal_data_ma[j]['ex_value']
+								ma_find_flag = 1
+						else:
+							ma_find_flag = 0
+
+						if (ma_find_flag == 1):
+							if (E1 >= E3) & (E4 < E5):
+								print("sell")
+								print(signal_data_ma[j]['number'])
+								signal = {}
+							if (E1 < E3) & (E4 > E5):
+								print("sell")
+								print(signal_data_ma[j]['number'])
+								signal = {}
+						j += 1
+
+	if (signal_data_macd[i]['exterm'] == 'min'):
+		if(signal_data_macd[i-1]['exterm'] == 'max'):
+			if(signal_data_macd[i-2]['exterm'] == 'min'):
+				E1 = signal_data_macd[i]['ex_value']
+				E2 = signal_data_macd[i-1]['ex_value']
+				E3 = signal_data_macd[i-2]['ex_value']
+				if ((E2>E1) & (E2>E3) & (Diff_min_max<(abs((E2/E1)-1)*100))):
+					j = 0
+					while j<len(signal_data_ma):
+						#print(signal_data_ma[j]['number'])
+						if (signal_data_ma[j]['number'] == signal_data_macd[i]['number']):
+							if (signal_data_ma[j]['exterm'] == 'min'):
+								E4 = signal_data_ma[j]['ex_value']
+								ma_find_flag = 1
+						else:
+							ma_find_flag = 0
+						if (signal_data_ma[j]['number'] == signal_data_macd[i-2]['number']):
+							if (signal_data_ma[j]['exterm'] == 'min'):
+								E5 = signal_data_ma[j]['ex_value']
+								ma_find_flag = 1
+						else:
+							ma_find_flag = 0
+
+						if (ma_find_flag == 1):
+							if (E1 <= E3) & (E4 > E5):
+								print("buy")
+								print(signal_data_ma[j]['number'])
+								signal = {}
+							if (E1 > E3) & (E4 < E5):
+								print("buy")
+								print(signal_data_ma[j]['number'])
+								signal = {}
+						j += 1
+					#print("founded")
+					#break
+	i -= 1
